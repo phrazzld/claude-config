@@ -62,11 +62,6 @@ Create a project-specific "execute" command that systematically completes tasks 
    - Conduct web searches for best practices and common pitfalls
    - Research similar implementations in respected codebases
 
-   ### 4. **Advanced Analysis** (when task complexity warrants)
-   - Invoke `thinktank` CLI for multi-perspective analysis
-   - Consider security, performance, and maintainability angles
-   - Evaluate long-term implications of implementation choices
-
    ## STRATEGIC PLANNING
 
    ### Multi-Expert Planning Session
