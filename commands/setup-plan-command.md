@@ -30,7 +30,7 @@ Create a project-specific "plan" command that leverages multiple expert programm
 
    Generate the best possible implementation plan for the task described in TASK.md by:
    - Conducting exhaustive research and context gathering
-   - Leveraging multiple expert programming personas through subagents
+   - Leveraging multiple expert programming personas through subagents. Make sure each one only conducts research and investigations and brainstorms, and outputs all responses directly to chat -- they should not make code changes and they should not use plan mode
    - Synthesizing diverse perspectives into a strongly opinionated recommendation
 
    ## ANALYZE
@@ -45,12 +45,12 @@ Create a project-specific "plan" command that leverages multiple expert programm
    5. Conduct web searches on the problem domain, solutions, and best practices
 
    ### Phase 2: Multi-Expert Analysis
-   Launch parallel subagents embodying legendary programmer perspectives using the Task tool:
+   Launch parallel subagents embodying legendary programmer perspectives using the Task tool. Use them to thoroughly review, investigate, audit, and analyze the code, but do not have them write any code! They should output everything to chat, and they should not use plan mode.
 
    **Task 1: John Carmack Perspective**
    - Prompt: "As John Carmack, analyze this task focusing on performance optimization, elegant algorithms, and first principles thinking. What would be the most algorithmically sound and performance-optimized approach? Consider memory management, computational complexity, and elegant mathematical solutions."
 
-   **Task 2: Richard Stallman Perspective**  
+   **Task 2: Richard Stallman Perspective**
    - Prompt: "As Richard Stallman, analyze this task from software freedom, ethical considerations, and long-term maintainability perspectives. How would you ensure user freedom, avoid vendor lock-in, and create truly maintainable solutions that serve users rather than corporations?"
 
    **Task 3: Linus Torvalds Perspective**
@@ -89,7 +89,7 @@ Create a project-specific "plan" command that leverages multiple expert programm
    4. **Synthesis and Evaluation**
       - Compare all approaches across multiple dimensions:
         * Technical feasibility and complexity
-        * Performance and scalability characteristics  
+        * Performance and scalability characteristics
         * Maintainability and long-term sustainability
         * User experience and practical utility
         * Implementation timeline and resource requirements
@@ -105,7 +105,7 @@ Create a project-specific "plan" command that leverages multiple expert programm
    ## Success Criteria
 
    - Comprehensive analysis incorporating multiple expert perspectives
-   - Clear, actionable implementation plan with strong technical rationale  
+   - Clear, actionable implementation plan with strong technical rationale
    - Consideration of both technical excellence and practical constraints
    - Strategic approach that maximizes probability of successful execution
    - Integration with existing codebase patterns and project conventions

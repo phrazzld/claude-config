@@ -66,7 +66,7 @@ Create a project-specific "execute" command that systematically completes tasks 
 
    ### Multi-Expert Planning Session
 
-   For complex tasks, use the Task tool to consult expert perspectives:
+   For complex tasks, use the Task tool to consult expert perspectives. Make sure each one only conducts research and investigations and brainstorms, and outputs all responses directly to chat -- they should not make code changes and they should not use plan mode.
 
    **Task 1: John Carmack - First Principles Engineering**
    - Prompt: "As John Carmack, analyze this implementation task. What's the most elegant, performant solution? Consider algorithmic efficiency, system design, and mathematical elegance. What would you optimize?"

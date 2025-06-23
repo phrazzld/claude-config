@@ -42,12 +42,12 @@ Create a project-specific "ticket" command that leverages multiple expert progra
    5. Analyze existing TODO patterns in the codebase
 
    ### Phase 2: Multi-Expert Task Decomposition
-   Launch parallel subagents embodying legendary programmer perspectives using the Task tool:
+   Launch parallel subagents embodying legendary programmer perspectives using the Task tool. Make sure each one only conducts research and investigations and brainstorms, and outputs all responses directly to chat -- they should not make code changes and they should not use plan mode:
 
    **Task 1: John Carmack - Engineering Excellence**
    - Prompt: "As John Carmack, break down this plan into atomic engineering tasks. Focus on algorithmic clarity, performance considerations, and first principles. Each task should be technically precise and implementation-focused. What are the most fundamental units of work?"
 
-   **Task 2: David Allen - GTD Methodology**  
+   **Task 2: David Allen - GTD Methodology**
    - Prompt: "As David Allen (Getting Things Done), decompose this plan into next actions that are concrete, actionable, and context-specific. Each task should have a clear 'done' state and be executable without further planning. Focus on removing ambiguity."
 
    **Task 3: Kent Beck - Test-Driven Development**
@@ -106,13 +106,13 @@ Create a project-specific "ticket" command that leverages multiple expert progra
       ## Core Implementation
       - [ ] [Task with full context and details]
       - [ ] [Task with dependencies noted]
-      
+
       ## Testing & Validation
       - [ ] [Test-specific tasks]
-      
+
       ## Documentation & Polish
       - [ ] [User-facing improvements]
-      
+
       ## Technical Debt & Refactoring
       - [ ] [Architecture improvements]
       ```
@@ -124,12 +124,12 @@ Create a project-specific "ticket" command that leverages multiple expert progra
         * Too large (>500 lines of code changes)
         * Too broad in scope (touching >10 files or multiple subsystems)
         * Too difficult to review (mixing refactoring with new features)
-      
+
       If the scope is too large:
       - Break the work into logical, self-contained chunks
       - Each chunk should represent one focused PR worth of work
       - Prioritize chunks by dependencies and value delivery
-      
+
    7. **Scope Management**
       If breaking up is needed:
       - Take the highest priority chunk as the new TODO.md scope
@@ -138,7 +138,7 @@ Create a project-specific "ticket" command that leverages multiple expert progra
         * Check if BACKLOG.md exists
         * If exists: Integrate new items elegantly, maintaining existing structure
         * If not: Create new BACKLOG.md with clear organization
-      
+
       BACKLOG.md format:
       ```markdown
       # BACKLOG
@@ -150,7 +150,7 @@ Create a project-specific "ticket" command that leverages multiple expert progra
       **Scope**: [What this chunk accomplishes]
       **Tasks**:
       - [ ] [High-level task items for this chunk]
-      
+
       ### [Next Chunk Name]
       ...
       ```

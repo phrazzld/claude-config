@@ -33,7 +33,7 @@ Create a project-specific "review" command that leverages multiple expert progra
      - DevOps: Kelsey Hightower, Jessie Frazelle, Mitchell Hashimoto
 
    ### Phase 1: Parallel Expert Review
-   Launch subagents using the Task tool for independent analysis:
+   Launch subagents using the Task tool for independent analysis. Make sure each one only conducts research and investigations and brainstorms, and outputs all responses directly to chat -- they should not make code changes and they should not use plan mode:
 
    **Task 1: John Carmack - Performance & Algorithms**
    - Prompt: "As John Carmack, review the code diff in REVIEW-CONTEXT.md focusing on algorithmic efficiency, performance optimization, and first principles engineering. Consider computational complexity, memory usage, and mathematical elegance. What could be more elegant or performant?"
