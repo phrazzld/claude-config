@@ -33,12 +33,12 @@ Create a project-specific "review" command that leverages multiple expert progra
      - DevOps: Kelsey Hightower, Jessie Frazelle, Mitchell Hashimoto
 
    ### Phase 1: Parallel Expert Review
-   Launch subagents using the Task tool for independent analysis. Make sure each one only conducts research and investigations and brainstorms, and outputs all responses directly to chat -- they should not make code changes and they should not use plan mode:
+   Launch subagents using the Task tool for independent analysis. Each subagent must run independently and in parallel for maximum efficiency. CRITICAL: All subagents operate in research/investigation mode only - they should NOT modify code, use plan mode, or create files. They must output all analysis and findings directly to chat:
 
    **Task 1: John Carmack - Performance & Algorithms**
-   - Prompt: "As John Carmack, review the code diff in REVIEW-CONTEXT.md focusing on algorithmic efficiency, performance optimization, and first principles engineering. Consider computational complexity, memory usage, and mathematical elegance. What could be more elegant or performant?"
+   - Prompt: "As John Carmack, review the code diff in REVIEW-CONTEXT.md focusing on algorithmic efficiency, performance optimization, and first principles engineering. Consider computational complexity, memory usage, and mathematical elegance. What could be more elegant or performant? IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your review findings directly to chat."
 
-   [Project-specific expert tasks based on detected stack]
+   [Project-specific expert tasks based on detected stack - all with research mode instructions]
 
    ### Phase 2: Superior Synthesis
    1. Read all expert subagent reviews

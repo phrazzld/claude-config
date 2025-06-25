@@ -42,22 +42,22 @@ Create a project-specific "ticket" command that leverages multiple expert progra
    5. Analyze existing TODO patterns in the codebase
 
    ### Phase 2: Multi-Expert Task Decomposition
-   Launch parallel subagents embodying legendary programmer perspectives using the Task tool. Make sure each one only conducts research and investigations and brainstorms, and outputs all responses directly to chat -- they should not make code changes and they should not use plan mode:
+   Launch parallel subagents embodying legendary programmer perspectives using the Task tool. Each subagent must run independently and in parallel for maximum efficiency. CRITICAL: All subagents operate in research/investigation mode only - they should NOT modify code, use plan mode, or create files. They must output all thoughts, findings, and brainstorming directly to chat:
 
    **Task 1: John Carmack - Engineering Excellence**
-   - Prompt: "As John Carmack, break down this plan into atomic engineering tasks. Focus on algorithmic clarity, performance considerations, and first principles. Each task should be technically precise and implementation-focused. What are the most fundamental units of work?"
+   - Prompt: "As John Carmack, break down this plan into atomic engineering tasks. Focus on algorithmic clarity, performance considerations, and first principles. Each task should be technically precise and implementation-focused. What are the most fundamental units of work? IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your task breakdown directly to chat."
 
    **Task 2: David Allen - GTD Methodology**
-   - Prompt: "As David Allen (Getting Things Done), decompose this plan into next actions that are concrete, actionable, and context-specific. Each task should have a clear 'done' state and be executable without further planning. Focus on removing ambiguity."
+   - Prompt: "As David Allen (Getting Things Done), decompose this plan into next actions that are concrete, actionable, and context-specific. Each task should have a clear 'done' state and be executable without further planning. Focus on removing ambiguity. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your task breakdown directly to chat."
 
    **Task 3: Kent Beck - Test-Driven Development**
-   - Prompt: "As Kent Beck, break down this plan into testable increments. Each task should represent a verifiable behavior change. Structure tasks to enable test-first development and continuous integration."
+   - Prompt: "As Kent Beck, break down this plan into testable increments. Each task should represent a verifiable behavior change. Structure tasks to enable test-first development and continuous integration. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your task breakdown directly to chat."
 
    **Task 4: Martin Fowler - Refactoring & Architecture**
-   - Prompt: "As Martin Fowler, identify refactoring and architectural tasks. Break down the work to maintain clean architecture, enable incremental improvements, and prevent technical debt accumulation."
+   - Prompt: "As Martin Fowler, identify refactoring and architectural tasks. Break down the work to maintain clean architecture, enable incremental improvements, and prevent technical debt accumulation. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your task breakdown directly to chat."
 
    **Task 5: Joel Spolsky - Pragmatic Product Development**
-   - Prompt: "As Joel Spolsky, create tasks that balance engineering excellence with shipping. Include tasks for documentation, edge cases, user experience polish, and practical deployment considerations."
+   - Prompt: "As Joel Spolsky, create tasks that balance engineering excellence with shipping. Include tasks for documentation, edge cases, user experience polish, and practical deployment considerations. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your task breakdown directly to chat."
 
    ### Phase 3: Task Characteristics
    Each expert should ensure their tasks are:
@@ -77,11 +77,13 @@ Create a project-specific "ticket" command that leverages multiple expert progra
 
    2. **Launch Expert Subagents**
       - Use the Task tool to create independent subagents for each perspective
-      - Have each expert create their task breakdown independently
-      - Collect all task lists with rationales
+      - All subagents run in parallel for maximum efficiency
+      - Each expert creates their task breakdown independently in research mode only
+      - Collect all task lists with rationales via direct chat output
 
    3. **Synthesis Round**
-      - Launch a synthesis subagent to merge all expert task lists
+      - Launch a synthesis subagent using the Task tool to merge all expert task lists
+      - Synthesis agent operates in research mode only - no code changes, no plan mode, output to chat
       - Eliminate duplicates while preserving unique insights
       - Order tasks by dependencies and critical path
       - Ensure comprehensive coverage without gaps

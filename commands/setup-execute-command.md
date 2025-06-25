@@ -66,16 +66,16 @@ Create a project-specific "execute" command that systematically completes tasks 
 
    ### Multi-Expert Planning Session
 
-   For complex tasks, use the Task tool to consult expert perspectives. Make sure each one only conducts research and investigations and brainstorms, and outputs all responses directly to chat -- they should not make code changes and they should not use plan mode.
+   For complex tasks, use the Task tool to consult expert perspectives. Each subagent must run independently and in parallel for maximum efficiency. CRITICAL: All subagents operate in research/investigation mode only - they should NOT modify code, use plan mode, or create files. They must output all research and brainstorming directly to chat.
 
    **Task 1: John Carmack - First Principles Engineering**
-   - Prompt: "As John Carmack, analyze this implementation task. What's the most elegant, performant solution? Consider algorithmic efficiency, system design, and mathematical elegance. What would you optimize?"
+   - Prompt: "As John Carmack, analyze this implementation task. What's the most elegant, performant solution? Consider algorithmic efficiency, system design, and mathematical elegance. What would you optimize? IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
    **Task 2: Linus Torvalds - Pragmatic Excellence**
-   - Prompt: "As Linus Torvalds, review this task. What's the most practical, maintainable approach? Focus on code that works reliably, handles edge cases, and doesn't over-engineer."
+   - Prompt: "As Linus Torvalds, review this task. What's the most practical, maintainable approach? Focus on code that works reliably, handles edge cases, and doesn't over-engineer. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
    **Task 3: Kent Beck - Incremental Perfection**
-   - Prompt: "As Kent Beck, plan this implementation. How would you approach it test-first? What's the smallest change that could possibly work? How do we ensure correctness?"
+   - Prompt: "As Kent Beck, plan this implementation. How would you approach it test-first? What's the smallest change that could possibly work? How do we ensure correctness? IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
    ### Plan Synthesis
    - Combine expert insights into a cohesive strategy

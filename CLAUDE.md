@@ -67,3 +67,9 @@
 * Search the web when you're unsure about things. Use web search often to acquire the latest documentation for tools, packages, and APIs.
 
 * Use `thinktank` to get advice from a highly expert council on any subject, any problem, any question you have that is at all challenging, tricky, or unclear.
+
+---
+
+## Other Notes
+
+* It is currently 2025

@@ -44,25 +44,25 @@ This command operates through several coordinated phases to create the most effe
 
 ## Phase 2: Multi-Expert Parallel Analysis
 
-Launch parallel subagents using the Task tool for comprehensive expert analysis:
+Launch parallel subagents using the Task tool for comprehensive expert analysis. Each subagent should run independently and in parallel for maximum efficiency. All subagents must operate in research/investigation mode only - they should NOT modify code, use plan mode, or create files. They should output all thoughts, findings, and analysis directly to chat.
 
 ### **Task 1: John Carmack - Systems Architecture Expert**
-**Prompt**: "As John Carmack, analyze this project's codebase focusing on architectural decisions, performance characteristics, and system design patterns. What are the core algorithms and data structures? How is complexity managed? What would be the most efficient approaches for extending this system? Consider computational complexity, memory management, and elegant mathematical solutions."
+**Prompt**: "As John Carmack, analyze this project's codebase focusing on architectural decisions, performance characteristics, and system design patterns. What are the core algorithms and data structures? How is complexity managed? What would be the most efficient approaches for extending this system? Consider computational complexity, memory management, and elegant mathematical solutions. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
 ### **Task 2: Martin Fowler - Software Architecture & Design Patterns**
-**Prompt**: "As Martin Fowler, analyze this project's architecture and design patterns. What architectural styles are being used? How is the code organized for maintainability? What refactoring opportunities exist? How well does the current design support testing and evolution? Focus on enterprise patterns, domain modeling, and architectural decision records."
+**Prompt**: "As Martin Fowler, analyze this project's architecture and design patterns. What architectural styles are being used? How is the code organized for maintainability? What refactoring opportunities exist? How well does the current design support testing and evolution? Focus on enterprise patterns, domain modeling, and architectural decision records. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
 ### **Task 3: Kelsey Hightower - DevOps & Infrastructure**
-**Prompt**: "As Kelsey Hightower, analyze this project's infrastructure, deployment, and operational characteristics. How is the application built, tested, and deployed? What are the infrastructure requirements? How would you optimize the development and deployment pipeline? Consider containerization, cloud-native patterns, and operational excellence."
+**Prompt**: "As Kelsey Hightower, analyze this project's infrastructure, deployment, and operational characteristics. How is the application built, tested, and deployed? What are the infrastructure requirements? How would you optimize the development and deployment pipeline? Consider containerization, cloud-native patterns, and operational excellence. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
 ### **Task 4: DHH (David Heinemeier Hansson) - Developer Experience & Productivity**
-**Prompt**: "As DHH, analyze this project from a developer productivity and experience perspective. What makes this codebase easy or difficult to work with? How could developer ergonomics be improved? What conventions and patterns make the code more or less accessible? Focus on developer happiness, convention over configuration, and practical productivity."
+**Prompt**: "As DHH, analyze this project from a developer productivity and experience perspective. What makes this codebase easy or difficult to work with? How could developer ergonomics be improved? What conventions and patterns make the code more or less accessible? Focus on developer happiness, convention over configuration, and practical productivity. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
 ### **Task 5: Brendan Eich - Language & Framework Expertise**
-**Prompt**: "As a language and framework expert, analyze the specific technologies used in this project. What are the idiomatic patterns for this tech stack? What are common pitfalls and best practices? How should someone work effectively within these technology constraints? Focus on language-specific patterns, framework conventions, and ecosystem best practices."
+**Prompt**: "As a language and framework expert, analyze the specific technologies used in this project. What are the idiomatic patterns for this tech stack? What are common pitfalls and best practices? How should someone work effectively within these technology constraints? Focus on language-specific patterns, framework conventions, and ecosystem best practices. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
 ### **Task 6: Linus Torvalds - Pragmatic Engineering Excellence**
-**Prompt**: "As Linus Torvalds, analyze this project with a focus on practical engineering excellence. What works well and what doesn't? How would you improve the maintainability and reliability? What are the most important things to get right when working on this codebase? Focus on no-nonsense engineering, scalability, and robust system design."
+**Prompt**: "As Linus Torvalds, analyze this project with a focus on practical engineering excellence. What works well and what doesn't? How would you improve the maintainability and reliability? What are the most important things to get right when working on this codebase? Focus on no-nonsense engineering, scalability, and robust system design. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
 ## Phase 3: Research & Documentation Discovery
 
@@ -88,7 +88,7 @@ Launch parallel subagents using the Task tool for comprehensive expert analysis:
 ## Phase 4: Project Context Integration
 
 ### **Task 7: Integration Synthesis Agent**
-**Prompt**: "You are a senior technical lead responsible for synthesizing all expert analysis into coherent project guidance. Review all expert analyses, research findings, and project characteristics. Create an integrated understanding of:
+**Prompt**: "You are a senior technical lead responsible for synthesizing all expert analysis into coherent project guidance. Review all expert analyses, research findings, and project characteristics. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your synthesis directly to chat. Create an integrated understanding of:
 
 1. **Core Project Identity**: What this project is, its purpose, and unique characteristics
 2. **Technical Architecture**: Key architectural decisions and their implications
@@ -252,7 +252,7 @@ Generate a comprehensive CLAUDE.md file with the following structure:
 ## Phase 6: Quality Assurance & Validation
 
 ### **Task 8: Quality Review Agent**
-**Prompt**: "Review the generated CLAUDE.md file for completeness, accuracy, and usefulness. Ensure that:
+**Prompt**: "Review the generated CLAUDE.md file for completeness, accuracy, and usefulness. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your review findings directly to chat. Ensure that:
 
 1. **Completeness**: All critical project aspects are covered
 2. **Accuracy**: Technical details match the actual codebase
@@ -288,7 +288,7 @@ The generated CLAUDE.md file should:
 ## Execution Instructions
 
 1. **Begin with comprehensive project analysis** using all available tools (Glob, Grep, Read, etc.)
-2. **Launch all expert subagents in parallel** to maximize analysis efficiency
+2. **Launch all expert subagents in parallel using the Task tool** to maximize analysis efficiency - each subagent operates independently in research mode only
 3. **Conduct thorough external research** using WebSearch and Context7 MCP
 4. **Synthesize findings through integration agents** to create coherent guidance
 5. **Generate the CLAUDE.md file** using the structured template above

@@ -45,22 +45,22 @@ Create a project-specific "plan" command that leverages multiple expert programm
    5. Conduct web searches on the problem domain, solutions, and best practices
 
    ### Phase 2: Multi-Expert Analysis
-   Launch parallel subagents embodying legendary programmer perspectives using the Task tool. Use them to thoroughly review, investigate, audit, and analyze the code, but do not have them write any code! They should output everything to chat, and they should not use plan mode.
+   Launch parallel subagents embodying legendary programmer perspectives using the Task tool. Each subagent must run independently and in parallel for maximum efficiency. CRITICAL: All subagents operate in research/investigation mode only - they should NOT modify code, use plan mode, or create files. They must thoroughly review, investigate, audit, and analyze, outputting all findings directly to chat.
 
    **Task 1: John Carmack Perspective**
-   - Prompt: "As John Carmack, analyze this task focusing on performance optimization, elegant algorithms, and first principles thinking. What would be the most algorithmically sound and performance-optimized approach? Consider memory management, computational complexity, and elegant mathematical solutions."
+   - Prompt: "As John Carmack, analyze this task focusing on performance optimization, elegant algorithms, and first principles thinking. What would be the most algorithmically sound and performance-optimized approach? Consider memory management, computational complexity, and elegant mathematical solutions. IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
    **Task 2: Richard Stallman Perspective**
-   - Prompt: "As Richard Stallman, analyze this task from software freedom, ethical considerations, and long-term maintainability perspectives. How would you ensure user freedom, avoid vendor lock-in, and create truly maintainable solutions that serve users rather than corporations?"
+   - Prompt: "As Richard Stallman, analyze this task from software freedom, ethical considerations, and long-term maintainability perspectives. How would you ensure user freedom, avoid vendor lock-in, and create truly maintainable solutions that serve users rather than corporations? IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
    **Task 3: Linus Torvalds Perspective**
-   - Prompt: "As Linus Torvalds, analyze this task focusing on pragmatic engineering, scalability, and robust system design. What would be the most practical, no-nonsense approach that scales well and handles edge cases gracefully?"
+   - Prompt: "As Linus Torvalds, analyze this task focusing on pragmatic engineering, scalability, and robust system design. What would be the most practical, no-nonsense approach that scales well and handles edge cases gracefully? IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
    **Task 4: Jeff Dean Perspective**
-   - Prompt: "As Jeff Dean, analyze this task from distributed systems, massive scale, and reliability engineering perspectives. How would you design this to handle enormous scale, ensure reliability, and optimize for distributed computing environments?"
+   - Prompt: "As Jeff Dean, analyze this task from distributed systems, massive scale, and reliability engineering perspectives. How would you design this to handle enormous scale, ensure reliability, and optimize for distributed computing environments? IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
    **Task 5: Bret Taylor Perspective**
-   - Prompt: "As Bret Taylor, analyze this task focusing on product-focused engineering and user experience. What approach would best serve actual user needs while being practically implementable and maintainable by a team?"
+   - Prompt: "As Bret Taylor, analyze this task focusing on product-focused engineering and user experience. What approach would best serve actual user needs while being practically implementable and maintainable by a team? IMPORTANT: You are in research mode only - do not modify any code, do not use plan mode, and output all your analysis directly to chat."
 
    ### Phase 3: Design Exploration
    For each approach, consider:
@@ -78,11 +78,13 @@ Create a project-specific "plan" command that leverages multiple expert programm
 
    2. **Launch Expert Subagents**
       - Use the Task tool to create independent subagents for each programming legend
-      - Have each analyze the problem through their distinctive lens
-      - Collect their unique recommendations and implementation approaches
+      - All subagents run in parallel for maximum efficiency
+      - Each analyzes the problem through their distinctive lens in research mode only
+      - Collect their unique recommendations via direct chat output
 
    3. **Cross-Pollination Round**
-      - Launch follow-up subagents that review all expert perspectives
+      - Launch follow-up subagents using the Task tool that review all expert perspectives
+      - Subagents operate in research mode only - no code changes, no plan mode, output to chat
       - Identify synergies and conflicts between different approaches
       - Generate hybrid solutions that combine the best insights
 
