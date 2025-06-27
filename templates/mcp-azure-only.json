@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "azure": {
+      "command": "npx",
+      "args": ["-y", "@mashriram/azure_mcp_server"],
+      "_description": "Azure MCP server - manage Blob Storage, Cosmos DB, and App Configuration"
+    }
+  }
+}
