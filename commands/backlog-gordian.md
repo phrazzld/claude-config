@@ -5,7 +5,6 @@ Identify opportunities for radical simplification and creative destruction in th
 
 ## 1. Project Context Analysis
 - Read local BACKLOG.md to understand existing tasks and avoid duplication
-- Identify all `glance.md` files in the current project to gather architectural insights
 - Analyze current project structure, identifying areas of complexity and coupling
 - Review existing code patterns and architectural decisions
 

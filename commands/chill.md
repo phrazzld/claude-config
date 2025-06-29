@@ -1,4 +1,4 @@
-# CHILL
+Let's breath for a minute.
 
 ## 1. Pause & Reflect
 - Step back, clear assumptions.

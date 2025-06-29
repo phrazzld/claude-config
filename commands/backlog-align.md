@@ -5,7 +5,6 @@ Analyze the current project codebase against leyline development philosophy and 
 
 ## 1. Project Context Analysis
 - Read local BACKLOG.md to understand existing tasks and avoid duplication
-- Identify all `glance.md` files in the current project to gather architectural insights
 - Read project-specific leyline documents in `./docs/leyline/` if they exist
 - Analyze current project structure, technologies, and patterns
 

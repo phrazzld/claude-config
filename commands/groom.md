@@ -8,7 +8,6 @@ Create an organized, expanded, and prioritized issue backlog based on comprehens
   ```bash
   gh issue list --limit 100 --json number,title,body,labels
   ```
-- Identify all `glance.md` files in the codebase to gather architectural insights.
 - Read leyline documents to anchor new backlog items in project principles.
 
 ## 2. Generate Enhanced GitHub Issues with Thinktank

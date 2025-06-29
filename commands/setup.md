@@ -30,7 +30,7 @@ Initialize a project with opinionated defaults, link leyline documents, and crea
   if [ -f "package.json" ]; then
     IS_NODE=true
     echo "Detected Node.js project"
-    
+
     # Check if it's a frontend project
     if grep -q "\"react\"\|\"vue\"\|\"angular\"\|\"svelte\"" package.json; then
       IS_FRONTEND=true
@@ -109,7 +109,6 @@ Initialize a project with opinionated defaults, link leyline documents, and crea
   - [ ] Prevent commit of sensitive data and large files
   - [ ] Enforce conventional commit format
 - [ ] Configure post-commit hooks
-  - [ ] Set up \`glance ./\` to run async
   - [ ] Generate documentation updates if needed
 - [ ] Configure pre-push hooks
   - [ ] Run complete test suite
@@ -253,7 +252,7 @@ EOF
   ```bash
   echo "Verifying setup..."
   ls -l docs/DEVELOPMENT_PHILOSOPHY.md docs/prompts
-  
+
   echo "Setup complete! A detailed TODO.md file has been created."
   echo "Review TODO.md and start implementing the recommended configurations."
   ```

@@ -5,7 +5,6 @@ Organize, prioritize, and clean up the local BACKLOG.md file to maintain an acti
 
 ## 1. Prepare Context
 - Read current BACKLOG.md to understand existing tasks and structure
-- Identify all `glance.md` files in the current project to gather architectural insights
 - Read project-specific leyline documents in `./docs/leyline/` if they exist
 - Analyze current project priorities and constraints
 
@@ -20,10 +19,10 @@ Organize, prioritize, and clean up the local BACKLOG.md file to maintain an acti
   ## Current Tasks Summary
   ### High Priority
   [List current high priority tasks]
-  
+
   ### Medium Priority
   [List current medium priority tasks]
-  
+
   ### Low Priority
   [List current low priority tasks]
 

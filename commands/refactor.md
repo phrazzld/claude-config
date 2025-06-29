@@ -9,7 +9,6 @@ Analyze the codebase and generate GitHub issues for code refactoring while prese
   gh issue list --state open --json number,title,body,labels --limit 100
   ```
 - Read leyline documents.
-- Identify all `glance.md` files in the codebase to gather architectural insights.
 
 ## 2. Create Context File
 - Create `REFACTOR-CONTEXT.md` with the following content:

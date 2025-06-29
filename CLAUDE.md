@@ -73,3 +73,4 @@
 ## Other Notes
 
 * It is currently 2025
+* Do not try to run dev servers. If you need one run, always stop and ask
