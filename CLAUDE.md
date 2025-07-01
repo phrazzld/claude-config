@@ -31,3 +31,16 @@
   thinktank instructions.txt ./src
   thinktank security-review.md ./auth --dry-run
   ```
+
+**Parallel Execution:**
+* Use the `Task` tool to launch multiple agents in parallel when actions operate in distinct, non-conflicting spaces:
+  - Research from different perspectives or domains
+  - Brainstorming ideas with independent expert viewpoints
+  - Conducting investigations across separate code areas
+  - Writing code/tests/docs in isolated modules
+  ```bash
+  # Example: Launch parallel research agents
+  Task 1: "Research authentication patterns in codebase"
+  Task 2: "Investigate API rate limiting best practices" 
+  Task 3: "Analyze error handling conventions"
+  ```
