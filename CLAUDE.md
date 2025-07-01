@@ -1,76 +1,33 @@
 # CLAUDE
 
-**North Star: YOU MUST ALWAYS LISTEN TO EXACTLY WHAT I SAY AND FOLLOW MY INSTRUCTIONS PERFECTLY, WITHOUT DEVIATION.**
+## Development Philosophy
 
----
+* Consult `./docs/leyline/` for project-specific development philosophies and guidelines
 
-## Core Philosophy
+## Essential Tools
 
-**Build for Simplicity & Testability:**
-* Construct small, focused, inherently testable components
-* Prioritize clarity and explicit contracts over optimization
-* All code MUST be designed for straightforward testing
-* NEVER mock internal collaborators - refactor for testability instead
+**Research & Information:**
+* Use `gemini --prompt` for web research, documentation lookup, and external information
+  ```bash
+  gemini --prompt "latest Next.js 15 routing changes"
+  gemini --prompt "best practices for PostgreSQL indexing"
+  ```
 
-**Champion Explicitness & Maintainability:**
-* Dependencies, control flow, and contracts must be obvious
-* Write self-evident code that others can understand and maintain
-* Document the *Why* (rationale), not the *How* (implementation)
+**Code Analysis:**
+* Use `ast-grep` for semantic code search and structural pattern matching
+  ```bash
+  ast-grep --lang typescript -p 'function $NAME($$$) { $$$ }'
+  ast-grep --lang rust -p 'impl $TRAIT for $TYPE'
+  ```
 
-**Automate Everything:**
-* Leverage all project tooling: linters, formatters, type checkers, tests, CI/CD
-* Use strictest available configurations for all development tools
-
----
-
-## Mandatory Constraints
-
-**Absolute Integrity:**
-* NEVER suppress, ignore, or bypass errors/warnings - fix root causes
-* NEVER fabricate, falsify, or misrepresent any information
-* NEVER hardcode secrets - use environment variables
-
-**Security First:**
-* Validate ALL external input at system boundaries
-* Treat all external data as untrusted
-
-**Git Discipline:**
-* Follow Conventional Commits specification strictly
-* Messages must be descriptive with meaningful details
-* ALL code must pass pre-commit hooks and CI checks
-* NEVER bypass quality gates with `--no-verify`
-
-**Knowledge Verification:**
-* Acknowledge knowledge cutoff limitations
-* Always verify current best practices, APIs, and dependencies
-* Never rely solely on pre-existing knowledge for critical information
-
----
-
-## Operational Excellence
-
-**Mandatory Planning:**
-* Create detailed plans before any non-trivial work
-* This "thinking" phase is compulsory - never skip planning
-
-**Foundation Documents:**
-* Strictly adhere to all leyline documents in `./docs/leyline/`
-* Check relevant leyline tenets before tackling any task
-* These are foundational and inviolable guides
-
----
-
-## Use Tools!
-
-* You run in an environment where `ast-grep` is available; whenever a search requires syntax-aware or structural matching, default to `ast-grep --lang rust -p '<pattern>'` (or set `--lang` appropriately) and avoid falling back to text-only tools like `rg` or `grep` unless I explicitly request a plain-text search.
-
-* Search the web when you're unsure about things. Use web search often to acquire the latest documentation for tools, packages, and APIs.
-
-* Use `thinktank` to get advice from a highly expert council on any subject, any problem, any question you have that is at all challenging, tricky, or unclear.
-
----
-
-## Other Notes
-
-* It is currently 2025
-* Do not try to run dev servers. If you need one run, always stop and ask
+**Expert Consultation:**
+* Use `thinktank` CLI for expert advice on:
+  - Code review and feedback
+  - Task planning and architecture decisions
+  - Security audits and vulnerability analysis
+  - Complex problem solving
+  ```bash
+  # Create instructions.txt with your question/task
+  thinktank instructions.txt ./src
+  thinktank security-review.md ./auth --dry-run
+  ```

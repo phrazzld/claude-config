@@ -3,3 +3,5 @@
 /todos
 /statsig
 /*.bak*
+/thinktank_*/
+*.log
