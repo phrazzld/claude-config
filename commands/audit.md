@@ -1,3 +1,5 @@
+Perform a comprehensive security audit of the codebase, identifying vulnerabilities and creating remediation plans.
+
 # AUDIT
 
 ## GOAL
@@ -6,7 +8,7 @@ Perform a comprehensive security audit of the codebase, identifying potential vu
 ## 1. Init Workspace
 - Create `SECURITY_AUDIT.md` (Sections: Scope & Goals, Methodology Notes, Exploratory Log, Deep Dive Log).
 - Create `SECURITY_PLAN.md` (Sections: Summary, Findings & Recommendations).
-- `git add SECURITY_AUDIT.md SECURITY_PLAN.md`.
+- !git add SECURITY_AUDIT.md SECURITY_PLAN.md
 
 ## 2. Exploratory Review
 - **Goal:** Scan codebase/artifacts for potential weaknesses.
@@ -18,7 +20,7 @@ Perform a comprehensive security audit of the codebase, identifying potential vu
 - **Actions:**
     - Prioritize findings from Exploratory Log.
     - For each item:
-        - ***Think hard***: Analyze code logic.
+        - Think hard: Analyze code logic.
         - Use security tools (SAST, dependency checkers) if available.
         - Document detailed findings, evidence, impact, confidence level in `SECURITY_AUDIT.MD` -> `Deep Dive Analysis Log`.
         - Assign preliminary severity (Low, Medium, High).
@@ -41,7 +43,7 @@ Perform a comprehensive security audit of the codebase, identifying potential vu
       ## Medium/Low Priority Issues
       [List less severe issues]
       ```
-    - ***Think very hard*** about creating a comprehensive remediation plan:
+    - Think very hard about creating a comprehensive remediation plan:
       - Prioritize findings by risk severity and exploitation likelihood
       - Consider implementation complexity and resource requirements
       - Develop specific, actionable remediation steps for each vulnerability

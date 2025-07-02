@@ -1,3 +1,5 @@
+Distill CLAUDE.md into concise repository-specific operational guidance under 100 lines.
+
 # DISTILL
 
 ## GOAL

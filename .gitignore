@@ -5,3 +5,5 @@
 /*.bak*
 /thinktank_*/
 *.log
+.update.lock
+TODO.md

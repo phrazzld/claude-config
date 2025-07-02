@@ -1,3 +1,5 @@
+Perform comprehensive documentation audit and generate actionable improvement tasks for repository documentation.
+
 # DOCUMENT
 
 ## GOAL
@@ -10,7 +12,7 @@ Audit, critique, evaluate, consolidate, expand, and improve the documentation in
 
 ## 1. Prepare Context
 - Gather all the markdown documentation files in the project
-- Review `BACKLOG.md` to understand current documentation-related tasks
+- Review `@BACKLOG.md` to understand current documentation-related tasks
 - Read leyline documents for documentation standards and expectations
 
 ## 2. Create Context File
@@ -29,7 +31,7 @@ Audit, critique, evaluate, consolidate, expand, and improve the documentation in
   ```
 
 ## 3. Execute Documentation Audit
-- ***Think very hard*** about the documentation quality and completeness:
+- Think very hard about the documentation quality and completeness:
   - Analyze all markdown files for structure, clarity, and consistency
   - Evaluate documentation coverage against codebase functionality
   - Check for missing or outdated information
