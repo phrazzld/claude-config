@@ -1,3 +1,5 @@
+Execute multi-specialist collaborative analysis using parallel subagents for comprehensive topic exploration.
+
 # Multi-Mind - Subagent-Based Collaborative Analysis
 
 Execute a multi-specialist collaborative analysis using independent subagents.

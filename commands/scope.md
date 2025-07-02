@@ -1,17 +1,19 @@
+Analyze @TODO.md scope and split into manageable pieces if needed to ensure reviewable pull requests.
+
 # SCOPE
 
 ## GOAL
-Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed to avoid unwieldy pull requests.
+Analyze and right-size `@TODO.md`, breaking it into manageable pieces if needed to avoid unwieldy pull requests.
 
 ## FLOW
 
 ### 1. Gather Context
 - Read PLAN.md
-- Read TODO.md
+- Read @TODO.md
 - Find relevant leyline documents
 
 ### 2. Analyze Scope and Complexity
-- **Think very hard** about the scope and complexity of TODO.md:
+- Think very hard about the scope and complexity of @TODO.md:
   - Analyze the total number of tasks and their complexity
   - Consider the interconnectedness of tasks
   - Evaluate if the changes would result in a reviewable PR
@@ -31,13 +33,13 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
     ```markdown
     # Scope Splitting Context
 
-    Based on the scope analysis, split TODO.md into multiple focused todo files.
+    Based on the scope analysis, split @TODO.md into multiple focused todo files.
 
     ## Source Plan
     [Include PLAN.md content]
 
     ## Source TODO
-    [Include TODO.md content]
+    [Include @TODO.md content]
 
     ## Scope Analysis Results
     [Include SCOPE-RESULT.md content]
@@ -46,7 +48,7 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
     1. Create separate plan files (TODO-1.md, TODO-2.md, etc.)
     2. Each todo file must be independently implementable
     ```
-  - **Think very hard** about how to split the tasks effectively:
+  - Think very hard about how to split the tasks effectively:
     - Group related tasks that should be implemented together
     - Ensure each split is independently testable and deployable
     - Maintain logical coherence within each split

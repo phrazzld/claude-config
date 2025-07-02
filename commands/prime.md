@@ -9,5 +9,5 @@ Gather important context.
 - leyline documents
 
 ## RUN
-- `git ls-files`
+- !git ls-files
 
