@@ -1,54 +1,177 @@
-Organize, prioritize, and enhance BACKLOG.md by analyzing tasks and ensuring philosophy alignment.
+Organize, prioritize, and enhance BACKLOG.md using parallel expert analysis from 8 specialized perspectives.
 
 # GROOM
 
-Organize, prioritize, and enhance @BACKLOG.md by analyzing existing tasks, identifying missing work, and checking philosophy alignment.
+Organize, prioritize, and enhance @BACKLOG.md by launching 8 parallel expert agents who analyze the project from their unique perspectives and generate targeted improvements.
 
 ## 1. Prepare Context
+
+**Read foundational documents**:
 - Read current @BACKLOG.md to understand existing tasks and structure
 - Read project-specific leyline documents in `./docs/leyline/` if they exist
-- Analyze current project priorities, constraints, and architecture
+- Note current project architecture, tech stack, and recent changes
+- Identify any existing priority indicators or categories
 
-## 2. Comprehensive Backlog Analysis
-- **Leyline Pre-Processing**: Query relevant leyline documents for grooming context:
-  - Tenets related to project value, continuous delivery, and maintainability
-  - Bindings for project organization and quality standards
-  - Principles that guide prioritization and task decomposition
-- Think very hard about comprehensive backlog grooming for THIS PROJECT:
-  - Thoroughly analyze the current @BACKLOG.md tasks
-  - Consider the project's current architecture, direction, and constraints
-  - Identify:
-    * Missing tasks that should be added (project-specific technical debt, improvements, features)
-    * Existing tasks that need clarification, expansion, or better priority assignment
-    * Outdated tasks that should be removed or modified for current project state
-    * Dependencies between tasks that affect prioritization
-    * Tasks that should be broken down into smaller, more atomic pieces
-    * Tasks that should be consolidated if they're too granular
-    * Philosophy alignment issues that warrant new tasks
+## 2. Parallel Expert Analysis
 
-## 3. Philosophy Alignment Check
-- Think hard about the current project's alignment with development philosophy:
-  - Systematically analyze major components against core principles:
-    * Simplicity and modularity in current project context
-    * Testability and explicit contracts in existing code
-    * Maintainability and clarity of current implementation
-    * Automation and tooling adherence for this specific project
-  - For each misalignment found, create specific `[ALIGN]` tasks
-  - Ensure alignment tasks are concrete and actionable for current codebase
+Launch 8 expert agents using the Task tool to analyze the project and generate backlog items:
 
-## 4. Update @BACKLOG.md Structure
-- **Reorganize tasks** by moving items between priority sections as needed
-- **Update task descriptions** to be more specific and actionable
-- **Remove completed/outdated tasks** or move to appropriate sections
-- **Add missing tasks** identified during analysis
-- **Add alignment tasks** for any philosophy violations found
-- **Consolidate or split tasks** as appropriate for better workflow
-- **Ensure consistent formatting**: `- [ ] [PRIORITY] [TYPE] Description`
-  - Types: ALIGN/REFACTOR/FEATURE/BUG/DOCS/TEST/CHORE
+```
+Task 1: "Creative/Product Innovation Agent - Think hard about innovative possibilities. Analyze the project codebase and @BACKLOG.md. Generate 3-5 innovative feature ideas that could dramatically improve user experience or unlock new capabilities. Consider:
+- Emerging patterns in the codebase that suggest new possibilities
+- User pain points that could be addressed creatively
+- Opportunities for delightful surprises or '10x better' experiences
+- Integration opportunities with modern tools/services
+Each item should include: Priority (HIGH/MEDIUM/LOW), estimated complexity, and innovation rationale.
+Format: `- [ ] [PRIORITY] [FEATURE] Description | Innovation: why this is game-changing`"
 
-## 5. Document Grooming Results
-- Create brief summary of changes made:
-  * Tasks added/removed/reprioritized
-  * Alignment issues identified
-  * Key dependencies or sequencing notes
-  * Any project-specific considerations
+Task 2: "Security Audit Agent - Think very hard about security vulnerabilities and risks. Conduct thorough security analysis of the codebase and @BACKLOG.md. Generate 3-5 security improvements. Examine:
+- Authentication and authorization patterns
+- Data validation and sanitization practices  
+- Dependency vulnerabilities
+- Secrets management and configuration security
+- API security and rate limiting needs
+Each item should include: Priority (HIGH for vulnerabilities, MEDIUM for hardening, LOW for best practices), and security impact.
+Format: `- [ ] [PRIORITY] [SECURITY] Description | Risk: what threat this addresses`"
+
+Task 3: "Codebase Simplification Agent - Think about code complexity and simplification opportunities. Analyze code complexity and @BACKLOG.md. Generate 3-5 simplification opportunities. Look for:
+- Over-engineered solutions that could be simplified
+- Duplicate code or logic that could be consolidated
+- Complex abstractions that add little value
+- Unused or barely-used code that could be removed
+- Convoluted flows that could be streamlined
+Each item should include: Priority based on maintenance burden, and simplification impact.
+Format: `- [ ] [PRIORITY] [SIMPLIFY] Description | Impact: lines removed or complexity reduced`"
+
+Task 4: "Gordian Reimagining Agent - Ultrathink! Challenge fundamental assumptions in the codebase and @BACKLOG.md. Generate 3-5 radical simplifications by questioning 'why do we even need this?'. Consider:
+- Features that could be entirely removed without real impact
+- Architectural patterns that could be dramatically simplified
+- Third-party dependencies that could be eliminated
+- Whole subsystems that could be replaced with simpler alternatives
+- 'Sacred cows' that no longer serve their purpose
+Format: `- [ ] [PRIORITY] [GORDIAN] Description | Breakthrough: what assumption this challenges`"
+
+Task 5: "Developer Experience Agent - Think about developer pain points and workflow friction. Analyze developer workflow and @BACKLOG.md. Generate 3-5 DX improvements. Focus on:
+- Build and test speed optimizations
+- Better error messages and debugging tools
+- Development environment setup simplification
+- Documentation gaps that slow developers
+- Tooling that could accelerate common tasks
+Each item should include: Priority based on developer pain, and time savings estimate.
+Format: `- [ ] [PRIORITY] [DX] Description | Time saved: estimated hours per week`"
+
+Task 6: "Maintainability Agent - Think hard about long-term code health and technical debt. Assess long-term code health and @BACKLOG.md. Generate 3-5 maintainability improvements. Evaluate:
+- Test coverage gaps and test quality issues
+- Code that's hard to understand or modify
+- Missing documentation for complex areas
+- Architectural debt that compounds over time
+- Monitoring and observability gaps
+Each item should include: Priority based on maintenance risk, and maintainability score improvement.
+Format: `- [ ] [PRIORITY] [MAINTAIN] Description | Debt: what future pain this prevents`"
+
+Task 7: "Leyline Philosophy Alignment Agent - Think hard about philosophy violations and misalignments. Read leyline philosophy docs and analyze codebase against principles. Generate 3-5 alignment tasks for violations of:
+- Simplicity and minimalism principles
+- Explicitness over magic
+- Testability and contract clarity
+- Single responsibility and modularity
+- Performance and resource efficiency
+Each item should include: Specific principle violated and correction needed.
+Format: `- [ ] [HIGH] [ALIGN] Description | Principle: which tenet this upholds`"
+
+Task 8: "Performance Optimization Agent - Think hard about performance bottlenecks and optimization opportunities. Profile potential bottlenecks and analyze @BACKLOG.md. Generate 3-5 performance improvements. Consider:
+- Database query optimization opportunities
+- Caching strategies for expensive operations
+- Algorithm efficiency improvements
+- Resource usage optimization
+- Startup time and lazy loading opportunities
+Each item should include: Priority based on user impact, and expected performance gain.
+Format: `- [ ] [PRIORITY] [PERF] Description | Gain: expected improvement metrics`"
+```
+
+## 3. Synthesis and Consolidation
+
+**Process all expert outputs**:
+- Collect all generated items from the 8 agents
+- Identify overlapping suggestions and consolidate
+- Resolve conflicts between different perspectives
+- Balance innovation with stability
+- Ensure alignment with project goals
+
+**Prioritization matrix**:
+```
+HIGH Priority:
+- Security vulnerabilities
+- Critical performance issues  
+- Major DX blockers
+- Philosophy alignment violations
+
+MEDIUM Priority:
+- Valuable features
+- Code simplifications
+- Maintainability improvements
+- Non-critical optimizations
+
+LOW Priority:
+- Nice-to-have features
+- Minor optimizations
+- Style improvements
+- Future-proofing
+```
+
+## 4. Update BACKLOG.md
+
+**Merge expert recommendations**:
+- Add new items to appropriate sections
+- Update priorities based on expert consensus
+- Remove completed or obsolete items
+- Add cross-references between related items
+- Ensure consistent formatting
+
+**Structure template**:
+```markdown
+# BACKLOG
+
+## Critical Priority
+[Items marked HIGH by multiple experts or security/performance critical]
+
+## High Value
+[Items with strong rationale from 2+ experts]
+
+## Technical Debt
+[Simplification and maintainability items]
+
+## Future Considerations
+[Innovation and nice-to-have items]
+
+## Completed
+[Archive of recently completed items]
+```
+
+## 5. Document Grooming Summary
+
+Create concise summary:
+```markdown
+## Grooming Summary [Date]
+
+### Items Added
+- X security improvements (Y critical)
+- X simplification opportunities
+- X innovation features
+- X DX enhancements
+
+### Key Themes
+- [Primary concern across experts]
+- [Secondary pattern identified]
+- [Unexpected discovery]
+
+### Recommended Focus
+[Top 3 items to tackle next based on expert consensus]
+```
+
+## Success Criteria
+
+✓ All 8 experts provide perspective-specific analysis
+✓ 24-40 total items generated (3-5 per expert)
+✓ Clear rationale for each priority assignment
+✓ Consolidated list balances all perspectives
+✓ BACKLOG.md is actionable and well-organized
