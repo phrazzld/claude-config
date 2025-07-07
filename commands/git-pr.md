@@ -46,8 +46,9 @@ Open a pull request for current branch with punchy title and comprehensive descr
   ```
 
 ## 4. Create Pull Request
-- **Use GitHub CLI**: `!gh pr create --title "[generated title]" --body "[generated description]"`
-- **Auto-assign reviewers** if team conventions exist
+- **Use GitHub CLI**: `!gh pr create --draft --assignee phrazzld --title "[generated title]" --body "[generated description]"`
+- **ALWAYS create as draft**: Use `--draft` flag to allow for review before marking ready
+- **ALWAYS assign to phrazzld**: Use `--assignee phrazzld` for consistent ownership
 - **Add labels** based on change type (feature, bugfix, refactor, etc.)
 - **Link issues** if commit messages reference them
 
