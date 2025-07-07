@@ -2,7 +2,7 @@
 
 Streamlined command library for Claude Code CLI, providing an integrated development workflow from ideation to deployment.
 
-## Core Workflow (20 Commands)
+## Core Workflow Commands (28 Total)
 
 ### 🚀 Development Pipeline
 
@@ -22,11 +22,16 @@ The main development flow follows this progression:
 ### 📊 Analysis & Debugging
 
 - **debug.md** - Adaptive debugging with 8 domain experts using confidence scoring
-- **audit.md** - Security audit documentation
+- **ci.md** - CI failure analysis and resolution task generation
+- **verify.md** - Pre-commit bypass validation
 
-### 📋 Backlog Management
+### 📋 Task Management
 
-- **backlog-groom.md** - Parallel expert backlog generation with 8 specialized agents
+- **address.md** - Extract actionable blockers from code reviews
+- **ticket.md** - Convert plans into prioritized TODO.md items
+- **task-breakdown.md** - Break down TASK.md into discrete TODO entries
+- **scope.md** - Analyze and split oversized PRs
+- **shatter.md** - Decompose monolithic branches into atomic PRs
 
 ### 🔀 Git Operations
 
@@ -34,22 +39,23 @@ The main development flow follows this progression:
 - **git-respond.md** - Handle PR feedback and reviews
 - **git-push.md** - Quality gate workflow before pushing
 - **git-simple-push.md** - Quick push without quality gates
+- **git-resolve-conflicts.md** - Specialized merge conflict resolution
 
-### 🧠 Meta Commands
-
-- **meta-carmack.md** - John Carmack-inspired technical problem-solving
-- **meta-chill.md** - Structured reflection and stress reduction
-- **meta-update-claude.md** - Session-based CLAUDE.md refinement
-
-### 📚 Documentation
+### 📚 Documentation & Reflection
 
 - **docs-sync.md** - Extract patterns from work logs and update documentation
+- **distill.md** - Optimize CLAUDE.md to ≤100 lines
+- **carmack.md** - John Carmack-inspired technical problem-solving
+- **chill.md** - Structured reflection and stress reduction
+- **update-claude.md** - Session-based CLAUDE.md refinement
 
-### ⚙️ Setup Commands
+### 🛠️ Utilities
 
-- **setup-mcp.md** - Configure MCP integrations
-- **setup-context7.md** - Set up Context7 documentation access
-- **setup-playwright.md** - Configure Playwright testing
+- **backlog-groom.md** - Parallel expert backlog generation with 8 specialized agents
+- **branch.md** - Create git worktrees with proper configuration
+- **setup-mcp.md** - Configure MCP integrations (GitHub, Linear, Azure, Context7, Playwright)
+- **thinktank.md** - Interface with external expert consultation tool
+- **synthesize.md** - Create superior synthesis from multiple AI outputs
 
 ## Key Features
 
@@ -98,7 +104,7 @@ Commands update TODO.md in real-time with:
 ### Documentation Update
 ```bash
 /docs-sync                # Extract patterns and update docs
-/meta-update-claude       # Refine CLAUDE.md with session insights
+/update-claude            # Refine CLAUDE.md with session insights
 ```
 
 ## File Conventions
