@@ -1,96 +1,126 @@
 # Claude Commands
 
-This directory contains custom slash commands for Claude Code CLI, providing structured workflows organized into logical namespaces for software development tasks.
+Streamlined command library for Claude Code CLI, providing an integrated development workflow from ideation to deployment.
 
-## Purpose
+## Core Workflow (20 Commands)
 
-These commands provide standardized templates and workflows that help maintain consistency across development activities. Each command follows best practices and ensures comprehensive coverage of critical aspects of the task at hand.
+### 🚀 Development Pipeline
 
-## Namespace Organization
+The main development flow follows this progression:
 
-Commands are organized into specialized namespaces for better discoverability and logical grouping:
+```
+/prime → /spec → /plan → /execute → /git-pr → /git-code-review
+```
 
-### 📊 Analysis
-Root cause analysis and debugging workflows.
-- **analysis/debug.md** - Multi-methodology RCA using parallel Task agents
+1. **prime.md** - Gather context from repository files (README, CLAUDE.md, package.json)
+2. **spec.md** - Research and specification generation with parallel experts
+3. **plan.md** - Convert specifications to actionable TODO items
+4. **execute.md** - Adaptive task execution with complexity-based reasoning
+5. **git-pr.md** - Create pull requests with auto-generated descriptions
+6. **git-code-review.md** - Multi-expert code review generating TODOs and backlog items
 
-### 📋 Backlog Management  
-Idea generation and backlog organization.
-- **backlog/ideate.md** - Generate project-specific ideas and append to BACKLOG.md
-- **backlog/groom.md** - Organize, prioritize, and enhance BACKLOG.md
+### 📊 Analysis & Debugging
 
-### 🔧 Git Workflows
-Git operations and GitHub integration.
-- **git/pr.md** - Create pull requests with auto-generated descriptions
-- **git/push.md** - Quality gate workflow before pushing code
-- **git/respond.md** - Handle PR feedback and reviews
+- **debug.md** - Adaptive debugging with 8 domain experts using confidence scoring
+- **audit.md** - Security audit documentation
+
+### 📋 Backlog Management
+
+- **backlog-groom.md** - Parallel expert backlog generation with 8 specialized agents
+
+### 🔀 Git Operations
+
+- **git-merge-main.md** - Merge main branch with conflict resolution
+- **git-respond.md** - Handle PR feedback and reviews
+- **git-push.md** - Quality gate workflow before pushing
+- **git-simple-push.md** - Quick push without quality gates
 
 ### 🧠 Meta Commands
-Reflection and strategic thinking tools.
-- **meta/carmack.md** - John Carmack-inspired technical problem-solving framework
-- **meta/chill.md** - Structured reflection and stress reduction
 
-### ⚙️ Setup & Configuration
-Project setup and tool configuration.
-- **setup/mcp.md** - Add MCP integrations (GitHub, Linear, Azure, Context7, Playwright)
-- **setup/sync.md** - Update commands to match project state
-- Plus various setup templates for logging, commands, reviews, etc.
+- **meta-carmack.md** - John Carmack-inspired technical problem-solving
+- **meta-chill.md** - Structured reflection and stress reduction
+- **meta-update-claude.md** - Session-based CLAUDE.md refinement
 
-### 📝 Task Management
-Task planning and breakdown workflows.
-- **task/plan.md** - Read BACKLOG.md and create detailed breakdowns in TASK.md
-- **task/ready.md** - Convert TASK.md items into actionable TODO.md entries
+### 📚 Documentation
 
-### ✅ TODO Execution
-Task execution and resolution workflows.
-- **todo/execute.md** - Execute next available task from TODO.md with status tracking
-- **todo/resolve.md** - Unblock stuck tasks and resolve issues
+- **docs-sync.md** - Extract patterns from work logs and update documentation
 
-### 🛠️ Utility Commands (Root Level)
-General-purpose development utilities.
-- **audit.md** - Security audit documentation
-- **prime.md** - Gather context from key repository files  
-- **ticket.md** - Convert plans into prioritized task tickets
-- **branch.md** - Create feature branches with proper naming
-- Plus specialized tools like brainstorm.md, document.md, verify.md, etc.
+### ⚙️ Setup Commands
 
-## Workflow Integration
+- **setup-mcp.md** - Configure MCP integrations
+- **setup-context7.md** - Set up Context7 documentation access
+- **setup-playwright.md** - Configure Playwright testing
 
-The commands follow an integrated workflow pattern:
-```
-BACKLOG.md → TASK.md → TODO.md → Execution
-```
+## Key Features
 
-1. **backlog/ideate.md** → Generate ideas in BACKLOG.md
-2. **backlog/groom.md** → Organize and prioritize backlog  
-3. **task/plan.md** → Move items from BACKLOG.md to TASK.md with detailed planning
-4. **task/ready.md** → Convert TASK.md to actionable TODO.md entries
-5. **todo/execute.md** → Execute tasks with proper status tracking
-6. **git/push.md** → Quality gates and code push
-7. **git/pr.md** → Create pull requests
+### Adaptive Complexity
 
-## Usage
+The `/execute` command assesses task complexity and allocates reasoning accordingly:
+- **SIMPLE** (0-2 files): Direct execution
+- **MEDIUM** (3-5 files): Think mode
+- **COMPLEX** (6+ files): Think hard mode
+- **VERY_COMPLEX** (system-wide): Ultrathink mode
 
-Commands are invoked using slash syntax:
+### Parallel Processing
+
+Multiple commands use the Task tool for concurrent expert analysis:
+- `/spec` - 3 research experts (web, docs, codebase)
+- `/debug` - 8 domain experts with confidence assessment
+- `/backlog-groom` - 8 specialized backlog agents
+- `/git-code-review` - 8 review experts
+
+### Live Progress Tracking
+
+Commands update TODO.md in real-time with:
+- Timestamps and complexity assessment
+- Context discovery logs
+- Approach decisions
+- Learnings and blockers
+
+## Workflow Examples
+
+### Feature Development
 ```bash
-/backlog/ideate    # Generate project ideas
-/task/plan         # Plan next task from backlog  
-/todo/execute      # Execute next available task
-/git/pr            # Create pull request
+/prime                    # Understand the codebase
+/spec                     # Research and specify the feature
+/plan                     # Break down into TODO items
+/execute                  # Work through tasks adaptively
+/git-pr                   # Create pull request
 ```
 
-## File References
+### Debugging Session
+```bash
+/debug                    # Launch parallel debugging experts
+/execute                  # Fix identified issues
+/git-push                 # Push fixes with quality checks
+```
 
-Commands use standardized file references:
-- **@BACKLOG.md** - Project backlog and ideas
-- **@TASK.md** - Current task being planned
-- **@TODO.md** - Actionable task queue
+### Documentation Update
+```bash
+/docs-sync                # Extract patterns and update docs
+/meta-update-claude       # Refine CLAUDE.md with session insights
+```
 
-## Development
+## File Conventions
 
-When creating or modifying commands:
-1. Use appropriate namespace for logical organization
-2. Start with one-sentence purpose statement
-3. Use proper file references (@BACKLOG.md, @TASK.md, @TODO.md)
-4. Follow established thinking directive patterns
-5. Integrate with existing workflow where applicable
+- **@TODO.md** - Active task queue with live progress logs
+- **@TASK.md** - Detailed task specifications
+- **@BACKLOG.md** - Project ideas and future work
+- **@ISSUE.md** - Problem descriptions for debugging
+- **@CLAUDE.md** - Project-specific instructions
+
+## Best Practices
+
+1. **Start with context**: Use `/prime` to understand the codebase
+2. **Research thoroughly**: Use `/spec` for complex features
+3. **Track everything**: Let commands update TODO.md automatically
+4. **Review comprehensively**: Use `/git-code-review` before merging
+5. **Document learnings**: Run `/docs-sync` after major work
+
+## Command Philosophy
+
+- **Single Purpose**: Each command does one thing well
+- **Composable**: Commands work together in workflows
+- **Transparent**: Live logging shows what's happening
+- **Adaptive**: Complexity-based reasoning allocation
+- **Parallel**: Multi-expert analysis when beneficial
