@@ -7,3 +7,5 @@
 *.log
 .update.lock
 TODO.md
+settings.local.json
+shell-snapshots/

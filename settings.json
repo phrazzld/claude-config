@@ -1,25 +1,59 @@
 {
-  "model": "sonnet",
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "opus",
   "hooks": {
-    "PreToolUse": [
+    "Stop": [
       {
-        "matcher": "Grep",
         "hooks": [
           {
             "type": "command",
-            "command": "stopgrep"
+            "command": "afplay \"/Users/phaedrus/Music/soundboard/warcraft2-work-complete.mp3\""
           }
         ]
-      },
+      }
+    ],
+    "Notification": [
       {
-        "matcher": "WebSearch",
         "hooks": [
           {
             "type": "command",
-            "command": "stopsearch"
+            "command": "afplay \"/Users/phaedrus/Music/soundboard/navi-hey.mp3\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay \"/Users/phaedrus/Music/soundboard/whip-crack.mp3\""
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay \"/Users/phaedrus/Music/soundboard/starcraft-pylons.mp3\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay \"/Users/phaedrus/Music/soundboard/gta-here-we-go-again.mp3\""
           }
         ]
       }
     ]
+  },
+  "feedbackSurveyState": {
+    "lastShownTime": 1754085739446
   }
 }

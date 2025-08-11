@@ -1,58 +1,42 @@
-# PRIME
+Gather context. Do not write any code.
 
-Comprehensive context gathering to establish situational awareness
+# INTELLIGENT SESSION ONBOARDING
 
-## 1. PROJECT CONTEXT
+Launch specialized project state analysis to prepare for optimal TODO.md execution.
 
-### Core Documentation
-- @README.md
-- @CLAUDE.md (both ~/.claude/CLAUDE.md and ./CLAUDE.md if exists)
-- docs/leyline/* (project philosophy and guidelines)
+## PROJECT STATE ANALYSIS
 
-### Task Management
-- @TODO.md (current task state and progress)
-- @TASK.md (active task specification)
-- @BACKLOG.md (future work items)
+Launch the project-state-analyst sub-agent to perform comprehensive project analysis and TODO execution preparation.
 
-## 2. CODEBASE STATE
+The sub-agent will use ultrathink to deeply analyze:
+- Current project state and recent activity patterns
+- TODO.md items and execution readiness assessment  
+- Relevant technical context via Context7 MCP and web research
+- Potential blockers and execution prerequisites
+- Architecture patterns and implementation guidance
+- Optimal execution strategies and complexity insights
 
-### Git Status
-- !git status --short --branch
-- !git log --oneline -10 --graph --decorate
+Execute this task to launch the specialized analysis:
 
-### Recent Activity
-- !git diff --stat HEAD~5..HEAD
-- !git show --name-only --format="Commit: %h %s (%cr)" HEAD
+**Task**: Project state analysis and TODO preparation
+**Agent Type**: general-purpose  
+**Instructions**: Act as the project-state-analyst sub-agent from the .claude/agents directory. Perform comprehensive project analysis and TODO.md execution preparation as defined in your specification. Use ultrathink for deep analysis. Focus on gathering intelligence that optimizes the main agent's execute command performance. Provide a structured report covering: 1) Project state summary, 2) TODO execution readiness, 3) Contextual intelligence, 4) Potential blockers, and 5) Execution recommendations. Be thorough and actionable.
 
-### Directory Structure
-- !find . -type f -name "*.md" | grep -E "(README|TODO|TASK|BACKLOG|CLAUDE)" | head -20
-- !ls -la
+## POST-ANALYSIS INTEGRATION
 
-## 3. DEVELOPMENT WORKFLOW
-
-### Available Commands
-- commands/README.md
-- !ls -1 commands/*.md | head -10
-
-### Configuration
-- settings.json
-- .env (if exists)
-- package.json (if exists)
-
-## 4. QUICK ASSESSMENT
-
-### Complexity Indicators
-- !git ls-files | wc -l (total tracked files)
-- !git diff --name-only | wc -l (modified files)
-- !find . -name "*.test.*" -o -name "*.spec.*" | wc -l (test files)
-
-### Key Patterns
-- !rg "TODO|FIXME|HACK|XXX" --stats-only 2>/dev/null || echo "No ripgrep available"
+After the sub-agent completes its analysis and reports back:
+- Review the structured findings and recommendations
+- Integrate the contextual intelligence for informed decision-making
+- Understand identified blockers and prerequisites
+- Prepare for seamless transition to execute command with enhanced context
 
 ## SUCCESS CRITERIA
 
-✓ Understand project purpose and structure
-✓ Know current branch and recent changes
-✓ Aware of active tasks and priorities
-✓ Familiar with available commands and workflows
-✓ Ready to proceed with informed context
+✓ Deep understanding of current project state and recent changes
+✓ Comprehensive TODO.md analysis with execution implications assessed  
+✓ Relevant technical context and documentation loaded
+✓ Potential execution blockers identified and addressed
+✓ Contextual intelligence gathered for optimal implementation decisions
+✓ Ready for execute command with maximum effectiveness
+
+The enhanced contextual understanding from this analysis will enable the execute command to make optimal complexity assessments, follow established patterns automatically, and implement solutions with full project awareness.

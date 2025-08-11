@@ -1,5 +1,3 @@
-# CHILL
-
 Pause, breathe, and conduct a structured reflection on current approach to ensure alignment with requirements and best practices.
 
 ## 1. Pause & Reflect

@@ -1,7 +1,7 @@
 Create a single superior synthesis that captures the collective intelligence while eliminating redundancy and resolving conflicts.
 
 ## READ
-Read every file in the thinktank directory completely. Pay attention to:
+Read every file in every thinktank directory completely. Pay attention to:
 - Unique insights each model contributed
 - Areas where models agree vs. disagree
 - Varying levels of detail and specificity
