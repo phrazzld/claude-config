@@ -16,10 +16,20 @@ Read the initial TASK.md description and enhance it with detailed requirements, 
 
 ## 2. Parallel Research Pipeline
 
-Launch 3 specialized research agents using the Task tool:
+Launch specialized research using native subagents and Task tool:
 
+### Pattern Discovery (Native Subagent)
+Invoke `pattern-scout` to find similar implementations in the codebase:
+- Search for existing patterns matching the task requirements
+- Identify reusable components and implementation examples
+- Get specific file:line references with confidence scores
+- Update pattern memory for future searches
+
+**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as pattern-scout from /Users/phaedrus/.claude/agents/pattern-scout.md
+
+### External Research (Task Agents)
 ```
-Task 1: "Web Research Expert - Research the task described in @TASK.md using gemini --prompt. Focus on:
+Task 1: "Web Research Expert - Research the task described in TASK.md using gemini --prompt. Focus on:
 - Current industry best practices and patterns for this type of task
 - Latest technology choices and frameworks recommended in 2025
 - Common implementation approaches and their trade-offs
@@ -29,7 +39,7 @@ Task 1: "Web Research Expert - Research the task described in @TASK.md using gem
 - Ultrathink
 Use multiple gemini queries to gather comprehensive insights. DO NOT modify files - output research findings directly."
 
-Task 2: "Documentation Expert - Research relevant libraries and frameworks for the task in @TASK.md using Context7 MCP. Focus on:
+Task 2: "Documentation Expert - Research relevant libraries and frameworks for the task in TASK.md using Context7 MCP. Focus on:
 - Identify potentially relevant libraries/frameworks based on task description
 - Use mcp__context7__resolve-library-id to find matching libraries
 - Use mcp__context7__get-library-docs to get current documentation
@@ -37,15 +47,6 @@ Task 2: "Documentation Expert - Research relevant libraries and frameworks for t
 - Note version compatibility and integration requirements
 - Ultrathink
 DO NOT modify files - output documentation findings directly."
-
-Task 3: "Codebase Analysis Expert - Analyze the existing codebase for patterns relevant to the task in @TASK.md. Focus on:
-- Search for similar implementations or patterns using ast-grep and file search
-- Identify existing architecture patterns and conventions to follow
-- Find reusable components, utilities, or modules
-- Note coding standards, testing patterns, and project structure
-- Assess integration points and potential impacts
-- Ultrathink
-Use ast-grep, Glob, and Grep tools as needed. DO NOT modify files - output analysis directly."
 ```
 
 ## 3. Requirements Clarification

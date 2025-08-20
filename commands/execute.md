@@ -8,9 +8,21 @@ Grab next task from TODO.md → Think about approach → Do the work → Mark co
 
 1. **Find next task**: Look for first `[~]` (in-progress) or `[ ]` (not started) task in TODO.md
 2. **Mark in-progress**: Update `[ ]` to `[~]` 
-3. **Think before acting**: Consider the approach, identify relevant files, plan the implementation
+3. **Think before acting**: 
+   - Consider the approach and plan implementation
+   - For implementation tasks, invoke `pattern-scout` to find similar code
+   - Identify relevant files and existing patterns to follow
 4. **Do the work**: Implement what the task describes
 5. **Mark complete**: Update `[~]` to `[x]` when done
+
+## PATTERN DISCOVERY
+
+When working on implementation tasks, invoke pattern-scout subagent to find similar code:
+- Shows existing patterns with file:line references
+- Provides confidence scores for matches
+- Updates pattern memory for future use
+
+**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as pattern-scout from /Users/phaedrus/.claude/agents/pattern-scout.md
 
 ## WORK LOG
 
