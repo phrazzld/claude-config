@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay \"/Users/phaedrus/Music/soundboard/warcraft2-work-complete.mp3\""
+            "command": "afplay -v 0.6 \"/Users/phaedrus/Music/soundboard/warcraft2-work-complete.mp3\""
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay \"/Users/phaedrus/Music/soundboard/navi-hey.mp3\""
+            "command": "afplay -v 0.6 \"/Users/phaedrus/Music/soundboard/navi-hey.mp3\""
           }
         ]
       }
@@ -27,27 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay \"/Users/phaedrus/Music/soundboard/whip-crack.mp3\""
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay \"/Users/phaedrus/Music/soundboard/starcraft-pylons.mp3\""
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay \"/Users/phaedrus/Music/soundboard/gta-here-we-go-again.mp3\""
+            "command": "afplay -v 0.4 \"/Users/phaedrus/Music/soundboard/whip-crack.mp3\""
           }
         ]
       }

@@ -96,7 +96,78 @@ Each task should include:
 - **Dependencies** (what must be done first)
 - **Complexity estimate** (helps execute.md allocate appropriate reasoning)
 
-## 5. Validation Checklist
+## 5. Complexity Assessment & Enrichment
+
+After generating initial TODO items, assess complexity and enrich accordingly:
+
+### Complexity Heuristics
+
+**SIMPLE**:
+- Single file changes
+- Config updates
+- Documentation changes
+- Bug fixes with clear solutions
+- Keywords: "update", "fix", "add config", "document"
+
+**MEDIUM**:
+- 2-5 files affected
+- New features following existing patterns
+- API endpoints, UI components
+- Keywords: "implement", "create component", "add endpoint"
+
+**COMPLEX**:
+- 6+ files or cross-module changes
+- New patterns or architectures
+- Keywords: "refactor", "migrate", "integrate", "auth", "security"
+
+**VERY_COMPLEX**:
+- System-wide changes
+- Breaking changes
+- Keywords: "redesign", "overhaul", "distributed", "migration strategy"
+
+### Task Enrichment Based on Complexity
+
+**For SIMPLE tasks** - Keep concise:
+```markdown
+- [ ] Update API documentation
+```
+
+**For MEDIUM tasks** - Add success criteria:
+```markdown
+- [ ] Implement user profile endpoint
+  - Success criteria: Returns user data with proper authorization
+  - Files: api/users.ts, middleware/auth.ts
+```
+
+**For COMPLEX tasks** - Add detailed context:
+```markdown
+- [ ] Refactor authentication system to OAuth2
+  - Success criteria: All auth flows migrated, backward compatible
+  - Files: auth/*, api/*, middleware/*, database/migrations/*
+  - Context: Current system uses JWT, need gradual migration
+  - Risks: Session invalidation, API compatibility
+  - Reference: See similar pattern in services/oauth-example.ts
+```
+
+**For VERY_COMPLEX tasks** - Consider breaking down:
+```markdown
+- [ ] Implement distributed caching layer
+  ```
+  Context & Approach:
+  - Architecture: Redis cluster with fallback to memory cache
+  - Affected systems: API, database, session management
+  - Migration strategy: Feature flag rollout
+  - Performance targets: <50ms cache reads, 99.9% availability
+  - Breaking changes: Session format, cache key structure
+  - Consider breaking into subtasks:
+    1. Set up Redis infrastructure
+    2. Implement cache abstraction layer
+    3. Migrate session storage
+    4. Update API caching logic
+  ```
+```
+
+## 6. Validation Checklist
 
 Before finalizing TODO.md:
 - [ ] All acceptance criteria from TASK.md are covered
@@ -107,7 +178,7 @@ Before finalizing TODO.md:
 - [ ] Parallel work opportunities are maximized
 - [ ] Risk mitigation tasks are included where needed
 
-## 6. Output Format
+## 7. Output Format
 
 Generate TODO.md with:
 - Clear section headers
