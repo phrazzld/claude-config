@@ -1,79 +1,36 @@
-Debug complex issues using adaptive parallel expert analysis that dynamically responds to issue characteristics.
+Debug complex issues using parallel native subagents for comprehensive root cause analysis.
 
 # DEBUG
 
-Conduct comprehensive root cause analysis of the issue in @ISSUE.md using parallel domain experts who assess relevance and provide targeted or elimination-based insights.
+Conduct comprehensive root cause analysis of the issue in ISSUE.md using native subagents who provide specialized analysis.
 
 ## 1. Initial Issue Analysis
 
 **Read and classify the issue**:
-- Read @ISSUE.md thoroughly
+- Read ISSUE.md thoroughly
 - Extract symptoms, error messages, logs, stack traces
 - Identify affected systems and reproduction steps
 - Note keywords that suggest issue domain
 - Generate initial "issue fingerprint"
 
-## 2. Adaptive Expert Analysis
+## 2. Parallel Expert Analysis
 
-Launch 8 parallel domain experts using the Task tool. Each expert assesses relevance and provides analysis accordingly:
+Launch specialized debugging subagents in parallel. Each expert assesses relevance and provides targeted analysis:
 
-```
-Task 1: "Performance Expert - Assess if the issue in @ISSUE.md relates to performance (0-100% confidence). 
-HIGH confidence (>70%): Investigate bottlenecks, resource usage, slow queries, algorithm complexity, memory leaks, CPU spikes, I/O blocking, caching issues.
-LOW confidence (<30%): Explain what performance indicators are MISSING and why this appears to be a different type of issue.
-MEDIUM confidence (30-70%): Check key performance indicators and note ambiguous signals.
-Keywords: slow, timeout, lag, memory, CPU, bottleneck, performance.
-DO NOT modify code - output confidence score and analysis."
+**Invoke these subagents**:
+1. `bug-historian` - Check if we've seen this pattern before (has memory)
+2. `performance-detective` - Assess performance issues (bottlenecks, resources)
+3. `logic-detective` - Analyze code logic and business rules
+4. `integration-detective` - Investigate system integration problems
 
-Task 2: "Logic Expert - Assess if the issue in @ISSUE.md relates to code logic/business rules (0-100% confidence).
-HIGH confidence: Trace execution paths, identify incorrect conditionals, off-by-one errors, edge cases, null handling, state management bugs.
-LOW confidence: Explain why logic appears sound and what other domain might be affected.
-MEDIUM confidence: Investigate suspicious logic patterns while noting uncertainty.
-Keywords: incorrect, wrong result, unexpected behavior, should be, supposed to.
-DO NOT modify code - output confidence score and analysis."
+Additional analysis if needed:
+- Flakiness patterns (race conditions, intermittent failures)
+- Security concerns (auth, vulnerabilities, exposure)
+- Data integrity (validation, corruption, constraints)
+- Configuration issues (env vars, deployment settings)
 
-Task 3: "Integration Expert - Assess if the issue in @ISSUE.md relates to system integration (0-100% confidence).
-HIGH confidence: Investigate API failures, service communication, dependency conflicts, protocol mismatches, network issues, timeouts.
-LOW confidence: Explain why integration layers appear healthy and suggest other domains.
-MEDIUM confidence: Check integration points while noting ambiguity.
-Keywords: API, service, connection, integration, dependency, communication.
-DO NOT modify code - output confidence score and analysis."
-
-Task 4: "Flakiness Expert - Assess if the issue in @ISSUE.md is intermittent/non-deterministic (0-100% confidence).
-HIGH confidence: Investigate race conditions, timing dependencies, concurrency bugs, test flakiness, environmental variance, random failures.
-LOW confidence: Explain why issue appears deterministic and consistent.
-MEDIUM confidence: Look for subtle non-determinism patterns.
-Keywords: sometimes, occasionally, flaky, intermittent, randomly, sporadic.
-DO NOT modify code - output confidence score and analysis."
-
-Task 5: "Security Expert - Assess if the issue in @ISSUE.md relates to security (0-100% confidence).
-HIGH confidence: Investigate auth failures, vulnerabilities, data exposure, injection risks, privilege escalation, security misconfigurations.
-LOW confidence: Explain why security appears intact and issue lies elsewhere.
-MEDIUM confidence: Check security boundaries while noting uncertainty.
-Keywords: unauthorized, forbidden, security, authentication, permission, access.
-DO NOT modify code - output confidence score and analysis."
-
-Task 6: "Data Expert - Assess if the issue in @ISSUE.md relates to data integrity/validation (0-100% confidence).
-HIGH confidence: Investigate data corruption, validation failures, schema mismatches, encoding issues, data loss, integrity constraints.
-LOW confidence: Explain why data layer appears healthy.
-MEDIUM confidence: Check data flows and transformations.
-Keywords: corrupt, invalid, data, validation, integrity, missing data.
-DO NOT modify code - output confidence score and analysis."
-
-Task 7: "Configuration Expert - Assess if the issue in @ISSUE.md relates to configuration/environment (0-100% confidence).
-HIGH confidence: Investigate env variables, config files, deployment settings, version mismatches, missing dependencies, environment differences.
-LOW confidence: Explain why configuration appears correct.
-MEDIUM confidence: Check key configuration points.
-Keywords: environment, config, deployment, setting, production, staging.
-DO NOT modify code - output confidence score and analysis."
-
-Task 8: "UX Expert - Assess if the issue in @ISSUE.md relates to user experience/interface (0-100% confidence).
-HIGH confidence: Investigate UI bugs, accessibility issues, user workflow problems, confusing interactions, responsive design issues.
-LOW confidence: Explain why this appears to be a backend/system issue.
-MEDIUM confidence: Consider UX implications of technical issues.
-Keywords: user, UI, interface, display, interaction, accessibility, workflow.
-DO NOT modify code - output confidence score and analysis."
-```
+**How to invoke subagents**:
+Use the Task tool with subagent_type: "general-purpose" and prompt each to act as their respective subagent from /Users/phaedrus/.claude/agents/[agent-name].md
 
 ## 3. Evidence Synthesis
 
@@ -114,49 +71,46 @@ If all experts report low confidence (<30%), apply general debugging techniques:
 
 | Expert | Confidence | Assessment | Key Finding |
 |--------|------------|------------|-------------|
-| Performance | 15% | NOT MY DOMAIN | No performance indicators; issue is binary failure |
-| Logic | 85% | PRIMARY DOMAIN | Off-by-one error in array boundary check |
-| Integration | 20% | NOT MY DOMAIN | All API calls succeeding; issue is internal |
-| Flakiness | 10% | NOT MY DOMAIN | 100% reproducible with same input |
-| Security | 25% | UNLIKELY | No auth involved in affected code path |
-| Data | 40% | POSSIBLE FACTOR | Data validation might be too permissive |
-| Configuration | 15% | NOT MY DOMAIN | Same config works in other environments |
-| UX | 30% | SECONDARY IMPACT | Error not surfaced clearly to user |
+| Bug Historian | X% | [Found/New] | [Previous solution or new pattern] |
+| Performance | X% | [Domain fit] | [Key finding or elimination] |
+| Logic | X% | [Domain fit] | [Key finding or elimination] |
+| Integration | X% | [Domain fit] | [Key finding or elimination] |
 
 ### Synthesis
 
-**Primary Finding**: Logic error with 85% confidence
-- Off-by-one error in array indexing at module.js:45
-- Elimination of performance/flakiness/integration confirms deterministic logic bug
-- Data expert's finding suggests validation gap allowed bad input to reach buggy code
+**Primary Finding**: [Highest confidence domain]
+- [Root cause identified]
+- [Supporting evidence]
+- [How elimination of other domains confirms this]
 
 **Process of Elimination Value**:
-- Performance ruled out → Not a scaling/resource issue
-- Flakiness ruled out → Consistent reproduction path exists
-- Integration ruled out → Problem is internal, not external
+- [Domain] ruled out → [What this tells us]
+- [Domain] ruled out → [What this tells us]
 
 ### Root Cause
-Array index calculation fails when input length equals buffer size due to incorrect boundary condition.
+[Clear statement of the root cause]
 
 ### Recommended Actions
 
 #### Immediate Fix
-- [ ] Fix off-by-one error in array boundary check
-- [ ] Add input validation to prevent edge case
+- [ ] [Specific action to fix the issue]
+- [ ] [Additional required changes]
 
 #### Validation  
-- [ ] Add unit test for boundary condition
-- [ ] Test with inputs at size limits
+- [ ] [Tests to verify the fix]
+- [ ] [Checks to ensure no regression]
 
 #### Prevention
-- [ ] Add stricter data validation layer
-- [ ] Improve error messaging for users
+- [ ] [Changes to prevent recurrence]
+- [ ] [Monitoring or alerts to add]
 ```
 
 ## Success Criteria
 
-- All 8 experts provide confidence assessment
+- Bug historian checks memory first for known patterns
+- All relevant experts provide confidence assessment
 - Both positive and negative findings are synthesized
 - Evidence matrix clearly shows convergence/divergence
 - Root cause has supporting evidence from multiple angles
 - Elimination reasoning strengthens positive findings
+- Bug historian updates memory with new patterns found
