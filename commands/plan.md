@@ -96,76 +96,34 @@ Each task should include:
 - **Dependencies** (what must be done first)
 - **Complexity estimate** (helps execute.md allocate appropriate reasoning)
 
-## 5. Complexity Assessment & Enrichment
+## 5. Task Decomposition & Complexity Assessment
 
-After generating initial TODO items, assess complexity and enrich accordingly:
+### Task Analysis (Native Subagent)
+Invoke `task-decomposer` to break down the task and assess complexity:
+- Analyze TASK.md for major components and phases
+- Break down into atomic, actionable tasks
+- Identify dependencies and create valid execution DAG
+- Estimate complexity based on past patterns and memory
+- Identify parallelization opportunities
+- Define clear success criteria for each task
+- Learn from estimate accuracy for continuous improvement
 
-### Complexity Heuristics
+**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as task-decomposer from /Users/phaedrus/.claude/agents/task-decomposer.md
 
-**SIMPLE**:
-- Single file changes
-- Config updates
-- Documentation changes
-- Bug fixes with clear solutions
-- Keywords: "update", "fix", "add config", "document"
+**Process**:
+1. Send TASK.md content to task-decomposer
+2. Get decomposed tasks with complexity estimates
+3. Review critical path and parallel work streams
+4. Enrich tasks based on complexity level
+5. Update task-decomposer memory with actual vs estimated after completion
 
-**MEDIUM**:
-- 2-5 files affected
-- New features following existing patterns
-- API endpoints, UI components
-- Keywords: "implement", "create component", "add endpoint"
-
-**COMPLEX**:
-- 6+ files or cross-module changes
-- New patterns or architectures
-- Keywords: "refactor", "migrate", "integrate", "auth", "security"
-
-**VERY_COMPLEX**:
-- System-wide changes
-- Breaking changes
-- Keywords: "redesign", "overhaul", "distributed", "migration strategy"
-
-### Task Enrichment Based on Complexity
-
-**For SIMPLE tasks** - Keep concise:
-```markdown
-- [ ] Update API documentation
-```
-
-**For MEDIUM tasks** - Add success criteria:
-```markdown
-- [ ] Implement user profile endpoint
-  - Success criteria: Returns user data with proper authorization
-  - Files: api/users.ts, middleware/auth.ts
-```
-
-**For COMPLEX tasks** - Add detailed context:
-```markdown
-- [ ] Refactor authentication system to OAuth2
-  - Success criteria: All auth flows migrated, backward compatible
-  - Files: auth/*, api/*, middleware/*, database/migrations/*
-  - Context: Current system uses JWT, need gradual migration
-  - Risks: Session invalidation, API compatibility
-  - Reference: See similar pattern in services/oauth-example.ts
-```
-
-**For VERY_COMPLEX tasks** - Consider breaking down:
-```markdown
-- [ ] Implement distributed caching layer
-  ```
-  Context & Approach:
-  - Architecture: Redis cluster with fallback to memory cache
-  - Affected systems: API, database, session management
-  - Migration strategy: Feature flag rollout
-  - Performance targets: <50ms cache reads, 99.9% availability
-  - Breaking changes: Session format, cache key structure
-  - Consider breaking into subtasks:
-    1. Set up Redis infrastructure
-    2. Implement cache abstraction layer
-    3. Migrate session storage
-    4. Update API caching logic
-  ```
-```
+The task-decomposer will provide:
+- Critical path items that must be done in order
+- Parallel work streams that can proceed independently
+- Complexity estimates (SIMPLE/MEDIUM/COMPLEX/VERY_COMPLEX)
+- Success criteria for each task
+- Risk mitigation tasks where needed
+- Confidence level based on similar past projects
 
 ## 6. Validation Checklist
 
@@ -221,3 +179,20 @@ Generates TODO items:
   - Success criteria: Shows logged-in user's name and avatar
   - Dependencies: Auth middleware working
 ```
+
+## 8. Post-Planning Learning
+
+After completing implementation of planned tasks, invoke lesson-harvester:
+
+**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as lesson-harvester from /Users/phaedrus/.claude/agents/lesson-harvester.md, providing:
+- Which complexity estimates were accurate
+- Tasks that revealed hidden dependencies
+- Planning patterns that worked well
+- Task breakdowns that were too coarse or too fine
+- Critical path accuracy
+
+The lesson-harvester will:
+- Update estimates.md with actual vs planned times
+- Track task decomposition effectiveness
+- Note planning blind spots
+- Improve future complexity assessments

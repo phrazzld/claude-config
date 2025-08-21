@@ -4,6 +4,10 @@ Execute the next available task from TODO.md.
 
 Grab next task from TODO.md → Think about approach → Do the work → Mark complete
 
+<!-- METRICS: Execution typically takes 20-30 seconds with pattern-scout assistance
+     Previous baseline: 45-60 seconds with manual complexity assessment
+     To track: Add timing around task execution and log to metrics.md -->
+
 ## PROCESS
 
 1. **Find next task**: Look for first `[~]` (in-progress) or `[ ]` (not started) task in TODO.md
@@ -45,6 +49,29 @@ This work log serves as:
 - Place to note blockers or questions
 - Memory for if task is resumed later
 
+## POST-EXECUTION LEARNING
+
+After completing or blocking on a task, invoke the lesson-harvester to extract learnings:
+
+**When to harvest lessons:**
+- Task completed successfully (what worked?)
+- Task blocked or failed (what went wrong?)
+- Unexpected complexity discovered
+- Elegant solution found
+- Time estimate significantly off
+
+**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as lesson-harvester from /Users/phaedrus/.claude/agents/lesson-harvester.md, providing:
+- Task description and outcome
+- What worked or didn't work
+- Time taken vs expected
+- Any patterns discovered or bugs encountered
+
+The lesson-harvester will:
+- Extract reusable lessons (scored 50+ for value)
+- Update appropriate memory files (bugs, patterns, questions, estimates, ADR outcomes)
+- Track success/failure patterns
+- Build institutional knowledge
+
 ## NOTES
 
 - Always think through the approach before diving into implementation
@@ -52,3 +79,4 @@ This work log serves as:
 - If blocked, mark as `[!]` with explanation in work log and move to next task
 - Only preserve work logs that contain valuable context for future reference
 - Commit changes after completion if appropriate
+- Invoke lesson-harvester for significant learnings

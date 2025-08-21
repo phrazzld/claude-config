@@ -10,6 +10,8 @@ Each entry includes:
 - **Outcome**: Success/Mixed/Failure
 - **Lessons**: What we learned
 - **Pattern**: Reusable insight
+- **Times referenced**: How often this outcome is consulted
+- **Last used**: When this pattern was last referenced (YYYY-MM-DD)
 
 ---
 
@@ -21,6 +23,8 @@ Each entry includes:
 **Outcome**: Mixed
 **Lessons**: Extraction worked but added complexity for small team
 **Pattern**: Consider team size when choosing architecture complexity
+**Times referenced**: 0
+**Last used**: Never
 
 ---
 

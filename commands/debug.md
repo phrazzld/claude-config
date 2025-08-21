@@ -4,6 +4,11 @@ Debug complex issues using parallel native subagents for comprehensive root caus
 
 Conduct comprehensive root cause analysis of the issue in ISSUE.md using native subagents who provide specialized analysis.
 
+<!-- METRICS: Parallel subagent analysis takes 2-3 minutes
+     Previous baseline: 5-10 minutes with sequential analysis
+     Performance gain: 60% faster with parallel execution
+     To track: Log subagent invocation times and bug memory hits -->
+
 ## 1. Initial Issue Analysis
 
 **Read and classify the issue**:
@@ -105,6 +110,23 @@ If all experts report low confidence (<30%), apply general debugging techniques:
 - [ ] [Monitoring or alerts to add]
 ```
 
+## 7. Post-Debug Learning
+
+After resolving the issue, invoke lesson-harvester to capture debugging insights:
+
+**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as lesson-harvester from /Users/phaedrus/.claude/agents/lesson-harvester.md, providing:
+- The issue description and root cause
+- Which expert analysis was most accurate
+- Time to resolution vs severity
+- Any new bug patterns discovered
+- Debugging techniques that worked
+
+The lesson-harvester will:
+- Update bugs.md with new patterns if bug-historian missed them
+- Score expert effectiveness for future debugging
+- Extract reusable debugging strategies
+- Note prevention opportunities
+
 ## Success Criteria
 
 - Bug historian checks memory first for known patterns
@@ -114,3 +136,4 @@ If all experts report low confidence (<30%), apply general debugging techniques:
 - Root cause has supporting evidence from multiple angles
 - Elimination reasoning strengthens positive findings
 - Bug historian updates memory with new patterns found
+- Lesson-harvester captures debugging insights after resolution

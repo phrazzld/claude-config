@@ -51,39 +51,24 @@ DO NOT modify files - output documentation findings directly."
 
 ## 3. Requirements Clarification
 
-**Generate clarifying questions**:
-Based on the initial task and research findings, create a bunch of high impact and useful yes/no questions that would clarify requirements:
+### Requirements Analysis (Native Subagent)
+Invoke `requirements-oracle` to generate high-impact clarifying questions:
+- Analyze task for ambiguities and hidden complexities
+- Check memory for similar past projects and valuable question patterns
+- Generate prioritized questions that prevent rework
+- Track which questions reveal missing requirements
+- Learn from question effectiveness for future projects
 
-```markdown
-## Clarifying Questions for [Task Title]
+**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as requirements-oracle from /Users/phaedrus/.claude/agents/requirements-oracle.md
 
-### Scope & Features
-1. Should this feature support [specific capability]?
-2. Do we need [specific integration] in the initial version?
-3. Should the implementation handle [edge case/scenario]?
+**Process**:
+1. Get clarifying questions from requirements-oracle
+2. Ask the critical and important questions to the user
+3. Incorporate answers into the TASK.md description
+4. Repeat if significant ambiguities remain
+5. Update requirements-oracle memory with question value scores
 
-### Technical Approach
-4. Should we use [technology A] or [technology B] for [component]?
-5. Do we need to maintain backward compatibility with [existing system]?
-6. Should this be implemented as [approach A] or [approach B]?
-
-### Performance & Scale
-7. Do we need to support [specific performance target]?
-8. Should this handle [scale requirement] in the initial version?
-9. Is [caching/optimization strategy] required?
-
-### Security & Compliance
-10. Does this need [specific security measure]?
-11. Should we implement [authentication/authorization] requirements?
-12. Are there [compliance/regulatory] considerations?
-
-### User Experience
-13. Should the interface support [specific UX pattern]?
-14. Do we need [accessibility features] in the initial version?
-15. Should this include [user feedback/monitoring] capabilities?
-```
-
-Ask these questions to the user and get their answers. Incorporate the answers into the TASK.md description, then rinse and repeat this process from the top. Do this a couple times, until the TASK.md file is crystal clear and we've fleshed out the spec and mitigated most of the uncertainty.
+Continue this cycle until the TASK.md is crystal clear and uncertainty is minimized.
 
 ## 4. Synthesis and Enhancement
 
@@ -221,4 +206,21 @@ Invoke `adr-architect` to propose architecture decisions:
 - Confirm architecture decisions have clear rationale
 - Validate implementation strategy is feasible
 - Check that success criteria are measurable
+
+## 6. Post-Specification Learning
+
+After completing the specification, invoke lesson-harvester to capture insights:
+
+**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as lesson-harvester from /Users/phaedrus/.claude/agents/lesson-harvester.md, providing:
+- Which clarifying questions proved most valuable
+- Architecture patterns that emerged
+- Research findings that changed the approach
+- Complexity estimation accuracy
+- Requirements that were initially missed
+
+The lesson-harvester will:
+- Update questions.md with high-value clarifications
+- Add successful architecture patterns to patterns.md
+- Track specification accuracy for future estimates
+- Note common requirement blind spots
 
