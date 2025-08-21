@@ -28,4 +28,15 @@ Each entry includes:
 
 ---
 
+## Reading Status Model: Three-State to Two-State Simplification
+**ADR**: ADR-001
+**Date**: 2025-08-21
+**Outcome**: Pending Implementation
+**Lessons**: Complex status models in single-user systems often unnecessary; simplification preferred when business logic is clear
+**Pattern**: For personal tools, favor binary states over multi-state models unless clear value justification exists
+**Times referenced**: 0
+**Last used**: 2025-08-21
+
+---
+
 <!-- New ADR outcomes will be added below this line -->
