@@ -22,9 +22,9 @@ Grab next task from TODO.md → Think about approach → Do the work → Mark co
 ## PATTERN DISCOVERY
 
 When working on implementation tasks, invoke pattern-scout subagent to find similar code:
-- Shows existing patterns with file:line references
-- Provides confidence scores for matches
-- Updates pattern memory for future use
+- Shows existing patterns with file:line references  
+- Identifies the best template to follow
+- Updates knowledge.md with genuinely useful new patterns
 
 **How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as pattern-scout from /Users/phaedrus/.claude/agents/pattern-scout.md
 
@@ -67,8 +67,8 @@ After completing or blocking on a task, invoke the lesson-harvester to extract l
 - Any patterns discovered or bugs encountered
 
 The lesson-harvester will:
-- Extract reusable lessons (scored 50+ for value)
-- Update appropriate memory files (bugs, patterns, questions, estimates, ADR outcomes)
+- Extract reusable lessons that are impactful and non-obvious
+- Update knowledge.md with valuable patterns, gotchas, questions, and estimation insights
 - Track success/failure patterns
 - Build institutional knowledge
 

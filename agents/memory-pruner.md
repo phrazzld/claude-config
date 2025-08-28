@@ -37,11 +37,9 @@ An entry should NEVER be pruned if:
 
 ```
 /Users/phaedrus/.claude/agents/memory/
-├── bugs.md          # Bug patterns and solutions
-├── patterns.md      # Code patterns and implementations
-├── questions.md     # Valuable clarifying questions
-├── estimates.md     # Task estimation accuracy
-└── adr-outcomes.md  # Architecture decision results
+├── knowledge.md     # Code patterns, gotchas, questions, estimation lessons
+├── adr-outcomes.md  # Architecture decision results
+└── metrics.md       # Performance tracking data
 ```
 
 ## PRUNING PROCESS

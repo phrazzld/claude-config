@@ -103,7 +103,7 @@ Invoke `task-decomposer` to break down the task and assess complexity:
 - Analyze TASK.md for major components and phases
 - Break down into atomic, actionable tasks
 - Identify dependencies and create valid execution DAG
-- Estimate complexity based on past patterns and memory
+- Estimate complexity based on past patterns from knowledge.md
 - Identify parallelization opportunities
 - Define clear success criteria for each task
 - Learn from estimate accuracy for continuous improvement
@@ -115,7 +115,7 @@ Invoke `task-decomposer` to break down the task and assess complexity:
 2. Get decomposed tasks with complexity estimates
 3. Review critical path and parallel work streams
 4. Enrich tasks based on complexity level
-5. Update task-decomposer memory with actual vs estimated after completion
+5. Update knowledge.md with estimation lessons learned after completion
 
 The task-decomposer will provide:
 - Critical path items that must be done in order
@@ -192,7 +192,7 @@ After completing implementation of planned tasks, invoke lesson-harvester:
 - Critical path accuracy
 
 The lesson-harvester will:
-- Update estimates.md with actual vs planned times
+- Update knowledge.md with estimation accuracy patterns
 - Track task decomposition effectiveness
 - Note planning blind spots
 - Improve future complexity assessments

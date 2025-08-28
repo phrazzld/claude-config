@@ -24,20 +24,16 @@ Create reliable, timestamped backups of memory files before any potentially dest
 ```
 Source Directory:
 /Users/phaedrus/.claude/agents/memory/
-├── bugs.md
-├── patterns.md
-├── questions.md
-├── estimates.md
-└── adr-outcomes.md
+├── knowledge.md
+├── adr-outcomes.md
+└── metrics.md
 
 Backup Directory:
 /Users/phaedrus/.claude/agents/memory/backups/
 ├── YYYYMMDD_HHMMSS/
-│   ├── bugs.md
-│   ├── patterns.md
-│   ├── questions.md
-│   ├── estimates.md
+│   ├── knowledge.md
 │   ├── adr-outcomes.md
+│   ├── metrics.md
 │   └── manifest.txt
 ```
 
@@ -70,7 +66,7 @@ source_dir="/Users/phaedrus/.claude/agents/memory"
 mkdir -p "$backup_dir"
 
 # Copy and verify each file
-for file in bugs.md patterns.md questions.md estimates.md adr-outcomes.md; do
+for file in knowledge.md adr-outcomes.md metrics.md; do
     if [ -f "$source_dir/$file" ]; then
         cp "$source_dir/$file" "$backup_dir/"
         

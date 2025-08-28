@@ -96,6 +96,33 @@ Each entry includes:
 - "How should the system handle retroactive data corrections?"
 - "What are the data retention and archival requirements?"
 
+## Backend Implementation: Task Dependency Recognition
+**Question**: Are there logical dependencies between these tasks that require specific implementation order?
+**Value**: 85
+**Impact**: Prevented blocking issues where dependent tasks would fail if foundational work wasn't completed first
+**Pattern**: "What are the dependencies between [related tasks] and what order should they be implemented?"
+**Usage Count**: 1
+**Domain**: Backend Development
+**Context**: Multi-task implementation where internal mutations must exist before actions can call them
+
+## Pattern Discovery: Multi-Task Scope
+**Question**: Which related tasks can be completed efficiently using these discovered patterns?
+**Value**: 80
+**Impact**: Enabled efficient multi-task completion instead of piecemeal implementation, maintaining consistency across related functionality
+**Pattern**: "What other [functionality] can be implemented using these same patterns?"
+**Usage Count**: 1
+**Domain**: Development Efficiency
+**Context**: When pattern-scout discovers comprehensive templates that apply to multiple related tasks
+
+## Component Data Flow: Threading Strategy  
+**Question**: What's the most maintainable way to thread this data through the existing component architecture?
+**Value**: 80
+**Impact**: Prevented architectural complexity and maintained backward compatibility by using existing prop-passing patterns instead of introducing context or state management
+**Pattern**: "How should new data flow through the existing [component/architecture] without breaking current usage?"
+**Usage Count**: 1
+**Domain**: React Development
+**Context**: When new data needs to reach deep components but existing architecture patterns should be preserved
+
 ---
 
 <!-- New question patterns will be added below this line as they prove valuable -->

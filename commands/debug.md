@@ -23,7 +23,7 @@ Conduct comprehensive root cause analysis of the issue in ISSUE.md using native 
 Launch specialized debugging subagents in parallel. Each expert assesses relevance and provides targeted analysis:
 
 **Invoke these subagents**:
-1. `bug-historian` - Check if we've seen this pattern before (has memory)
+1. `bug-historian` - Check if we've seen this pattern before (checks knowledge.md)
 2. `performance-detective` - Assess performance issues (bottlenecks, resources)
 3. `logic-detective` - Analyze code logic and business rules
 4. `integration-detective` - Investigate system integration problems
@@ -122,18 +122,18 @@ After resolving the issue, invoke lesson-harvester to capture debugging insights
 - Debugging techniques that worked
 
 The lesson-harvester will:
-- Update bugs.md with new patterns if bug-historian missed them
-- Score expert effectiveness for future debugging
+- Update knowledge.md with new bug patterns if bug-historian missed them
+- Track debugging technique effectiveness for future use
 - Extract reusable debugging strategies
 - Note prevention opportunities
 
 ## Success Criteria
 
-- Bug historian checks memory first for known patterns
+- Bug historian checks knowledge.md first for known patterns
 - All relevant experts provide confidence assessment
 - Both positive and negative findings are synthesized
 - Evidence matrix clearly shows convergence/divergence
 - Root cause has supporting evidence from multiple angles
 - Elimination reasoning strengthens positive findings
-- Bug historian updates memory with new patterns found
+- Bug historian updates knowledge.md with new patterns found
 - Lesson-harvester captures debugging insights after resolution

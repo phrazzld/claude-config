@@ -23,11 +23,8 @@ Analyze task execution outcomes (success or failure) and extract reusable lesson
 
 Based on the type of lesson learned, update the appropriate memory file:
 
-1. **bugs.md** - When debugging reveals new bug patterns or solutions
-2. **patterns.md** - When new implementation patterns prove effective
-3. **questions.md** - When clarifying questions prevent rework
-4. **estimates.md** - When actual time differs from estimates
-5. **adr-outcomes.md** - When architecture decisions show results
+1. **knowledge.md** - When discovering new patterns, gotchas, good questions, or estimation lessons
+2. **adr-outcomes.md** - When architecture decisions show results (keep separate)
 
 ## LESSON EXTRACTION PROCESS
 
@@ -58,29 +55,33 @@ Based on the type of lesson learned, update the appropriate memory file:
 
 ## MEMORY UPDATE FORMAT
 
-### For New Patterns
+Add genuinely valuable lessons to knowledge.md in simple format:
+
+### Code Patterns
 ```markdown
-## [Pattern Name]: [Brief Description]
-**First seen**: YYYY-MM-DD (ISO 8601 format)
-**Last used**: YYYY-MM-DD
-**Times used**: 1
-**Effectiveness**: [0-100]
-**Context**: [When this applies]
-**Solution**: [What to do]
-**Example**: [Specific instance]
-**Files**: [file:line references]
+### [Pattern Category]
+- **[Pattern name]**: Brief description with key insight
 ```
 
-### For Existing Patterns
-- Increment appropriate counter field:
-  - patterns.md: **Times referenced**
-  - bugs.md: **Times encountered**
-  - questions.md: **Usage Count**
-  - estimates.md: **Times referenced**
-  - adr-outcomes.md: **Times referenced**
-- Update effectiveness/value score (weighted average where applicable)
-- Add new example if significantly different
-- Update **Last used** to current date (YYYY-MM-DD format)
+### Common Gotchas  
+```markdown
+### [Issue Category]
+- **[Problem]**: Brief description and simple solution
+```
+
+### Good Questions to Ask
+```markdown  
+### [Context Category]
+- "Specific question template that prevents rework"
+```
+
+### Time Estimation Wisdom
+```markdown
+### [Task Category]
+- **[Task type]**: Typical time range and key factors affecting estimates
+```
+
+Only add lessons that are genuinely valuable and reusable. Avoid duplicating existing entries.
 
 ## SUCCESS INDICATORS
 
@@ -100,15 +101,15 @@ Watch for these warning signs:
 - Significant rework required
 - Time estimate far off
 
-## LESSON VALUE SCORING
+## LESSON VALUE CRITERIA
 
-Rate lessons from 0-100 based on:
-- **Reusability** (40%): How often will this apply?
-- **Impact** (30%): How much time/effort saved?
-- **Clarity** (20%): How easy to apply?
-- **Novelty** (10%): Is this new knowledge?
+Only record lessons that are:
+- **Reusable**: Will apply to future similar situations
+- **Impactful**: Saves significant time or prevents significant problems  
+- **Clear**: Easy to understand and apply
+- **Non-obvious**: Not already well-known or documented
 
-Only record lessons scoring 50+ to avoid memory bloat.
+Avoid recording obvious patterns or one-off specific solutions.
 
 ## ANTI-PATTERNS TO TRACK
 

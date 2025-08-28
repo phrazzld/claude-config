@@ -22,8 +22,8 @@ Launch specialized research using native subagents and Task tool:
 Invoke `pattern-scout` to find similar implementations in the codebase:
 - Search for existing patterns matching the task requirements
 - Identify reusable components and implementation examples
-- Get specific file:line references with confidence scores
-- Update pattern memory for future searches
+- Get specific file:line references with implementation guidance
+- Update knowledge.md with genuinely useful new patterns
 
 **How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as pattern-scout from /Users/phaedrus/.claude/agents/pattern-scout.md
 
@@ -54,7 +54,7 @@ DO NOT modify files - output documentation findings directly."
 ### Requirements Analysis (Native Subagent)
 Invoke `requirements-oracle` to generate high-impact clarifying questions:
 - Analyze task for ambiguities and hidden complexities
-- Check memory for similar past projects and valuable question patterns
+- Check knowledge.md for similar past projects and valuable question patterns
 - Generate prioritized questions that prevent rework
 - Track which questions reveal missing requirements
 - Learn from question effectiveness for future projects
@@ -66,7 +66,7 @@ Invoke `requirements-oracle` to generate high-impact clarifying questions:
 2. Ask the critical and important questions to the user
 3. Incorporate answers into the TASK.md description
 4. Repeat if significant ambiguities remain
-5. Update requirements-oracle memory with question value scores
+5. Update knowledge.md with valuable questions that prevent rework
 
 Continue this cycle until the TASK.md is crystal clear and uncertainty is minimized.
 
@@ -110,7 +110,7 @@ Append detailed sections to @TASK.md based on research findings:
 ### Generate ADR (Native Subagent)
 Invoke `adr-architect` to propose architecture decisions:
 - Analyze requirements and constraints from research
-- Check memory for similar past decisions and outcomes
+- Check adr-outcomes.md for similar past decisions and outcomes
 - Generate formal ADR with trade-offs and alternatives
 - Include lessons from past architectural decisions
 
@@ -219,8 +219,7 @@ After completing the specification, invoke lesson-harvester to capture insights:
 - Requirements that were initially missed
 
 The lesson-harvester will:
-- Update questions.md with high-value clarifications
-- Add successful architecture patterns to patterns.md
+- Update knowledge.md with high-value clarifications and successful architecture patterns
 - Track specification accuracy for future estimates
 - Note common requirement blind spots
 
