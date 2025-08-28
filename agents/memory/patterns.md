@@ -947,93 +947,104 @@ Task execution showed that using pattern-scout to find Convex schema patterns ma
 **Files**: Component chain in Chrondle application
 
 ## Convex Database Testing with Test Implementation Pattern
-**First seen**: 2025-08-28
-**Last used**: 2025-08-28
+**Locations**:
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:12-109 - TestConvexDB class simulating real database operations (confidence: 98%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:75-108 - createTestContext providing proper mutation context (confidence: 95%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:119-179 - Test setup with users, sessions, and questions (confidence: 95%)
+- /Users/phaedrus/Development/scry/convex/spacedRepetition.test.ts:6-38 - Mock question creation with FSRS fields (confidence: 90%)
 **Times referenced**: 1
-**Effectiveness**: 98
-**Context**: Testing Convex backend mutations with comprehensive CRUD operations following Leyline no-internal-mocking principle
-**Solution**: Create TestConvexDB class that simulates real database operations without mocking internal components. Implement full database interface (insert, patch, query, get) with proper ID generation, timestamps, and session management. Use createTestContext to provide proper mutation context.
-**Example**: 22 tests covering updateQuestion, softDeleteQuestion, restoreQuestion with permission validation, soft delete behavior, FSRS data preservation, and edge cases. TestConvexDB provided realistic database simulation enabling thorough testing.
-**Files**: /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:12-109
+**Last used**: 2025-08-28
+**Average confidence**: 94.5%
+**Notes**: Uses TestConvexDB class following Leyline no-internal-mocking principle. Provides full database interface (insert, patch, query, get) with proper ID generation, timestamps, and session management. Enables comprehensive CRUD testing with 22 tests covering permissions, soft delete behavior, FSRS preservation, and edge cases.
 
 ## Convex Mutation Handler Access Pattern
-**First seen**: 2025-08-28
-**Last used**: 2025-08-28
+**Locations**:
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:185,297,374 - mutation._handler(ctx, args) pattern for testing (confidence: 98%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:75-108 - createTestContext providing MutationCtx interface (confidence: 95%)
+- /Users/phaedrus/Development/scry/convex/fsrs.test.ts:1-4 - Direct function testing without handler access (confidence: 85%)
 **Times referenced**: 1
-**Effectiveness**: 95
-**Context**: Accessing the actual handler function from Convex mutation objects for unit testing
-**Solution**: Convex mutations expose their handler via `_handler` property, not `handler`. Use `mutationName._handler(ctx, args)` pattern to invoke mutation functions in tests with proper context and arguments.
-**Example**: `updateQuestion._handler(ctx, { sessionToken, questionId, question })` correctly invokes the mutation. Initial attempt with `handler` property failed, `_handler` discovered through debugging process.
-**Files**: /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:185,297,374
+**Last used**: 2025-08-28
+**Average confidence**: 92.7%
+**Notes**: Convex mutations expose handlers via `_handler` property, not `handler`. Use `mutationName._handler(ctx, args)` pattern to invoke mutation functions with proper context. TestConvexDB provides realistic database simulation without mocking internal components, following Leyline testing principles.
 
 ## Authentication Context Simulation for Testing
-**First seen**: 2025-08-28
-**Last used**: 2025-08-28
+**Locations**:
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:20-32,89-106 - Session management in TestConvexDB with insertSession/querySession methods (confidence: 98%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:134-139 - Valid session creation with userId, token, expiresAt fields (confidence: 95%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:470-488 - Expired session testing with past expiresAt timestamps (confidence: 90%)
 **Times referenced**: 1
-**Effectiveness**: 95
-**Context**: Creating realistic authentication context for testing Convex mutations that require session validation
-**Solution**: Implement test session management in TestConvexDB with insertSession/querySession methods. In createTestContext, implement db.query('sessions') to return proper session lookup functionality that matches real Convex query patterns.
-**Example**: Session creation with userId, token, expiresAt fields, then query implementation that finds sessions by token for authentication validation in mutations.
-**Files**: /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:20-32,89-106
+**Last used**: 2025-08-28
+**Average confidence**: 94.3%
+**Notes**: Realistic authentication context created in TestConvexDB with proper session lookup functionality matching real Convex query patterns. Enables testing of session validation, authentication boundaries, and expired session scenarios. Critical for testing creator-only permission model.
 
 ## FSRS Data Preservation Testing Pattern
-**First seen**: 2025-08-28
-**Last used**: 2025-08-28
+**Locations**:
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:515-557 - Complete FSRS field preservation verification during updates (confidence: 98%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:154-163 - FSRS field initialization in test question setup (confidence: 95%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:559-583 - Attempt statistics preservation testing (confidence: 90%)
 **Times referenced**: 1
-**Effectiveness**: 90
-**Context**: Verifying that CRUD operations preserve complex spaced repetition data (FSRS fields) during updates
-**Solution**: Set up test data with complete FSRS fields (stability, difficulty, state, review times), capture original values before operation, perform update, then verify all FSRS fields remain unchanged while confirming editable fields were updated.
-**Example**: Test verified that updating question text/topic preserved all 9 FSRS fields (nextReview, stability, fsrsDifficulty, elapsedDays, scheduledDays, reps, lapses, state, lastReview) while allowing content changes.
-**Files**: /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:515-557
+**Last used**: 2025-08-28
+**Average confidence**: 94.3%
+**Notes**: Verifies that CRUD operations preserve all 9 FSRS fields (stability, difficulty, state, review times, etc.) during updates. Tests capture original values, perform operations, then verify preservation. Critical for maintaining spaced repetition integrity across question lifecycle operations.
 
 ## Comprehensive Permission Testing Coverage
-**First seen**: 2025-08-28
-**Last used**: 2025-08-28
+**Locations**:
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:211-221,316-325,394-405 - Multi-user authorization matrix testing (confidence: 98%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:122-132 - Multiple test users and questions setup (confidence: 95%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:458-488 - Authentication edge cases (invalid tokens, expired sessions) (confidence: 95%)
 **Times referenced**: 1
-**Effectiveness**: 98
-**Context**: Testing creator-only permission model across all CRUD operations with multiple user scenarios
-**Solution**: Set up multiple test users and questions with different ownership. Test all operations (update, delete, restore) against both owned and non-owned resources. Include authentication edge cases (invalid tokens, expired sessions, missing tokens).
-**Example**: Every mutation tested against: valid user with owned resource, valid user with non-owned resource, invalid session token, expired session, missing session. Comprehensive coverage of authorization matrix.
-**Files**: /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:211-221,316-325,394-405
+**Last used**: 2025-08-28
+**Average confidence**: 96%
+**Notes**: Every mutation tested against complete authorization matrix: valid user with owned resource, valid user with non-owned resource, invalid session token, expired session, missing session. Ensures creator-only permission model is properly enforced across all operations.
 
 ## Soft Delete State Testing Pattern
-**First seen**: 2025-08-28
-**Last used**: 2025-08-28
+**Locations**:
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:294-314,365-392,419-441 - Complete soft delete lifecycle testing (confidence: 98%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:259-272 - Update rejection on deleted questions (confidence: 95%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:338-350 - Double deletion prevention (confidence: 90%)
 **Times referenced**: 1
-**Effectiveness**: 95
-**Context**: Testing soft delete functionality that preserves data while marking items as deleted with proper state transitions
-**Solution**: Test soft delete operation preserves all original data while adding deletedAt timestamp. Test that operations on deleted items are properly rejected. Test restore operation removes deletedAt and adds updatedAt. Verify state transitions are atomic.
-**Example**: Soft delete preserves question content and FSRS data while adding deletedAt. Updates/deletes rejected on deleted items. Restore removes deletedAt, adds updatedAt, preserves all other data.
-**Files**: /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:294-314,365-392,419-441
+**Last used**: 2025-08-28
+**Average confidence**: 94.3%
+**Notes**: Tests soft delete preserves all data while adding deletedAt timestamp, operations on deleted items are rejected, restore removes deletedAt and adds updatedAt. Verifies state transitions are atomic and business rules are enforced throughout lifecycle.
 
 ## Edge Case and Concurrency Testing Pattern
-**First seen**: 2025-08-28
-**Last used**: 2025-08-28
+**Locations**:
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:490-512 - Concurrent operations testing with Promise.allSettled (confidence: 95%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:352-362,444-454 - Non-existent resource handling (confidence: 90%)
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:234-257 - Empty/invalid input validation (confidence: 90%)
 **Times referenced**: 1
-**Effectiveness**: 85
-**Context**: Testing mutation behavior under edge conditions and concurrent operations to ensure robust error handling
-**Solution**: Test non-existent resources, already-deleted items, empty/invalid inputs, expired sessions, concurrent operations using Promise.allSettled. Focus on graceful degradation and proper error messages.
-**Example**: Concurrent update and delete operations tested with Promise.allSettled, expired session simulation with past expiresAt timestamps, empty string validation for required fields.
-**Files**: /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:490-512,470-488,234-257
+**Last used**: 2025-08-28
+**Average confidence**: 91.7%
+**Notes**: Tests non-existent resources, already-deleted items, empty/invalid inputs, expired sessions, concurrent operations. Uses Promise.allSettled for race condition testing. Focuses on graceful degradation and proper error messages under stress conditions.
 
 ## Leyline No-Internal-Mocking Testing Principle
-**First seen**: 2025-08-28
-**Last used**: 2025-08-28
+**Locations**:
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:10-12,74-108 - TestConvexDB realistic database simulation (confidence: 98%)
+- /Users/phaedrus/Development/scry/docs/leyline/tenets/testability.md:29 - "Avoid Internal Mocking" guideline (confidence: 95%)
+- /Users/phaedrus/Development/scry/docs/leyline/bindings/core/integration-first-testing.md:31 - "real implementations internally" principle (confidence: 95%)
 **Times referenced**: 1
-**Effectiveness**: 98
-**Context**: Following Leyline testing philosophy of only mocking external systems (database) without mocking internal components
-**Solution**: Create realistic test implementation of external system (TestConvexDB) that behaves like real database but doesn't mock internal business logic. Test actual mutation functions with realistic context and data flow.
-**Example**: TestConvexDB implements full database interface (insert, patch, query, get) with proper ID generation, timestamps, and relationships. Mutations tested with real business logic against realistic data layer.
-**Files**: /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:10-12,74-108
+**Last used**: 2025-08-28
+**Average confidence**: 96%
+**Notes**: TestConvexDB implements full database interface without mocking internal business logic. Only mocks external systems (database layer) while testing real mutation functions. Maintains realistic data flow and behavior patterns for high-confidence testing.
 
 ## Time Estimation for Comprehensive Unit Testing
-**First seen**: 2025-08-28
-**Last used**: 2025-08-28
+**Locations**:
+- /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:complete-test-suite - 22 tests covering CRUD mutations in 45 minutes (confidence: 95%)
+- /Users/phaedrus/Development/scry/vitest.config.ts:54-55 - Test timeout configuration (10s test, 10s hook) (confidence: 90%)
 **Times referenced**: 1
-**Effectiveness**: 95
-**Context**: Successfully completing comprehensive unit test suites for CRUD mutations in reasonable time frames
-**Solution**: When following established testing patterns and having clear requirements, comprehensive unit test coverage (22 tests) for CRUD operations can be achieved in ~45 minutes including debugging time.
-**Example**: Complete test suite covering 3 mutations with permission validation, data preservation, soft delete behavior, edge cases, and authentication scenarios completed in 45 minutes total.
-**Files**: /Users/phaedrus/Development/scry/convex/questions.crud.test.ts:complete-test-suite
+**Last used**: 2025-08-28
+**Average confidence**: 92.5%
+**Notes**: Comprehensive unit test coverage (22 tests) for CRUD operations achievable in ~45 minutes when following established patterns. Includes permission validation, data preservation, soft delete behavior, edge cases, and authentication scenarios. Pattern-driven development accelerates implementation.
+
+## Integration Testing Philosophy and Patterns (Scry Codebase)
+**Locations**:
+- /Users/phaedrus/Development/scry/docs/leyline/bindings/core/integration-first-testing.md:10-20 - 10/70/20 test distribution (E2E/Integration/Unit) (confidence: 98%)
+- /Users/phaedrus/Development/scry/docs/leyline/bindings/core/integration-first-testing.md:43-78 - Integration test structure with real database interactions (confidence: 95%)
+- /Users/phaedrus/Development/scry/docs/leyline/bindings/core/integration-first-testing.md:145-151 - Real implementations with test doubles for externals only (confidence: 95%)
+- /Users/phaedrus/Development/scry/docs/leyline/tenets/testability.md:22-31 - Testability as first-class design constraint (confidence: 90%)
+**Times referenced**: 1
+**Last used**: 2025-08-28
+**Average confidence**: 94.5%
+**Notes**: Prioritizes integration tests (70%) as primary investment, focusing on component boundaries and API contracts. Uses real implementations internally with test doubles only for external systems. Integration tests provide optimal balance of bug-catching power versus maintenance overhead compared to traditional pyramid strategies.
 
 <!-- New patterns will be added as discovered -->
