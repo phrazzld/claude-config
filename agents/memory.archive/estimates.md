@@ -198,6 +198,46 @@ Each entry includes:
 **Times referenced**: 1
 **Last used**: 2025-08-28
 
+## Testing: Integration Test Suite for Complex Workflows (Scry)
+**Estimated**: MEDIUM (~60 minutes)
+**Actual**: ~60 minutes (including debugging)
+**Accuracy**: 100% (exact match)
+**Factors**: Followed Leyline integration-first testing philosophy (10/70/20 distribution), built comprehensive TestConvexDB with full database simulation, created realistic authentication context, tested complete multi-step workflows with state verification, discovered syntax complexity requiring careful bracket/brace matching, timing-sensitive assertions needed adjustment, complex nested object structures in test context
+**Learning**: Comprehensive integration testing with established patterns and principles can be accurately estimated when following systematic approach with realistic database simulation and workflow validation
+**Confidence Adjustment**: Trust MEDIUM estimates for integration test suites when following established testing philosophy, using realistic database simulation, and testing complete workflows with proper authentication context
+**Times referenced**: 1
+**Last used**: 2025-08-28
+
+## Performance: Lighthouse Performance Validation with Optimistic UI Analysis (Scry)
+**Estimated**: Not explicitly estimated (performance validation tasks often unclear)
+**Actual**: ~25 minutes total
+**Accuracy**: Faster than expected for comprehensive performance validation
+**Factors**: Lighthouse CLI provides automated measurement (`npx lighthouse https://scry.sh --output=json`), systematic CRUD operation timing analysis, comprehensive documentation creation, established performance architecture already in place, Next.js + Vercel deployment performs excellently by default, CSS Grid layout prevents CLS by design
+**Learning**: Performance validation with established architecture and automated tools is SIMPLE when measurement infrastructure exists and performance patterns are already implemented
+**Confidence Adjustment**: Performance validation tasks are SIMPLE (20-30 minutes) when automated tools (Lighthouse CLI) exist and performance architecture is already established with optimistic UI patterns
+**Times referenced**: 1
+**Last used**: 2025-08-28
+
+## Testing: Complex Test Architecture Refactoring with Unvalidated Library (Scry)
+**Estimated**: Not explicitly estimated, but approached as MEDIUM-HIGH (~30-40 minutes)
+**Actual**: 30-40 minutes of work, then BLOCKED by library runtime error
+**Accuracy**: Time estimate accurate for refactoring work, but failed to account for compatibility risk
+**Factors**: Successfully refactored two large test files (584 + 754 lines) from internal `_handler` pattern to official convex-test library, updated vitest configuration for edge-runtime, installed new dependencies (@edge-runtime/vm), but blocked by ".glob is not a function" runtime error in convex-test library
+**Learning**: **HIGH-RISK PATTERN**: Complete test architecture refactoring with unvalidated libraries should be estimated as COMPLEX with significant compatibility validation phase. Library adoption risk was underestimated.
+**Confidence Adjustment**: **ALWAYS validate library compatibility first** - add 2x time buffer for unvalidated library adoption. Test infrastructure refactoring should include validation phase before major architecture changes.
+**Times referenced**: 1
+**Last used**: 2025-08-28
+
+## Testing: Unit/Integration Tests for CRUD Mutations with Business Logic Focus (Scry)
+**Estimated**: Not explicitly estimated, but completed very efficiently
+**Actual**: ~5 minutes
+**Accuracy**: Much faster than expected for comprehensive testing
+**Factors**: Focused on business logic validation rather than complex mocking infrastructure, leveraged existing `_handler` pattern for direct mutation testing, comprehensive coverage (16 test cases) for permission enforcement, FSRS field preservation, soft delete behavior, and edge cases, clear understanding of requirements and established testing patterns, TestConvexDB infrastructure already available
+**Learning**: **BUSINESS LOGIC FOCUSED TESTING**: When testing patterns are established and requirements are clear, comprehensive CRUD mutation testing can be completed very efficiently by focusing on behavior validation rather than infrastructure mocking
+**Confidence Adjustment**: CRUD mutation testing with established patterns and business logic focus should be estimated as VERY_SIMPLE (5-10 minutes) when testing infrastructure exists and requirements are well-understood
+**Times referenced**: 1
+**Last used**: 2025-08-28
+
 ---
 
 ## Patterns by Complexity Level
@@ -214,6 +254,7 @@ Each entry includes:
 - UI action buttons with existing components and backend support
 - Enhanced listing pages with existing filtering patterns and performance conventions
 - Component refactoring when existing organization is already good
+- **Performance validation with established architecture and automated tools (20-30 minutes)**
 
 ### Consistently MEDIUM (4-8 hours)
 - New feature with 2-3 components
@@ -225,6 +266,7 @@ Each entry includes:
 - External API integrations with discovered patterns and existing constants (15-30 minutes)
 - Multi-task implementations with pattern discovery and clear integration hooks
 - **Comprehensive unit test suites with established testing patterns (30-45 minutes)**
+- **Comprehensive integration test suites with established testing philosophy (60 minutes)**
 
 ### Consistently VERY_SIMPLE (1-5 minutes)
 - Convex schema optional field additions with existing patterns
@@ -234,6 +276,7 @@ Each entry includes:
 - Field ordering following established conventions
 - Convex action creation with discovered patterns
 - Environment variable setup with clear commands
+- **CRUD mutation testing with established patterns and business logic focus (5-10 minutes)**
 
 ### Consistently COMPLEX (1-3 days)
 - Authentication implementation
@@ -241,6 +284,7 @@ Each entry includes:
 - Database migration with data transformation
 - Cross-service communication
 - Performance optimization with measurement
+- **Complete test architecture refactoring with unvalidated libraries** - requires compatibility validation phase, library adoption risk assessment, and fallback planning
 
 ### Consistently VERY_COMPLEX (3+ days)
 - Architectural refactoring
@@ -266,6 +310,8 @@ Each entry includes:
 - Multiple team coordination needed
 - Compliance requirements present
 - Performance SLAs defined
+- **Adopting unvalidated testing libraries or frameworks**
+- **Complete test architecture refactoring without compatibility verification**
 
 ### Reduce by 25% When:
 - Strong existing patterns available
@@ -289,6 +335,8 @@ Each entry includes:
 - Configuration changes with clear precedent
 - Well-documented field ordering conventions
 - Convex actions with discovered directory and import patterns
+- **Business logic focused testing with established patterns and clear requirements**
+- **CRUD mutation testing when testing infrastructure and `_handler` patterns exist**
 
 ### Accurate Estimates When:
 - Task matches existing patterns closely
@@ -312,6 +360,16 @@ Each entry includes:
 - **Components are already well-organized** - pattern-scout shows high confidence in existing structure, only categorization improvements needed
 - **Testing patterns established** - clear testing philosophy (no-internal-mocking) and infrastructure patterns exist
 - **Clear requirements and established testing principles** - comprehensive coverage requirements well-understood with principled approach
+- **Realistic database simulation patterns exist** - TestConvexDB or similar comprehensive test infrastructure already established
+- **Integration-first testing philosophy established** - following Leyline 10/70/20 distribution with component boundary focus
+- **Complex workflow validation patterns exist** - established approaches for testing multi-step state transitions
+- **Authentication context simulation patterns exist** - realistic session management and permission testing infrastructure
+- **Performance architecture already established** - optimistic UI patterns and measurement tools (Lighthouse CLI) ready for validation
+- **Automated performance measurement tools available** - CLI tools provide systematic validation without manual testing
+- **CSS Grid layout prevents CLS by design** - architectural patterns eliminate layout shift issues automatically
+- **Working test infrastructure exists** - internal testing patterns (_handler) provide comprehensive coverage and proven stability
+- **Business logic testing patterns established** - focus on behavior validation rather than infrastructure complexity
+- **CRUD mutation requirements well-understood** - permission enforcement, data integrity, state transitions clearly defined
 
 ---
 
@@ -379,6 +437,54 @@ Each entry includes:
 - **Soft delete state testing** - proper state transition verification
 - **Edge case and concurrency testing** - robust error handling with Promise.allSettled patterns
 - **Time estimation accuracy** - 45 minutes for 22 comprehensive tests when patterns and principles are established
+- **Integration testing philosophy established** - Leyline 10/70/20 distribution focusing on component boundaries
+- **Realistic database simulation** - comprehensive TestConvexDB with full CRUD interface and query simulation
+- **Multi-step workflow validation** - testing complete state transitions (create → edit → delete → restore)
+- **Complex data integrity preservation** - FSRS field preservation across all 9 spaced repetition fields
+- **Comprehensive permission matrix** - testing all authorization combinations (owned/non-owned, valid/invalid/expired sessions)
+- **Concurrent operation testing** - Promise.allSettled for race condition and stress testing
+- **Business logic focus over infrastructure mocking** - test expected behavior patterns rather than internal implementation details
+- **Direct mutation testing with _handler pattern** - eliminates complex mocking while providing comprehensive coverage
+- **Clear testing requirements** - permission enforcement, data integrity, state transitions well-understood
+- **Established testing infrastructure** - TestConvexDB, authentication simulation, and edge case patterns ready to use
+
+### Performance Validation Success Factors:
+- **Lighthouse CLI integration** - automated performance measurement with `npx lighthouse URL --output=json`
+- **Established performance architecture** - optimistic UI patterns already delivering exceptional results
+- **CSS Grid layout preventing CLS by design** - architectural solution eliminates layout shift issues
+- **Next.js + Vercel deployment optimization** - platform handles performance optimization automatically
+- **Systematic CRUD timing analysis** - established patterns for measuring perceived performance
+- **Comprehensive metrics tracking** - CLS, FCP, LCP, Performance Score monitoring established
+- **Performance documentation patterns** - creating detailed reports with concrete metrics and architectural explanations
+- **Sub-millisecond optimistic UI** - immediate feedback patterns already implemented and tested
+- **Automatic rollback with error handling** - established patterns for maintaining data integrity with instant UX
+
+### Library Adoption Risk Factors:
+- **Official libraries may be less stable than internal patterns** - convex-test runtime error blocked entire test suite
+- **Environment compatibility is critical** - edge-runtime dependencies can conflict with library expectations
+- **Validate library compatibility with minimal examples first** - prevent major refactoring work from being blocked
+- **Working internal patterns should be preserved** - _handler pattern provided comprehensive, stable test coverage
+- **Library adoption should be incremental** - keep old tests working while validating new approaches
+- **Runtime errors in test libraries block entire test suites** - single ".glob is not a function" error prevented all testing
+- **Peer dependency conflicts are common** - complex environment requirements (Vitest + edge-runtime + convex-test) increase failure risk
+
+### Test Infrastructure Refactoring Success Factors:
+- **Preserve working test patterns during exploration** - 22 comprehensive tests should not be sacrificed for library experimentation
+- **Validate new testing libraries in isolation** - create single test file to verify compatibility before major refactoring
+- **Internal APIs may be more reliable than official libraries** - _handler pattern was stable and comprehensive
+- **Complex test refactoring requires COMPLEX estimation** - 1300+ lines of test changes with unvalidated library is high-risk
+- **Library compatibility validation prevents blocked work** - minimal validation would have caught ".glob is not a function" error
+- **Comprehensive test coverage is more valuable than library adoption** - maintain working tests over exploring new tools
+
+### CRUD Testing Efficiency Factors:
+- **Business logic focus eliminates mocking complexity** - test behavior patterns rather than infrastructure details
+- **Established _handler pattern provides direct access** - eliminates need for complex Convex context simulation
+- **Clear requirement categories** - permission enforcement, data integrity preservation, state transitions, edge cases
+- **Comprehensive test infrastructure exists** - TestConvexDB, authentication simulation, FSRS field validation patterns
+- **Well-understood domain complexity** - spaced repetition fields, creator-only permissions, soft delete lifecycle clearly defined
+- **Testing philosophy guides implementation** - Leyline no-internal-mocking principle provides clear direction
+- **Pattern recognition accelerates coverage** - 16 test cases covering all critical business logic paths efficiently identified
+- **Validation patterns over implementation details** - focus on what the mutation should accomplish rather than how it accomplishes it
 
 ---
 

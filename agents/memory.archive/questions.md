@@ -123,6 +123,42 @@ Each entry includes:
 **Domain**: React Development
 **Context**: When new data needs to reach deep components but existing architecture patterns should be preserved
 
+## Library Adoption: Compatibility Validation Strategy
+**Question**: Should we validate this new library's compatibility with our current environment before refactoring existing working code?
+**Value**: 95
+**Impact**: Would have prevented 30-40 minutes of blocked work and loss of comprehensive test coverage due to convex-test library runtime error
+**Pattern**: "What's the validation strategy for [new library/framework] compatibility before major refactoring?"
+**Usage Count**: 1
+**Domain**: Testing Infrastructure
+**Context**: When considering migration from working internal testing patterns to official libraries
+
+## Testing Infrastructure: Preservation vs Innovation Trade-off
+**Question**: Is there sufficient value in adopting this new testing library to justify risking our current comprehensive test coverage?
+**Value**: 90
+**Impact**: Would have prevented loss of 22 working comprehensive tests and maintained stable testing infrastructure
+**Pattern**: "What's the risk/benefit analysis for replacing working [infrastructure/pattern] with new [official/recommended] approach?"
+**Usage Count**: 1
+**Domain**: Testing Strategy
+**Context**: When official libraries or recommended approaches may be less reliable than proven internal patterns
+
+## Architecture Refactoring: Risk Assessment
+**Question**: What's our fallback plan if this major architecture change fails or introduces blocking issues?
+**Value**: 85
+**Impact**: Would have maintained test coverage during convex-test library migration attempt
+**Pattern**: "What's the rollback strategy if [major refactoring/library migration] fails?"
+**Usage Count**: 1
+**Domain**: Architecture Decisions
+**Context**: When making significant changes to working systems, especially test infrastructure or core dependencies
+
+## Library Environment Compatibility
+**Question**: Does this library have any undocumented environment requirements or peer dependency conflicts with our current setup?
+**Value**: 88
+**Impact**: Would have caught edge-runtime and convex-test compatibility issues before major refactoring
+**Pattern**: "What are the complete environment requirements and potential conflicts for [new library] in our [specific runtime/framework] setup?"
+**Usage Count**: 1
+**Domain**: Library Integration
+**Context**: When adopting libraries with complex environment requirements (testing libraries, edge-runtime, specialized frameworks)
+
 ---
 
 <!-- New question patterns will be added below this line as they prove valuable -->

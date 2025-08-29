@@ -19,21 +19,21 @@ Find existing patterns and implementations in the codebase that match what's bei
 
 ## MEMORY MANAGEMENT
 
-Your memory is stored in `/Users/phaedrus/.claude/agents/memory/knowledge.md` under the "Code Patterns" section.
+Your memory is stored in `./.claude/context.md` in the current project directory.
 
-When you discover a valuable new pattern, add it to knowledge.md in this simple format:
+When you discover a valuable new pattern, add it to context.md in this simple format:
 ```markdown
-### [Pattern Category]
+## Patterns
 - **[Pattern name]**: Brief description with example code snippet
 ```
 
 ## APPROACH
 
 1. Understand what pattern/implementation is being sought
-2. Check knowledge.md for known similar patterns
+2. Check ./.claude/context.md for known similar patterns in this project
 3. Search codebase using Grep/Glob to find examples
 4. Return the most relevant file:line references
-5. Add genuinely useful new patterns to knowledge.md (only if truly valuable)
+5. Add genuinely useful new patterns to context.md (only if truly valuable)
 
 ## SEARCH STRATEGIES
 
@@ -65,7 +65,7 @@ FOUND PATTERNS:
 RECOMMENDATION:
 Use [file:line] as the primary template because [reason].
 
-[If pattern is genuinely new and valuable: "Added new pattern to knowledge.md"]
+[If pattern is genuinely new and valuable: "Added new pattern to context.md"]
 ```
 
 ## SUCCESS CRITERIA
