@@ -4,15 +4,11 @@ Execute the next available task from TODO.md.
 
 Grab next task from TODO.md → Think about approach → Do the work → Mark complete
 
-<!-- METRICS: Execution typically takes 20-30 seconds with pattern-scout assistance
-     Previous baseline: 45-60 seconds with manual complexity assessment
-     To track: Add timing around task execution and log to metrics.md -->
-
 ## PROCESS
 
 1. **Find next task**: Look for first `[~]` (in-progress) or `[ ]` (not started) task in TODO.md
-2. **Mark in-progress**: Update `[ ]` to `[~]` 
-3. **Think before acting**: 
+2. **Mark in-progress**: Update `[ ]` to `[~]`
+3. **Think before acting**:
    - Consider the approach and plan implementation
    - For implementation tasks, invoke `pattern-scout` to find similar code
    - Identify relevant files and existing patterns to follow
@@ -22,7 +18,7 @@ Grab next task from TODO.md → Think about approach → Do the work → Mark co
 ## PATTERN DISCOVERY
 
 When working on implementation tasks, invoke pattern-scout subagent to find similar code:
-- Shows existing patterns with file:line references  
+- Shows existing patterns with file:line references
 - Identifies the best template to follow
 - Updates knowledge.md with genuinely useful new patterns
 
@@ -49,28 +45,6 @@ This work log serves as:
 - Place to note blockers or questions
 - Memory for if task is resumed later
 
-## POST-EXECUTION LEARNING
-
-After completing or blocking on a task, invoke the lesson-harvester to extract learnings:
-
-**When to harvest lessons:**
-- Task completed successfully (what worked?)
-- Task blocked or failed (what went wrong?)
-- Unexpected complexity discovered
-- Elegant solution found
-- Time estimate significantly off
-
-**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as lesson-harvester from /Users/phaedrus/.claude/agents/lesson-harvester.md, providing:
-- Task description and outcome
-- What worked or didn't work
-- Time taken vs expected
-- Any patterns discovered or bugs encountered
-
-The lesson-harvester will:
-- Extract reusable lessons that are impactful and non-obvious
-- Update knowledge.md with valuable patterns, gotchas, questions, and estimation insights
-- Track success/failure patterns
-- Build institutional knowledge
 
 ## NOTES
 
@@ -79,4 +53,3 @@ The lesson-harvester will:
 - If blocked, mark as `[!]` with explanation in work log and move to next task
 - Only preserve work logs that contain valuable context for future reference
 - Commit changes after completion if appropriate
-- Invoke lesson-harvester for significant learnings

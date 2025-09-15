@@ -1,8 +1,8 @@
-Conduct comprehensive code review using parallel expert analysis to identify merge blockers and improvement opportunities.
+Comprehensive quality review: cleanup, then brutal honesty.
 
-# REVIEW-CODE
+# CODE-REVIEW
 
-Perform thorough code review of the current PR/branch using 8 specialized experts who identify critical blockers and enhancement opportunities.
+Two-phase quality review that first cleans up the code, then tears it apart with critical analysis.
 
 ## 1. Review Context Gathering
 
@@ -10,193 +10,118 @@ Perform thorough code review of the current PR/branch using 8 specialized expert
 - Check if reviewing a PR: `gh pr view` or examine PR URL
 - If branch review: `git diff main...HEAD` (or appropriate base branch)
 - Note changed files, additions, deletions, and affected modules
-- Identify review priorities based on change scope
+- For post-task review: `git diff HEAD~1` or check recently modified files
 
-**Prepare review environment**:
-- Ensure latest changes are pulled
-- Run any existing tests to establish baseline
-- Note any CI/CD status if available
+## 2. Phase 1: The Cleanup (Matt Shumer)
 
-## 2. Parallel Expert Code Review
+**"After successfully completing your goal, ask: Please clean up the code you worked on, remove any bloat you added, and document it very clearly."**
 
-Launch 8 expert reviewers using the Task tool. Each expert examines the changes and categorizes findings as BLOCKERS (must-fix) or IMPROVEMENTS (nice-to-have):
+**Cleanup Actions**:
+- Remove all console.logs, debug statements, and print debugging
+- Delete commented-out code and zombie imports
+- Fix inconsistent naming (variables, functions, classes)
+- Extract magic numbers and hardcoded strings to constants
+- Simplify overly complex logic and nested conditionals
+- Add clear documentation for complex sections
+- Remove any temporary hacks or workarounds
+- Ensure consistent code style and formatting
 
-```
-Task 1: "Security Review Expert - Think very hard about security implications of the changes. Examine:
-- Authentication/authorization changes
-- Input validation and sanitization
-- Potential injection vulnerabilities
-- Secrets or sensitive data exposure
-- Dependency security issues
-- CORS/CSP/security header changes
-Categorize each finding as:
-BLOCKER: Security vulnerabilities, auth bypasses, data exposure
-IMPROVEMENT: Security hardening, defense in depth
-Format: `[BLOCKER/IMPROVEMENT] Description | Risk: specific threat`"
+**Documentation Check**:
+- Every public function has a clear purpose comment
+- Complex algorithms have step-by-step explanations
+- Non-obvious decisions are explained
+- Configuration and setup requirements are documented
 
-Task 2: "Code Quality Expert - Think hard about code maintainability and clarity. Review:
-- Code readability and naming conventions
-- Function/class complexity (cyclomatic complexity)
-- DRY violations and code duplication
-- SOLID principle adherence
-- Magic numbers and hardcoded values
-- Code organization and structure
-Categorize findings as:
-BLOCKER: Severe readability issues, major DRY violations, unmaintainable code
-IMPROVEMENT: Minor refactoring, naming improvements, style consistency
-Format: `[BLOCKER/IMPROVEMENT] Description | Impact: maintenance burden`"
+## 3. Phase 2: The Critical Analysis (Daniel Jeffries)
 
-Task 3: "Testing Expert - Think hard about test coverage and quality. Analyze:
-- Missing tests for new functionality
-- Edge case coverage
-- Test quality and assertions
-- Mocking and test isolation
-- Integration test needs
-- Performance test requirements
-Categorize findings as:
-BLOCKER: Zero test coverage for critical paths, broken tests
-IMPROVEMENT: Additional edge cases, test refactoring, coverage gaps
-Format: `[BLOCKER/IMPROVEMENT] Description | Coverage: what's missing`"
+**"That's great that its 'production ready' but let's pretend it's not. Go back and tell me what you missed, half assed or did wrong. Ferret out any magical code and hallucination bullshit. Analyze it with a critical eye like you are Linus Torvalds on a bender doing a code review. Prove that it works by designing a useful test. Output your understanding of what I just said and your plan once you have analyzed it."**
 
-Task 4: "Performance Expert - Think hard about efficiency and scalability. Investigate:
-- Algorithm complexity (O(n²) or worse)
-- Database query efficiency (N+1, missing indexes)
-- Memory leaks or excessive allocation
-- Caching opportunities
-- Async/parallel processing potential
-- Resource usage patterns
-Categorize findings as:
-BLOCKER: O(n²)+ algorithms, severe memory leaks, obvious N+1 queries
-IMPROVEMENT: Caching opportunities, minor optimizations
-Format: `[BLOCKER/IMPROVEMENT] Description | Impact: performance metric`"
+**Brutal Honesty Questions**:
+- What did I miss, half-ass, or completely botch?
+- Where's the magical thinking and hallucination bullshit?
+- What would make Linus rage-quit this review?
+- What edge cases will definitely explode in production?
+- Where did I copy-paste without understanding?
+- What tests would actually prove this garbage works?
+- What assumptions will bite us at 3am on a Sunday?
+- Where's the technical debt I'm hiding?
 
-Task 5: "Architecture Expert - Think hard about design patterns and system structure. Evaluate:
-- Coupling and cohesion
-- Layer violations
-- Design pattern appropriateness
-- API contract changes
-- Backward compatibility
-- Scalability considerations
-Categorize findings as:
-BLOCKER: Breaking changes without migration, severe coupling, layer violations
-IMPROVEMENT: Better patterns, decoupling opportunities, future-proofing
-Format: `[BLOCKER/IMPROVEMENT] Description | Design: principle violated`"
+**Linus-Level Analysis**:
+- **Security**: What moron would expose user data like this?
+- **Performance**: This O(n²) loop is what - a DoS vulnerability you're gifting to attackers?
+- **Error Handling**: "It probably won't fail" is not error handling, genius
+- **Testing**: These tests test nothing but your ability to write useless tests
+- **Architecture**: This coupling is so tight it needs therapy
+- **Documentation**: "It's self-documenting" = "I'm too lazy to explain my mess"
 
-Task 6: "Error Handling Expert - Think about robustness and failure scenarios. Check:
-- Exception handling completeness
-- Error message quality
-- Graceful degradation
-- Retry logic appropriateness
-- Logging and observability
-- User-facing error experiences
-Categorize findings as:
-BLOCKER: Unhandled exceptions, data loss on errors, poor error recovery
-IMPROVEMENT: Better error messages, enhanced logging, retry strategies
-Format: `[BLOCKER/IMPROVEMENT] Description | Failure: scenario not handled`"
+## 4. Categorize Findings
 
-Task 7: "Documentation Expert - Think about knowledge transfer and clarity. Review:
-- Code comments for complex logic
-- API documentation completeness
-- README updates for new features
-- Architecture decision records
-- Configuration documentation
-- Migration guides if needed
-Categorize findings as:
-BLOCKER: Missing critical setup docs, undocumented breaking changes
-IMPROVEMENT: Better comments, enhanced examples, clarifications
-Format: `[BLOCKER/IMPROVEMENT] Description | Gap: what's missing`"
+### BLOCKERS (This Will Burn In Production)
+- Security vulnerabilities that will get us pwned
+- Data loss scenarios that will lose customer data
+- Performance issues that will take down the server
+- Breaking changes with no migration path
+- Unhandled errors that will crash everything
 
-Task 8: "API Design Expert - Think hard about interface design and usability. Assess:
-- API consistency and conventions
-- Request/response schema design
-- Versioning strategy
-- Rate limiting and quotas
-- Error response formats
-- REST/GraphQL best practices
-Categorize findings as:
-BLOCKER: Breaking API changes, inconsistent schemas, missing versioning
-IMPROVEMENT: Better naming, enhanced responses, consistency fixes
-Format: `[BLOCKER/IMPROVEMENT] Description | API: design issue`"
-```
+### IMPROVEMENTS (Should Fix Before Someone Notices)
+- Code that works but makes no sense
+- Missing tests for critical paths
+- Performance optimizations we're ignoring
+- Documentation that's wrong or missing
+- Technical debt we're accumulating
 
-## 3. Synthesis and Categorization
+### POLISH (Nice To Have If We Cared)
+- Style inconsistencies
+- Better naming conventions
+- Refactoring opportunities
+- Enhanced logging
 
-**Consolidate all findings**:
-- Collect all BLOCKER findings from experts
-- Collect all IMPROVEMENT findings from experts
-- Remove duplicates while preserving unique perspectives
-- Prioritize based on severity and impact
+## 5. Generate TODO.md Items
 
-**Validation criteria for blockers**:
-- Security vulnerabilities
-- Data loss risks
-- Breaking changes without migration
-- Severe performance regressions
-- Unhandled critical errors
-- Zero test coverage for critical paths
-
-## 4. Generate TODO.md Items
-
-**Create high-priority tasks for all blockers**:
+**Add all BLOCKERS with Linus-level clarity**:
 ```markdown
 ## Code Review Blockers - [Branch/PR Name] [Date]
 
-- [ ] [HIGH] Fix SQL injection vulnerability in user search | Security: user input directly concatenated
-- [ ] [HIGH] Add tests for payment processing logic | Testing: 0% coverage on critical financial path
-- [ ] [HIGH] Fix O(n²) algorithm in notification system | Performance: will not scale beyond 1000 users
-- [ ] [HIGH] Handle network timeout in API client | Error: data loss on connection failure
+- [ ] [CRITICAL] Fix SQL injection in user search - currently concatenating user input like it's 1999
+- [ ] [CRITICAL] Add ANY tests for payment processing - zero coverage on code handling actual money
+- [ ] [CRITICAL] Fix O(n²) algorithm in notifications - will melt server with >1000 users
+- [ ] [CRITICAL] Handle network timeouts - currently just praying the network never fails
 ```
 
-## 5. Generate BACKLOG.md Items
+## 6. Output Summary
 
-**Add improvements to backlog with appropriate sections**:
 ```markdown
-## Code Review Improvements - [Branch/PR Name] [Date]
+## Review Summary
 
-### Performance Optimization
-- [ ] [MEDIUM] Add caching for user preferences API | Performance: reduce 90% of repeated queries
-- [ ] [LOW] Consider pagination for admin dashboard | Performance: currently loads all records
+### What I Half-Assed
+- [Honest admission of shortcuts taken]
+- [Features that barely work]
+- [Code I copied without understanding]
 
-### Code Quality
-- [ ] [MEDIUM] Refactor UserService to reduce complexity | Quality: cyclomatic complexity of 15
-- [ ] [LOW] Rename variables for clarity in data processor | Quality: improve readability
+### Magical Thinking & Hallucination Bullshit
+- [Assumptions that are definitely wrong]
+- [Code that works by accident]
+- [Things I pretended to understand]
 
-### Testing
-- [ ] [LOW] Add edge case tests for date parsing | Testing: enhance robustness
-- [ ] [LOW] Consider property-based testing for validators | Testing: catch more edge cases
-```
+### What Would Make Linus Rage
+- [The absolutely broken garbage]
+- [Security holes you could drive a truck through]
+- [Performance disasters waiting to happen]
 
-## 6. Review Summary
+### Tests That Would Actually Prove It Works
+- [Specific test cases that would expose the bugs]
+- [Edge cases I'm definitely not handling]
+- [Load tests that would break everything]
 
-**Generate actionable summary**:
-```markdown
-## Review Summary for [Branch/PR Name]
-
-### Merge Decision: BLOCKED/APPROVED
-
-### Critical Blockers (4)
-1. Security vulnerability in authentication
-2. Missing tests for payment flow
-3. Performance regression in search
-4. Data loss risk on errors
-
-### Improvement Opportunities (8)
-- 3 performance optimizations
-- 2 code quality enhancements
-- 2 testing improvements
-- 1 documentation update
-
-### Commendations
-- Excellent error handling in module X
-- Well-structured API design
-- Comprehensive test coverage in module Y
+### Merge Decision: [BLOCKED/APPROVED]
+[Clear explanation of why this should or shouldn't merge]
 ```
 
 ## Success Criteria
 
-✓ All 8 experts complete their specialized review
-✓ Clear distinction between blockers and improvements
-✓ Blockers are actionable and specific
-✓ TODO.md updated with high-priority blockers
-✓ BACKLOG.md updated with improvement opportunities
-✓ Summary provides clear merge decision
+✓ Code is cleaned up and properly documented
+✓ Brutal honest assessment completed
+✓ All magical thinking exposed
+✓ BLOCKERS identified with clear explanations
+✓ TODO.md updated with critical items
+✓ No sugar-coating or false confidence

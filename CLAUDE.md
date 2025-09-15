@@ -41,26 +41,6 @@
   ```bash
   # Example: Launch parallel research agents
   Task 1: "Research authentication patterns in codebase"
-  Task 2: "Investigate API rate limiting best practices" 
+  Task 2: "Investigate API rate limiting best practices"
   Task 3: "Analyze error handling conventions"
   ```
-
-## Reasoning Budget Control
-
-Claude has powerful reasoning capabilities that can be invoked with specific phrases:
-
-**Reasoning Levels:**
-* `think` - Basic reasoning for straightforward analysis
-* `think hard` - Deeper analysis for complex problems
-* `think very hard` - Extensive reasoning for intricate challenges  
-* `ultrathink` - Maximum reasoning budget for the most complex tasks
-
-**Usage Guidelines:**
-* Use reasoning phrases when tasks require careful analysis, not for simple operations
-* Match reasoning level to task complexity:
-  - Simple refactoring, documentation → no explicit reasoning needed
-  - Architecture decisions, debugging → `think` or `think hard`
-  - System-wide changes, security analysis → `think very hard`
-  - Fundamental reimagining, complex algorithms → `ultrathink`
-* Place reasoning phrases before the analysis request for best results
-* These phrases unlock deeper analytical capabilities and should be used judiciously

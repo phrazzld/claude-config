@@ -180,19 +180,3 @@ Generates TODO items:
   - Dependencies: Auth middleware working
 ```
 
-## 8. Post-Planning Learning
-
-After completing implementation of planned tasks, invoke lesson-harvester:
-
-**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as lesson-harvester from /Users/phaedrus/.claude/agents/lesson-harvester.md, providing:
-- Which complexity estimates were accurate
-- Tasks that revealed hidden dependencies
-- Planning patterns that worked well
-- Task breakdowns that were too coarse or too fine
-- Critical path accuracy
-
-The lesson-harvester will:
-- Update knowledge.md with estimation accuracy patterns
-- Track task decomposition effectiveness
-- Note planning blind spots
-- Improve future complexity assessments

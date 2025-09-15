@@ -9,3 +9,7 @@
 TODO.md
 settings.local.json
 shell-snapshots/
+
+# Memory and lessons archives
+agents/memory/
+lessons/

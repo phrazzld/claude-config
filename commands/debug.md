@@ -110,22 +110,6 @@ If all experts report low confidence (<30%), apply general debugging techniques:
 - [ ] [Monitoring or alerts to add]
 ```
 
-## 7. Post-Debug Learning
-
-After resolving the issue, invoke lesson-harvester to capture debugging insights:
-
-**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as lesson-harvester from /Users/phaedrus/.claude/agents/lesson-harvester.md, providing:
-- The issue description and root cause
-- Which expert analysis was most accurate
-- Time to resolution vs severity
-- Any new bug patterns discovered
-- Debugging techniques that worked
-
-The lesson-harvester will:
-- Update knowledge.md with new bug patterns if bug-historian missed them
-- Track debugging technique effectiveness for future use
-- Extract reusable debugging strategies
-- Note prevention opportunities
 
 ## Success Criteria
 

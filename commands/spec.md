@@ -207,19 +207,4 @@ Invoke `adr-architect` to propose architecture decisions:
 - Validate implementation strategy is feasible
 - Check that success criteria are measurable
 
-## 6. Post-Specification Learning
-
-After completing the specification, invoke lesson-harvester to capture insights:
-
-**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as lesson-harvester from /Users/phaedrus/.claude/agents/lesson-harvester.md, providing:
-- Which clarifying questions proved most valuable
-- Architecture patterns that emerged
-- Research findings that changed the approach
-- Complexity estimation accuracy
-- Requirements that were initially missed
-
-The lesson-harvester will:
-- Update knowledge.md with high-value clarifications and successful architecture patterns
-- Track specification accuracy for future estimates
-- Note common requirement blind spots
 

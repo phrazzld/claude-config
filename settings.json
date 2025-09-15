@@ -1,13 +1,13 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "model": "opus",
+  "model": "sonnet",
   "hooks": {
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "afplay -v 0.6 \"/Users/phaedrus/Music/soundboard/warcraft2-work-complete.mp3\""
+            "command": "afplay -v 0 \"/Users/phaedrus/Music/soundboard/warcraft2-work-complete.mp3\""
           }
         ]
       }
@@ -17,17 +17,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay -v 0.6 \"/Users/phaedrus/Music/soundboard/navi-hey.mp3\""
+            "command": "afplay -v 0 \"/Users/phaedrus/Music/soundboard/navi-hey.mp3\""
           }
         ]
       }
     ],
-    "UserPromptSubmit": [
+    "PreToolUse": [
       {
+        "matcher": "Grep|Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "afplay -v 0.4 \"/Users/phaedrus/Music/soundboard/whip-crack.mp3\""
+            "command": "python3 /Users/phaedrus/.claude/hooks/remind-rg-astgrep.py"
           }
         ]
       }
