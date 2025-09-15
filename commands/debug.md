@@ -18,15 +18,15 @@ Conduct comprehensive root cause analysis of the issue in ISSUE.md using native 
 - Note keywords that suggest issue domain
 - Generate initial "issue fingerprint"
 
-## 2. Parallel Expert Analysis
+## 2. Multi-Angle Analysis
 
-Launch specialized debugging subagents in parallel. Each expert assesses relevance and provides targeted analysis:
+Analyze the issue from multiple debugging perspectives using the helper agent:
 
-**Invoke these subagents**:
-1. `bug-historian` - Check if we've seen this pattern before (checks knowledge.md)
-2. `performance-detective` - Assess performance issues (bottlenecks, resources)
-3. `logic-detective` - Analyze code logic and business rules
-4. `integration-detective` - Investigate system integration problems
+**Investigation angles**:
+1. **Historical patterns** - Check if we've seen this pattern before (review knowledge.md)
+2. **Performance analysis** - Assess performance issues (bottlenecks, resources)
+3. **Logic analysis** - Analyze code logic and business rules
+4. **Integration analysis** - Investigate system integration problems
 
 Additional analysis if needed:
 - Flakiness patterns (race conditions, intermittent failures)
@@ -34,12 +34,12 @@ Additional analysis if needed:
 - Data integrity (validation, corruption, constraints)
 - Configuration issues (env vars, deployment settings)
 
-**How to invoke subagents**:
-Use the Task tool with subagent_type: "general-purpose" and prompt each to act as their respective subagent from /Users/phaedrus/.claude/agents/[agent-name].md
+**How to analyze**:
+Use the helper agent (agents/helper.md) to investigate each angle systematically, building a comprehensive understanding of the issue.
 
 ## 3. Evidence Synthesis
 
-**Build evidence matrix from ALL experts**:
+**Build evidence matrix from ALL investigation angles**:
 - Include both positive findings and elimination reasoning
 - Value "not my domain" explanations as debugging evidence
 - Look for convergence and divergence patterns
@@ -72,11 +72,11 @@ If all experts report low confidence (<30%), apply general debugging techniques:
 ```markdown
 ## Debug Analysis for [Issue Title]
 
-### Expert Analysis Matrix
+### Analysis Matrix
 
-| Expert | Confidence | Assessment | Key Finding |
+| Angle | Confidence | Assessment | Key Finding |
 |--------|------------|------------|-------------|
-| Bug Historian | X% | [Found/New] | [Previous solution or new pattern] |
+| Historical | X% | [Found/New] | [Previous solution or new pattern] |
 | Performance | X% | [Domain fit] | [Key finding or elimination] |
 | Logic | X% | [Domain fit] | [Key finding or elimination] |
 | Integration | X% | [Domain fit] | [Key finding or elimination] |
@@ -113,11 +113,11 @@ If all experts report low confidence (<30%), apply general debugging techniques:
 
 ## Success Criteria
 
-- Bug historian checks knowledge.md first for known patterns
-- All relevant experts provide confidence assessment
+- Check knowledge.md first for known patterns
+- All investigation angles provide confidence assessment
 - Both positive and negative findings are synthesized
 - Evidence matrix clearly shows convergence/divergence
 - Root cause has supporting evidence from multiple angles
 - Elimination reasoning strengthens positive findings
-- Bug historian updates knowledge.md with new patterns found
-- Lesson-harvester captures debugging insights after resolution
+- Update knowledge.md with new patterns found
+- Capture debugging insights for future reference
