@@ -2,7 +2,7 @@ Execute the next available task from TODO.md.
 
 # EXECUTE
 
-Grab next task from TODO.md → Think about approach → Do the work → Mark complete
+Grab next task from TODO.md → Think about approach → Do the work → Commit atomically → Mark complete
 
 ## PROCESS
 
@@ -10,19 +10,21 @@ Grab next task from TODO.md → Think about approach → Do the work → Mark co
 2. **Mark in-progress**: Update `[ ]` to `[~]`
 3. **Think before acting**:
    - Consider the approach and plan implementation
-   - For implementation tasks, invoke `pattern-scout` to find similar code
-   - Identify relevant files and existing patterns to follow
+   - Look for existing patterns in the codebase to follow
+   - Identify relevant files and implementation approach
 4. **Do the work**: Implement what the task describes
-5. **Mark complete**: Update `[~]` to `[x]` when done
+5. **COMMIT ATOMICALLY**:
+   - Every completed task gets a commit. No exceptions.
+   - Stage relevant changes: `git add -p` or `git add [files]`
+   - Write semantic commit message: `git commit -m "type: concise description"`
+   - Types: `feat|fix|docs|style|refactor|test|chore`
+6. **Mark complete**: Update `[~]` to `[x]` when done
 
-## PATTERN DISCOVERY
+## THE CARMACK RULE
 
-When working on implementation tasks, invoke pattern-scout subagent to find similar code:
-- Shows existing patterns with file:line references
-- Identifies the best template to follow
-- Updates knowledge.md with genuinely useful new patterns
+*"A task without a commit is a task not done."*
 
-**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as pattern-scout from /Users/phaedrus/.claude/agents/pattern-scout.md
+Every completed task must result in an atomic commit. This isn't optional - it's fundamental to maintaining a clean, traceable history. If you can't commit it, the task isn't actually complete.
 
 ## WORK LOG
 
@@ -52,4 +54,4 @@ This work log serves as:
 - If task includes context or detailed steps, follow them
 - If blocked, mark as `[!]` with explanation in work log and move to next task
 - Only preserve work logs that contain valuable context for future reference
-- Commit changes after completion if appropriate
+- **ALWAYS commit changes after task completion** - no exceptions
