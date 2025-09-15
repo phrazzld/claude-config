@@ -28,6 +28,9 @@ Break down the task into logical components:
 
 ## 3. Generate Prioritized TODO Items
 
+**CRITICAL**: Only include actionable items needed for the current work in TODO.md.
+Future enhancements and nice-to-haves go in BACKLOG.md (see section below).
+
 Create TODO.md with the following structure:
 
 ```markdown
@@ -82,9 +85,16 @@ Generated from TASK.md on [timestamp]
 - [ ] Code review and refactoring pass
   - Success criteria: No linting errors, follows project conventions
 
-## Future Enhancements (BACKLOG.md candidates)
-- [ ] [Enhancement 1] - [Description]
-- [ ] [Enhancement 2] - [Description]
+## Future Enhancements (Write to BACKLOG.md, NOT TODO.md)
+
+**The Torvalds Test**: "If it's not needed for this PR to work, it's not a TODO."
+
+Write these to BACKLOG.md, never TODO.md:
+- [ ] [Enhancement 1] - [Nice-to-have feature]
+- [ ] [Enhancement 2] - [Optimization for later]
+- [ ] [Enhancement 3] - [Future improvement]
+
+<!-- CRITICAL: These items must go in BACKLOG.md. TODO.md is for immediate work only. -->
 ```
 
 ## 4. Task Attributes
