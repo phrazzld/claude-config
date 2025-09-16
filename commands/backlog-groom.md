@@ -1,228 +1,82 @@
-Organize, prioritize, and enhance BACKLOG.md using parallel expert analysis combining native subagents and specialized perspectives for code quality and engineering excellence.
+Organize and prioritize BACKLOG.md with quality-focused analysis.
 
 # GROOM
 
-Organize, prioritize, and enhance @BACKLOG.md by first cleaning up the existing backlog, then launching expert analysis through 4 native subagents and 2 specialized Task agents who analyze the project from their unique perspectives.
+What would a seasoned engineering manager do? Transform chaos into clarity.
 
-## 1. Backlog Organization and Cleanup
+## The Priority Principle
 
-**Analyze existing backlog structure**:
-- Read current @BACKLOG.md to understand existing tasks, structure, and priority system
-- Identify completed items that should be archived
-- Remove obsolete or no-longer-relevant items
-- Categorize remaining items by effort (S/M/L) and quality impact (1-10)
-- Note recurring technical debt patterns and quality issues
+*"Perfect is the enemy of good, but broken is the enemy of everything."* - Every Senior Engineer
 
-**Reorganize for clarity**:
-- Group similar items together (quality gates, documentation, refactoring, etc.)
-- Apply quality-first prioritization (security > maintainability > features > optimizations)
-- Create clear sections with consistent formatting
-- Add estimated effort and quality impact to existing items where missing
+Prioritize by pain: What's breaking? What's blocking? What's bothering?
 
-## 2. Prepare Context
+## 1. Clean the Backlog
 
-**Read foundational documents**:
-- Read project-specific leyline documents in `./docs/leyline/` if they exist
-- Note current project architecture, tech stack, and recent changes
-- Read key documentation and best practices for project toolchains and technologies via context7 MCP and web search
-- Assess current quality measures (test coverage, complexity metrics, documentation state)
-- Identify existing quality gates, CI/CD setup, and automation
+**The Marie Kondo Pass**:
+- Read @BACKLOG.md
+- Archive completed items
+- Delete obsolete wishes
+- Group by theme (quality, features, debt, docs)
+- Tag with effort (S/M/L) and impact (1-10)
 
-## 3. Parallel Expert Analysis
+**The Torvalds Test**: "Would I accept a PR for this today?" If no, it stays in backlog.
 
-Launch expert analysis using 4 native subagents and 2 Task agents for comprehensive coverage:
+## 2. Quality-First Analysis
 
-### Native Subagent Invocations
+**Channel the Platform Engineer mindset**:
 
-**Security Analysis**:
-Invoke `security-scanner` subagent to conduct comprehensive security analysis:
-- Authentication and authorization vulnerabilities
-- Input validation and injection risks
-- Dependency vulnerabilities and CVEs
-- Secrets management and configuration security
-- API security and rate limiting
-- Automated security enforcement opportunities
-
-**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as security-scanner from /Users/phaedrus/.claude/agents/security-scanner.md
-
-**Code Quality & Maintainability Analysis**:
-Invoke `quality-auditor` subagent to assess code health:
-- Code complexity metrics and violations
-- Test coverage gaps and quality issues
-- Documentation completeness
-- Technical debt identification
-- Architectural debt and modularization needs
-- Automation opportunities for quality gates
-
-**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as quality-auditor from /Users/phaedrus/.claude/agents/quality-auditor.md
-
-**Radical Simplification Analysis**:
-Invoke `simplification-expert` subagent to find dramatic improvements:
-- Features that could be entirely removed
-- Dependencies that could be eliminated
-- Subsystems that could be replaced
-- Over-engineering patterns to remove
-- Build and infrastructure simplifications
-- Focus on 30%+ code reduction opportunities
-
-**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as simplification-expert from /Users/phaedrus/.claude/agents/simplification-expert.md
-
-**Developer Experience & Performance Analysis**:
-Invoke `dx-optimizer` subagent to improve productivity and performance:
-- Developer workflow pain points and friction
-- Build and test performance optimization
-- Quality gates and automation setup
-- API and database performance issues
-- Bundle size and load time improvements
-- ROI calculations for improvements
-
-**How to invoke**: Use Task tool with subagent_type: "general-purpose" and prompt to act as dx-optimizer from /Users/phaedrus/.claude/agents/dx-optimizer.md
-
-### Specialized Task Agent Analysis
-
+Run quality analysis using the helper agent:
 ```
-Task 1: "Creative/Product Innovation Agent - Think hard about innovative possibilities that improve both user experience and code quality. Analyze the project codebase and @BACKLOG.md. Generate 3-5 innovative feature ideas focusing on:
-- Developer experience innovations (better tooling, workflow automation, quality gates)
-- User pain points that could be addressed with clean, maintainable solutions
-- Opportunities for delightful experiences that don't increase code complexity
-- Integration opportunities with modern tools/services that reduce technical debt
-- Features that could simplify rather than complicate the codebase
-Each item should include: Priority (CRITICAL/HIGH/MEDIUM/LOW), effort estimate (S/M/L), quality impact (1-10), and innovation rationale.
-Format: `- [ ] [PRIORITY] [FEATURE] Description | Effort: S/M/L | Quality: X/10 | Innovation: why this improves both UX and code health`"
-
-Task 2: "Leyline Philosophy Alignment Agent - Ultrathink about philosophy violations and misalignments. Read leyline philosophy docs and analyze codebase against principles. Generate 3-5 alignment tasks for violations of:
-- Simplicity and minimalism principles
-- Explicitness over magic
-- Testability and contract clarity
-- Single responsibility and modularity
-- Performance and resource efficiency
-Each item should include: Specific principle violated and correction needed.
-Format: `- [ ] [HIGH] [ALIGN] Description | Principle: which tenet this upholds`"
+Task: "Analyze codebase for quality issues and technical debt. Focus on:
+- Security vulnerabilities and risks
+- Code complexity and maintainability problems
+- Missing tests and documentation gaps
+- Performance bottlenecks
+- Dependency risks and outdated packages
+Generate specific, actionable backlog items with effort estimates."
 ```
 
-## 4. Synthesis and Consolidation
+## 3. Stack Rank by Value
 
-**Process all expert outputs**:
-- Ultrathink
-- Collect all generated items from the 4 subagents and 2 Task agents
-- Identify overlapping suggestions and consolidate duplicate recommendations
-- Resolve conflicts between different perspectives, prioritizing code quality
-- Balance innovation with engineering excellence and maintainability
-- Ensure alignment with project goals and quality standards
+**The Bezos Question**: "Will this matter to users in 6 months?"
 
-**Quality-First Prioritization Matrix**:
-```
-CRITICAL Priority (address immediately):
-- Security vulnerabilities (from security-scanner)
-- Quality gate failures (from quality-auditor)
-- High complexity violations (>15 cyclomatic complexity)
-- Critical performance degradations affecting users
+Priority order:
+1. **CRITICAL**: Security/data loss risks
+2. **HIGH**: User-facing bugs and performance issues
+3. **MEDIUM**: Developer experience and maintainability
+4. **LOW**: Nice-to-haves and optimizations
 
-HIGH Priority (next sprint/iteration):
-- Code health issues (coverage gaps, maintainability debt)
-- Developer experience blockers with quality gates
-- Architecture improvements that reduce technical debt
-- Philosophy alignment violations (simplicity, explicitness)
+## 4. Output Format
 
-MEDIUM Priority (upcoming iterations):
-- Valuable features that don't increase complexity
-- Code simplifications with measurable impact
-- Documentation improvements
-- Performance optimizations with clear metrics
-
-LOW Priority (future considerations):
-- Nice-to-have features with quality safeguards
-- Minor optimizations without complexity increase
-- Style improvements and formatting automation
-- Future-proofing with minimal current impact
-```
-
-**Quality Assessment Criteria**:
-- Each item must include effort estimate (S/M/L) and quality impact (1-10)
-- Prioritize items with high quality impact and reasonable effort
-- Favor automation and enforcement over manual processes
-- Ensure measurable success criteria for all recommendations
-
-## 5. Update BACKLOG.md
-
-**Merge expert recommendations with quality focus**:
-- Add new items to appropriate priority sections based on quality-first matrix
-- Update priorities based on expert consensus and quality impact scores
-- Remove completed or obsolete items to archived section
-- Add effort estimates and quality metrics to all items
-- Add cross-references between related quality improvements
-- Ensure consistent formatting with new metadata structure
-
-**Enhanced Structure Template**:
 ```markdown
-# BACKLOG
+# BACKLOG.md
 
-## Critical Priority (CRITICAL)
-[Security vulnerabilities, quality gate failures, high complexity violations]
-- Format: `- [ ] [CRITICAL] [TYPE] Description | Effort: S/M/L | Impact: description`
+## Critical [Fix This Week]
+- [L] Fix SQL injection in user input (Security)
+- [S] Add rate limiting to API (Security)
 
-## High Priority (HIGH)
-[Code health issues, DX blockers, architecture debt, philosophy violations]
-- Format: `- [ ] [HIGH] [TYPE] Description | Effort: S/M/L | Quality: X/10 | Target: measurable goal`
+## High Priority [This Sprint]
+- [M] Reduce homepage load time >2s (Performance)
+- [S] Fix flaky payment tests (Quality)
 
-## Medium Priority (MEDIUM)
-[Valuable features, simplifications, documentation, performance with metrics]
-- Format: `- [ ] [MEDIUM] [TYPE] Description | Effort: S/M/L | Value: benefit description`
+## Medium Priority [This Quarter]
+- [L] Refactor authentication module (Tech Debt)
+- [M] Add integration test suite (Quality)
 
-## Low Priority (LOW)
-[Nice-to-have features, minor optimizations, future-proofing]
-- Format: `- [ ] [LOW] [TYPE] Description | Effort: S/M/L | Note: when to consider`
+## Low Priority [Someday]
+- [S] Dark mode support (Feature)
+- [S] Optimize bundle size (Performance)
 
-## Quality Gates & Automation
-[Dedicated section for enforcement mechanisms]
-
-## Documentation & Knowledge
-[Inline comments, README, architectural docs, knowledge management]
-
-## Completed
-[Recently completed items with completion date and impact achieved]
+## Archived
+- ✅ Implemented user authentication
+- ❌ WebSocket support (no longer needed)
 ```
 
-## 6. Document Grooming Summary
+## Success Metrics
 
-Create concise summary with quality metrics:
-```markdown
-## Grooming Summary [Date]
+- Every item has clear effort (S/M/L) and category
+- Top 5 items could start tomorrow
+- No vague wishes like "improve performance"
+- Archived section prevents backlog bloat
 
-### Items Added by Category
-- X security improvements (Y critical, Z automated)
-- X code quality improvements (complexity, coverage, maintainability)
-- X developer experience enhancements (quality gates, automation)
-- X simplification opportunities (measurable reduction targets)
-- X documentation improvements (inline to architectural)
-- X performance optimizations (with specific targets)
-
-### Quality Focus Metrics
-- Coverage targets: X% current → Y% target
-- Complexity reductions: X functions identified for refactoring
-- Quality gates: X automation opportunities identified
-- Technical debt: X measurable reduction targets set
-
-### Key Themes Discovered
-- [Primary quality concern across experts]
-- [Secondary pattern in code health]
-- [Automation opportunities identified]
-- [Documentation gaps requiring attention]
-
-### Recommended Immediate Focus
-[Top 3 CRITICAL/HIGH items to tackle next based on quality impact]
-
-### Quality Enforcement Added
-[List of new automation/gate recommendations]
-```
-
-## Success Criteria
-
-✓ Existing backlog cleaned up and reorganized with quality focus
-✓ All 4 native subagents provide focused analysis
-✓ 2 specialized Task agents add unique perspectives
-✓ 20-30 total items generated with effort/quality metrics
-✓ Clear quality-first rationale for each priority assignment
-✓ Quality gates and automation opportunities identified
-✓ Measurable targets set for complexity, coverage, and performance
-✓ BACKLOG.md is actionable, well-organized, and quality-focused
+Remember: **A groomed backlog is a usable backlog. Everything else is wishful thinking.**
