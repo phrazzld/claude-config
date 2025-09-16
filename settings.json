@@ -1,7 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "model": "opus",
-  "customInstructions": "# Workflow Principles\n\n## The Carmack Rule\n'A task without a commit is a task not done.'\n- Every completed task MUST result in an atomic commit\n- Use semantic commit messages: feat|fix|docs|style|refactor|test|chore\n- Stage changes with git add, commit with descriptive message\n\n## The Torvalds Test for TODOs\n'If it's not needed for this PR, it's not a TODO.'\n- TODOs must be actionable NOW, not 'someday' items\n- Avoid: future, maybe, consider, possibly, eventually\n- Move wishful thinking to BACKLOG.md\n\n## Command Usage\n- /execute: Grab task → Do work → Commit atomically → Mark complete\n- /plan: Actionable TODOs only, future items go to BACKLOG.md\n- /gates: Audit quality infrastructure effectiveness\n- /tighten: Find and eliminate unnecessary code",
   "hooks": {
     "Stop": [
       {
@@ -30,26 +29,6 @@
           {
             "type": "command",
             "command": "python3 /Users/phaedrus/.claude/hooks/remind-rg-astgrep.py"
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 /Users/phaedrus/.claude/hooks/check-todo-quality.py"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 /Users/phaedrus/.claude/hooks/commit-reminder.py"
           }
         ]
       }
