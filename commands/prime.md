@@ -1,42 +1,46 @@
-Gather context. Do not write any code.
+Load context. Understand everything. Write nothing.
 
-# INTELLIGENT SESSION ONBOARDING
+# PRIME
 
-Launch specialized project state analysis to prepare for optimal TODO.md execution.
+Use ultrathink to deeply analyze the project state before any action.
 
-## PROJECT STATE ANALYSIS
+## The Readiness Principle
 
-Launch the project-state-analyst sub-agent to perform comprehensive project analysis and TODO execution preparation.
+*"Measure twice, cut once."* - Every Carpenter Ever
 
-The sub-agent will use ultrathink to deeply analyze:
-- Current project state and recent activity patterns
-- TODO.md items and execution readiness assessment  
-- Relevant technical context via Context7 MCP and web research
-- Potential blockers and execution prerequisites
-- Architecture patterns and implementation guidance
-- Optimal execution strategies and complexity insights
+Gather intelligence first. Execute with confidence later.
 
-Execute this task to launch the specialized analysis:
+## 1. Project State Analysis
+- Check git status and recent commits (last 10)
+- Identify current branch vs main/master
+- Note uncommitted changes and their impact
+- Detect project type and tech stack
 
-**Task**: Project state analysis and TODO preparation
-**Agent Type**: general-purpose  
-**Instructions**: Act as the project-state-analyst sub-agent from the .claude/agents directory. Perform comprehensive project analysis and TODO.md execution preparation as defined in your specification. Use ultrathink for deep analysis. Focus on gathering intelligence that optimizes the main agent's execute command performance. Provide a structured report covering: 1) Project state summary, 2) TODO execution readiness, 3) Contextual intelligence, 4) Potential blockers, and 5) Execution recommendations. Be thorough and actionable.
+## 2. Task Intelligence
+- Read TODO.md for immediate work items
+- Check BACKLOG.md existence and contents
+- Assess task complexity and dependencies
+- Identify potential blockers early
 
-## POST-ANALYSIS INTEGRATION
+## 3. Contextual Research
+- Web search for best practices on identified technologies
+- Context7 MCP for relevant documentation
+- Review ./docs/leyline/ for project philosophy
+- Check CLAUDE.md for custom instructions
 
-After the sub-agent completes its analysis and reports back:
-- Review the structured findings and recommendations
-- Integrate the contextual intelligence for informed decision-making
-- Understand identified blockers and prerequisites
-- Prepare for seamless transition to execute command with enhanced context
+## 4. Pattern Discovery
+- Grep codebase for conventions and patterns
+- Identify test framework and approach
+- Find build/lint/format commands in package.json or similar
+- Note architectural decisions and constraints
 
-## SUCCESS CRITERIA
+## 5. Output Readiness Report
 
-✓ Deep understanding of current project state and recent changes
-✓ Comprehensive TODO.md analysis with execution implications assessed  
-✓ Relevant technical context and documentation loaded
-✓ Potential execution blockers identified and addressed
-✓ Contextual intelligence gathered for optimal implementation decisions
-✓ Ready for execute command with maximum effectiveness
+Provide brief, actionable summary:
+- **Current Context**: Branch, recent changes, work focus
+- **Next Tasks**: Immediate actionable items from TODO
+- **Key Patterns**: Conventions to follow
+- **Blockers**: Any identified impediments
+- **Ready For**: Recommended next command (execute/plan/debug)
 
-The enhanced contextual understanding from this analysis will enable the execute command to make optimal complexity assessments, follow established patterns automatically, and implement solutions with full project awareness.
+Remember: **Context is king. Understanding prevents mistakes.**
