@@ -1,123 +1,99 @@
-Debug complex issues using parallel native subagents for comprehensive root cause analysis.
+Find bugs by thinking, not by guessing.
 
 # DEBUG
 
-Conduct comprehensive root cause analysis of the issue in ISSUE.md using native subagents who provide specialized analysis.
+Channel Kernighan: "The most effective debugging tool is still careful thought, coupled with judiciously placed print statements."
 
-<!-- METRICS: Parallel subagent analysis takes 2-3 minutes
-     Previous baseline: 5-10 minutes with sequential analysis
-     Performance gain: 60% faster with parallel execution
-     To track: Log subagent invocation times and bug memory hits -->
+## The Kernighan Principle
 
-## 1. Initial Issue Analysis
+*"Debugging is twice as hard as writing the code in the first place."*
 
-**Read and classify the issue**:
-- Read ISSUE.md thoroughly
-- Extract symptoms, error messages, logs, stack traces
-- Identify affected systems and reproduction steps
-- Note keywords that suggest issue domain
-- Generate initial "issue fingerprint"
+If you wrote clever code, you're not smart enough to debug it. Write simple code.
 
-## 2. Multi-Angle Analysis
+## 1. Understand the Problem
 
-Analyze the issue from multiple debugging perspectives using the helper agent:
+**What would Kernighan ask first?**
+- Read @ISSUE.md carefully
+- What changed recently? (90% of bugs are in new code)
+- Can you reproduce it reliably?
+- What's the simplest failing case?
 
-**Investigation angles**:
-1. **Historical patterns** - Check if we've seen this pattern before (review knowledge.md)
-2. **Performance analysis** - Assess performance issues (bottlenecks, resources)
-3. **Logic analysis** - Analyze code logic and business rules
-4. **Integration analysis** - Investigate system integration problems
+## 2. Form a Hypothesis
 
-Additional analysis if needed:
-- Flakiness patterns (race conditions, intermittent failures)
-- Security concerns (auth, vulnerabilities, exposure)
-- Data integrity (validation, corruption, constraints)
-- Configuration issues (env vars, deployment settings)
+**The Pike Philosophy: "Don't guess, measure"**
 
-**How to analyze**:
-Use the helper agent (agents/helper.md) to investigate each angle systematically, building a comprehensive understanding of the issue.
+Before touching code:
+- What do you think is broken?
+- Why do you think that?
+- How will you prove it?
+- What will you do if you're wrong?
 
-## 3. Evidence Synthesis
+## 3. Systematic Investigation
 
-**Build evidence matrix from ALL investigation angles**:
-- Include both positive findings and elimination reasoning
-- Value "not my domain" explanations as debugging evidence
-- Look for convergence and divergence patterns
-- Identify cross-domain issues
+**The Binary Search Method:**
 
-**Process of elimination**:
-- Which domains were confidently ruled out?
-- What does this tell us about the issue?
-- How do elimination findings support positive findings?
+```bash
+# Find when it broke
+git log --oneline -20  # What changed?
+git bisect start       # When did it break?
 
-## 4. Fallback Analysis
+# Find where it breaks
+grep -r "error_pattern" .  # Where's the symptom?
+rg "function_name" --type py  # Where's the cause?
 
-If all experts report low confidence (<30%), apply general debugging techniques:
-- **Five Whys**: Iteratively ask "why" to drill to root cause
-- **Ishikawa/Fishbone**: Map cause-and-effect relationships
-- **Binary search**: Systematically narrow problem scope
-- **Differential analysis**: Compare working vs broken states
-
-## 5. Root Cause Determination
-
-**Synthesize findings**:
-- Primary hypothesis based on highest confidence expert(s)
-- Supporting evidence from other domains
-- Contradicting evidence and how to reconcile
-- Confidence level in root cause determination
-
-## 6. Solution Development
-
-**Generate action plan based on evidence**:
-```markdown
-## Debug Analysis for [Issue Title]
-
-### Analysis Matrix
-
-| Angle | Confidence | Assessment | Key Finding |
-|--------|------------|------------|-------------|
-| Historical | X% | [Found/New] | [Previous solution or new pattern] |
-| Performance | X% | [Domain fit] | [Key finding or elimination] |
-| Logic | X% | [Domain fit] | [Key finding or elimination] |
-| Integration | X% | [Domain fit] | [Key finding or elimination] |
-
-### Synthesis
-
-**Primary Finding**: [Highest confidence domain]
-- [Root cause identified]
-- [Supporting evidence]
-- [How elimination of other domains confirms this]
-
-**Process of Elimination Value**:
-- [Domain] ruled out → [What this tells us]
-- [Domain] ruled out → [What this tells us]
-
-### Root Cause
-[Clear statement of the root cause]
-
-### Recommended Actions
-
-#### Immediate Fix
-- [ ] [Specific action to fix the issue]
-- [ ] [Additional required changes]
-
-#### Validation  
-- [ ] [Tests to verify the fix]
-- [ ] [Checks to ensure no regression]
-
-#### Prevention
-- [ ] [Changes to prevent recurrence]
-- [ ] [Monitoring or alerts to add]
+# Find why it breaks
+print("HERE 1")  # Yes, really
+console.log({state})  # State at failure point
 ```
 
+## 4. Common Bug Patterns
 
-## Success Criteria
+**The Thompson Test: "When in doubt, use brute force"**
 
-- Check knowledge.md first for known patterns
-- All investigation angles provide confidence assessment
-- Both positive and negative findings are synthesized
-- Evidence matrix clearly shows convergence/divergence
-- Root cause has supporting evidence from multiple angles
-- Elimination reasoning strengthens positive findings
-- Update knowledge.md with new patterns found
-- Capture debugging insights for future reference
+Check the usual suspects:
+1. **Off-by-one**: Boundaries, loops, array indices
+2. **Null/undefined**: Missing checks, race conditions
+3. **State mutations**: Shared state, side effects
+4. **Async issues**: Race conditions, promise chains
+5. **Type mismatches**: String vs number, implicit conversions
+
+## 5. Fix Strategy
+
+**The Ritchie Rule: "The only way to learn a new programming language is by writing programs in it"**
+
+```markdown
+## Root Cause
+- What: [Specific failure]
+- Where: [file:line]
+- Why: [Actual reason]
+- When: [Conditions that trigger]
+
+## Fix
+- Minimal change that fixes the issue
+- No clever refactoring while debugging
+- Add test to prevent regression
+
+## Verification
+- [ ] Bug reproduces before fix
+- [ ] Bug gone after fix
+- [ ] No new bugs introduced
+- [ ] Test captures the issue
+```
+
+## 6. Post-Mortem Questions
+
+**Channel Lamport: "A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable"**
+
+Ask yourself:
+- Why didn't tests catch this?
+- What similar bugs might exist?
+- How can we prevent this class of bugs?
+- Is the fix simpler than the bug?
+
+## The Three Laws of Debugging
+
+1. **It's always your code** (until proven otherwise)
+2. **The bug is not where you think it is** (check your assumptions)
+3. **Read the error message** (yes, the whole thing)
+
+Remember: **The best debugger is a fresh pair of eyes and a good night's sleep.**
