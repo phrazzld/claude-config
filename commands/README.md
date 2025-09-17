@@ -2,22 +2,23 @@
 
 Streamlined command library for Claude Code CLI, providing an integrated development workflow from ideation to deployment.
 
-## Core Workflow Commands (28 Total)
+## Core Workflow Commands (29 Total)
 
 ### 🚀 Development Pipeline
 
 The main development flow follows this progression:
 
 ```
-/prime → /spec → /plan → /execute → /git-pr → /git-code-review
+/prime → /spec → /plan → /flesh → /execute → /git-pr → /git-code-review
 ```
 
 1. **prime.md** - Gather context from repository files (README, CLAUDE.md, package.json)
 2. **spec.md** - Research and specification generation with parallel experts
 3. **plan.md** - Convert specifications to actionable TODO items
-4. **execute.md** - Adaptive task execution with complexity-based reasoning
-5. **git-pr.md** - Create pull requests with auto-generated descriptions
-6. **git-code-review.md** - Multi-expert code review generating TODOs and backlog items
+4. **flesh.md** - Transform skeletal TODOs into executable specifications with parallel research
+5. **execute.md** - Adaptive task execution with complexity-based reasoning
+6. **git-pr.md** - Create pull requests with auto-generated descriptions
+7. **git-code-review.md** - Multi-expert code review generating TODOs and backlog items
 
 ### 📊 Analysis & Debugging
 
@@ -28,6 +29,7 @@ The main development flow follows this progression:
 ### 📋 Task Management
 
 - **address.md** - Extract actionable blockers from code reviews
+- **flesh.md** - Expand TODO items with deep analysis and parallel research
 - **ticket.md** - Convert plans into prioritized TODO.md items
 - **task-breakdown.md** - Break down TASK.md into discrete TODO entries
 - **scope.md** - Analyze and split oversized PRs
@@ -71,6 +73,7 @@ The `/execute` command assesses task complexity and allocates reasoning accordin
 
 Multiple commands use the Task tool for concurrent expert analysis:
 - `/spec` - 3 research experts (web, docs, codebase)
+- `/flesh` - 3 research experts for TODO expansion
 - `/debug` - 8 domain experts with confidence assessment
 - `/backlog-groom` - 8 specialized backlog agents
 - `/git-code-review` - 8 review experts
@@ -90,6 +93,7 @@ Commands update TODO.md in real-time with:
 /prime                    # Understand the codebase
 /spec                     # Research and specify the feature
 /plan                     # Break down into TODO items
+/flesh                    # Expand complex TODOs before execution
 /execute                  # Work through tasks adaptively
 /git-pr                   # Create pull request
 ```
