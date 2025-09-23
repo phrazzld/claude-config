@@ -10,18 +10,13 @@ Channel Dijkstra's precision: "The question of whether a computer can think is n
 
 A specification isn't about what you want to build - it's about what must work.
 
-## Workflow Detection
+## State Detection
 
-**First, check if continuing from Phase 1:**
-```bash
-if [ -f ".spec-context.json" ]; then
-  echo "Found existing spec context. Continuing to Phase 2..."
-  # Jump to Phase 2: Contextual Refinement
-else
-  echo "Starting fresh specification investigation..."
-  # Continue with Phase 1
-fi
-```
+**Check TASK.md to determine current state:**
+- If `## Refined Specification` exists → Specification complete
+- If `## Clarifying Questions` exists with answers → Continue with Phase 2
+- If `## Clarifying Questions` exists without answers → Waiting for user input
+- Otherwise → Start Phase 1
 
 ---
 
@@ -117,77 +112,75 @@ For each approach, consider:
 7. **Evolution**: What features are likely to be added in 6 months?
 8. **[Add 1-3 context-specific questions based on research findings]**
 
-### Save Context for Phase 2
+### Update TASK.md with Investigation & Questions
 
-**Store investigation findings and questions:**
-```bash
-cat > .spec-context.json << 'EOF'
-{
-  "timestamp": "$(date -Iseconds)",
-  "task": "[original task from TASK.md]",
-  "research_findings": {
-    "best_practices": "[summarized findings from research]",
-    "architecture_options": "[evaluated approaches with tradeoffs]",
-    "constraints_discovered": "[technical limitations found]",
-    "existing_patterns": "[relevant patterns in codebase]"
-  },
-  "questions": [
-    "Scale: What's the expected load?",
-    "Constraints: What are the hard limits?",
-    "[...all questions listed above...]"
-  ],
-  "preliminary_recommendation": "[initial approach based on research]"
-}
-EOF
+**Append findings and questions to TASK.md:**
+```markdown
+## Investigation Summary
+- [Key finding 1 from research]
+- [Key finding 2 from research]
+- [Architecture tradeoffs discovered]
+- [Existing patterns that could be leveraged]
+- [Constraints identified]
+
+## Clarifying Questions
+Please answer these questions to refine the specification:
+
+1. **Scale**: What's the expected load? (users, requests/sec, data volume)
+2. **Constraints**: What are the hard limits? (budget, timeline, team size)
+3. **Integration**: What systems must this work with? What are their APIs?
+4. **Users**: Who exactly will use this? What's their technical level?
+5. **Success**: How will we measure success? What metrics matter?
+6. **Flexibility**: What needs to be configurable vs. hardcoded?
+7. **Evolution**: What features are likely to be added in 6 months?
+8. [Context-specific questions based on investigation]
+
+*[Your answers here]*
 ```
 
 ## 🛑 STOP HERE - PHASE 1 COMPLETE
 
-**✋ DO NOT PROCEED FURTHER. Present the questions above to the user and wait for their responses.**
+**Your task:**
+1. Open TASK.md
+2. Add your answers below the questions (replace `*[Your answers here]*`)
+3. Save TASK.md
+4. Run `/spec` again to continue
 
-### Instructions for User
+**Example of answered questions in TASK.md:**
+```markdown
+## Clarifying Questions
+Please answer these questions to refine the specification:
 
-**Please provide answers to the questions above.** You can respond in any format:
-- Numbered list (e.g., "1. We expect 1000 users...")
-- Prose addressing each point
-- Skip questions that don't apply
+1. **Scale**: What's the expected load?
+2. **Constraints**: What are the hard limits?
+[...questions...]
 
-**Example response:**
+We expect about 1000 concurrent users with 50 req/sec peak.
+Budget is $5000, timeline is 2 months with 3 developers.
+Must integrate with existing PostgreSQL and Stripe APIs.
+Users are non-technical business analysts.
+Success = 50% reduction in report generation time.
+API endpoints should be configurable, algorithms can be hardcoded.
+Likely to add webhook support and batch processing within 6 months.
 ```
-1. Scale: ~100 concurrent users, 50 requests/sec peak
-2. Constraints: 3 week timeline, 2 developers, $1000 budget
-3. Integration: Existing PostgreSQL database, Stripe API
-4. Users: Technical developers familiar with CLI tools
-5. Success: 90% reduction in manual process time
-6. Flexibility: API keys configurable, algorithm hardcoded
-7. Evolution: Likely adding webhook support, batch processing
-```
-
-**After you provide answers**, run `/spec` again and I'll continue with Phase 2 to create a refined specification based on your input.
 
 ---
 
 # PHASE 2: CONTEXTUAL REFINEMENT
-*This section executes only when .spec-context.json exists with user answers*
+*This section executes only when answers are found in TASK.md*
 
-## 5. Load Context & User Answers
+## 5. Read Context & User Answers
 
-**Retrieve saved investigation context:**
-```bash
-if [ ! -f ".spec-context.json" ]; then
-  echo "ERROR: No context found. Please run /spec first to generate questions."
-  exit 1
-fi
+**Read TASK.md to extract:**
+- Original task description
+- Investigation summary from Phase 1
+- Questions with user's answers
 
-context=$(cat .spec-context.json)
-echo "Resuming specification from $(echo $context | jq -r .timestamp)"
-```
-
-**Process user answers:**
-- Map answers to original questions
-- Update constraints with concrete values
-- Refine architecture based on scale/timeline
-- Adjust approach for stated integrations
+**Process the answers to understand:**
+- Concrete scale and performance requirements
+- Actual timeline and resource constraints
+- Specific integration points and APIs
+- User personas and success metrics
 
 ## 6. Targeted Refinement Research
 
@@ -218,11 +211,9 @@ Be realistic about what could go wrong."
 
 ## 7. Final Specification Generation
 
-**Create the refined specification incorporating all context:**
+**Append the refined specification to TASK.md:**
 
 ```markdown
-# TASK
-[Original task description preserved at top]
 
 ## Refined Specification
 
@@ -268,12 +259,6 @@ Be realistic about what could go wrong."
 - [Unresolved question needing user input]
 ```
 
-### Cleanup
-```bash
-# Remove context file after successfully updating TASK.md
-rm -f .spec-context.json
-echo "Specification complete and context cleaned up."
-```
 
 ## 8. Validation & Next Steps
 
@@ -295,14 +280,48 @@ Remember: **A good specification is not when there is nothing left to add, but w
 1. Read TASK.md and ultrathink
 2. Conduct parallel research
 3. Evaluate architecture alternatives
-4. Generate clarifying questions
-5. Save context and STOP for user input
+4. Append investigation summary to TASK.md
+5. Append clarifying questions to TASK.md
+6. STOP and wait for user to add answers
 
 **Phase 2 (Post-Answer Refinement):**
-1. Load saved context and user answers
+1. Read TASK.md with user's answers
 2. Conduct targeted research based on answers
 3. Refine approach with concrete constraints
-4. Update TASK.md with final specification
-5. Clean up temporary files
+4. Append refined specification to TASK.md
 
-**Key Innovation**: The specification evolves through dialogue, not guesswork.
+**Key Innovation**: The specification evolves through natural language dialogue within TASK.md itself - no JSON, no temp files, just a living document that tells its own story.
+
+## Implementation Notes
+
+**Phase 1 appends to TASK.md:**
+```markdown
+## Investigation Summary
+- Key findings from research
+- Architecture tradeoffs discovered
+- Existing patterns identified
+
+## Clarifying Questions
+Please answer these questions to refine the specification:
+1. Scale: What's the expected load?
+2. Constraints: What are the hard limits?
+[...more questions...]
+
+*[Your answers here]*
+```
+
+**Phase 2 appends to TASK.md:**
+```markdown
+## Refined Specification
+
+### Selected Approach
+[Chosen architecture based on answers]
+
+### Requirements
+[Functional and non-functional requirements]
+
+### Success Criteria
+[Measurable outcomes]
+```
+
+The entire specification process becomes a readable narrative in TASK.md.
