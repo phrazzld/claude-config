@@ -230,11 +230,74 @@ Summarize with an overall compliance assessment and list the most critical issue
 
 ## 5. Generate TODO.md Items
 
+### Binding Violation TODO Generation
+
+When binding or tenet violations are found, automatically generate actionable TODO items:
+
+**For Each Binding Violation**:
+- Create a specific TODO item with the exact file and line number
+- Describe what binding or tenet was violated and why it matters
+- Provide concrete steps to fix the violation
+- Set priority based on risk (CRITICAL for production risks, HIGH for security/reliability, MEDIUM for maintainability)
+- Include the specific standard or pattern that should be followed instead
+
+**TODO Format for Violations**:
+Each generated TODO should clearly state:
+- The location of the violation (file:line)
+- The principle that was violated
+- Why this violation is problematic
+- The specific remediation required
+- Any context needed to understand the fix
+
+**Prioritization Guidelines**:
+- **CRITICAL**: Security vulnerabilities, data loss risks, production crashes
+- **HIGH**: Error handling gaps, architectural violations, missing critical tests
+- **MEDIUM**: Code quality issues, maintainability problems, missing documentation
+- **LOW**: Style issues, naming conventions, minor optimizations
+
+**Example TODO Generation**:
+When you find a TypeScript file using 'any' without justification, generate:
+"[HIGH] Fix untyped parameter in UserService.ts:45 - Replace 'any' with proper User interface type to maintain type safety"
+
+When you find ignored errors in Go code, generate:
+"[CRITICAL] Handle ignored error in api/handler.go:89 - Error from database query must be handled to prevent silent failures"
+
 **Add all BLOCKERS with brutal clarity**:
 
-Create TODO items that are impossible to misunderstand. Each blocker should explain what's broken, why it's dangerous, and what needs to be done. Use clear severity labels (CRITICAL for production risks, HIGH for serious issues, MEDIUM for technical debt). Write descriptions that would make any developer immediately understand the urgency and nature of the problem.
+Create TODO items that are impossible to misunderstand. Each blocker should explain what's broken, why it's dangerous, and what needs to be done. Write descriptions that would make any developer immediately understand the urgency and nature of the problem.
 
-## 6. Review Summary Format
+## 6. Tenet-Aware Review Scoring
+
+### Comprehensive Quality Scoring
+
+Enhance the review with a scoring system that considers both traditional quality metrics and tenet compliance:
+
+**Scoring Dimensions**:
+- **Code Quality** (25%): Traditional metrics like test coverage, documentation, error handling
+- **Tenet Compliance** (35%): Adherence to simplicity, explicitness, modularity, maintainability principles
+- **Binding Adherence** (20%): Technology-specific best practices and patterns
+- **Architecture Alignment** (20%): Clean architecture principles, proper layering, dependency management
+
+**Scoring Scale**:
+- **90-100**: Exceptional - Ready to merge, exemplary code
+- **70-89**: Good - Minor improvements needed, can merge with small fixes
+- **50-69**: Needs Work - Significant issues to address before merge
+- **Below 50**: Requires Major Revision - Fundamental problems need resolution
+
+**Tenet Scoring Breakdown**:
+Evaluate each tenet and provide specific scores:
+- **Simplicity**: Is the solution as simple as possible? Are there unnecessary abstractions?
+- **Explicitness**: Are dependencies and behavior obvious? Is there hidden complexity?
+- **Modularity**: Are components properly isolated? Can they be tested independently?
+- **Maintainability**: Will future developers understand this? Is it easy to modify?
+
+**Score Calculation Guidance**:
+Weight the importance of each dimension based on the context. For critical production code, weight reliability and tenet compliance higher. For prototypes, weight speed of implementation higher. Always provide clear justification for scores.
+
+**Review Score Output**:
+Present the score with breakdown by dimension, specific strengths and weaknesses, and clear action items for improvement. The score should guide the merge decision but not replace human judgment.
+
+## 7. Review Summary Format
 
 Provide a brutally honest assessment covering:
 
