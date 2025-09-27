@@ -384,6 +384,9 @@ Validate the specification:
 
 Remember: **A good specification is not when there is nothing left to add, but when there is nothing left to take away.**
 
+---
+*For complete tenet definitions and vocabulary, see [docs/tenets.md](../docs/tenets.md)*
+
 ## Workflow Summary
 
 **Phase 1 (Initial Investigation):**

@@ -143,3 +143,6 @@ Identify the type of file being worked on and apply the relevant technology and 
 - Only preserve work logs that contain valuable context for future reference
 - **ALWAYS commit changes after task completion** - no exceptions
 - **ALWAYS validate simplicity** - complexity is the enemy of reliability
+
+---
+*For complete tenet definitions and vocabulary, see [docs/tenets.md](../docs/tenets.md)*

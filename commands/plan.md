@@ -330,3 +330,6 @@ After creating TODO.md:
 3. Use `/debug` if you hit unexpected issues
 
 Remember: **The best plan is one that gets code into production. Everything else is commentary.**
+
+---
+*For complete tenet definitions and vocabulary, see [docs/tenets.md](../docs/tenets.md)*

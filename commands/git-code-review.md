@@ -319,3 +319,6 @@ Provide a brutally honest assessment covering:
 ✓ BLOCKERS identified with clear explanations
 ✓ TODO.md updated with critical items
 ✓ No sugar-coating or false confidence
+
+---
+*For complete tenet definitions and vocabulary, see [docs/tenets.md](../docs/tenets.md)*
