@@ -35,6 +35,12 @@ Grab next task from TODO.md → Think about approach → Do the work → Commit 
      - Find commented code? Delete it. Git remembers.
      - Spot inconsistent formatting? Correct it immediately.
      - Quality erosion starts with "I'll fix it later"
+   - **🎯 EXPLICIT OVER IMPLICIT**:
+     - Show dependencies clearly in function signatures
+     - Avoid global state and hidden side effects
+     - Make data flow obvious, not magical
+     - Prefer explicit parameters over implicit context
+     - If behavior isn't obvious from the signature, it's too implicit
 5. **COMMIT ATOMICALLY**:
    - Every completed task gets a commit. No exceptions.
    - Stage relevant changes: `git add -p` or `git add [files]`
@@ -159,6 +165,61 @@ When working in a file:
 3. Rename unclear variables you encounter
 4. Extract magic numbers to constants
 5. Remove unnecessary complexity
+
+## 🎯 EXPLICIT CODE GENERATION
+
+*"Explicit is better than implicit."* - The Zen of Python
+
+### Explicit Dependencies
+```javascript
+// ❌ Implicit - dependencies hidden
+function processOrder() {
+    const user = getCurrentUser();  // Where does this come from?
+    const config = getConfig();     // Global? Singleton?
+    // ...
+}
+
+// ✅ Explicit - dependencies clear
+function processOrder(user: User, config: Config, orderData: OrderData) {
+    // All dependencies visible in signature
+}
+```
+
+### Clear Function Signatures
+```typescript
+// ❌ Implicit return and side effects
+function updateUser(data) {
+    db.save(data);  // Side effect not obvious
+    cache.clear();  // Another hidden side effect
+}
+
+// ✅ Explicit signature and effects
+async function updateUser(userId: string, updates: UserUpdate): Promise<User> {
+    const user = await db.users.update(userId, updates);
+    await cache.users.invalidate(userId);
+    return user;
+}
+```
+
+### Transparent Behavior Rules
+- **No Magic**: If it's not in the function signature, it shouldn't affect behavior
+- **Pure When Possible**: Functions should return the same output for the same input
+- **Side Effects Explicit**: If a function modifies state, name it accordingly (updateX, deleteY, saveZ)
+- **Dependencies Injected**: Pass dependencies as parameters, don't reach out to get them
+
+### Explicit Patterns to Follow
+1. **Dependency Injection over Service Locators**
+2. **Parameters over Global State**
+3. **Return Values over Mutations**
+4. **Type Annotations over Type Inference** (when it aids clarity)
+5. **Named Parameters over Positional** (for functions with >3 parameters)
+
+### The Explicit Checklist
+Before completing any function:
+- [ ] Are all inputs visible in the signature?
+- [ ] Is the return type clear and documented?
+- [ ] Are side effects obvious from the function name?
+- [ ] Could someone understand this without reading the implementation?
 
 ## NOTES
 
