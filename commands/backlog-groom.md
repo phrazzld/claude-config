@@ -1,149 +1,100 @@
-Organize and prioritize BACKLOG.md with quality-focused analysis.
+Conduct a comprehensive review of the codebase to identify opportunities for improvement across all dimensions.
 
 # GROOM
 
-What would a seasoned engineering manager do? Transform chaos into clarity.
+Step back and see the whole system. What would make this better?
 
-## The Priority Principle
+## The Discovery Principle
 
-*"Perfect is the enemy of good, but broken is the enemy of everything."* - Every Senior Engineer
+*"The best problems to solve are the ones you find, not the ones you're given."* - Every Senior Engineer
 
-Prioritize by pain: What's breaking? What's blocking? What's bothering?
+Look for opportunities, not just problems. Think holistically about what would improve the product, the codebase, and the development experience.
 
-## 1. Clean the Backlog
+## 1. Start Fresh
 
-**The Marie Kondo Pass**:
-- Read @BACKLOG.md
-- Archive completed items
-- Delete obsolete wishes
-- Group by theme (quality, features, debt, docs)
-- Tag with effort (S/M/L) and impact (1-10)
+First, clean up any existing backlog. Archive what's done, remove what's obsolete, and group what remains by theme. This gives you a clean slate to work with.
 
-**The Torvalds Test**: "Would I accept a PR for this today?" If no, it stays in backlog.
+Ask yourself: "Would I actually work on this in the next quarter?" If not, it probably doesn't belong in the active backlog.
 
-## 2. Quality-First Analysis
+## 2. Comprehensive Codebase Audit
 
-**Channel the Platform Engineer mindset**:
+Use the helper agent to conduct a thorough quality analysis. Ask it to examine the codebase from multiple angles - security, performance, maintainability, test coverage, dependencies.
 
-Run quality analysis using the helper agent:
-```
-Task: "Analyze codebase for quality issues and technical debt. Focus on:
-- Security vulnerabilities and risks
-- Code complexity and maintainability problems
-- Missing tests and documentation gaps
-- Performance bottlenecks
-- Dependency risks and outdated packages
-Generate specific, actionable backlog items with effort estimates."
-```
+You're looking for anything that affects the health and velocity of the system. The agent should identify specific issues and opportunities, not vague concerns. Each finding should be actionable - something a developer could pick up and work on tomorrow.
 
-## 3. 🎯 Tenet-Based Technical Debt Evaluation
+## 3. Consider Development Principles
 
-**Evaluate backlog items against fundamental leyline tenets**:
+As you review the codebase, think about where fundamental principles are being violated.
 
-### Core Tenets to Consider
+Is there unnecessary complexity that could be simplified? Are there tightly coupled modules that should be independent? Is there hidden behavior that should be explicit? Would a new developer struggle to understand certain areas?
 
-**Simplicity**: Is the current implementation unnecessarily complex? Look for over-engineered solutions, excessive abstractions, or clever code where boring would work better. Items that restore simplicity often prevent cascading complexity.
+These principle violations often compound over time. A confusing abstraction in a core module affects everything built on top of it. Tightly coupled components make changes risky and slow. Hidden dependencies create debugging nightmares.
 
-**Modularity**: Are components properly isolated with clear boundaries? Identify tightly coupled code, god classes, or modules doing too many things. Fixing modularity issues enables parallel development and easier testing.
+When you find these issues, consider their ripple effects. Sometimes fixing a fundamental problem in the architecture is worth more than adding three new features.
 
-**Explicitness**: Is behavior obvious or hidden? Watch for implicit dependencies, magic constants, side effects, or unclear data flow. Making things explicit reduces debugging time and onboarding friction.
+## 4. Technology-Specific Considerations
 
-**Maintainability**: Would a new developer understand this in six months? Flag cryptic naming, missing documentation, inconsistent patterns, or code that requires archaeology to modify.
+Different technologies have their own patterns and pitfalls.
 
-### Tenet Violation Impact
+In TypeScript, are you bypassing the type system with 'any' types? In Go, are errors being ignored when they should be handled? In React, is state management clear and predictable? In your database layer, are queries optimized and migrations safe?
 
-When evaluating technical debt, consider which fundamental principles are being violated:
-- **High Impact**: Violations that affect system-wide patterns or architectural principles
-- **Medium Impact**: Local violations that complicate specific features or modules
-- **Low Impact**: Style or convention violations that don't affect functionality
+Security concerns cut across all technologies. Authentication bugs, authorization gaps, unvalidated inputs - these issues have real consequences and deserve attention regardless of where they appear.
 
-Items that violate multiple tenets or core architectural principles should be prioritized higher, as they tend to generate more technical debt over time.
+When you find issues that violate both general principles and technology-specific best practices, they're usually worth addressing sooner rather than later. They tend to cause problems from multiple angles.
 
-### 🎯 Technology-Specific Binding Awareness
+## 5. Think About Impact and Priority
 
-**Consider technology-specific best practices when evaluating debt**:
+Now comes the judgment call - what matters most?
 
-Different technologies have their own critical patterns and anti-patterns. When grooming your backlog, consider violations of technology-specific bindings:
+Consider multiple dimensions: Will this improve the user experience? Will it make development faster? Will it prevent future problems? Will it reduce operational burden?
 
-**TypeScript/JavaScript**: Look for uses of 'any' without justification, missing type definitions, ignored promise rejections, or direct DOM manipulation in React components. These violations often lead to runtime errors that TypeScript was meant to prevent.
+Some items are obviously critical - security vulnerabilities, data loss risks, broken core functionality. These go to the top of the list.
 
-**Go**: Identify ignored errors (the underscore pattern), missing context propagation, goroutine leaks, or improper mutex usage. Go's explicit error handling philosophy means ignored errors often hide critical failures.
+Beyond the critical issues, use your engineering instincts. A performance improvement that affects every user might matter more than a new feature that helps a few. A refactoring that unblocks three other features might be worth doing first. A fix that prevents weekly firefighting could save more time than it costs.
 
-**Python**: Watch for missing type hints in public APIs, bare except clauses that swallow errors, or mutable default arguments. These Python-specific issues create debugging nightmares.
+Don't overthink the prioritization. You know what matters. Trust your judgment about what would make the biggest positive impact on the product and the team.
 
-**SQL/Database**: Flag missing indexes on foreign keys, SELECT * in production queries, or non-idempotent migrations. Database issues compound quickly under load.
+## 6. Include Clear Next Steps
 
-**Security Bindings**: Regardless of technology, prioritize items involving authentication, authorization, data validation, or secret management. Security debt is technical debt with external consequences.
+For each backlog item, briefly describe not just what the problem is, but how to approach fixing it.
 
-When a backlog item violates both a fundamental tenet AND a technology-specific binding, it deserves higher priority. For example, a Go service that both ignores errors (binding violation) AND has unclear module boundaries (tenet violation) is accumulating debt from multiple directions.
+If something is overly complex, the fix might be to remove abstractions rather than add them. If modules are tightly coupled, identify where to draw boundaries. If behavior is hidden, surface it in function signatures or return values.
 
-## 4. Stack Rank by Value
+The goal is to make each backlog item actionable. A developer should be able to pick it up and know where to start. They don't need step-by-step instructions, just enough context to approach the problem effectively.
 
-**The Bezos Question**: "Will this matter to users in 6 months?"
+## 7. Organize Your Findings
 
-Priority order:
-1. **CRITICAL**: Security/data loss risks, fundamental tenet violations affecting system stability
-2. **HIGH**: User-facing bugs, performance issues, architectural principle violations
-3. **MEDIUM**: Developer experience, maintainability, local tenet violations
-4. **LOW**: Nice-to-haves, optimizations, minor convention violations
+Structure your backlog in a way that makes sense for the team. Group related items together. Note any dependencies between tasks. Be clear about the value and effort of each item.
 
-**Tenet-Aware Prioritization**:
-Items that violate core tenets (simplicity, modularity, explicitness) early in the stack often create compounding technical debt. Prioritize fixing fundamental violations even if they're not immediately user-facing - they affect your ability to deliver everything else.
-
-### 🎯 Remediation Strategy Guidance
-
-**Describe how to fix issues based on tenet violations**:
-
-When creating backlog items, include clear remediation strategies based on which principles are being violated:
-
-**Simplicity Violations - The Path to Boring**:
-For over-engineered code, the fix usually involves removing layers, not adding them. Replace clever abstractions with straightforward implementations. Convert configuration into constants if values never change. Replace factories with direct instantiation when there's only one type. The remediation is often deletion - remove the abstraction and inline the logic.
-
-**Modularity Violations - Creating Clear Boundaries**:
-For tightly coupled code, identify the seams where modules should separate. Extract god classes into focused components with single responsibilities. Define clear interfaces between modules. Move shared state into explicit dependencies. The fix involves drawing boundaries and moving code to respect them.
-
-**Explicitness Violations - Making the Implicit Obvious**:
-For hidden behavior, surface dependencies in function signatures. Replace magic numbers with named constants. Convert side effects into return values. Document assumptions that can't be made explicit in code. The remediation makes invisible behavior visible.
-
-**Maintainability Violations - Writing for Future You**:
-For cryptic code, rename variables and functions to describe intent. Extract complex conditionals into well-named functions. Add documentation for non-obvious decisions. Establish consistent patterns within modules. The fix makes code self-documenting.
-
-**Multiple Violation Remediation**:
-When an item violates multiple tenets, address them in order: simplicity first (remove unnecessary complexity), then modularity (establish boundaries), then explicitness (surface behavior), and finally maintainability (polish for clarity). This order prevents fixing symptoms while core issues remain.
-
-Include these remediation approaches in backlog items so developers know not just what's wrong, but how to approach fixing it.
-
-## 5. Output Format
+A simple, effective structure might look like:
 
 ```markdown
 # BACKLOG.md
 
-## Critical [Fix This Week]
-- [L] Fix SQL injection in user input (Security)
-- [S] Add rate limiting to API (Security)
+## Immediate Concerns
+Things that need attention right now - security issues, broken functionality, critical performance problems.
 
-## High Priority [This Sprint]
-- [M] Reduce homepage load time >2s (Performance)
-- [S] Fix flaky payment tests (Quality)
+## High-Value Improvements
+Changes that would significantly improve user experience, developer velocity, or system reliability.
 
-## Medium Priority [This Quarter]
-- [L] Refactor authentication module (Tech Debt)
-- [M] Add integration test suite (Quality)
+## Technical Debt Worth Paying
+Refactorings and cleanups that would make future development easier and faster.
 
-## Low Priority [Someday]
-- [S] Dark mode support (Feature)
-- [S] Optimize bundle size (Performance)
+## Nice to Have
+Improvements that would be valuable but aren't urgent - optimizations, new features, quality-of-life improvements.
 
-## Archived
-- ✅ Implemented user authentication
-- ❌ WebSocket support (no longer needed)
+## Completed/Archived
+Track what's been done and what's been deliberately decided against.
 ```
 
-## Success Metrics
+Use whatever organization makes sense for your context. The goal is clarity and actionability.
 
-- Every item has clear effort (S/M/L) and category
-- Top 5 items could start tomorrow
-- No vague wishes like "improve performance"
-- Archived section prevents backlog bloat
+## What Success Looks Like
 
-Remember: **A groomed backlog is a usable backlog. Everything else is wishful thinking.**
+You've done a good job if:
+- Each item is clear and actionable - a developer could pick it up and start working
+- The most important items are obvious - the team knows what to tackle first
+- There's a good mix of quick wins and important long-term improvements
+- The backlog reflects the real needs of both users and developers
+
+The backlog should feel like a map of opportunities, not a list of complaints. It should energize the team about what's possible, not overwhelm them with what's broken.
