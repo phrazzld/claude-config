@@ -53,6 +53,8 @@ Task 1: "Research current best practices for the task in TASK.md:
 - Performance bottlenecks and optimization patterns
 🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
 🎯 **PRODUCT VALUE FIRST**: Every approach must justify existence through demonstrable user value.
+🎯 **EXPLICIT OVER IMPLICIT**: Surface and document all assumptions, dependencies, and constraints.
+For each approach, explicitly identify: dependencies on existing systems, assumptions about environment/users/scale, constraints and limitations, integration requirements, and potential side effects on other systems.
 Evaluate each approach against user/business outcomes - reject technically interesting but low-value solutions.
 Focus on production-proven solutions with real-world validation and clear user benefits."
 
@@ -64,6 +66,8 @@ Task 2: "Find relevant documentation using Context7 MCP:
 - Identify ecosystem maturity and community support
 🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
 🎯 **PRODUCT VALUE FIRST**: Every technology choice must serve demonstrable user value.
+🎯 **EXPLICIT OVER IMPLICIT**: Surface and document all assumptions, dependencies, and constraints.
+For each technology choice, explicitly document: runtime dependencies, configuration requirements, assumptions about infrastructure/environment, integration constraints, breaking change risks, and compatibility requirements.
 Evaluate libraries based on user benefits they enable, not feature richness or technical novelty.
 Prioritize battle-tested libraries that directly support user-valuable functionality."
 
@@ -75,6 +79,8 @@ Task 3: "Explore alternative architectures and implementations:
 - Assess integration complexity with existing systems
 🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
 🎯 **PRODUCT VALUE FIRST**: Every architectural choice must demonstrate clear user value.
+🎯 **EXPLICIT OVER IMPLICIT**: Surface and document all assumptions, dependencies, and constraints.
+For each architecture, explicitly identify: existing system dependencies, data flow contracts, deployment assumptions, scalability constraints, team skill requirements, and operational complexity implications.
 Question whether complex patterns serve users or just engineering preferences.
 Bring back 3-5 concrete alternatives with pros/cons and clear user value propositions."
 ```
@@ -101,11 +107,12 @@ For each approach, consider:
 ### Evaluation Matrix
 🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
 🎯 **PRODUCT VALUE FIRST**: Every approach must justify existence through demonstrable user value.
+🎯 **EXPLICIT OVER IMPLICIT**: Surface and document all assumptions, dependencies, and constraints.
 
-| Approach | **User Value** | **Simplicity** | Performance | Maintainability | Risk | Time |
-|----------|----------------|----------------|-------------|-----------------|------|------|
-| Option 1 | High/Med/Low + user benefits | High/Med/Low + reasoning | Score | Score | Score | Estimate |
-| Option 2 | High/Med/Low + user benefits | High/Med/Low + reasoning | ... | ... | ... | ... |
+| Approach | **User Value** | **Simplicity** | **Explicitness** | Performance | Maintainability | Risk | Time |
+|----------|----------------|----------------|------------------|-------------|-----------------|------|------|
+| Option 1 | High/Med/Low + user benefits | High/Med/Low + reasoning | High/Med/Low + details | Score | Score | Score | Estimate |
+| Option 2 | High/Med/Low + user benefits | High/Med/Low + reasoning | High/Med/Low + details | ... | ... | ... | ... |
 
 **User Value Evaluation Criteria** (Primary):
 - **High**: Clear, measurable user benefits; solves real user problems; enables valuable user outcomes
@@ -117,7 +124,12 @@ For each approach, consider:
 - **Medium**: Some abstraction needed, manageable complexity
 - **Low**: Multiple complex interactions, non-obvious behavior
 
-**Recommendation**: [Selected approach with justification prioritizing user value and simplicity - reject technically interesting but low-value solutions]
+**Explicitness Evaluation Criteria**:
+- **High**: All dependencies, assumptions, and constraints clearly documented; no hidden behavior
+- **Medium**: Most dependencies visible; some assumptions need clarification
+- **Low**: Hidden dependencies, unstated assumptions, or unclear integration contracts
+
+**Recommendation**: [Selected approach with justification prioritizing user value, simplicity, and explicitness - reject technically interesting but low-value solutions and approaches with hidden dependencies]
 
 ## 4. Clarifying Questions Generation
 
@@ -255,10 +267,23 @@ Be realistic about what could go wrong."
 - Security: [threat model from security analysis]
 - Reliability: [failure modes and recovery]
 
+### Dependencies (Explicit Documentation)
+- **External Systems**: [list all system dependencies with versions/contracts]
+- **Libraries/Frameworks**: [required dependencies with version constraints]
+- **Infrastructure**: [database, message queues, caches, etc.]
+- **Third-party Services**: [APIs, SaaS platforms, external integrations]
+
+### Assumptions (Make Implicit Explicit)
+- **Environment**: [deployment platform, resource availability, network topology]
+- **Scale**: [expected load, growth patterns, performance baselines]
+- **Users**: [technical level, usage patterns, device capabilities]
+- **Team**: [skill level, availability, knowledge constraints]
+
 ### Constraints Discovered
-- Technical: [existing system boundaries found]
-- Resource: [realistic time/space limits]
-- Integration: [API contracts, data formats]
+- **Technical**: [existing system boundaries found]
+- **Resource**: [realistic time/space limits]
+- **Integration**: [API contracts, data formats]
+- **Operational**: [deployment, monitoring, maintenance requirements]
 
 ### Implementation Strategy
 #### Phase 1: Core Functionality
@@ -291,6 +316,7 @@ Be realistic about what could go wrong."
 
 🎯 **SIMPLICITY TENET VALIDATION**: Prefer the simplest design that solves the problem completely.
 🎯 **PRODUCT VALUE FIRST VALIDATION**: Every approach must justify existence through demonstrable user value.
+🎯 **EXPLICIT OVER IMPLICIT VALIDATION**: Surface and document all assumptions, dependencies, and constraints.
 
 Validate the specification:
 - Can this fail silently? → Document failure modes
@@ -301,6 +327,10 @@ Validate the specification:
 - **How does this directly benefit users?** → Articulate clear user value proposition
 - **What user problems does this solve?** → Verify real user need exists
 - **Would users notice if we removed features/complexity?** → Eliminate vanity engineering
+- **Are all dependencies explicitly documented?** → List every external system dependency
+- **What assumptions are we making?** → Surface environment, scale, and user assumptions
+- **Are integration contracts clear?** → Define all interfaces and data flows explicitly
+- **What could break if assumptions change?** → Identify hidden coupling and constraints
 - Would Dijkstra approve? → Ensure mathematical precision
 
 **Next Command**: Run `/plan` to decompose this specification into actionable tasks
