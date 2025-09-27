@@ -90,6 +90,29 @@ Priority order:
 **Tenet-Aware Prioritization**:
 Items that violate core tenets (simplicity, modularity, explicitness) early in the stack often create compounding technical debt. Prioritize fixing fundamental violations even if they're not immediately user-facing - they affect your ability to deliver everything else.
 
+### 🎯 Remediation Strategy Guidance
+
+**Describe how to fix issues based on tenet violations**:
+
+When creating backlog items, include clear remediation strategies based on which principles are being violated:
+
+**Simplicity Violations - The Path to Boring**:
+For over-engineered code, the fix usually involves removing layers, not adding them. Replace clever abstractions with straightforward implementations. Convert configuration into constants if values never change. Replace factories with direct instantiation when there's only one type. The remediation is often deletion - remove the abstraction and inline the logic.
+
+**Modularity Violations - Creating Clear Boundaries**:
+For tightly coupled code, identify the seams where modules should separate. Extract god classes into focused components with single responsibilities. Define clear interfaces between modules. Move shared state into explicit dependencies. The fix involves drawing boundaries and moving code to respect them.
+
+**Explicitness Violations - Making the Implicit Obvious**:
+For hidden behavior, surface dependencies in function signatures. Replace magic numbers with named constants. Convert side effects into return values. Document assumptions that can't be made explicit in code. The remediation makes invisible behavior visible.
+
+**Maintainability Violations - Writing for Future You**:
+For cryptic code, rename variables and functions to describe intent. Extract complex conditionals into well-named functions. Add documentation for non-obvious decisions. Establish consistent patterns within modules. The fix makes code self-documenting.
+
+**Multiple Violation Remediation**:
+When an item violates multiple tenets, address them in order: simplicity first (remove unnecessary complexity), then modularity (establish boundaries), then explicitness (surface behavior), and finally maintainability (polish for clarity). This order prevents fixing symptoms while core issues remain.
+
+Include these remediation approaches in backlog items so developers know not just what's wrong, but how to approach fixing it.
+
 ## 5. Output Format
 
 ```markdown
