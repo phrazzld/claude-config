@@ -56,7 +56,7 @@ Two-phase quality review that first cleans up the code, then tears it apart with
 
 ## 4. Phase 3: Leyline Binding Validation Expert
 
-**🎯 BINDING COMPLIANCE REVIEW**: Validate all changes against applicable leyline bindings based on file types modified.
+**Binding Compliance Review**: Validate all changes against applicable leyline bindings based on file types modified.
 
 ### File Type Detection & Binding Application
 
@@ -112,10 +112,10 @@ Organize violations by severity (HIGH for issues that will cause problems in pro
 
 ## 5. Phase 4: Tenet Compliance Review
 
-**🎯 CORE TENET VALIDATION**: Evaluate all code changes against fundamental leyline tenets.
+**Core Tenet Validation**: Evaluate all code changes against fundamental leyline tenets.
 
 ### Simplicity Tenet Review
-**"Prefer the simplest design that solves the problem completely"**
+**"Prefer the simplest solution that solves the problem completely"**
 
 **Simplicity Violations to Detect:**
 - Clever code where boring would work
@@ -133,7 +133,7 @@ Organize violations by severity (HIGH for issues that will cause problems in pro
 ```
 
 ### Explicitness Tenet Review
-**"Explicit over implicit - make behavior obvious"**
+**"Make behavior obvious - explicit over implicit"**
 
 **Implicit Behavior to Flag:**
 - Hidden dependencies not visible in signatures
@@ -151,7 +151,7 @@ Organize violations by severity (HIGH for issues that will cause problems in pro
 - [ ] Configuration explicit and documented
 
 ### Modularity Tenet Review
-**"Build independent, focused components"**
+**"Build independent, focused components with clear boundaries"**
 
 **Modularity Violations:**
 - God classes/modules doing everything
@@ -191,9 +191,9 @@ Independent Testing: Can test without dependencies
 ### Tenet Compliance Assessment
 
 Evaluate the code against four core tenets, weighing their relative importance:
-- **Simplicity (30%)**: Is the solution as simple as it could be while solving the problem completely?
-- **Explicitness (25%)**: Is all behavior obvious and dependencies visible?
-- **Modularity (25%)**: Are components properly isolated with clean boundaries?
+- **Simplicity (30%)**: Is this the simplest solution that solves the problem completely?
+- **Explicitness (25%)**: Is behavior obvious with all dependencies visible?
+- **Modularity (25%)**: Are components independent and focused with clear boundaries?
 - **Maintainability (20%)**: Will future developers understand and be able to modify this code?
 
 ### Tenet Review Reporting

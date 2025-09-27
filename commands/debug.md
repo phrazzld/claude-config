@@ -28,7 +28,7 @@ Before touching code:
 - How will you prove it?
 - What will you do if you're wrong?
 
-### 🎯 Observability First
+### Observability First
 
 **Make the System Visible**:
 Don't debug in the dark. Add instrumentation to see what's actually happening. Use logging, metrics, and tracing to understand system behavior. Make the invisible visible before trying to fix it.
@@ -49,7 +49,7 @@ Don't debug in the dark. Add instrumentation to see what's actually happening. U
 
 ## 3. Systematic Investigation
 
-### 🎯 Explicit Debugging Documentation
+### Explicit Debugging Documentation
 
 **Document Actual vs Expected**:
 Before diving into code, explicitly document what you expect to happen versus what actually happens. Clear documentation of the discrepancy guides your investigation and prevents assumptions.
@@ -87,10 +87,10 @@ Check the usual suspects:
 
 **The Ritchie Rule: "The only way to learn a new programming language is by writing programs in it"**
 
-### 🎯 Simplicity in Debug Solutions
+### Simplicity in Debug Solutions
 
 **Choose the Simplest Fix**:
-When debugging, prefer the simplest solution that solves the problem. Avoid the temptation to refactor or optimize while fixing bugs. Complex fixes often introduce new bugs. Save architectural improvements for separate tasks.
+When debugging, prefer the simplest solution that solves the problem completely. Avoid the temptation to refactor or optimize while fixing bugs. Complex fixes often introduce new bugs. Save architectural improvements for separate tasks.
 
 **Simplicity Guidelines**:
 - Fix the bug with minimal code changes

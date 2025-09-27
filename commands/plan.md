@@ -21,10 +21,10 @@ Every TODO must be atomic, context-rich, and immediately executable.
 **Ultrathink with Tenet Focus:**
 - Ultrathink
 - What's the simplest thing that could possibly work?
-- **🎯 MODULARITY**: What are the natural module boundaries? How can we create independent, focused components?
-- **🎯 DESIGN NEVER DONE**: What assumptions might change? Where should we plan for iteration and refactoring?
-- **🎯 TESTABILITY**: How can each component be tested in isolation? What are the testing seams?
-- **🎯 AUTOMATION**: What repetitive tasks will emerge? What processes should be automated from the start?
+- **Modularity**: What are the natural module boundaries? How can we build independent, focused components with clear boundaries?
+- **Design Never Done**: What assumptions might change? Where should we plan for iteration and refactoring?
+- **Testability**: How can each component be tested in isolation? What are the testing seams?
+- **Automation**: What repetitive tasks will emerge? What processes should be automated from the start?
 - Where will the complexity actually live?
 - What can be built in parallel vs. what must be sequential?
 - What existing code can I leverage vs. what needs creation?
@@ -68,25 +68,25 @@ Break down into atomic, context-rich, tenet-compliant tasks:
 - No task bigger than 2 hours (prefer 15-30 min tasks)
 - Dependencies explicitly stated and minimized
 
-**🎯 MODULARITY Decomposition Principles:**
+**Modularity Decomposition Principles:**
 - Each task should create or modify a single, well-defined component
 - Minimize coupling between tasks - prefer independent implementation paths
 - Design clear interfaces between components before implementation
 - Ensure each component can be developed and tested in isolation
 
-**🎯 TESTABILITY Planning Requirements:**
+**Testability Planning Requirements:**
 - Each task must include test strategy (unit/integration/e2e)
 - Identify test setup requirements and mock boundaries
 - Plan for test data and environment needs
 - Design components for easy testing isolation
 
-**🎯 DESIGN NEVER DONE Integration:**
+**Design Never Done Integration:**
 - Include refactoring checkpoints after major milestones
 - Plan iteration opportunities based on learning
 - Identify assumptions that might change and plan flexibility points
 - Schedule design review tasks after implementation phases
 
-**🎯 AUTOMATION Opportunity Detection:**
+**Automation Opportunity Detection:**
 - Identify repetitive tasks that should be automated
 - Plan automation of quality gates (tests, linting, validation)
 - Consider build/deployment automation needs

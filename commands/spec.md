@@ -51,9 +51,9 @@ Task 1: "Research current best practices for the task in TASK.md:
 - Identify common failure modes and how to prevent them
 - Security vulnerabilities and mitigation strategies
 - Performance bottlenecks and optimization patterns
-🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
-🎯 **PRODUCT VALUE FIRST**: Every approach must justify existence through demonstrable user value.
-🎯 **EXPLICIT OVER IMPLICIT**: Surface and document all assumptions, dependencies, and constraints.
+**Simplicity**: Prefer the simplest solution that solves the problem completely.
+**Product Value First**: Every approach must justify existence through demonstrable user value.
+**Explicitness**: Make behavior obvious - explicit over implicit. Surface and document all assumptions, dependencies, and constraints.
 For each approach, explicitly identify: dependencies on existing systems, assumptions about environment/users/scale, constraints and limitations, integration requirements, and potential side effects on other systems.
 Evaluate each approach against user/business outcomes - reject technically interesting but low-value solutions.
 Focus on production-proven solutions with real-world validation and clear user benefits."
@@ -64,9 +64,9 @@ Task 2: "Find relevant documentation using Context7 MCP:
 - Extract configuration patterns and best practices
 - Note version constraints, breaking changes, and migration paths
 - Identify ecosystem maturity and community support
-🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
-🎯 **PRODUCT VALUE FIRST**: Every technology choice must serve demonstrable user value.
-🎯 **EXPLICIT OVER IMPLICIT**: Surface and document all assumptions, dependencies, and constraints.
+**Simplicity**: Prefer the simplest solution that solves the problem completely.
+**Product Value First**: Every technology choice must serve demonstrable user value.
+**Explicitness**: Make behavior obvious - explicit over implicit. Surface and document all assumptions, dependencies, and constraints.
 For each technology choice, explicitly document: runtime dependencies, configuration requirements, assumptions about infrastructure/environment, integration constraints, breaking change risks, and compatibility requirements.
 Evaluate libraries based on user benefits they enable, not feature richness or technical novelty.
 Prioritize battle-tested libraries that directly support user-valuable functionality."
@@ -77,9 +77,9 @@ Task 3: "Explore alternative architectures and implementations:
 - Evaluate different toolchains and build systems
 - Consider data flow patterns (event-driven, request-response, streaming)
 - Assess integration complexity with existing systems
-🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
-🎯 **PRODUCT VALUE FIRST**: Every architectural choice must demonstrate clear user value.
-🎯 **EXPLICIT OVER IMPLICIT**: Surface and document all assumptions, dependencies, and constraints.
+**Simplicity**: Prefer the simplest solution that solves the problem completely.
+**Product Value First**: Every architectural choice must demonstrate clear user value.
+**Explicitness**: Make behavior obvious - explicit over implicit. Surface and document all assumptions, dependencies, and constraints.
 For each architecture, explicitly identify: existing system dependencies, data flow contracts, deployment assumptions, scalability constraints, team skill requirements, and operational complexity implications.
 Question whether complex patterns serve users or just engineering preferences.
 Bring back 3-5 concrete alternatives with pros/cons and clear user value propositions."
@@ -135,9 +135,9 @@ For each approach, consider:
 - **Time**: Realistic implementation estimate
 
 ### Evaluation Matrix
-🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
-🎯 **PRODUCT VALUE FIRST**: Every approach must justify existence through demonstrable user value.
-🎯 **EXPLICIT OVER IMPLICIT**: Surface and document all assumptions, dependencies, and constraints.
+**Simplicity**: Prefer the simplest solution that solves the problem completely.
+**Product Value First**: Every approach must justify existence through demonstrable user value.
+**Explicitness**: Make behavior obvious - explicit over implicit. Surface and document all assumptions, dependencies, and constraints.
 
 | Approach | **User Value** | **Simplicity** | **Explicitness** | Performance | Maintainability | Risk | Time |
 |----------|----------------|----------------|------------------|-------------|-----------------|------|------|
@@ -361,9 +361,9 @@ Be realistic about what could go wrong."
 
 **The Hoare Test: "There are two ways of constructing a software design: One way is to make it so simple that there are obviously no deficiencies."**
 
-🎯 **SIMPLICITY TENET VALIDATION**: Prefer the simplest design that solves the problem completely.
-🎯 **PRODUCT VALUE FIRST VALIDATION**: Every approach must justify existence through demonstrable user value.
-🎯 **EXPLICIT OVER IMPLICIT VALIDATION**: Surface and document all assumptions, dependencies, and constraints.
+**Simplicity Validation**: Prefer the simplest solution that solves the problem completely.
+**Product Value First Validation**: Every approach must justify existence through demonstrable user value.
+**Explicitness Validation**: Make behavior obvious - surface and document all assumptions, dependencies, and constraints.
 
 Validate the specification:
 - Can this fail silently? → Document failure modes

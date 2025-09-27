@@ -16,8 +16,8 @@ Grab next task from TODO.md → Think about approach → Do the work → Commit 
    - Validate that you're not over-engineering the solution
 
 4. **Do the work with principled implementation**:
-   - **Simplicity**: Choose boring, proven solutions over clever abstractions. Write code that reads clearly. Make the happy path obvious.
-   - **Maintainability**: Write for the developer who will modify this in six months. Name things clearly based on purpose. Optimize for readability over cleverness.
+   - **Simplicity**: Prefer the simplest solution that solves the problem completely. Choose boring, proven solutions over clever abstractions.
+   - **Maintainability**: Write for the developer who will modify this in six months. Name things clearly based on purpose.
    - **Fix Issues Immediately**: When you see a problem, fix it now rather than deferring. Remove dead code, improve naming, correct formatting issues.
    - **Be Explicit**: Make dependencies visible, avoid hidden state, ensure behavior is obvious from function signatures.
    - **Follow Technology Standards**: Apply the appropriate patterns and best practices for the language and framework you're using.
@@ -56,9 +56,9 @@ This work log serves as:
 - Memory for if task is resumed later
 
 
-## 🎯 SIMPLICITY VALIDATION
+## Simplicity Validation
 
-Before implementing any solution, think deeply about simplicity.
+Before implementing any solution, think hard about simplicity.
 
 ### The Simplicity Test
 Ask yourself whether the solution can be explained in one sentence. Consider if a junior developer would understand it immediately. Avoid solving problems that don't exist yet - remember YAGNI (You Aren't Gonna Need It). Choose boring, reliable solutions over clever ones.
@@ -68,7 +68,7 @@ Be alert when you're tempted to write factories for single types, create interfa
 
 Remember: Simplicity is prerequisite for reliability. Every line of code is a liability - only keep the ones that pay rent.
 
-## 🎯 MAINTAINABILITY GUIDELINES
+## Maintainability Guidelines
 
 Code is read far more often than it's written. Optimize for the reader, not the writer.
 
