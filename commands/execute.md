@@ -41,6 +41,12 @@ Grab next task from TODO.md → Think about approach → Do the work → Commit 
      - Make data flow obvious, not magical
      - Prefer explicit parameters over implicit context
      - If behavior isn't obvious from the signature, it's too implicit
+   - **🎯 BINDING VALIDATION**:
+     - Check file type: TypeScript? Go? React? Database schema?
+     - Apply relevant technology bindings automatically
+     - Validate architecture patterns for the context
+     - Ensure interface contracts are honored
+     - Confirm dependency rules aren't violated
 5. **COMMIT ATOMICALLY**:
    - Every completed task gets a commit. No exceptions.
    - Stage relevant changes: `git add -p` or `git add [files]`
@@ -220,6 +226,84 @@ Before completing any function:
 - [ ] Is the return type clear and documented?
 - [ ] Are side effects obvious from the function name?
 - [ ] Could someone understand this without reading the implementation?
+
+## 🎯 REAL-TIME BINDING VALIDATION
+
+*"Architecture is about the important stuff. Whatever that is."* - Ralph Johnson
+
+### File Type Detection & Binding Application
+During code generation, automatically detect and apply relevant bindings:
+
+### Technology-Specific Bindings
+```yaml
+TypeScript Files (.ts, .tsx):
+  - Strong typing over any
+  - Interfaces for data contracts
+  - Strict null checks enabled
+  - No implicit any returns
+
+React Components (.jsx, .tsx):
+  - Props validation with TypeScript/PropTypes
+  - Hooks rules compliance
+  - Component purity (no side effects in render)
+  - Consistent state management patterns
+
+Go Files (.go):
+  - Error handling explicit (no ignored errors)
+  - Context propagation in APIs
+  - Interface segregation
+  - Embedded struct composition
+
+Database Schemas (.sql, migrations):
+  - Foreign key constraints explicit
+  - Indexes for queried columns
+  - NOT NULL by default
+  - Consistent naming conventions
+```
+
+### Architecture Binding Compliance
+```
+Component Isolation:
+  - Single responsibility per module
+  - Clear input/output boundaries
+  - No circular dependencies
+  - Testable in isolation
+
+Interface Contracts:
+  - Backward compatibility maintained
+  - Version changes documented
+  - Breaking changes avoided
+  - Contract tests present
+
+Dependency Rules:
+  - Dependencies point inward (clean architecture)
+  - Domain doesn't depend on infrastructure
+  - UI doesn't directly access data layer
+  - Dependency injection used
+```
+
+### Real-Time Validation Process
+1. **Detect File Type** → Identify applicable technology bindings
+2. **Load Binding Rules** → Apply relevant constraints for the context
+3. **Generate Code** → Follow binding requirements during creation
+4. **Validate Output** → Ensure generated code meets all bindings
+5. **Fix Violations** → Immediately correct any binding violations
+
+### Binding Validation Checklist
+Before committing any code:
+- [ ] Technology bindings applied for file type?
+- [ ] Architecture patterns maintained?
+- [ ] Interface contracts honored?
+- [ ] Dependency rules followed?
+- [ ] No binding violations introduced?
+
+### Common Binding Violations to Catch
+- **TypeScript**: Using `any` type without justification
+- **React**: Direct DOM manipulation in components
+- **Go**: Ignoring errors with `_`
+- **SQL**: Missing indexes on foreign keys
+- **API**: Breaking changes without version bump
+- **Architecture**: Business logic in UI layer
 
 ## NOTES
 
