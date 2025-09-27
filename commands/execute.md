@@ -23,6 +23,12 @@ Grab next task from TODO.md → Think about approach → Do the work → Commit 
      - Write code that reads like documentation
      - Make the happy path obvious
      - Keep cyclomatic complexity low
+   - **🎯 MAINTAINABILITY PRINCIPLE**:
+     - Write for the next developer (who might be you in 6 months)
+     - Name things based on what they do, not how they work
+     - Leave breadcrumbs: clear function signatures, explicit types
+     - Optimize for readability over cleverness
+     - Future changes should be obvious, not archaeological digs
 5. **COMMIT ATOMICALLY**:
    - Every completed task gets a commit. No exceptions.
    - Stage relevant changes: `git add -p` or `git add [files]`
@@ -80,6 +86,33 @@ When you find yourself:
 - Creating an interface with one implementation → **Stop**, wait for the second use case
 - Building a generic solution for a specific problem → **Stop**, solve the specific problem
 - Adding configuration for values that never change → **Stop**, use constants
+
+## 🎯 MAINTAINABILITY GUIDELINES
+
+Code is read 100x more than it's written. Optimize for the reader, not the writer.
+
+### The Future Developer Test
+Ask yourself: *"If I had to modify this code in 6 months, what would I curse myself for?"*
+
+### Maintainability Principles
+- **Explicit Intent**: Code should announce what it does, not make you deduce it
+- **Local Reasoning**: Understanding a function shouldn't require understanding the entire system
+- **Obvious Extension Points**: Where changes will happen should be clear
+- **Consistent Patterns**: Do similar things in similar ways
+
+### Naming for Maintainability
+```
+❌ processData()      → ✅ validateAndNormalizeUserInput()
+❌ flag               → ✅ isEmailVerified
+❌ helper()           → ✅ formatDateForDisplay()
+❌ doStuff()          → ✅ syncInventoryWithWarehouse()
+```
+
+### Code Organization for Future Changes
+- **Group by feature**, not by file type (components/UserProfile not components/buttons)
+- **Colocate related code** (keep the test next to the implementation)
+- **Make dependencies explicit** (imports at the top, clear interfaces)
+- **Leave escape hatches** (extension points for likely changes)
 
 ## NOTES
 
