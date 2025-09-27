@@ -158,7 +158,131 @@ Each violation must be addressed before merge:
 5. Add JSDoc type annotations to JavaScript utilities
 ```
 
-## 5. Categorize Findings
+## 5. Phase 4: Tenet Compliance Review
+
+**🎯 CORE TENET VALIDATION**: Evaluate all code changes against fundamental leyline tenets.
+
+### Simplicity Tenet Review
+**"Prefer the simplest design that solves the problem completely"**
+
+**Simplicity Violations to Detect:**
+- Clever code where boring would work
+- Unnecessary abstractions (factories for single types)
+- Over-engineered solutions to simple problems
+- Premature optimization without metrics
+- Complex inheritance where composition would suffice
+- Configuration for values that never change
+
+**Simplicity Score:**
+```markdown
+✅ SIMPLE: Can explain in one sentence, junior dev would understand
+⚠️ MODERATE: Some complexity justified by requirements
+❌ COMPLEX: Over-engineered, needs simplification
+```
+
+### Explicitness Tenet Review
+**"Explicit over implicit - make behavior obvious"**
+
+**Implicit Behavior to Flag:**
+- Hidden dependencies not visible in signatures
+- Side effects not obvious from function names
+- Global state mutations
+- Magic numbers without context
+- Implicit type conversions
+- Undocumented assumptions
+
+**Explicitness Checklist:**
+- [ ] All dependencies visible in function signatures
+- [ ] Return types clearly specified
+- [ ] Side effects obvious from naming
+- [ ] No hidden global state access
+- [ ] Configuration explicit and documented
+
+### Modularity Tenet Review
+**"Build independent, focused components"**
+
+**Modularity Violations:**
+- God classes/modules doing everything
+- Tight coupling between unrelated components
+- Circular dependencies
+- Mixed concerns in single module
+- Lack of clear boundaries
+- Components not testable in isolation
+
+**Module Health Check:**
+```yaml
+Single Responsibility: Each module has one clear purpose
+Loose Coupling: Modules interact through interfaces
+High Cohesion: Related functionality grouped together
+Clear Boundaries: Obvious what belongs where
+Independent Testing: Can test without dependencies
+```
+
+### Maintainability Tenet Review
+**"Write for the future developer (probably you in 6 months)"**
+
+**Maintainability Red Flags:**
+- Cryptic variable names (a, temp, data, thing)
+- Missing documentation for complex logic
+- Inconsistent patterns in similar code
+- No clear extension points for likely changes
+- Copy-paste code that should be extracted
+- Deep nesting making code hard to follow
+
+**Future Developer Test:**
+```markdown
+✅ MAINTAINABLE: Clear intent, obvious extension points, well-documented
+⚠️ UNCLEAR: Needs some documentation or refactoring
+❌ CRYPTIC: Would require archaeology to modify
+```
+
+### Tenet Compliance Scoring Matrix
+
+| Tenet | Weight | Pass Criteria | Current Score |
+|-------|--------|--------------|---------------|
+| **Simplicity** | 30% | No unnecessary complexity | ✅/⚠️/❌ |
+| **Explicitness** | 25% | All behavior obvious | ✅/⚠️/❌ |
+| **Modularity** | 25% | Clean boundaries | ✅/⚠️/❌ |
+| **Maintainability** | 20% | Future-proof code | ✅/⚠️/❌ |
+
+### Tenet Review Output
+```markdown
+## Tenet Compliance Assessment
+
+### 🎯 Simplicity (Score: 7/10)
+✅ Straightforward implementation in UserService
+✅ Clear, linear flow in authentication logic
+❌ Over-engineered factory pattern in NotificationBuilder
+❌ Unnecessary abstraction layers in data access
+
+### 🎯 Explicitness (Score: 8/10)
+✅ Clear function signatures with typed parameters
+✅ Explicit error handling throughout
+⚠️ Some magic numbers in rate limiting logic
+❌ Hidden dependency on global config in Logger
+
+### 🎯 Modularity (Score: 6/10)
+✅ Clean separation of API and business logic
+⚠️ Some coupling between user and auth modules
+❌ Circular dependency between order and inventory
+❌ God class in ApplicationController
+
+### 🎯 Maintainability (Score: 7/10)
+✅ Well-documented public APIs
+✅ Consistent naming conventions
+⚠️ Complex nested logic in payment processing
+❌ Copy-pasted validation logic across controllers
+
+### Overall Tenet Compliance: 70% (NEEDS IMPROVEMENT)
+
+### Critical Tenet Violations Requiring Fix:
+1. Simplify NotificationBuilder - remove factory pattern
+2. Extract magic numbers to named constants
+3. Break circular dependency between order/inventory
+4. Extract shared validation logic to utilities
+```
+
+## 6. Categorize Findings
 
 ### BLOCKERS (This Will Burn In Production)
 - Security vulnerabilities that will get us pwned
