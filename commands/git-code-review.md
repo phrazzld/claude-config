@@ -54,7 +54,111 @@ Two-phase quality review that first cleans up the code, then tears it apart with
 - **Architecture**: This coupling is so tight it needs therapy
 - **Documentation**: "It's self-documenting" = "I'm too lazy to explain my mess"
 
-## 4. Categorize Findings
+## 4. Phase 3: Leyline Binding Validation Expert
+
+**🎯 BINDING COMPLIANCE REVIEW**: Validate all changes against applicable leyline bindings based on file types modified.
+
+### File Type Detection & Binding Application
+Analyze the diff to identify file types and apply relevant bindings:
+
+**Technology-Specific Bindings to Validate:**
+```yaml
+TypeScript/JavaScript (.ts, .tsx, .js, .jsx):
+  ✓ No use of 'any' without justification
+  ✓ Explicit type annotations where needed
+  ✓ Strict null checks compliance
+  ✓ No implicit any returns
+  ✓ Proper error boundaries in React
+
+Go (.go):
+  ✓ All errors explicitly handled (no _ ignoring)
+  ✓ Context propagation in API calls
+  ✓ Interface segregation principle followed
+  ✓ Embedded struct composition over inheritance
+  ✓ Defer statements for cleanup
+
+Python (.py):
+  ✓ Type hints for function signatures
+  ✓ Docstrings for public functions
+  ✓ No bare except clauses
+  ✓ Context managers for resources
+
+SQL/Migrations (.sql):
+  ✓ Foreign key constraints defined
+  ✓ Indexes on queried columns
+  ✓ NOT NULL constraints by default
+  ✓ Consistent naming conventions
+  ✓ No SELECT * in production code
+```
+
+### Architecture Binding Compliance
+**Core Architecture Principles:**
+```yaml
+hex-domain-purity:
+  ✓ Domain logic free from infrastructure concerns
+  ✓ Pure functions in business logic
+  ✓ No database queries in domain layer
+  ✓ No HTTP concerns in business rules
+
+component-isolation:
+  ✓ Single responsibility per module
+  ✓ Clear input/output boundaries
+  ✓ No circular dependencies detected
+  ✓ Testable in isolation
+
+interface-contracts:
+  ✓ Backward compatibility maintained
+  ✓ Version changes documented
+  ✓ No breaking changes without version bump
+  ✓ Contract tests present
+
+dependency-inversion:
+  ✓ Dependencies point inward
+  ✓ Abstractions don't depend on details
+  ✓ High-level modules independent of low-level
+  ✓ Dependency injection used appropriately
+```
+
+### Binding Violation Detection
+**Scan for common violations:**
+- **Type Safety**: Any use of dynamic types without justification
+- **Error Handling**: Swallowed exceptions or ignored errors
+- **Architecture**: Business logic mixed with infrastructure
+- **Dependencies**: Circular references or inverted dependencies
+- **Testing**: Untestable code due to tight coupling
+- **Performance**: Missing indexes, N+1 queries, unbounded loops
+
+### Binding Review Output
+```markdown
+## Leyline Binding Compliance Report
+
+### Files Reviewed & Applicable Bindings
+- `src/api/handler.ts` → TypeScript, hex-domain-purity, interface-contracts
+- `internal/service/user.go` → Go, component-isolation, dependency-inversion
+- `migrations/001_users.sql` → SQL, database constraints
+
+### ✅ Binding Compliance Passed
+- TypeScript strict mode compliance in all .ts files
+- Proper error handling in Go services
+- Foreign key constraints in database migrations
+
+### ❌ Binding Violations Detected
+- **[HIGH]** `src/api/handler.ts:45` - Using 'any' type without justification
+- **[HIGH]** `internal/service/user.go:89` - Error ignored with underscore
+- **[MEDIUM]** `src/domain/order.ts:23` - Database query in domain layer
+- **[MEDIUM]** `migrations/002_orders.sql` - Missing index on foreign key
+- **[LOW]** `src/utils/helper.js` - No type annotations in utility functions
+
+### Remediation Requirements
+Each violation must be addressed before merge:
+1. Replace 'any' with proper types or add justification comment
+2. Handle all errors explicitly in Go code
+3. Move database queries to repository layer
+4. Add index on orders.user_id foreign key
+5. Add JSDoc type annotations to JavaScript utilities
+```
+
+## 5. Categorize Findings
 
 ### BLOCKERS (This Will Burn In Production)
 - Security vulnerabilities that will get us pwned
