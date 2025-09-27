@@ -10,6 +10,9 @@ Check the CI status for the current PR and generate actionable resolution tasks 
 - Create `CI-FAILURE-SUMMARY.md` with comprehensive failure details
 - Include build information, error logs, failed steps, and affected components
 
+### Tenet Reminder: Observability & Explicitness
+**Observability** - Make system behavior visible rather than guessing. Add logging, capture state, trace the failure path. **Explicitness** - Document actual vs expected behavior clearly. Surface all assumptions about the CI environment and make hidden dependencies obvious.
+
 ## 3. Generate Resolution Plan
 - **Leyline Pre-Processing**: Query failure analysis principles:
   - Tenets related to quality gates, automation, and systematic problem-solving

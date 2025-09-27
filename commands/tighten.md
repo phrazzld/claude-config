@@ -12,6 +12,9 @@ Ultrathink.
 
 You made it work. Now make it right. This command focuses exclusively on cleaning up the changes you've made in your current branch - not the entire codebase.
 
+### Tenet Reminder: Simplicity & Maintainability
+When cleaning up, remember: **Simplicity** - prefer the simplest solution that solves the problem completely. Remove clever code in favor of boring, obvious implementations. **Maintainability** - write for the developer who will modify this in six months. Clear naming, consistent patterns, and obvious intent matter more than cleverness.
+
 ## Your Mission
 
 First, figure out what branch you're merging into (usually main, master, or trunk). Then analyze everything that changed in your current branch and hunt for the mess we all leave behind while getting things to work.

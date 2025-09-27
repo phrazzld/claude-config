@@ -10,6 +10,9 @@ What would a platform engineer do? Critically examine our quality gates and iden
 
 This command doesn't run quality checks - CI/CD does that. This audits whether your quality checks are even worth running.
 
+### Tenet Reminder: Simplicity & Automation
+**Simplicity** - Quality gates should catch real problems, not create bureaucracy. Prefer simple checks that prevent actual bugs over complex rules that slow development. **Automation** - If it can be automated, it should be. Manual quality checks are bug-prone and time-consuming.
+
 ## 1. CI/CD Pipeline Analysis
 
 **Review `.github/workflows/`, `.gitlab-ci.yml`, or equivalent:**
