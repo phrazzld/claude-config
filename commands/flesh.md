@@ -26,6 +26,7 @@ A vague task hides complexity. Flesh it out before you code it out.
 3. What could go wrong? (risks)
 
 **Ultrathink about**:
+- Ultrathink
 - Hidden dependencies and assumptions
 - Edge cases lurking in the shadows
 - Performance implications at scale

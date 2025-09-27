@@ -1,135 +1,115 @@
-Ruthlessly eliminate unnecessary code and complexity.
+Clean up the changes made in the current branch before merging.
 
 # TIGHTEN
 
-What would Marie Kondo do to your codebase? Identify everything that doesn't spark joy and mark it for deletion.
+Your branch works, but it's messy. Time to clean up the crime scene before the code review.
 
-## The Minimalism Principle
+Ultrathink.
 
-*"Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away."* - Antoine de Saint-Exupéry
+## The Branch Cleanup Philosophy
 
-This command hunts for code that exists but shouldn't. Dead code is technical debt that compounds silently.
+*"Make it work, make it right, make it fast"* - Kent Beck
 
-## 1. Dead Code Detection
+You made it work. Now make it right. This command focuses exclusively on cleaning up the changes you've made in your current branch - not the entire codebase.
 
-**Channel the Carmack Philosophy**: "If it's not being executed, it's not code - it's a liability."
+## Your Mission
 
-**Hunt for zombie code:**
-- Unused functions, classes, and modules
-- Commented-out code blocks (git remembers, you don't need to)
-- Unreachable code after returns/throws
-- Feature flags that are permanently on/off
-- Debug code that made it to production
+First, figure out what branch you're merging into (usually main, master, or trunk). Then analyze everything that changed in your current branch and hunt for the mess we all leave behind while getting things to work.
 
-**The Deletion Test**: If you deleted this code, would anyone notice in the next 6 months?
+## Find the Mess
 
-**Generate deletion candidates:**
-- [ ] Remove 50 lines of commented code from module X
-- [ ] Delete unused utility function Y (last called 2019)
-- [ ] Remove unreachable code after early return in Z
+Look at the diff between your branch and the base branch. For every file that changed, search for:
 
-## 2. Dependency Audit
+### Debug Artifacts We Forgot
+- console.log, console.error, console.warn statements
+- print() statements in Python
+- fmt.Println() in Go
+- debugger statements
+- Debug flags set to true
+- Temporary logging we added to figure out what was breaking
+- Stack traces we were printing
 
-**What would Rich Hickey ask?** "Is this dependency simpler than writing it yourself?"
+### Temporary Code That Became Permanent
+- TODO comments that should be addressed now
+- FIXME notes we left for ourselves
+- "quick fix" or "temporary" in comments
+- Hardcoded values that should be configurable
+- Magic numbers that should be constants
+- Test data left in production code
+- Commented-out code from our refactoring
+- Old implementations we kept "just in case"
 
-**Examine package.json/requirements.txt/go.mod:**
-- Dependencies with 1-2 function usage (inline them)
-- Packages last updated 3+ years ago (security risk)
-- Multiple packages doing the same thing
-- Dev dependencies in production
-- The legendary `left-pad` pattern (3-line packages)
+### Code Smells From Rushing
+- Copy-pasted code that should be extracted
+- Overly complex conditionals that could be simplified
+- Functions that got too long while debugging
+- Variables named 'temp', 'test', 'foo', 'data', 'thing'
+- Deeply nested code from adding "one more if statement"
+- Error handling we skipped with // TODO: handle error
 
-**The 10-Line Rule**: If you can replace a dependency with 10 lines of code, do it.
-
-## 3. Configuration Cleanup
-
-**Channel Marie Kondo directly**: "Does this config value spark joy?"
-
-**Review all configuration files:**
-- Webpack/Vite/build configs with 200 lines of defaults
-- ESLint rules that everyone disables
-- Environment variables that are always the same value
-- Docker configs mounting volumes that don't exist
-- CI/CD steps that are always skipped
-
-**The Single-Value Test**: If a config has never changed, it's not configuration - it's complexity.
-
-## 4. Abstraction Archaeology
-
-**Torvalds Mode**: "Bad programmers worry about the code. Good programmers worry about data structures and their relationships."
-
-**Find premature abstractions:**
-- Interfaces with single implementations
-- Factory patterns making one type of object
-- Abstractions used in only one place
-- 5-layer deep inheritance hierarchies
-- Generic solutions for specific problems
-
-**The YAGNI Scan**: You Aren't Gonna Need It - probably ever.
-
-## 5. File System Archaeology
-
-**What would Ken Thompson delete?**
-
-**Scan for file system cruft:**
-- Empty directories and files
-- Backup files (.bak, .old, .save)
-- Build artifacts checked into version control
-- Documentation for deleted features
-- Test files for deleted code
-- Migration scripts from 3 years ago
+### Low-Hanging Refactors
+Look for easy wins that make the code cleaner without changing behavior:
+- Extract magic numbers to named constants
+- Combine multiple similar if statements
+- Replace complex conditionals with early returns
+- Extract duplicate code blocks into functions
+- Rename unclear variables to be descriptive
+- Remove unnecessary else blocks after returns
+- Simplify boolean expressions (if (x == true) → if (x))
 
 ## Output Format
 
+Organize your findings by priority - what would embarrass us most in code review?
+
 ```markdown
-## Codebase Tightening Analysis
+## Branch Cleanup Report
 
-### Dead Code Found (500+ lines to delete)
-- **src/utils/legacy.js**: 200 lines - unused since refactor
-- **api/v1/**: 150 lines - old API version, no traffic for 1 year
-- **lib/helpers.js:45-95**: 50 lines - commented "temporary fix 2019"
+### 🚨 Critical - Debug Code in Production
+- `src/api/handler.js:47` - console.log with user passwords
+- `lib/auth.py:92` - debugger statement left in
+- `main.go:156` - fmt.Println dumping entire request
 
-### Dependency Bloat (8 packages to remove)
-- **moment.js** (65kb): Using 1 function, replace with native Date
-- **lodash**: Using only `_.get`, write 5-line replacement
-- **axios**: fetch() is built-in now
+### ⚠️ High - Temporary Code to Remove
+- `components/Dashboard.tsx:234` - TODO: remove hardcoded API key
+- `utils/helper.js:89-95` - Commented out old implementation
+- `services/email.py:45` - FIXME: this is a hack
 
-### Config Simplification (200 lines to cut)
-- **webpack.config.js**: 150 lines of defaults, need only 20
-- **.eslintrc**: 35 rules disabled everywhere
-- **docker-compose.yml**: 3 services never used
+### 🧹 Medium - Code Quality Improvements
+- `controllers/user.js:67-89` - Duplicate code, extract to function
+- `models/order.py:234` - Magic number 86400, should be SECONDS_IN_DAY
+- `components/Form.tsx:145-167` - Deeply nested, needs early returns
 
-### Abstraction Overkill
-- **IUserFactory**: Makes only User objects, inline it
-- **AbstractBaseSingletonFactory**: Used once, adds no value
-- **5 interface files**: Single implementations, premature abstraction
+### 💅 Low - Polish
+- `utils/calc.js:23` - Variable 'temp' should be 'normalizedValue'
+- `lib/validator.py:67` - if result == True → if result
+- `api/routes.go:89` - Remove else after return
 
-### File System Cleanup
-- **12 empty directories**: Old feature folders
-- **25 .bak files**: Use git, not file.bak
-- **test/old/**: 2000 lines of tests for deleted features
-
-## Deletion TODOs (Prioritized)
-- [ ] [CRITICAL] Remove src/utils/legacy.js - 200 lines of dead code
-- [ ] [HIGH] Delete moment.js dependency - save 65kb bundle size
-- [ ] [HIGH] Inline IUserFactory - remove unnecessary abstraction
-- [ ] [MEDIUM] Clean webpack.config.js - reduce from 170 to 20 lines
-- [ ] [LOW] Delete all .bak files - git handles versioning
+## Cleanup Checklist
+- [ ] Remove all console.logs and debug statements
+- [ ] Delete commented-out code blocks
+- [ ] Replace magic numbers with constants
+- [ ] Extract duplicate code segments
+- [ ] Rename unclear variables
+- [ ] Address or remove TODO/FIXME comments
+- [ ] Simplify complex conditionals
 ```
 
-## The Marie Kondo Test
+## The Golden Rules
 
-For each piece of code, ask:
-1. Does it serve a current purpose?
-2. Will it realistically serve a future purpose?
-3. Does it make the codebase better or just bigger?
-
-If the answer to all three is "no" - thank it for its service and let it go.
+1. **Only touch files changed in this branch** - Don't go fixing the whole codebase
+2. **Don't change behavior** - We're cleaning, not refactoring
+3. **Quick wins only** - If it takes more than 2 minutes, skip it
+4. **No new features** - Save that for another branch
 
 ## Success Metrics
 
-**Before**: 50,000 lines of code, 45 dependencies, 500 lines of config
-**After**: 40,000 lines of code, 30 dependencies, 100 lines of config
-**Result**: Same functionality, 20% less complexity
+Your branch is clean when:
+- No debug output in the code
+- No commented-out code blocks
+- No TODOs that could be done now
+- No obvious code duplication
+- No magic numbers
+- Variable names make sense
+- The diff would make you proud in a job interview
 
-Remember: **Every line of code is a liability. Only keep the ones that pay rent.**
+Remember: **A clean branch is a mergeable branch.**

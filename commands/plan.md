@@ -34,17 +34,8 @@ Every TODO must be atomic, context-rich, and immediately executable.
 ## 2. Context Gathering
 
 **Investigate the codebase for implementation context:**
-```bash
-# Find similar patterns
-ast-grep --pattern 'relevant_pattern' .
-grep -r "existing_functionality" --include="*.ts" --include="*.py"
 
-# Identify key files
-find . -name "*relevant*" -type f | head -20
-
-# Check test patterns
-grep -r "test\|spec" --include="*.test.*" --include="*.spec.*"
-```
+Use appropriate search tools to find similar patterns and existing functionality in the codebase. Identify key files related to your task. Review test patterns to understand the testing conventions. Look for examples that can guide your implementation approach.
 
 **Gather intelligence about:**
 - Existing patterns to follow
