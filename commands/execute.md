@@ -29,6 +29,12 @@ Grab next task from TODO.md → Think about approach → Do the work → Commit 
      - Leave breadcrumbs: clear function signatures, explicit types
      - Optimize for readability over cleverness
      - Future changes should be obvious, not archaeological digs
+   - **🎯 FIX BROKEN WINDOWS**:
+     - See a problem? Fix it now. Technical debt compounds.
+     - Notice a typo? Fix it. Poor naming? Rename it.
+     - Find commented code? Delete it. Git remembers.
+     - Spot inconsistent formatting? Correct it immediately.
+     - Quality erosion starts with "I'll fix it later"
 5. **COMMIT ATOMICALLY**:
    - Every completed task gets a commit. No exceptions.
    - Stage relevant changes: `git add -p` or `git add [files]`
@@ -113,6 +119,46 @@ Ask yourself: *"If I had to modify this code in 6 months, what would I curse mys
 - **Colocate related code** (keep the test next to the implementation)
 - **Make dependencies explicit** (imports at the top, clear interfaces)
 - **Leave escape hatches** (extension points for likely changes)
+
+## 🎯 FIX BROKEN WINDOWS PROTOCOL
+
+*"One broken window, left unrepaired, leads to more broken windows."* - The Broken Windows Theory
+
+### Automatic Quality Detection During Execution
+While implementing any task, actively scan for and immediately fix:
+
+### Code Smells to Fix On Sight
+- **Dead Code**: Commented-out blocks, unreachable code, unused imports
+- **Poor Naming**: Single letters (except loop counters), abbreviations, misleading names
+- **Magic Numbers**: Hardcoded values that should be constants
+- **Duplicate Code**: Copy-paste that should be extracted
+- **Long Functions**: If it doesn't fit on a screen, break it up
+- **Deep Nesting**: More than 3 levels? Time to refactor
+
+### The Fix-It-Now Rule
+```
+if (you_see_it && you_can_fix_it_in_under_2_minutes) {
+    fix_it_now();  // Don't defer, don't document, just fix
+}
+```
+
+### Quality Erosion Indicators
+Watch for these signs that windows are breaking:
+- TODO comments older than the current sprint
+- Inconsistent code style in the same file
+- Test files with skipped/commented tests
+- Error handling with empty catch blocks
+- Console.logs in production code paths
+
+### The Boy Scout Rule
+*"Leave the code better than you found it"* - Even if you didn't break it
+
+When working in a file:
+1. Fix formatting inconsistencies
+2. Update outdated comments
+3. Rename unclear variables you encounter
+4. Extract magic numbers to constants
+5. Remove unnecessary complexity
 
 ## NOTES
 
