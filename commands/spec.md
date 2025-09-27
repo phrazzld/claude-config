@@ -52,8 +52,9 @@ Task 1: "Research current best practices for the task in TASK.md:
 - Security vulnerabilities and mitigation strategies
 - Performance bottlenecks and optimization patterns
 🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
-Evaluate each approach against this criterion - reject overly complex solutions even if technically impressive.
-Focus on production-proven solutions with real-world validation."
+🎯 **PRODUCT VALUE FIRST**: Every approach must justify existence through demonstrable user value.
+Evaluate each approach against user/business outcomes - reject technically interesting but low-value solutions.
+Focus on production-proven solutions with real-world validation and clear user benefits."
 
 Task 2: "Find relevant documentation using Context7 MCP:
 - Resolve library IDs for potential technology choices
@@ -62,8 +63,9 @@ Task 2: "Find relevant documentation using Context7 MCP:
 - Note version constraints, breaking changes, and migration paths
 - Identify ecosystem maturity and community support
 🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
-Favor libraries with simple APIs, minimal configuration, and clear mental models over feature-rich but complex alternatives.
-Prioritize battle-tested libraries with strong documentation."
+🎯 **PRODUCT VALUE FIRST**: Every technology choice must serve demonstrable user value.
+Evaluate libraries based on user benefits they enable, not feature richness or technical novelty.
+Prioritize battle-tested libraries that directly support user-valuable functionality."
 
 Task 3: "Explore alternative architectures and implementations:
 - Use ast-grep to find similar patterns in the codebase
@@ -72,8 +74,9 @@ Task 3: "Explore alternative architectures and implementations:
 - Consider data flow patterns (event-driven, request-response, streaming)
 - Assess integration complexity with existing systems
 🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
-Bias toward simple, proven architectures. Question whether complex patterns are truly necessary.
-Bring back 3-5 concrete alternatives with pros/cons."
+🎯 **PRODUCT VALUE FIRST**: Every architectural choice must demonstrate clear user value.
+Question whether complex patterns serve users or just engineering preferences.
+Bring back 3-5 concrete alternatives with pros/cons and clear user value propositions."
 ```
 
 ## 3. Design Brainstorming & Evaluation
@@ -97,18 +100,24 @@ For each approach, consider:
 
 ### Evaluation Matrix
 🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
+🎯 **PRODUCT VALUE FIRST**: Every approach must justify existence through demonstrable user value.
 
-| Approach | **Simplicity** | Performance | Maintainability | Risk | Time |
-|----------|----------------|-------------|-----------------|------|------|
-| Option 1 | High/Med/Low + reasoning | Score | Score | Score | Estimate |
-| Option 2 | High/Med/Low + reasoning | ... | ... | ... | ... |
+| Approach | **User Value** | **Simplicity** | Performance | Maintainability | Risk | Time |
+|----------|----------------|----------------|-------------|-----------------|------|------|
+| Option 1 | High/Med/Low + user benefits | High/Med/Low + reasoning | Score | Score | Score | Estimate |
+| Option 2 | High/Med/Low + user benefits | High/Med/Low + reasoning | ... | ... | ... | ... |
+
+**User Value Evaluation Criteria** (Primary):
+- **High**: Clear, measurable user benefits; solves real user problems; enables valuable user outcomes
+- **Medium**: Indirect user benefits; improves user experience through infrastructure/performance gains
+- **Low**: Technical improvement without clear user impact; serves engineering preferences over user needs
 
 **Simplicity Evaluation Criteria**:
 - **High**: Obvious design, minimal moving parts, clear mental model
 - **Medium**: Some abstraction needed, manageable complexity
 - **Low**: Multiple complex interactions, non-obvious behavior
 
-**Recommendation**: [Selected approach with justification prioritizing simplicity - prefer boring, proven solutions over clever alternatives]
+**Recommendation**: [Selected approach with justification prioritizing user value and simplicity - reject technically interesting but low-value solutions]
 
 ## 4. Clarifying Questions Generation
 
@@ -120,11 +129,13 @@ For each approach, consider:
 3. **Integration**: What systems must this work with? What are their APIs?
 4. **Users**: Who exactly will use this? What's their technical level?
 5. **Success**: How will we measure success? What metrics matter?
+6. **User Value**: What specific user problems does this solve? How will users' lives be better?
+7. **Business Impact**: What business outcomes justify this investment? How do we measure ROI?
 
 ### Design Questions (Shape the architecture)
-6. **Flexibility**: What needs to be configurable vs. hardcoded?
-7. **Evolution**: What features are likely to be added in 6 months?
-8. **[Add 1-3 context-specific questions based on research findings]**
+8. **Flexibility**: What needs to be configurable vs. hardcoded?
+9. **Evolution**: What features are likely to be added in 6 months?
+10. **[Add 1-3 context-specific questions based on research findings]**
 
 ### Update TASK.md with Investigation & Questions
 
@@ -279,6 +290,7 @@ Be realistic about what could go wrong."
 **The Hoare Test: "There are two ways of constructing a software design: One way is to make it so simple that there are obviously no deficiencies."**
 
 🎯 **SIMPLICITY TENET VALIDATION**: Prefer the simplest design that solves the problem completely.
+🎯 **PRODUCT VALUE FIRST VALIDATION**: Every approach must justify existence through demonstrable user value.
 
 Validate the specification:
 - Can this fail silently? → Document failure modes
@@ -286,6 +298,9 @@ Validate the specification:
 - **Is this the simplest solution?** → Justify every layer of complexity
 - **Could we solve this with fewer moving parts?** → Challenge each abstraction
 - **Would a newcomer understand this design?** → Test for obviousness
+- **How does this directly benefit users?** → Articulate clear user value proposition
+- **What user problems does this solve?** → Verify real user need exists
+- **Would users notice if we removed features/complexity?** → Eliminate vanity engineering
 - Would Dijkstra approve? → Ensure mathematical precision
 
 **Next Command**: Run `/plan` to decompose this specification into actionable tasks
