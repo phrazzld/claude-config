@@ -36,17 +36,43 @@ Task: "Analyze codebase for quality issues and technical debt. Focus on:
 Generate specific, actionable backlog items with effort estimates."
 ```
 
-## 3. Stack Rank by Value
+## 3. 🎯 Tenet-Based Technical Debt Evaluation
+
+**Evaluate backlog items against fundamental leyline tenets**:
+
+### Core Tenets to Consider
+
+**Simplicity**: Is the current implementation unnecessarily complex? Look for over-engineered solutions, excessive abstractions, or clever code where boring would work better. Items that restore simplicity often prevent cascading complexity.
+
+**Modularity**: Are components properly isolated with clear boundaries? Identify tightly coupled code, god classes, or modules doing too many things. Fixing modularity issues enables parallel development and easier testing.
+
+**Explicitness**: Is behavior obvious or hidden? Watch for implicit dependencies, magic constants, side effects, or unclear data flow. Making things explicit reduces debugging time and onboarding friction.
+
+**Maintainability**: Would a new developer understand this in six months? Flag cryptic naming, missing documentation, inconsistent patterns, or code that requires archaeology to modify.
+
+### Tenet Violation Impact
+
+When evaluating technical debt, consider which fundamental principles are being violated:
+- **High Impact**: Violations that affect system-wide patterns or architectural principles
+- **Medium Impact**: Local violations that complicate specific features or modules
+- **Low Impact**: Style or convention violations that don't affect functionality
+
+Items that violate multiple tenets or core architectural principles should be prioritized higher, as they tend to generate more technical debt over time.
+
+## 4. Stack Rank by Value
 
 **The Bezos Question**: "Will this matter to users in 6 months?"
 
 Priority order:
-1. **CRITICAL**: Security/data loss risks
-2. **HIGH**: User-facing bugs and performance issues
-3. **MEDIUM**: Developer experience and maintainability
-4. **LOW**: Nice-to-haves and optimizations
+1. **CRITICAL**: Security/data loss risks, fundamental tenet violations affecting system stability
+2. **HIGH**: User-facing bugs, performance issues, architectural principle violations
+3. **MEDIUM**: Developer experience, maintainability, local tenet violations
+4. **LOW**: Nice-to-haves, optimizations, minor convention violations
 
-## 4. Output Format
+**Tenet-Aware Prioritization**:
+Items that violate core tenets (simplicity, modularity, explicitness) early in the stack often create compounding technical debt. Prioritize fixing fundamental violations even if they're not immediately user-facing - they affect your ability to deliver everything else.
+
+## 5. Output Format
 
 ```markdown
 # BACKLOG.md
