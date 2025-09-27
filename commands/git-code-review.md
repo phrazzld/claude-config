@@ -61,6 +61,25 @@ Two-phase quality review that first cleans up the code, then tears it apart with
 ### File Type Detection & Binding Application
 Analyze the diff to identify file types and apply relevant bindings:
 
+**Automated File Type Detection:**
+```bash
+# Detect changed file types in current branch
+git diff --name-only main...HEAD | while read file; do
+  case "$file" in
+    *.ts|*.tsx) echo "TypeScript binding validation required" ;;
+    *.js|*.jsx) echo "JavaScript binding validation required" ;;
+    *.go) echo "Go binding validation required" ;;
+    *.py) echo "Python binding validation required" ;;
+    *.sql) echo "SQL binding validation required" ;;
+    *.rs) echo "Rust binding validation required" ;;
+    *.java) echo "Java binding validation required" ;;
+    *.rb) echo "Ruby binding validation required" ;;
+    *.yaml|*.yml) echo "YAML configuration validation required" ;;
+    Dockerfile*) echo "Docker binding validation required" ;;
+  esac
+done
+```
+
 **Technology-Specific Bindings to Validate:**
 ```yaml
 TypeScript/JavaScript (.ts, .tsx, .js, .jsx):
@@ -69,6 +88,10 @@ TypeScript/JavaScript (.ts, .tsx, .js, .jsx):
   ✓ Strict null checks compliance
   ✓ No implicit any returns
   ✓ Proper error boundaries in React
+  ✓ useEffect dependency arrays complete
+  ✓ No direct DOM manipulation in React
+  ✓ Async/await over callbacks
+  ✓ No var declarations (use const/let)
 
 Go (.go):
   ✓ All errors explicitly handled (no _ ignoring)
@@ -76,12 +99,26 @@ Go (.go):
   ✓ Interface segregation principle followed
   ✓ Embedded struct composition over inheritance
   ✓ Defer statements for cleanup
+  ✓ Goroutine leak prevention
+  ✓ Mutex lock/unlock pairs
+  ✓ Channel close responsibility clear
 
 Python (.py):
   ✓ Type hints for function signatures
   ✓ Docstrings for public functions
   ✓ No bare except clauses
   ✓ Context managers for resources
+  ✓ f-strings over % formatting
+  ✓ List comprehensions where appropriate
+  ✓ No mutable default arguments
+
+Rust (.rs):
+  ✓ Proper error handling with Result<T, E>
+  ✓ No unnecessary unwrap() calls
+  ✓ Lifetime annotations where needed
+  ✓ Prefer borrowing over ownership transfer
+  ✓ Use of unsafe blocks justified
+  ✓ Match expressions exhaustive
 
 SQL/Migrations (.sql):
   ✓ Foreign key constraints defined
@@ -89,6 +126,23 @@ SQL/Migrations (.sql):
   ✓ NOT NULL constraints by default
   ✓ Consistent naming conventions
   ✓ No SELECT * in production code
+  ✓ Transactions for multi-statement operations
+  ✓ Idempotent migrations (IF NOT EXISTS)
+
+Docker (Dockerfile):
+  ✓ Multi-stage builds for smaller images
+  ✓ Non-root user for runtime
+  ✓ Specific version tags (no :latest)
+  ✓ COPY preferred over ADD
+  ✓ Minimal layers through command combining
+  ✓ .dockerignore properly configured
+
+Configuration (*.yaml, *.yml, *.json):
+  ✓ No hardcoded secrets or credentials
+  ✓ Environment-specific values extracted
+  ✓ Schema validation where applicable
+  ✓ Consistent indentation and formatting
+  ✓ Comments for non-obvious settings
 ```
 
 ### Architecture Binding Compliance
