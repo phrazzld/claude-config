@@ -25,12 +25,13 @@ A specification isn't about what you want to build - it's about what must work.
 ## 1. Task Analysis & Deep Investigation
 
 **What would Dijkstra specify?**
-- Read @TASK.md with a critical eye
+- Read TASK.md with a critical eye
 - Extract invariants that must hold
 - Define preconditions and postconditions
 - Identify edge cases before features
 
 **Ultrathink: The Investigation Phase**
+- Ultrathink
 - What are the core problems we're actually solving?
 - What are 3-5 fundamentally different approaches?
 - What are the tradeoffs between simplicity and flexibility?
@@ -50,6 +51,8 @@ Task 1: "Research current best practices for the task in TASK.md:
 - Identify common failure modes and how to prevent them
 - Security vulnerabilities and mitigation strategies
 - Performance bottlenecks and optimization patterns
+🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
+Evaluate each approach against this criterion - reject overly complex solutions even if technically impressive.
 Focus on production-proven solutions with real-world validation."
 
 Task 2: "Find relevant documentation using Context7 MCP:
@@ -58,6 +61,8 @@ Task 2: "Find relevant documentation using Context7 MCP:
 - Extract configuration patterns and best practices
 - Note version constraints, breaking changes, and migration paths
 - Identify ecosystem maturity and community support
+🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
+Favor libraries with simple APIs, minimal configuration, and clear mental models over feature-rich but complex alternatives.
 Prioritize battle-tested libraries with strong documentation."
 
 Task 3: "Explore alternative architectures and implementations:
@@ -66,6 +71,8 @@ Task 3: "Explore alternative architectures and implementations:
 - Evaluate different toolchains and build systems
 - Consider data flow patterns (event-driven, request-response, streaming)
 - Assess integration complexity with existing systems
+🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
+Bias toward simple, proven architectures. Question whether complex patterns are truly necessary.
 Bring back 3-5 concrete alternatives with pros/cons."
 ```
 
@@ -89,12 +96,19 @@ For each approach, consider:
 - **Time**: Realistic implementation estimate
 
 ### Evaluation Matrix
-| Approach | Simplicity | Performance | Maintainability | Risk | Time |
-|----------|------------|-------------|-----------------|------|------|
-| Option 1 | High/Med/Low | Score | Score | Score | Estimate |
-| Option 2 | ... | ... | ... | ... | ... |
+🎯 **SIMPLICITY TENET**: Prefer the simplest design that solves the problem completely.
 
-**Recommendation**: [Selected approach with justification based on Dijkstra's simplicity principle]
+| Approach | **Simplicity** | Performance | Maintainability | Risk | Time |
+|----------|----------------|-------------|-----------------|------|------|
+| Option 1 | High/Med/Low + reasoning | Score | Score | Score | Estimate |
+| Option 2 | High/Med/Low + reasoning | ... | ... | ... | ... |
+
+**Simplicity Evaluation Criteria**:
+- **High**: Obvious design, minimal moving parts, clear mental model
+- **Medium**: Some abstraction needed, manageable complexity
+- **Low**: Multiple complex interactions, non-obvious behavior
+
+**Recommendation**: [Selected approach with justification prioritizing simplicity - prefer boring, proven solutions over clever alternatives]
 
 ## 4. Clarifying Questions Generation
 
@@ -264,10 +278,14 @@ Be realistic about what could go wrong."
 
 **The Hoare Test: "There are two ways of constructing a software design: One way is to make it so simple that there are obviously no deficiencies."**
 
+🎯 **SIMPLICITY TENET VALIDATION**: Prefer the simplest design that solves the problem completely.
+
 Validate the specification:
 - Can this fail silently? → Document failure modes
 - What happens at the boundaries? → Define edge cases
-- Is this the simplest solution? → Justify complexity
+- **Is this the simplest solution?** → Justify every layer of complexity
+- **Could we solve this with fewer moving parts?** → Challenge each abstraction
+- **Would a newcomer understand this design?** → Test for obviousness
 - Would Dijkstra approve? → Ensure mathematical precision
 
 **Next Command**: Run `/plan` to decompose this specification into actionable tasks
