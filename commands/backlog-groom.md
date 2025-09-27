@@ -59,6 +59,24 @@ When evaluating technical debt, consider which fundamental principles are being 
 
 Items that violate multiple tenets or core architectural principles should be prioritized higher, as they tend to generate more technical debt over time.
 
+### 🎯 Technology-Specific Binding Awareness
+
+**Consider technology-specific best practices when evaluating debt**:
+
+Different technologies have their own critical patterns and anti-patterns. When grooming your backlog, consider violations of technology-specific bindings:
+
+**TypeScript/JavaScript**: Look for uses of 'any' without justification, missing type definitions, ignored promise rejections, or direct DOM manipulation in React components. These violations often lead to runtime errors that TypeScript was meant to prevent.
+
+**Go**: Identify ignored errors (the underscore pattern), missing context propagation, goroutine leaks, or improper mutex usage. Go's explicit error handling philosophy means ignored errors often hide critical failures.
+
+**Python**: Watch for missing type hints in public APIs, bare except clauses that swallow errors, or mutable default arguments. These Python-specific issues create debugging nightmares.
+
+**SQL/Database**: Flag missing indexes on foreign keys, SELECT * in production queries, or non-idempotent migrations. Database issues compound quickly under load.
+
+**Security Bindings**: Regardless of technology, prioritize items involving authentication, authorization, data validation, or secret management. Security debt is technical debt with external consequences.
+
+When a backlog item violates both a fundamental tenet AND a technology-specific binding, it deserves higher priority. For example, a Go service that both ignores errors (binding violation) AND has unclear module boundaries (tenet violation) is accumulating debt from multiple directions.
+
 ## 4. Stack Rank by Value
 
 **The Bezos Question**: "Will this matter to users in 6 months?"
