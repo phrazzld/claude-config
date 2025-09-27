@@ -85,7 +85,37 @@ Question whether complex patterns serve users or just engineering preferences.
 Bring back 3-5 concrete alternatives with pros/cons and clear user value propositions."
 ```
 
-## 3. Design Brainstorming & Evaluation
+## 3. Leyline Binding Preview
+
+**Identify relevant leyline bindings for implementation guidance:**
+
+### Technology Detection & Binding Mapping
+- Analyze TASK.md and current branch context for technology indicators
+- Detect file types, frameworks, and languages that will be modified/created
+- Map detected technologies to relevant leyline binding categories
+
+### Applicable Leyline Bindings
+Based on detected technologies, reference relevant bindings:
+
+**Core Bindings (Always Applicable)**:
+- [hex-domain-purity](../bindings/core/hex-domain-purity.md): Keep business logic pure and infrastructure-free
+- [api-design](../bindings/core/api-design.md): Explicit component contracts and interfaces
+- [automated-quality-gates](../bindings/core/automated-quality-gates.md): Prevent quality degradation through automation
+- [code-size](../bindings/core/code-size.md): Small, focused files with clear responsibilities
+
+**Technology-Specific Bindings** (Include based on detection):
+- **TypeScript**: [no-any](../bindings/categories/typescript/no-any.md), [modern-typescript-toolchain](../bindings/categories/typescript/modern-typescript-toolchain.md)
+- **React**: [react-framework-selection](../bindings/categories/react/react-framework-selection.md), [server-first-architecture](../bindings/categories/react/server-first-architecture.md)
+- **Database**: [data-validation-at-boundaries](../bindings/categories/database/data-validation-at-boundaries.md), [migration-management-strategy](../bindings/categories/database/migration-management-strategy.md)
+- **API**: [rest-api-standards](../bindings/categories/api/rest-api-standards.md), [api-versioning-strategy](../bindings/categories/api/api-versioning-strategy.md)
+- **Security**: [input-validation-standards](../bindings/categories/security/input-validation-standards.md), [secrets-management-practices](../bindings/categories/security/secrets-management-practices.md)
+
+### Binding Compliance Notes
+- Consider these bindings during architecture selection
+- Include binding compliance as evaluation criteria
+- Plan for binding validation during implementation phase
+
+## 4. Design Brainstorming & Evaluation
 
 **Channel Thompson's simplicity while exploring alternatives:**
 
@@ -129,9 +159,26 @@ For each approach, consider:
 - **Medium**: Most dependencies visible; some assumptions need clarification
 - **Low**: Hidden dependencies, unstated assumptions, or unclear integration contracts
 
-**Recommendation**: [Selected approach with justification prioritizing user value, simplicity, and explicitness - reject technically interesting but low-value solutions and approaches with hidden dependencies]
+### Tenet Decision Matrix
 
-## 4. Clarifying Questions Generation
+**Structured decision framework prioritizing fundamental principles:**
+
+| Decision Factor | Weight | Criteria | Decision Rule |
+|----------------|--------|----------|---------------|
+| **User Value** | 40% | Does this solve real user problems? | Reject if user value is unclear or theoretical |
+| **Simplicity** | 30% | Is this the simplest viable solution? | Prefer obvious designs over clever alternatives |
+| **Explicitness** | 20% | Are dependencies and assumptions clear? | Reject approaches with hidden complexity |
+| **Implementation Risk** | 10% | What could realistically go wrong? | Prefer proven patterns over experimental approaches |
+
+**Decision Algorithm**:
+1. **User Value Filter**: Eliminate any approach that doesn't clearly benefit users
+2. **Simplicity Preference**: Among valuable approaches, prefer simpler solutions
+3. **Explicitness Check**: Ensure all dependencies and assumptions are documented
+4. **Risk Assessment**: Consider implementation complexity and team capabilities
+
+**Recommendation**: [Selected approach with justification using tenet decision matrix - prioritize user value, simplicity, and explicitness while managing implementation risk]
+
+## 5. Clarifying Questions Generation
 
 **Generate concrete questions to refine the specification:**
 
@@ -149,7 +196,7 @@ For each approach, consider:
 9. **Evolution**: What features are likely to be added in 6 months?
 10. **[Add 1-3 context-specific questions based on research findings]**
 
-### Update TASK.md with Investigation & Questions
+## 6. Update TASK.md with Investigation & Questions
 
 **Append findings and questions to TASK.md:**
 ```markdown
@@ -206,7 +253,7 @@ Likely to add webhook support and batch processing within 6 months.
 # PHASE 2: CONTEXTUAL REFINEMENT
 *This section executes only when answers are found in TASK.md*
 
-## 5. Read Context & User Answers
+## 7. Read Context & User Answers
 
 **Read TASK.md to extract:**
 - Original task description
@@ -219,7 +266,7 @@ Likely to add webhook support and batch processing within 6 months.
 - Specific integration points and APIs
 - User personas and success metrics
 
-## 6. Targeted Refinement Research
+## 8. Targeted Refinement Research
 
 **Launch Phase 2 research based on user's specific answers:**
 
@@ -246,7 +293,7 @@ Task 3: "Risk assessment for user's specific situation:
 Be realistic about what could go wrong."
 ```
 
-## 7. Final Specification Generation
+## 9. Final Specification Generation
 
 **Append the refined specification to TASK.md:**
 
@@ -310,7 +357,7 @@ Be realistic about what could go wrong."
 ```
 
 
-## 8. Validation & Next Steps
+## 10. Validation & Next Steps
 
 **The Hoare Test: "There are two ways of constructing a software design: One way is to make it so simple that there are obviously no deficiencies."**
 
