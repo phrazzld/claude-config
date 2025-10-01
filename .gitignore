@@ -10,6 +10,7 @@
 TODO.md
 settings.local.json
 shell-snapshots/
+file-history/
 
 # Memory and lessons archives
 agents/memory/
