@@ -35,48 +35,21 @@ A vague task hides complexity. Flesh it out before you code it out.
 
 ### Modular Task Analysis
 
-**Evaluate Task Independence**:
-Analyze whether this task can be broken into smaller, independent modules. Consider if each component can be developed and tested in isolation. Identify natural boundaries where the task could be split. Check for coupling with other tasks - can this be completed without waiting for other work?
-
-**Module Boundary Questions**:
-- Can this task be divided into smaller, independently testable parts?
-- What are the clear input/output boundaries?
-- Which parts could be developed in parallel?
-- What interfaces need to be defined between components?
-- Are there existing modules this should integrate with cleanly?
-
-**Independence Optimization**:
-Structure the expanded task to minimize dependencies on other work. Define clear contracts between modules. Ensure each subtask has a single, well-defined responsibility. Create tasks that can be assigned to different developers without conflict.
+**Evaluate Independence**: Can task be split into smaller, testable modules? What are natural boundaries?
+**Key Questions**: Independently testable parts? Input/output boundaries? Parallel work? Required interfaces? Existing module integration?
+**Optimize**: Minimize dependencies, define clear contracts, single responsibilities, avoid conflicts
 
 ### Testability Expansion
 
-**Test Strategy Development**:
-For each task component, identify specific test scenarios that validate correctness. Consider unit tests for individual functions, integration tests for module interactions, and end-to-end tests for complete workflows. Define what mocks or stubs will be needed. Specify the test data required.
-
-**Test Case Identification**:
-- What are the happy path scenarios that must work?
-- What edge cases could cause failures?
-- What error conditions need to be handled?
-- What performance benchmarks should be met?
-- What security vulnerabilities need testing?
-
-**Test Coverage Planning**:
-Define minimum coverage requirements for the task. Identify critical paths that must have tests. Specify which parts can rely on existing test infrastructure. Note any special test setup or teardown requirements. Consider both positive and negative test cases.
+**Strategy**: Identify test scenarios (unit/integration/e2e), required mocks, test data
+**Test Cases**: Happy path, edge cases, error conditions, performance benchmarks, security vulnerabilities
+**Coverage**: Minimum requirements, critical paths, existing infrastructure reuse, setup/teardown needs
 
 ### Automation Opportunity Detection
 
-**Identify Repetitive Patterns**:
-Look for aspects of the task that involve repetitive actions. Consider whether any part of the implementation could be automated or generated. Check if similar tasks will need to be done in the future. Identify boilerplate code that could be templated.
-
-**Automation Candidates**:
-- Are there repetitive file operations or transformations?
-- Could code generation reduce manual work?
-- Are there validation or checking steps that could be automated?
-- Would a script or tool make this task reusable?
-- Are there manual processes that slow down development?
-
-**Automation Investment Analysis**:
-Evaluate whether the time to automate is worth the future time savings. Consider how often this pattern will recur. Assess the risk of automation versus manual implementation. Note if automation would improve consistency and reduce errors.
+**Identify Patterns**: Repetitive actions, code generation opportunities, boilerplate templates
+**Candidates**: File operations, validation steps, reusable scripts, manual processes that slow development
+**Investment**: Time to automate vs future savings, recurrence frequency, consistency/error reduction benefits
 
 ## 3. Parallel Research
 
@@ -91,7 +64,7 @@ Task 1: "Research best practices for [task description]:
 Focus on production-ready solutions, not experiments."
 
 Task 2: "Find relevant documentation for [task description]:
-- Use Context7 MCP to resolve library IDs
+- Use Exa MCP to search for documentation and code examples
 - Extract critical APIs and usage patterns
 - Note version constraints and breaking changes
 - Identify configuration requirements

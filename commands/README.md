@@ -55,7 +55,7 @@ The main development flow follows this progression:
 
 - **backlog-groom.md** - Parallel expert backlog generation with 8 specialized agents
 - **branch.md** - Create git worktrees with proper configuration
-- **setup-mcp.md** - Configure MCP integrations (GitHub, Linear, Azure, Context7, Playwright)
+- **setup-mcp.md** - Configure MCP integrations (GitHub, Linear, Azure, Exa, Playwright)
 - **thinktank.md** - Interface with external expert consultation tool
 - **synthesize.md** - Create superior synthesis from multiple AI outputs
 

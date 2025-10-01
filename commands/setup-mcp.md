@@ -4,7 +4,7 @@ Add MCP server configuration to the current repository for specified service typ
 
 Add MCP server configuration to the current repository for specified service type.
 
-**Usage**: Provide MCP type as argument: `github`, `linear`, `azure`, `context7`, or `playwright`
+**Usage**: Provide MCP type as argument: `github`, `linear`, `azure`, `exa`, or `playwright`
 
 ## Implementation
 
@@ -102,25 +102,33 @@ Team members should run: claude mcp install --scope project"
 fi
 ```
 
-### Context7 MCP
+### Exa MCP
 ```bash
-if [ "$ARGUMENTS" = "context7" ]; then
-    # Copy the Context7-only template to repository root
-    !cp ~/.claude/templates/mcp-context7-only.json ./.mcp.json
-    
+if [ "$ARGUMENTS" = "exa" ]; then
+    # Copy the Exa-only template to repository root
+    !cp ~/.claude/templates/mcp-exa-only.json ./.mcp.json
+
     # Add to git
     !git add .mcp.json
-    !git commit -m "feat: add Context7 MCP server configuration
+    !git commit -m "feat: add Exa MCP server configuration
 
-Enables Context7 documentation server for all team members.
+Enables Exa AI-powered web search and code context retrieval for all team members.
 Team members should run: claude mcp install --scope project"
-    
-    !echo "✅ Context7 MCP configuration added and committed"
+
+    !echo "✅ Exa MCP configuration added and committed"
     !echo ""
     !echo "Team setup instructions:"
     !echo "1. Pull the latest changes"
     !echo "2. Run: claude mcp install --scope project"
-    !echo "3. Approve the Context7 server when prompted"
+    !echo "3. Approve the Exa server when prompted"
+    !echo "4. Configure required environment variable:"
+    !echo "   - EXA_API_KEY=<your_exa_api_key>"
+    !echo ""
+    !echo "Note: Exa MCP provides tools for:"
+    !echo "- Real-time web searches"
+    !echo "- Code context and documentation retrieval"
+    !echo "- Company and LinkedIn research"
+    !echo "- Deep research capabilities"
 fi
 ```
 
@@ -156,12 +164,12 @@ fi
 
 ### Usage Validation
 ```bash
-if [[ ! "$ARGUMENTS" =~ ^(github|linear|azure|context7|playwright)$ ]]; then
+if [[ ! "$ARGUMENTS" =~ ^(github|linear|azure|exa|playwright)$ ]]; then
     !echo "❌ Invalid MCP type. Supported types:"
     !echo "  - github: GitHub repository management"
     !echo "  - linear: Linear project management"
     !echo "  - azure: Azure cloud services"
-    !echo "  - context7: Context7 documentation"
+    !echo "  - exa: Exa AI-powered web search and code retrieval"
     !echo "  - playwright: Playwright browser automation"
     !echo ""
     !echo "Usage: Specify MCP type as argument"

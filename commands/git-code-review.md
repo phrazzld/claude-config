@@ -54,7 +54,25 @@ Two-phase quality review that first cleans up the code, then tears it apart with
 - **Architecture**: This coupling is so tight it needs therapy
 - **Documentation**: "It's self-documenting" = "I'm too lazy to explain my mess"
 
-## 4. Phase 3: Leyline Binding Validation Expert
+## 4. Phase 3: Design Quality Review (Ousterhout Red Flags)
+
+**Scan for six design red flags indicating accumulating complexity:**
+
+- [ ] **Information Leakage**: Implementation details visible through interfaces. If changing a module's internals breaks calling code, the implementation has leaked. Examples: returning raw database rows, exposing internal data structures, requiring callers to understand implementation details.
+
+- [ ] **Temporal Decomposition**: Code organized by execution order rather than functionality. High-level functions that are just sequences of method calls with no added abstraction. Creates change amplification - simple changes require edits across multiple locations.
+
+- [ ] **Over-exposure / Generic Names**: Vague names like Manager, Util, Helper, Context, Service without domain context. These suggest unfocused responsibility and often become dumping grounds for unrelated functionality.
+
+- [ ] **Pass-through Methods**: Methods that only call another method with same/similar signature. Indicate shallow, leaky abstractions that add no value. Each layer should change the abstraction level.
+
+- [ ] **Configuration Overload**: Dozens of exposed parameters forcing users to understand implementation. Good modules have sensible defaults and hide internal knobs.
+
+- [ ] **Shallow Modules**: Interface complexity ≈ implementation complexity. Wrapper classes exposing most of wrapped object's methods. Module Value = Functionality - Interface Complexity. Low value indicates shallow abstraction.
+
+**For each flag:** Explain specific violation, suggest how to deepen module/hide implementation/simplify interface.
+
+## 5. Phase 4: Leyline Binding Validation Expert
 
 **Binding Compliance Review**: Validate all changes against applicable leyline bindings based on file types modified.
 
@@ -110,7 +128,7 @@ Document your binding compliance findings by:
 
 Organize violations by severity (HIGH for issues that will cause problems in production, MEDIUM for technical debt, LOW for style issues). Each violation should include the specific location, what rule was violated, and how to fix it.
 
-## 5. Phase 4: Tenet Compliance Review
+## 6. Phase 5: Tenet Compliance Review
 
 **Core Tenet Validation**: Evaluate all code changes against fundamental leyline tenets.
 
@@ -206,7 +224,7 @@ For each tenet, provide:
 
 Summarize with an overall compliance assessment and list the most critical issues that must be addressed. Focus on actionable feedback that will meaningfully improve code quality.
 
-## 6. Categorize Findings
+## 7. Categorize Findings
 
 ### BLOCKERS (This Will Burn In Production)
 - Security vulnerabilities that will get us pwned
@@ -228,7 +246,7 @@ Summarize with an overall compliance assessment and list the most critical issue
 - Refactoring opportunities
 - Enhanced logging
 
-## 5. Generate TODO.md Items
+## 8. Generate TODO.md Items
 
 ### Binding Violation TODO Generation
 
@@ -266,7 +284,7 @@ When you find ignored errors in Go code, generate:
 
 Create TODO items that are impossible to misunderstand. Each blocker should explain what's broken, why it's dangerous, and what needs to be done. Write descriptions that would make any developer immediately understand the urgency and nature of the problem.
 
-## 6. Tenet-Aware Review Scoring
+## 9. Tenet-Aware Review Scoring
 
 ### Comprehensive Quality Scoring
 
@@ -297,7 +315,7 @@ Weight the importance of each dimension based on the context. For critical produ
 **Review Score Output**:
 Present the score with breakdown by dimension, specific strengths and weaknesses, and clear action items for improvement. The score should guide the merge decision but not replace human judgment.
 
-## 7. Review Summary Format
+## 10. Review Summary Format
 
 Provide a brutally honest assessment covering:
 

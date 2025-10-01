@@ -1,4 +1,4 @@
-Transform vague ideas into precise specifications through deep investigation and clarification.
+Transform vague ideas into precise specifications through deep investigation and direct clarification.
 
 # SPEC
 
@@ -10,13 +10,21 @@ Channel Dijkstra's precision: "The question of whether a computer can think is n
 
 A specification isn't about what you want to build - it's about what must work.
 
-## State Detection
+## The Ousterhout Lens
 
-**Check TASK.md to determine current state:**
-- If `## Refined Specification` exists → Specification complete
-- If `## Clarifying Questions` exists with answers → Continue with Phase 2
-- If `## Clarifying Questions` exists without answers → Waiting for user input
-- Otherwise → Start Phase 1
+*"The greatest limitation in writing software is our ability to understand the systems we are creating."*
+
+When specifying solutions, apply these design principles:
+
+**Design Twice**: Before committing to an approach, explore 2-3 fundamentally different alternatives. The best design often emerges from comparing options.
+
+**Deep Module Thinking**: Specify interfaces first. The best modules have simple interfaces hiding powerful implementations. Ask: "What complexity can this module hide from its users?"
+
+**Information Hiding**: What implementation details should stay internal? What must be exposed? Define clear boundaries between what callers need to know (interface) and what they shouldn't (implementation).
+
+**Strategic Specification**: This isn't just documenting features - it's investing in future velocity by creating clear abstractions that reduce system complexity.
+
+See [docs/tenets.md](../docs/tenets.md) and [docs/ousterhout-principles.md](../docs/ousterhout-principles.md) for detailed guidance.
 
 ---
 
@@ -58,8 +66,8 @@ For each approach, explicitly identify: dependencies on existing systems, assump
 Evaluate each approach against user/business outcomes - reject technically interesting but low-value solutions.
 Focus on production-proven solutions with real-world validation and clear user benefits."
 
-Task 2: "Find relevant documentation using Context7 MCP:
-- Resolve library IDs for potential technology choices
+Task 2: "Find relevant documentation using Exa MCP:
+- Search for documentation and code examples for potential technology choices
 - Compare APIs and capabilities of alternative solutions
 - Extract configuration patterns and best practices
 - Note version constraints, breaking changes, and migration paths
@@ -176,11 +184,13 @@ For each approach, consider:
 3. **Explicitness Check**: Ensure all dependencies and assumptions are documented
 4. **Risk Assessment**: Consider implementation complexity and team capabilities
 
-**Recommendation**: [Selected approach with justification using tenet decision matrix - prioritize user value, simplicity, and explicitness while managing implementation risk]
+**Preliminary Recommendation**: [Selected approach with justification using tenet decision matrix - prioritize user value, simplicity, and explicitness while managing implementation risk]
 
-## 5. Clarifying Questions Generation
+## 5. Generate Clarifying Questions
 
-**Generate concrete questions to refine the specification:**
+**Synthesize research into focused questions:**
+
+Based on the investigation, generate 5-10 critical questions that will refine the specification. Focus on:
 
 ### Critical Questions (Must answer before proceeding)
 1. **Scale**: What's the expected load? (users, requests/sec, data volume)
@@ -194,247 +204,305 @@ For each approach, consider:
 ### Design Questions (Shape the architecture)
 8. **Flexibility**: What needs to be configurable vs. hardcoded?
 9. **Evolution**: What features are likely to be added in 6 months?
-10. **[Add 1-3 context-specific questions based on research findings]**
+10. **[Add 2-4 context-specific questions based on research findings]**
 
-## 6. Update TASK.md with Investigation & Questions
+## 6. Ask User Directly
 
-**Append findings and questions to TASK.md:**
-```markdown
-## Investigation Summary
-- [Key finding 1 from research]
-- [Key finding 2 from research]
-- [Architecture tradeoffs discovered]
-- [Existing patterns that could be leveraged]
-- [Constraints identified]
+**Present questions directly to the user for immediate answers:**
 
-## Clarifying Questions
-Please answer these questions to refine the specification:
+Display investigation summary and questions in a clear, conversational format:
 
-1. **Scale**: What's the expected load? (users, requests/sec, data volume)
-2. **Constraints**: What are the hard limits? (budget, timeline, team size)
-3. **Integration**: What systems must this work with? What are their APIs?
-4. **Users**: Who exactly will use this? What's their technical level?
-5. **Success**: How will we measure success? What metrics matter?
-6. **Flexibility**: What needs to be configurable vs. hardcoded?
-7. **Evolution**: What features are likely to be added in 6 months?
-8. [Context-specific questions based on investigation]
+```
+# Investigation Summary
 
-*[Your answers here]*
+Based on research, here are the key findings:
+- [Finding 1: Industry pattern discovered]
+- [Finding 2: Architectural tradeoff identified]
+- [Finding 3: Existing codebase pattern found]
+- [Finding 4: Risk or constraint discovered]
+
+# Preliminary Approach
+
+I'm leaning toward [recommended approach] because:
+- [Reason 1: Simplicity/User Value/Explicitness]
+- [Reason 2: Fits constraints]
+- [Reason 3: Proven pattern]
+
+# Clarifying Questions
+
+To write a precise specification, I need answers to these questions:
+
+1. **Scale**: What's the expected load? (concurrent users, requests/sec, data volume)
+
+2. **Constraints**: What are the hard limits? (budget, timeline, team size, existing systems)
+
+3. **Integration**: What systems must this integrate with? Are there API contracts or data formats to follow?
+
+4. **Users**: Who will use this? What's their technical level and context?
+
+5. **Success Metrics**: How will we know this is working? What KPIs matter?
+
+6. **User Value**: What specific user problems are we solving? How will this improve their experience?
+
+7. **Flexibility**: What aspects need to be configurable vs. hardcoded?
+
+8. **Evolution**: What features are likely next? What should we design for extensibility?
+
+9. [Context-specific question 1]
+
+10. [Context-specific question 2]
+
+Please provide answers so I can write a detailed PRD.
 ```
 
-## 🛑 STOP HERE - PHASE 1 COMPLETE
+## 🛑 STOP HERE - Wait for User Answers
 
-**Your task:**
-1. Open TASK.md
-2. Add your answers below the questions (replace `*[Your answers here]*`)
-3. Save TASK.md
-4. Run `/spec` again to continue
-
-**Example of answered questions in TASK.md:**
-```markdown
-## Clarifying Questions
-Please answer these questions to refine the specification:
-
-1. **Scale**: What's the expected load?
-2. **Constraints**: What are the hard limits?
-[...questions...]
-
-We expect about 1000 concurrent users with 50 req/sec peak.
-Budget is $5000, timeline is 2 months with 3 developers.
-Must integrate with existing PostgreSQL and Stripe APIs.
-Users are non-technical business analysts.
-Success = 50% reduction in report generation time.
-API endpoints should be configurable, algorithms can be hardcoded.
-Likely to add webhook support and batch processing within 6 months.
-```
+Once user provides answers, continue to Phase 2.
 
 ---
 
-# PHASE 2: CONTEXTUAL REFINEMENT
-*This section executes only when answers are found in TASK.md*
+# PHASE 2: PRD GENERATION
 
-## 7. Read Context & User Answers
+*Execute this phase after receiving user's answers*
 
-**Read TASK.md to extract:**
-- Original task description
-- Investigation summary from Phase 1
-- Questions with user's answers
+## 7. Synthesize Answers
 
-**Process the answers to understand:**
-- Concrete scale and performance requirements
-- Actual timeline and resource constraints
-- Specific integration points and APIs
-- User personas and success metrics
+**Process user responses:**
+- Extract concrete requirements from answers
+- Identify scale, performance, and constraint parameters
+- Map to specific technology choices and architectural decisions
+- Note any new risks or considerations revealed
 
 ## 8. Targeted Refinement Research
 
-**Launch Phase 2 research based on user's specific answers:**
+**Conduct focused research based on user's specific context:**
 
 ```
-Task 1: "Refined solution research based on user requirements:
-- Use gemini --prompt to find solutions proven at [user's scale]
+Task 1: "Validate approach against user requirements:
+- Use gemini --prompt to verify [recommended approach] works at [user's scale]
 - Research [specific integrations] mentioned by user
-- Find patterns that fit [timeline/budget] constraints
-- Look for [specific features] user plans to add
-Be extremely specific to their exact requirements."
+- Find examples of [approach] with [user's tech stack]
+- Validate feasibility within [user's timeline/budget]"
 
-Task 2: "Technical validation for user's context:
-- Use Context7 MCP for [specific libraries] that fit requirements
-- Verify performance at [stated load] levels
-- Check compatibility with [mentioned integrations]
-- Validate feasibility within [stated timeline]
-Only recommend what's achievable with their constraints."
+Task 2: "Deep dive on implementation details:
+- Use Exa MCP to find production examples of [selected pattern]
+- Research [specific libraries/frameworks] needed
+- Find configuration examples for [user's use case]
+- Identify potential gotchas with [user's constraints]"
 
-Task 3: "Risk assessment for user's specific situation:
-- Identify risks specific to [their scale/timeline]
-- Find common failures with [their tech stack]
-- Assess complexity for [their team size]
-- Evaluate maintenance burden given constraints
-Be realistic about what could go wrong."
+Task 3: "Risk and mitigation planning:
+- Identify failure modes specific to [user's scale/context]
+- Research common issues with [selected approach + user's stack]
+- Find testing strategies that fit [user's team/timeline]
+- Plan for [user's evolution requirements]"
 ```
 
-## 9. Final Specification Generation
+## 9. Write Comprehensive PRD to TASK.md
 
-**Append the refined specification to TASK.md:**
+**Replace TASK.md contents with detailed Product Requirements Document:**
 
 ```markdown
+# [Feature/Project Name]
 
-## Refined Specification
-
-### Selected Approach
-[Chosen architecture with justification]
-
-### Requirements
-#### Functional (What it MUST do)
-- [ ] Invariant 1: [specific, testable]
-- [ ] Invariant 2: [measurable outcome]
-
-#### Non-Functional (How well it must do it)
-- Performance: [specific metrics based on research]
-- Security: [threat model from security analysis]
-- Reliability: [failure modes and recovery]
-
-### Dependencies (Explicit Documentation)
-- **External Systems**: [list all system dependencies with versions/contracts]
-- **Libraries/Frameworks**: [required dependencies with version constraints]
-- **Infrastructure**: [database, message queues, caches, etc.]
-- **Third-party Services**: [APIs, SaaS platforms, external integrations]
-
-### Assumptions (Make Implicit Explicit)
-- **Environment**: [deployment platform, resource availability, network topology]
-- **Scale**: [expected load, growth patterns, performance baselines]
-- **Users**: [technical level, usage patterns, device capabilities]
-- **Team**: [skill level, availability, knowledge constraints]
-
-### Constraints Discovered
-- **Technical**: [existing system boundaries found]
-- **Resource**: [realistic time/space limits]
-- **Integration**: [API contracts, data formats]
-- **Operational**: [deployment, monitoring, maintenance requirements]
-
-### Implementation Strategy
-#### Phase 1: Core Functionality
-- Minimal viable solution
-- Focus on critical path
-
-#### Phase 2: Hardening
-- Edge cases identified in research
-- Error handling patterns
-- Performance optimization opportunities
-
-### Success Criteria
-- [ ] All invariants hold
-- [ ] Performance meets targets
-- [ ] Security scan passes
-- [ ] Integration tests pass
-
-### Key Decisions
-- [Decision 1]: [Rationale]
-- [Decision 2]: [Rationale]
-
-### Open Questions (if any remain)
-- [Unresolved question needing user input]
-```
-
-
-## 10. Validation & Next Steps
-
-**The Hoare Test: "There are two ways of constructing a software design: One way is to make it so simple that there are obviously no deficiencies."**
-
-**Simplicity Validation**: Prefer the simplest solution that solves the problem completely.
-**Product Value First Validation**: Every approach must justify existence through demonstrable user value.
-**Explicitness Validation**: Make behavior obvious - surface and document all assumptions, dependencies, and constraints.
-
-Validate the specification:
-- Can this fail silently? → Document failure modes
-- What happens at the boundaries? → Define edge cases
-- **Is this the simplest solution?** → Justify every layer of complexity
-- **Could we solve this with fewer moving parts?** → Challenge each abstraction
-- **Would a newcomer understand this design?** → Test for obviousness
-- **How does this directly benefit users?** → Articulate clear user value proposition
-- **What user problems does this solve?** → Verify real user need exists
-- **Would users notice if we removed features/complexity?** → Eliminate vanity engineering
-- **Are all dependencies explicitly documented?** → List every external system dependency
-- **What assumptions are we making?** → Surface environment, scale, and user assumptions
-- **Are integration contracts clear?** → Define all interfaces and data flows explicitly
-- **What could break if assumptions change?** → Identify hidden coupling and constraints
-- Would Dijkstra approve? → Ensure mathematical precision
-
-**Next Command**: Run `/plan` to decompose this specification into actionable tasks
-
-Remember: **A good specification is not when there is nothing left to add, but when there is nothing left to take away.**
+*Generated: [Date] | Approach: [Selected Architecture]*
 
 ---
-*For complete tenet definitions and vocabulary, see [docs/tenets.md](../docs/tenets.md)*
+
+## Executive Summary
+
+**Problem**: [1-2 sentences]
+**Solution**: [1-2 sentences]
+**User Value**: [Clear benefit statement]
+**Success Criteria**: [Primary metric]
+
+---
+
+## User Context
+
+- **Who**: [User personas]
+- **Problems**: [Specific issues being solved]
+- **Benefits**: [Measurable improvements]
+
+---
+
+## Requirements
+
+### Functional (What it MUST do)
+- [ ] [Core functionality requirements]
+- [ ] [User interactions and flows]
+- [ ] [Integration points with existing systems]
+
+### Non-Functional (How well it performs)
+**Performance**: Throughput, latency, concurrent users, data volume
+**Security**: Authentication, authorization, data protection, threats
+**Reliability**: Availability targets, failure modes, recovery
+**Maintainability**: Code org, testing, documentation
+
+---
+
+## Architecture
+
+### Selected Approach
+**[Name]**: [Description]
+
+**Rationale**: Simplicity, user value, explicitness, constraints
+
+**Alternatives Considered**:
+| Approach | Value | Simplicity | Risk | Why Not |
+|----------|-------|------------|------|---------|
+| [Option] | [Score] | [Score] | [Score] | [Reason] |
+
+### System Design
+
+**Components**: [High-level component diagram or description]
+
+**Module Boundaries** ([Deep modules](../docs/ousterhout-principles.md)):
+- **[Module]**: Interface, responsibility, hidden complexity
+
+**Abstraction Layers**: [Top layer] → [Middle layer] → [Bottom layer]
+*Each layer changes vocabulary and abstraction level*
+
+**Technology Stack**:
+- Languages/Frameworks: [Tech + version + rationale]
+- Libraries: [Key dependencies]
+- Infrastructure: Database, caching, storage
+
+---
+
+## Dependencies & Assumptions
+
+**Dependencies**:
+- External systems: [APIs, versions, contracts]
+- Libraries: [Critical dependencies + versions]
+- Infrastructure: [Compute, storage, network requirements]
+
+**Assumptions**:
+- Environment: [Deployment platform, resources]
+- Scale: [Initial load, growth, peak patterns]
+- Users: [Technical level, devices, usage patterns]
+- Team: [Size, skills, timeline]
+
+**Constraints**:
+- Technical: [Existing system limitations]
+- Resource: [Budget, timeline, team capacity]
+- Operational: [Deployment processes, compliance]
+
+---
+
+## Implementation
+
+### Phase 1: MVP
+- [ ] [Core features proving value]
+- Success: [Primary flows work, tests pass, baseline met]
+- Time: [Estimate]
+
+### Phase 2: Hardening
+- [ ] [Edge cases, optimization, monitoring, docs]
+- Success: [All scenarios handled, targets met, review complete]
+- Time: [Estimate]
+
+### Phase 3: Future Extensions
+- [Planned improvements based on 6-month projection]
+- Design considerations: [Extensibility vs hardcoded decisions]
+
+---
+
+## Testing
+
+**Unit**: Core logic, business rules (80%+ coverage)
+**Integration**: System interactions, API contracts
+**E2E**: Critical user flows, error scenarios
+**Performance**: Load, stress, soak tests
+
+**Environments**: Test data strategy, staging setup, CI/CD automation
+
+---
+
+## Success Metrics
+
+**User Value** (Primary): [Key user-facing metrics with targets]
+**Technical** (Secondary): Performance, reliability, error rates
+**Business**: ROI, outcomes, adoption
+**Measurement**: Instrumentation approach, tooling, reporting
+
+---
+
+## Risks & Mitigation
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| [Technical] | H/M/L | H/M/L | [Plan] |
+| [Timeline] | H/M/L | H/M/L | [Plan] |
+| [Operational] | H/M/L | H/M/L | [Plan] |
+
+---
+
+## Key Decisions
+
+**[Decision Name]**: What, alternatives, rationale (user value, simplicity, explicitness), tradeoffs
+
+---
+
+## Validation
+
+**Ousterhout**: Deep modules? Info hiding? No leakage? Different abstractions? Strategic design?
+**Tenets**: Simplicity? User value? Explicitness? Maintainability? Observability?
+**Dijkstra**: Invariants? Edge cases? Failure modes?
+
+See [docs/tenets.md](../docs/tenets.md) and [docs/ousterhout-principles.md](../docs/ousterhout-principles.md)
+
+---
+
+## Next Steps
+
+1. Review PRD with stakeholders
+2. Get approval
+3. Run `/plan` for implementation tasks
+
+*"A good specification is not when there is nothing left to add, but when there is nothing left to take away."*
+```
+
+## 10. Present PRD Summary
+
+After writing TASK.md, provide concise summary to user:
+
+```
+✅ Specification Complete
+
+I've written a comprehensive PRD to TASK.md covering:
+
+**Approach**: [Selected architecture]
+**User Value**: [Key benefits]
+**Timeline**: [Phase 1: X weeks, Phase 2: Y weeks]
+**Key Decisions**: [Major choice 1, Major choice 2]
+
+**Complexity Assessment**:
+- Dependencies: [Count and criticality]
+- Risk Level: [Low/Medium/High]
+- Confidence: [High/Medium based on research]
+
+**Next**: Run `/plan` to break this down into implementation tasks.
+
+Any questions or changes to the approach?
+```
+
+---
 
 ## Workflow Summary
 
-**Phase 1 (Initial Investigation):**
-1. Read TASK.md and ultrathink
-2. Conduct parallel research
-3. Evaluate architecture alternatives
-4. Append investigation summary to TASK.md
-5. Append clarifying questions to TASK.md
-6. STOP and wait for user to add answers
+**Single Continuous Flow**:
+1. Read TASK.md (user's initial request)
+2. Ultrathink and conduct parallel research
+3. Evaluate 3-5 architectural alternatives
+4. Generate focused clarifying questions
+5. **Ask user directly** (conversational, not file-based)
+6. **Wait for user's answers**
+7. Conduct targeted research based on answers
+8. **Write comprehensive PRD to TASK.md** (replacing original content)
+9. Present summary to user
 
-**Phase 2 (Post-Answer Refinement):**
-1. Read TASK.md with user's answers
-2. Conduct targeted research based on answers
-3. Refine approach with concrete constraints
-4. Append refined specification to TASK.md
+**Key Innovation**: Direct conversation for clarification, then comprehensive documentation in TASK.md. No intermediate file states, no manual editing required.
 
-**Key Innovation**: The specification evolves through natural language dialogue within TASK.md itself - no JSON, no temp files, just a living document that tells its own story.
+---
 
-## Implementation Notes
-
-**Phase 1 appends to TASK.md:**
-```markdown
-## Investigation Summary
-- Key findings from research
-- Architecture tradeoffs discovered
-- Existing patterns identified
-
-## Clarifying Questions
-Please answer these questions to refine the specification:
-1. Scale: What's the expected load?
-2. Constraints: What are the hard limits?
-[...more questions...]
-
-*[Your answers here]*
-```
-
-**Phase 2 appends to TASK.md:**
-```markdown
-## Refined Specification
-
-### Selected Approach
-[Chosen architecture based on answers]
-
-### Requirements
-[Functional and non-functional requirements]
-
-### Success Criteria
-[Measurable outcomes]
-```
-
-The entire specification process becomes a readable narrative in TASK.md.
+*For complete tenet definitions and vocabulary, see [docs/tenets.md](../docs/tenets.md)*

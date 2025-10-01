@@ -5,10 +5,13 @@
 /*.bak*
 /thinktank_*/
 *.log
+*.jsonl
 .update.lock
 TODO.md
+settings.json
 settings.local.json
 shell-snapshots/
+file-history/
 
 # Memory and lessons archives
 agents/memory/
