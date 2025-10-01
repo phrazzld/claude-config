@@ -5,6 +5,7 @@
 /*.bak*
 /thinktank_*/
 *.log
+*.jsonl
 .update.lock
 TODO.md
 settings.local.json
