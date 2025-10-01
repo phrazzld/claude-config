@@ -14,17 +14,11 @@ Every TODO must be atomic, context-rich, and immediately executable.
 
 *"Working code isn't enough - invest 10-20% in design that pays compound interest."*
 
-When planning, balance tactical execution with strategic design:
-
-**Recognize Tactical Debt**: Identify tasks that are quick wins vs. tasks that invest in system design. Note when you're consciously taking shortcuts for speed. Plan strategic paydown of tactical debt in later iterations.
-
-**Module Depth Planning**: Plan for deep modules - simple interfaces hiding powerful implementations. When breaking down tasks, ask: "Are we creating shallow wrappers or meaningful abstractions?"
-
-**Avoid Temporal Decomposition**: Don't organize tasks by execution order alone. Group by functionality and module boundaries. If your task list reads like a script of sequential steps, you're doing it wrong.
-
-**Design for Different Abstractions**: If you're creating layers, ensure each task changes the abstraction level. Watch for pass-through methods that add no semantic value.
-
-See [docs/ousterhout-principles.md](../docs/ousterhout-principles.md) for tactical debt detection patterns and strategic planning guidance.
+Balance tactical execution with strategic design:
+- **Tactical Debt**: Note shortcuts taken for speed, plan paydown in later iterations. Recognize when you're trading implementation speed for design quality.
+- **Module Depth**: Build deep modules (simple interfaces, powerful implementations) not shallow wrappers. Value = Functionality - Interface Complexity. If interface complexity ≈ implementation complexity, you've created a shallow, low-value abstraction.
+- **Avoid Temporal Decomposition**: Group by functionality/module boundaries, not execution order. If your task list reads like sequential steps in a process, reorganize by component responsibility.
+- **Design for Abstractions**: Each layer should change abstraction level, avoid pass-through methods that just call another method with the same signature.
 
 ## 1. Deep Task Analysis with Tenet Integration
 
@@ -132,93 +126,36 @@ Break down into atomic, context-rich, tenet-compliant tasks:
 **The Implementation-Only Rule:**
 TODO.md contains ONLY implementation tasks - code you must write to complete this feature.
 
-**❌ NEVER Include These in TODO.md:**
+**❌ NEVER Include:**
+- Process tasks (PR creation, review responses, git housekeeping)
+- Deployment/operations (staging deploys, monitoring, analytics)
+- Quality gates (run tests, linting, bundle checks - these are implied by workflow)
+- Future/optional work → Write to BACKLOG.md instead
+- Pre-merge checklists (developer knows validation steps)
 
-**Process/Workflow Tasks:**
-- "Create Pull Request" - use `/git-pr` when ready
-- "Address Review Feedback" - handle when it happens
-- "Respond to comments" - not an implementation task
-- "Request reviews" - part of PR process, not code work
-- "Squash commits" - git housekeeping, not code work
-
-**Deployment/Operations Tasks:**
-- "Deploy to staging/production" - use CI/CD or separate deployment process
-- "Monitor Sentry for errors" - ongoing operations, not implementation
-- "Set up monitoring" - unless monitoring code is THE feature being built
-- "Post-merge retrospective" - team process, not code task
-- "Check analytics" - operations task, not implementation
-
-**Quality Gate Tasks:**
-- "Run tests" - implied by dev workflow, not a separate task
-- "Run linting" - handled by CI/CD and pre-commit hooks
-- "Check bundle size" - validation, not implementation
-- "Verify TypeScript compilation" - quality check, not code work
-
-**Future/Optional Work:**
-- "Optional: [feature]" → Write to BACKLOG.md
-- "Future Enhancement: [idea]" → Write to BACKLOG.md
-- "Nice-to-have: [improvement]" → Write to BACKLOG.md
-- Anything with "if time permits" → Write to BACKLOG.md
-
-**Pre-Merge Checklists:**
-- These are validation steps, not implementation tasks
-- Developer knows to run quality checks before committing
-- Don't clutter TODO.md with process reminders
-
-**✅ DO Include in TODO.md:**
-- Writing new code/components/modules
-- Modifying existing code to add/change functionality
-- Creating/updating tests for your implementation
+**✅ DO Include:**
+- Writing/modifying code/components/modules
+- Creating/updating tests for implementation
 - Updating types, interfaces, schemas
-- Refactoring code directly related to the feature
-- Adding/updating code documentation (JSDoc, inline comments)
+- Code documentation (JSDoc, inline comments)
 
 **Acceptance Criteria Format:**
 ```markdown
 - [ ] Implement user authentication service
   ```
-  Files to modify:
-  - src/services/auth.service.ts - Create new service
-
-  Implementation approach:
-  - Use JWT tokens following existing pattern
-  - Integrate with existing user repository
-
-  Success criteria:
-  - Service successfully authenticates valid users
-  - Invalid credentials return appropriate error
-  - JWT tokens generated with correct claims
-  - Integration tests pass
-
-  Time estimate: 45 minutes
+  Files: src/services/auth.service.ts
+  Approach: Use JWT tokens, integrate with user repository
+  Success: Authenticates valid users, rejects invalid credentials, tests pass
+  Time: 45 minutes
   ```
 ```
 
-**Note:** Acceptance criteria are NOTES explaining what success looks like, NOT separate `- [ ]` tasks.
+**Note:** Acceptance criteria are NOTES on tasks, NOT separate `- [ ]` items.
 
 **BACKLOG.md Generation:**
-When you identify future enhancements, optional features, or nice-to-have improvements:
-
-1. Create/update BACKLOG.md with structure:
-   ```markdown
-   # BACKLOG: [Feature Name]
-
-   ## Future Enhancements
-   - [Optional feature 1]: [brief description, value, estimated effort]
-   - [Optional feature 2]: [brief description, value, estimated effort]
-
-   ## Nice-to-Have Improvements
-   - [Improvement 1]: [brief description, impact]
-
-   ## Technical Debt Opportunities
-   - [Refactoring opportunity]: [benefit if addressed]
-   ```
-
-2. Reference BACKLOG.md in TODO.md context section:
-   ```markdown
-   ## Context
-   - **Future Work**: See BACKLOG.md for optional enhancements
-   ```
+When identifying future enhancements or optional features:
+1. Create/update BACKLOG.md with structure: Future Enhancements, Nice-to-Have Improvements, Technical Debt
+2. Reference in TODO.md context: `**Future Work**: See BACKLOG.md for optional enhancements`
 
 ## 4. Create Tenet-Enhanced TODO.md
 
@@ -242,141 +179,48 @@ When you identify future enhancements, optional features, or nice-to-have improv
 
 ## Phase 1: Core Implementation [2-4 hours]
 
-- [ ] Set up basic structure for [component]
+- [ ] Implement [component/feature name]
   ```
-  Files to modify:
-  - src/components/Feature.tsx:45 - Add new component
-  - src/types/index.ts:120 - Define interfaces
+  Files: src/components/Feature.tsx:45, src/types/index.ts:120
 
-  🎯 MODULARITY: Component boundaries and interfaces
-  - Clear single responsibility: [describe component purpose]
-  - Interface: [define props/api clearly]
-  - Dependencies: [minimal external dependencies listed]
+  🎯 MODULARITY: Single responsibility, clear interface, minimal dependencies
+  🎯 TESTABILITY: Unit tests + integration tests, mock external dependencies
+  🎯 BINDING COMPLIANCE: [List relevant bindings if applicable]
 
-  🎯 TESTABILITY: Test strategy for this task
-  - Unit tests: [specific test files and scenarios]
-  - Mock boundaries: [what external dependencies to mock]
-  - Test data: [required test fixtures or data]
-
-  Implementation approach:
-  - Follow existing pattern from src/components/Similar.tsx
-  - Use established error handling from utils/errors.ts
-
-  Success criteria:
-  - [ ] Component renders without errors
-  - [ ] Types compile successfully
-  - [ ] Basic smoke test passes
-  - [ ] Unit tests written and passing
-  - [ ] Binding compliance verified (if applicable)
-
-  🎯 BINDING COMPLIANCE: [List relevant bindings to validate]
-  Time estimate: 30 minutes
+  Approach: Follow pattern in src/components/Similar.tsx
+  Success: Component renders, types compile, tests pass
+  Time: 30 minutes
   ```
 
-- [ ] Implement core business logic
-  ```
-  Files to modify:
-  - src/services/feature.service.ts - New file
-  - src/services/index.ts:10 - Export new service
+- [ ] Additional implementation tasks following same format
 
-  🎯 MODULARITY: Service boundaries and interfaces
-  - Single responsibility: [business logic focus]
-  - Interface: [clear service contract]
-  - Dependencies: [external services/repositories needed]
+## Phase 2: Integration & Polish [1-2 hours]
 
-  🎯 TESTABILITY: Test strategy for this task
-  - Unit tests: [business logic test scenarios]
-  - Integration tests: [service integration points]
-  - Mock strategy: [repository/external service mocks]
+- [ ] Wire up API endpoints and add integration tests
 
-  Implementation approach:
-  - Implement using existing BaseService pattern
-  - Add input validation using zod schemas
-  - Handle errors with established error classes
+## Phase 3: Design Iteration [Continuous]
 
-  Success criteria:
-  - [ ] All unit tests pass
-  - [ ] No type errors
-  - [ ] Handles edge cases (null, empty, invalid)
-  - [ ] Integration tests pass
-  - [ ] Binding compliance verified
+🎯 **DESIGN NEVER DONE** - Schedule iteration checkpoints:
+- After Phase 1: Review module boundaries, extract emerging patterns
+- After Phase 2: Review interfaces, identify coupling issues, plan refactoring
 
-  🎯 BINDING COMPLIANCE: [hex-domain-purity, input-validation-standards]
-  Time estimate: 45 minutes
-  Dependencies: Previous task must be complete
-  ```
-
-## Phase 2: Integration & Testing [1-2 hours]
-
-- [ ] Wire up API endpoints
-- [ ] Add comprehensive integration tests
-
-## Phase 3: Design Iteration & Automation [Continuous]
-
-🎯 **DESIGN NEVER DONE - Iteration Checkpoints:**
-- [ ] **Iteration Checkpoint 1**: After Phase 1 - Review component boundaries and interfaces
-  ```
-  Questions to evaluate:
-  - Are the module boundaries correct?
-  - What did we learn that might change the design?
-  - Are there emerging patterns we should extract?
-
-  Time estimate: 15 minutes
-  ```
-
-- [ ] **Iteration Checkpoint 2**: After Phase 2 - Review integration patterns
-  ```
-  Questions to evaluate:
-  - Are the interfaces working well together?
-  - What coupling issues emerged?
-  - What should we refactor before moving forward?
-
-  Time estimate: 15 minutes
-  ```
-
-🎯 **AUTOMATION OPPORTUNITIES:**
-- [ ] **Quality Gate Automation**: Set up automated validation
-  ```
-  Automation tasks:
-  - [ ] Add binding compliance check to CI pipeline
-  - [ ] Automate test coverage reporting
-  - [ ] Set up automated code quality metrics
-
-  Time estimate: 30 minutes
-  ```
-
-- [ ] **Process Automation**: Identify and automate repetitive tasks
-  ```
-  Repetitive tasks identified:
-  - [List tasks that could be automated]
-  - [Consider build/deployment automation]
-  - [Document manual processes to automate]
-
-  Time estimate: Variable based on identified opportunities
-  ```
+🎯 **AUTOMATION** - Identify repetitive tasks to automate:
+- Quality gates (binding compliance, test coverage, code metrics)
+- Build/deployment processes
+- Manual validation steps
 
 ## Quality Validation (Reference - Not TODO Tasks)
 
-**IMPORTANT:** These are validation steps you'll perform during development, NOT separate TODO items.
+**Before commits:** Run tests, typecheck, lint, manual smoke test
 
-**Before Each Commit:**
-- Run `npm test` - all tests pass
-- Run `npm run typecheck` - no type errors
-- Run `npm run lint` - no lint errors
-- Manual smoke test of changes
+**🎯 Tenet Compliance:**
+- Modularity: Single responsibility, clear interfaces
+- Testability: Components tested in isolation
+- Design Evolution: Refactoring opportunities documented
+- Automation: Quality gates automated
+- Binding Compliance: Relevant bindings validated
 
-**🎯 Tenet Compliance (Self-Check):**
-- **Modularity**: Each component has single responsibility and clear interfaces
-- **Testability**: All components can be tested in isolation
-- **Design Evolution**: Refactoring opportunities identified and documented
-- **Automation**: Quality gates automated where possible
-- **Binding Compliance**: Relevant leyline bindings validated
-
-**Quality Metrics (Monitor):**
-- Test coverage meets project standards
-- No circular dependencies introduced
-- Component complexity within acceptable limits
-- Performance benchmarks maintained
+**Metrics:** Coverage standards met, no circular dependencies, complexity within limits
 
 ---
 
@@ -388,100 +232,47 @@ When you identify future enhancements, optional features, or nice-to-have improv
 
 ---
 
-## BACKLOG: Future Enhancements (Optional)
+## BACKLOG.md Example (Optional)
 
-*This section is an EXAMPLE of what goes in BACKLOG.md, NOT in TODO.md*
+*Future enhancements go in BACKLOG.md, NOT TODO.md*
 
 ```markdown
 # BACKLOG: [Feature Name]
 
 ## Future Enhancements
-
-### Optional: Performance Optimizations
-- [ ] Add caching layer for frequently accessed data
-- [ ] Implement lazy loading for heavy components
-- [ ] Optimize bundle size with code splitting
-
-**Estimated effort:** ~1 day | **Priority:** Low | **Value:** Medium
-
-### Optional: Enhanced Error Handling
-- [ ] Add user-friendly error messages
-- [ ] Implement error boundary components
-- [ ] Add retry logic for transient failures
-
-**Estimated effort:** ~4 hours | **Priority:** Low | **Value:** Medium
+- **Performance**: Caching, lazy loading, code splitting (effort: 1 day, priority: low)
+- **Error Handling**: User-friendly errors, boundaries, retry logic (effort: 4h, priority: low)
 
 ## Nice-to-Have Improvements
-- Better loading states with skeleton screens
-- Keyboard shortcuts for power users
-- Accessibility improvements (ARIA labels, keyboard navigation)
+- Loading states, keyboard shortcuts, accessibility
 
 ## Technical Debt Opportunities
-- Refactor duplicated validation logic into shared utility
-- Extract common patterns into reusable hooks
-- Improve test coverage in edge case scenarios
-```
-
-*End of BACKLOG.md example - this goes in separate file, not TODO.md*
+- Refactor duplication, extract patterns, improve test coverage
 ```
 
 ## 5. Implementation Hints
 
-**Before starting, verify:**
-- Can I execute the first task right now?
-- Do I have all the context needed?
-- Are success criteria binary (pass/fail)?
-- Is the time estimate realistic?
+**Before starting:** Verify first task is executable, all context available, success criteria binary, estimates realistic
+**During:** Start with riskiest task, parallelize independent work, validate before moving on
+**If blocked:** Create task for blocker, document requirements, move to parallel work
 
-**During implementation:**
-- Start with the riskiest/most uncertain task
-- Parallelize independent tasks
-- Validate each task before moving on
-- Update estimates based on actual time
+## The Implementation Laws
 
-**If blocked:**
-- Create a new task for the blocker
-- Document what's needed to unblock
-- Move to parallel tasks if possible
+1. No file:line references = guesswork
+2. No success criteria = wishful thinking
+3. No context = forced re-research
+4. Over 2 hours = hidden complexity
+5. 🎯 No module boundaries = coupling debt
+6. 🎯 No test strategy = testing pain later
+7. 🎯 No iteration planning = perfect design assumption
 
-## The Tenet-Enhanced Implementation Laws
+## Quality Validation
 
-1. **A TODO without file:line references is guesswork**
-2. **A TODO without success criteria is wishful thinking**
-3. **A TODO without context forces re-research**
-4. **A TODO over 2 hours hides complexity**
-5. **🎯 A TODO without clear module boundaries creates coupling debt**
-6. **🎯 A TODO without test strategy creates testing pain later**
-7. **🎯 A TODO without iteration planning assumes perfect initial design**
-8. **🎯 A TODO without automation consideration wastes human potential**
-9. **🎯 A TODO without binding compliance creates technical debt**
+**Carmack Test (per TODO):** Another dev can implement without questions, files/lines identified, approach clear, criteria testable, estimates realistic, 🎯 module boundaries defined, 🎯 test strategy comprehensive
 
-## Tenet-Enhanced Quality Validation
+**Torvalds Test (overall):** Ships TODAY, minimum that works, no premature optimization, 🎯 modular, 🎯 iteration planned
 
-**The Enhanced Carmack Test for each TODO:**
-- Could another developer implement this without asking questions?
-- Are the specific files and line numbers identified?
-- Is the implementation approach crystal clear?
-- Are success criteria objective and testable?
-- Is the time estimate based on similar past work?
-- **🎯 Are module boundaries and interfaces clearly defined?**
-- **🎯 Is the test strategy comprehensive and realistic?**
-- **🎯 Are binding compliance requirements identified?**
-
-**The Enhanced Torvalds Test for the overall plan:**
-- Will this ship working code TODAY?
-- Is this the minimum that works?
-- Did we avoid premature optimization?
-- **🎯 Are components modular and independently testable?**
-- **🎯 Are iteration and refactoring opportunities planned?**
-- **🎯 Are repetitive processes identified for automation?**
-
-**The Tenet Integration Validation:**
-- **Modularity**: Can each component be developed, tested, and deployed independently?
-- **Testability**: Is every component designed with testing seams and clear boundaries?
-- **Design Evolution**: Are assumptions explicit and iteration points planned?
-- **Automation**: Are quality gates and repetitive processes automated?
-- **Binding Compliance**: Are relevant leyline bindings integrated into the plan?
+**Tenet Integration:** Each component independently developable/testable/deployable, testing seams clear, assumptions explicit, quality gates automated, bindings validated
 
 ## Next Steps
 
