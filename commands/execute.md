@@ -38,6 +38,25 @@ Grab next task from TODO.md → Think about approach → Do the work → Commit 
 
 Every completed task must result in an atomic commit. This isn't optional - it's fundamental to maintaining a clean, traceable history. If you can't commit it, the task isn't actually complete.
 
+## COMPLEXITY & MODULE CHECKS
+
+Before finalizing implementation, run these Ousterhout-inspired checks:
+
+**Deep vs Shallow Module**: Am I creating a deep module (simple interface, powerful implementation) or a shallow wrapper? If interface complexity ≈ implementation complexity, reconsider the abstraction.
+
+**Information Leakage Test**: If I change this module's implementation, will calling code break? If yes, implementation details are leaking through the interface.
+
+**Dependencies vs Obscurity**: Does this change add new dependencies between components? Does it make behavior less obvious? Both increase complexity - can I avoid them?
+
+**Avoid Red Flags**:
+- Generic names (`Manager`, `Util`, `Helper`, `Context`) suggest unfocused responsibility
+- Pass-through methods that add no semantic value indicate shallow abstractions
+- Exposing configuration parameters that force users to understand implementation
+
+**Strategic Investment**: Am I just getting it working (tactical) or also improving the design (strategic)? Aim for 10-20% time on making the system better, not just completing the feature.
+
+See [docs/ousterhout-principles.md](../docs/ousterhout-principles.md) for detailed red flag examples and remediation patterns.
+
 ## WORK LOG
 
 For complex tasks or when discovering important context, add a work log entry directly under the task in TODO.md:

@@ -10,6 +10,22 @@ Channel dual energy - Torvalds' pragmatism: "Talk is cheap. Show me the code." m
 
 Every TODO must be atomic, context-rich, and immediately executable.
 
+## Strategic Programming Mindset
+
+*"Working code isn't enough - invest 10-20% in design that pays compound interest."*
+
+When planning, balance tactical execution with strategic design:
+
+**Recognize Tactical Debt**: Identify tasks that are quick wins vs. tasks that invest in system design. Note when you're consciously taking shortcuts for speed. Plan strategic paydown of tactical debt in later iterations.
+
+**Module Depth Planning**: Plan for deep modules - simple interfaces hiding powerful implementations. When breaking down tasks, ask: "Are we creating shallow wrappers or meaningful abstractions?"
+
+**Avoid Temporal Decomposition**: Don't organize tasks by execution order alone. Group by functionality and module boundaries. If your task list reads like a script of sequential steps, you're doing it wrong.
+
+**Design for Different Abstractions**: If you're creating layers, ensure each task changes the abstraction level. Watch for pass-through methods that add no semantic value.
+
+See [docs/ousterhout-principles.md](../docs/ousterhout-principles.md) for tactical debt detection patterns and strategic planning guidance.
+
 ## 1. Deep Task Analysis with Tenet Integration
 
 **Read the refined specification:**

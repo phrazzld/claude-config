@@ -10,6 +10,22 @@ Channel Dijkstra's precision: "The question of whether a computer can think is n
 
 A specification isn't about what you want to build - it's about what must work.
 
+## The Ousterhout Lens
+
+*"The greatest limitation in writing software is our ability to understand the systems we are creating."*
+
+When specifying solutions, apply these design principles:
+
+**Design Twice**: Before committing to an approach, explore 2-3 fundamentally different alternatives. The best design often emerges from comparing options.
+
+**Deep Module Thinking**: Specify interfaces first. The best modules have simple interfaces hiding powerful implementations. Ask: "What complexity can this module hide from its users?"
+
+**Information Hiding**: What implementation details should stay internal? What must be exposed? Define clear boundaries between what callers need to know (interface) and what they shouldn't (implementation).
+
+**Strategic Specification**: This isn't just documenting features - it's investing in future velocity by creating clear abstractions that reduce system complexity.
+
+See [docs/tenets.md](../docs/tenets.md) and [docs/ousterhout-principles.md](../docs/ousterhout-principles.md) for detailed guidance.
+
 ## State Detection
 
 **Check TASK.md to determine current state:**
