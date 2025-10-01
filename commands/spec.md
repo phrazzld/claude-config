@@ -304,427 +304,160 @@ Task 3: "Risk and mitigation planning:
 ```markdown
 # [Feature/Project Name]
 
-*Generated: [Date]*
-*Approach: [Selected Architecture]*
+*Generated: [Date] | Approach: [Selected Architecture]*
 
 ---
 
 ## Executive Summary
 
-**Problem**: [1-2 sentences describing the user problem being solved]
-
-**Solution**: [1-2 sentences describing the proposed solution]
-
-**User Value**: [Clear statement of how users benefit]
-
-**Success Criteria**: [Primary metric for success]
+**Problem**: [1-2 sentences]
+**Solution**: [1-2 sentences]
+**User Value**: [Clear benefit statement]
+**Success Criteria**: [Primary metric]
 
 ---
 
 ## User Context
 
-### Target Users
-- **Who**: [User personas from answers]
-- **Technical Level**: [From user answers]
-- **Use Case**: [Primary scenarios]
-
-### User Problems Being Solved
-1. [Specific user problem 1]
-2. [Specific user problem 2]
-3. [Specific user problem 3]
-
-### Expected User Benefits
-- [Measurable benefit 1]
-- [Measurable benefit 2]
-- [Measurable benefit 3]
+- **Who**: [User personas]
+- **Problems**: [Specific issues being solved]
+- **Benefits**: [Measurable improvements]
 
 ---
 
 ## Requirements
 
-### Functional Requirements (What it MUST do)
+### Functional (What it MUST do)
+- [ ] [Core functionality requirements]
+- [ ] [User interactions and flows]
+- [ ] [Integration points with existing systems]
 
-**Core Functionality**:
-- [ ] [Invariant 1: Specific, testable requirement]
-- [ ] [Invariant 2: Specific, testable requirement]
-- [ ] [Invariant 3: Specific, testable requirement]
-
-**User Interactions**:
-- [ ] [User flow 1]
-- [ ] [User flow 2]
-- [ ] [Error handling scenario]
-
-**Integration Points**:
-- [ ] [System integration 1 from user answers]
-- [ ] [System integration 2 from user answers]
-- [ ] [Data exchange requirement]
-
-### Non-Functional Requirements (How well it must perform)
-
-**Performance** (Based on user scale requirements):
-- Throughput: [X requests/sec from user answers]
-- Latency: [P95 < Y ms]
-- Concurrent Users: [Z users from user answers]
-- Data Volume: [Expected scale from user answers]
-
-**Scalability**:
-- Initial capacity: [Current needs]
-- Growth plan: [6-month projection from user answers]
-- Scaling strategy: [Horizontal/vertical approach]
-
-**Security**:
-- Authentication: [Method based on user context]
-- Authorization: [Access control model]
-- Data protection: [Encryption, PII handling]
-- Threat model: [Key threats identified]
-
-**Reliability**:
-- Availability: [Target uptime]
-- Failure modes: [How system degrades]
-- Recovery: [RTO/RPO from user constraints]
-
-**Maintainability**:
-- Code organization: [Module structure]
-- Testing strategy: [Coverage and approach]
-- Documentation: [What needs docs]
-- Operational complexity: [Deployment, monitoring]
+### Non-Functional (How well it performs)
+**Performance**: Throughput, latency, concurrent users, data volume
+**Security**: Authentication, authorization, data protection, threats
+**Reliability**: Availability targets, failure modes, recovery
+**Maintainability**: Code org, testing, documentation
 
 ---
 
-## Architectural Design
+## Architecture
 
 ### Selected Approach
-**[Architecture Name]**: [Brief description]
+**[Name]**: [Description]
 
-**Rationale**:
-- **Simplicity**: [Why this is the simplest solution that works]
-- **User Value**: [How this maximizes user benefits]
-- **Explicitness**: [How this makes behavior obvious]
-- **Constraints**: [How this fits timeline/budget/team]
+**Rationale**: Simplicity, user value, explicitness, constraints
 
-### Alternative Approaches Considered
+**Alternatives Considered**:
+| Approach | Value | Simplicity | Risk | Why Not |
+|----------|-------|------------|------|---------|
+| [Option] | [Score] | [Score] | [Score] | [Reason] |
 
-| Approach | User Value | Simplicity | Risk | Why Not Selected |
-|----------|-----------|------------|------|------------------|
-| [Option 1] | [Score] | [Score] | [Score] | [Reason] |
-| [Option 2] | [Score] | [Score] | [Score] | [Reason] |
+### System Design
 
-### System Architecture
+**Components**: [High-level component diagram or description]
 
-**High-Level Components**:
-```
-[ASCII diagram or description of major components]
+**Module Boundaries** ([Deep modules](../docs/ousterhout-principles.md)):
+- **[Module]**: Interface, responsibility, hidden complexity
 
-Component 1 (Interface: simple) ──> Component 2 (Interface: simple)
-       │                                    │
-       └──> Shared Data Store <─────────────┘
-```
+**Abstraction Layers**: [Top layer] → [Middle layer] → [Bottom layer]
+*Each layer changes vocabulary and abstraction level*
 
-**Module Boundaries** (Deep Module Design):
-- **[Module 1]**:
-  - Interface: [Simple, focused API]
-  - Responsibility: [Single, clear purpose]
-  - Hidden complexity: [What implementation details are internal]
-- **[Module 2]**:
-  - Interface: [Simple, focused API]
-  - Responsibility: [Single, clear purpose]
-  - Hidden complexity: [What implementation details are internal]
-
-**Abstraction Layers**:
-- **Layer 1 (Top)**: [User-facing abstraction]
-- **Layer 2 (Middle)**: [Business logic abstraction - different from Layer 1]
-- **Layer 3 (Bottom)**: [Infrastructure abstraction - different from Layer 2]
-
-*Note: Each layer changes vocabulary and abstraction level - no pass-through methods*
-
-### Technology Stack
-
-**Languages/Frameworks**:
-- [Technology 1]: [Version, rationale]
-- [Technology 2]: [Version, rationale]
-
-**Libraries/Dependencies**:
-- [Library 1]: [Version, purpose, why chosen]
-- [Library 2]: [Version, purpose, why chosen]
-
-**Infrastructure**:
-- Database: [Type, scale considerations]
-- Caching: [If needed, approach]
-- Message Queue: [If needed, approach]
-- Storage: [File storage, object storage]
-
-**Rationale**: [Why this stack serves users best, fits constraints, minimizes complexity]
+**Technology Stack**:
+- Languages/Frameworks: [Tech + version + rationale]
+- Libraries: [Key dependencies]
+- Infrastructure: Database, caching, storage
 
 ---
 
 ## Dependencies & Assumptions
 
-### Explicit Dependencies
-**External Systems**:
-- [System 1]: [API version, contract, SLA]
-- [System 2]: [API version, contract, SLA]
+**Dependencies**:
+- External systems: [APIs, versions, contracts]
+- Libraries: [Critical dependencies + versions]
+- Infrastructure: [Compute, storage, network requirements]
 
-**Libraries/Services**:
-- [Dependency 1]: [Version constraint, criticality]
-- [Dependency 2]: [Version constraint, criticality]
+**Assumptions**:
+- Environment: [Deployment platform, resources]
+- Scale: [Initial load, growth, peak patterns]
+- Users: [Technical level, devices, usage patterns]
+- Team: [Size, skills, timeline]
 
-**Infrastructure Requirements**:
-- Compute: [Specification]
-- Storage: [Specification]
-- Network: [Requirements]
-
-### Documented Assumptions
-**Environment**:
-- Deployment platform: [From user answers]
-- Network topology: [Assumptions about connectivity]
-- Resource availability: [Compute/memory/storage]
-
-**Scale**:
-- Initial load: [From user answers]
-- Growth rate: [Projection]
-- Peak patterns: [Traffic characteristics]
-
-**Users**:
-- Technical capability: [From user answers]
-- Device/browser support: [Compatibility matrix]
-- Usage patterns: [How users will interact]
-
-**Team**:
-- Size: [From user answers]
-- Skill level: [Capabilities]
-- Timeline: [From user answers]
-
-### Identified Constraints
-**Technical**:
-- [Existing system constraint 1]
-- [Integration limitation 2]
-- [Technology restriction 3]
-
-**Resource**:
-- Budget: [From user answers]
-- Timeline: [From user answers]
-- Team capacity: [From user answers]
-
-**Operational**:
-- Deployment process: [Existing practices to follow]
-- Monitoring/alerting: [Existing tooling]
-- Compliance: [Regulatory requirements]
+**Constraints**:
+- Technical: [Existing system limitations]
+- Resource: [Budget, timeline, team capacity]
+- Operational: [Deployment processes, compliance]
 
 ---
 
-## Implementation Strategy
+## Implementation
 
-### Phase 1: Core Functionality (MVP)
-**Goal**: Minimal viable solution proving core value
+### Phase 1: MVP
+- [ ] [Core features proving value]
+- Success: [Primary flows work, tests pass, baseline met]
+- Time: [Estimate]
 
-**Scope**:
-- [ ] [Core feature 1]
-- [ ] [Core feature 2]
-- [ ] [Critical integration 1]
-- [ ] [Basic error handling]
+### Phase 2: Hardening
+- [ ] [Edge cases, optimization, monitoring, docs]
+- Success: [All scenarios handled, targets met, review complete]
+- Time: [Estimate]
 
-**Success Criteria**:
-- [ ] [Primary user flow works]
-- [ ] [Integration test passes]
-- [ ] [Performance baseline met]
-
-**Estimated Time**: [Based on user timeline]
-
-### Phase 2: Hardening & Polish
-**Goal**: Production-ready, robust implementation
-
-**Scope**:
-- [ ] [Edge case handling from research]
-- [ ] [Error recovery patterns]
-- [ ] [Performance optimization]
-- [ ] [Monitoring/observability]
-- [ ] [Documentation]
-
-**Success Criteria**:
-- [ ] [All error scenarios handled]
-- [ ] [Performance targets met]
-- [ ] [Security scan passes]
-- [ ] [Code review complete]
-
-**Estimated Time**: [Based on user timeline]
-
-### Phase 3: Evolution (Future)
-**Planned Extensions** (Based on user's 6-month projection):
-- [Future feature 1 from user answers]
-- [Future feature 2 from user answers]
-- [Scalability improvements]
-
-**Design Considerations**:
-- [What we're designing for extensibility]
-- [What we're intentionally hardcoding]
-- [Where we expect change]
+### Phase 3: Future Extensions
+- [Planned improvements based on 6-month projection]
+- Design considerations: [Extensibility vs hardcoded decisions]
 
 ---
 
-## Testing Strategy
+## Testing
 
-### Test Pyramid
+**Unit**: Core logic, business rules (80%+ coverage)
+**Integration**: System interactions, API contracts
+**E2E**: Critical user flows, error scenarios
+**Performance**: Load, stress, soak tests
 
-**Unit Tests** (Fast, focused):
-- [ ] [Module 1: Core logic]
-- [ ] [Module 2: Business rules]
-- [ ] [Module 3: Utilities]
-- Target: 80%+ coverage of business logic
-
-**Integration Tests** (API contracts):
-- [ ] [Integration 1 from user requirements]
-- [ ] [Integration 2 from user requirements]
-- [ ] [Database interactions]
-- [ ] [External service mocking]
-
-**End-to-End Tests** (User scenarios):
-- [ ] [Critical user flow 1]
-- [ ] [Critical user flow 2]
-- [ ] [Error recovery scenario]
-
-**Performance Tests**:
-- [ ] Load test: [X req/sec sustained]
-- [ ] Stress test: [Peak load + 50%]
-- [ ] Soak test: [24hr stability]
-
-### Test Data & Environments
-- **Test Data**: [Strategy for realistic data]
-- **Staging**: [Environment matching production]
-- **CI/CD**: [Automated test runs]
+**Environments**: Test data strategy, staging setup, CI/CD automation
 
 ---
 
-## Success Metrics & KPIs
+## Success Metrics
 
-### User Value Metrics (Primary)
-- [Metric 1 from user answers]: Target [X]
-- [Metric 2 from user answers]: Target [Y]
-- User satisfaction: Target [Z]
-
-### Technical Metrics (Secondary)
-- Performance: [Latency targets]
-- Reliability: [Uptime target]
-- Error rate: [< X% target]
-
-### Business Metrics (From user context)
-- [ROI metric from user answers]
-- [Business outcome from user answers]
-- [Adoption metric]
-
-### How We'll Measure
-- [Instrumentation approach]
-- [Analytics tooling]
-- [Reporting cadence]
+**User Value** (Primary): [Key user-facing metrics with targets]
+**Technical** (Secondary): Performance, reliability, error rates
+**Business**: ROI, outcomes, adoption
+**Measurement**: Instrumentation approach, tooling, reporting
 
 ---
 
 ## Risks & Mitigation
 
-### Technical Risks
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|------------|
-| [Risk 1 from research] | High/Med/Low | High/Med/Low | [Specific mitigation plan] |
-| [Risk 2 from research] | High/Med/Low | High/Med/Low | [Specific mitigation plan] |
-
-### Timeline Risks
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| [Schedule risk] | High/Med/Low | High/Med/Low | [Buffer, scope reduction] |
-| [Dependency risk] | High/Med/Low | High/Med/Low | [Early integration, mocking] |
-
-### Operational Risks
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| [Deployment risk] | High/Med/Low | High/Med/Low | [Rollback plan, feature flags] |
-| [Scale risk] | High/Med/Low | High/Med/Low | [Monitoring, auto-scaling] |
+| [Technical] | H/M/L | H/M/L | [Plan] |
+| [Timeline] | H/M/L | H/M/L | [Plan] |
+| [Operational] | H/M/L | H/M/L | [Plan] |
 
 ---
 
-## Key Decisions & Rationale
+## Key Decisions
 
-### Decision 1: [Technology/Architecture Choice]
-**Decision**: [What was decided]
-**Options Considered**: [Alternatives]
-**Rationale**: [Why this choice - user value, simplicity, explicitness]
-**Trade-offs**: [What we're giving up]
-
-### Decision 2: [Design Pattern Choice]
-**Decision**: [What was decided]
-**Options Considered**: [Alternatives]
-**Rationale**: [Why this choice]
-**Trade-offs**: [What we're giving up]
-
-### Decision 3: [Scope/Feature Choice]
-**Decision**: [What's in/out]
-**Rationale**: [Based on user priorities, timeline, value]
+**[Decision Name]**: What, alternatives, rationale (user value, simplicity, explicitness), tradeoffs
 
 ---
 
-## Leyline Binding Compliance
+## Validation
 
-### Applicable Bindings for Implementation
-Based on detected technologies and architecture:
+**Ousterhout**: Deep modules? Info hiding? No leakage? Different abstractions? Strategic design?
+**Tenets**: Simplicity? User value? Explicitness? Maintainability? Observability?
+**Dijkstra**: Invariants? Edge cases? Failure modes?
 
-**Core Bindings**:
-- hex-domain-purity: [How we're maintaining domain purity]
-- api-design: [Interface contracts defined]
-- automated-quality-gates: [CI/CD checks]
-- code-size: [Module size limits]
-
-**Technology-Specific Bindings**:
-- [Binding 1]: [Compliance approach]
-- [Binding 2]: [Compliance approach]
-
-**Validation Plan**:
-- Code review checklist includes binding compliance
-- Automated linting for applicable rules
-- Manual review for architectural bindings
-
----
-
-## Open Questions (If Any)
-
-- [ ] [Unresolved question 1]: Needs [stakeholder] input
-- [ ] [Unresolved question 2]: Requires [technical research]
-
-*Note: These should be rare - most questions answered in clarification phase*
-
----
-
-## Validation Checklist
-
-**Ousterhout Validation**:
-- [ ] **Deep Modules**: Are we creating simple interfaces hiding complex implementations?
-- [ ] **Information Hiding**: Are implementation details truly hidden?
-- [ ] **No Information Leakage**: Can we change internals without breaking callers?
-- [ ] **Different Abstractions**: Does each layer change vocabulary/concepts?
-- [ ] **Strategic Design**: Have we invested 10-20% time in design quality?
-
-**Tenet Validation**:
-- [ ] **Simplicity**: Is this the simplest solution that solves the problem completely?
-- [ ] **User Value**: Does every feature clearly benefit users?
-- [ ] **Explicitness**: Are all dependencies, assumptions, and constraints documented?
-- [ ] **Maintainability**: Would a developer understand this in 6 months?
-- [ ] **Observability**: Can we see what's happening in production?
-
-**Dijkstra Validation**:
-- [ ] All invariants explicitly stated?
-- [ ] Edge cases defined?
-- [ ] Failure modes documented?
-- [ ] Mathematical precision in requirements?
+See [docs/tenets.md](../docs/tenets.md) and [docs/ousterhout-principles.md](../docs/ousterhout-principles.md)
 
 ---
 
 ## Next Steps
 
-1. Review this PRD with stakeholders
-2. Get approval on approach and constraints
-3. Run `/plan` to decompose into actionable tasks
-4. Begin Phase 1 implementation
-
-**Ready for**: `/plan` command
-
----
+1. Review PRD with stakeholders
+2. Get approval
+3. Run `/plan` for implementation tasks
 
 *"A good specification is not when there is nothing left to add, but when there is nothing left to take away."*
 ```
