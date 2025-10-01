@@ -111,10 +111,114 @@ Break down into atomic, context-rich, tenet-compliant tasks:
 **Apply The Enhanced Torvalds Test:**
 1. Will the code break without this? → TODO
 2. Will users notice if this is missing? → TODO
-3. Is this required for THIS PR? → TODO
+3. Is this required for THIS PR to merge? → TODO
 4. Does this create good module boundaries? → TODO
 5. Can this be tested independently? → TODO
-6. Everything else? → BACKLOG
+6. Is this about WRITING CODE for the feature? → TODO
+7. Is this a process/workflow/meta task? → EXCLUDE
+8. Is this a "future enhancement" or "optional"? → BACKLOG.md
+9. Everything else? → BACKLOG.md or EXCLUDE
+
+**Examples:**
+- "Implement user login API" → TODO ✅
+- "Create pull request" → EXCLUDE ❌
+- "Monitor production errors" → EXCLUDE ❌
+- "Optional: Add dark mode" → BACKLOG.md ✅
+- "Run test suite" → EXCLUDE (implied by workflow) ❌
+- "Address review feedback" → EXCLUDE ❌
+
+## 3.5. TODO.md Scope Discipline (Critical)
+
+**The Implementation-Only Rule:**
+TODO.md contains ONLY implementation tasks - code you must write to complete this feature.
+
+**❌ NEVER Include These in TODO.md:**
+
+**Process/Workflow Tasks:**
+- "Create Pull Request" - use `/git-pr` when ready
+- "Address Review Feedback" - handle when it happens
+- "Respond to comments" - not an implementation task
+- "Request reviews" - part of PR process, not code work
+- "Squash commits" - git housekeeping, not code work
+
+**Deployment/Operations Tasks:**
+- "Deploy to staging/production" - use CI/CD or separate deployment process
+- "Monitor Sentry for errors" - ongoing operations, not implementation
+- "Set up monitoring" - unless monitoring code is THE feature being built
+- "Post-merge retrospective" - team process, not code task
+- "Check analytics" - operations task, not implementation
+
+**Quality Gate Tasks:**
+- "Run tests" - implied by dev workflow, not a separate task
+- "Run linting" - handled by CI/CD and pre-commit hooks
+- "Check bundle size" - validation, not implementation
+- "Verify TypeScript compilation" - quality check, not code work
+
+**Future/Optional Work:**
+- "Optional: [feature]" → Write to BACKLOG.md
+- "Future Enhancement: [idea]" → Write to BACKLOG.md
+- "Nice-to-have: [improvement]" → Write to BACKLOG.md
+- Anything with "if time permits" → Write to BACKLOG.md
+
+**Pre-Merge Checklists:**
+- These are validation steps, not implementation tasks
+- Developer knows to run quality checks before committing
+- Don't clutter TODO.md with process reminders
+
+**✅ DO Include in TODO.md:**
+- Writing new code/components/modules
+- Modifying existing code to add/change functionality
+- Creating/updating tests for your implementation
+- Updating types, interfaces, schemas
+- Refactoring code directly related to the feature
+- Adding/updating code documentation (JSDoc, inline comments)
+
+**Acceptance Criteria Format:**
+```markdown
+- [ ] Implement user authentication service
+  ```
+  Files to modify:
+  - src/services/auth.service.ts - Create new service
+
+  Implementation approach:
+  - Use JWT tokens following existing pattern
+  - Integrate with existing user repository
+
+  Success criteria:
+  - Service successfully authenticates valid users
+  - Invalid credentials return appropriate error
+  - JWT tokens generated with correct claims
+  - Integration tests pass
+
+  Time estimate: 45 minutes
+  ```
+```
+
+**Note:** Acceptance criteria are NOTES explaining what success looks like, NOT separate `- [ ]` tasks.
+
+**BACKLOG.md Generation:**
+When you identify future enhancements, optional features, or nice-to-have improvements:
+
+1. Create/update BACKLOG.md with structure:
+   ```markdown
+   # BACKLOG: [Feature Name]
+
+   ## Future Enhancements
+   - [Optional feature 1]: [brief description, value, estimated effort]
+   - [Optional feature 2]: [brief description, value, estimated effort]
+
+   ## Nice-to-Have Improvements
+   - [Improvement 1]: [brief description, impact]
+
+   ## Technical Debt Opportunities
+   - [Refactoring opportunity]: [benefit if addressed]
+   ```
+
+2. Reference BACKLOG.md in TODO.md context section:
+   ```markdown
+   ## Context
+   - **Future Work**: See BACKLOG.md for optional enhancements
+   ```
 
 ## 4. Create Tenet-Enhanced TODO.md
 
@@ -251,33 +355,74 @@ Break down into atomic, context-rich, tenet-compliant tasks:
   Time estimate: Variable based on identified opportunities
   ```
 
-## Phase 4: Polish & Long-term Design [If time permits]
+## Quality Validation (Reference - Not TODO Tasks)
 
-- [ ] Performance optimizations
-- [ ] Additional error handling
-- [ ] Documentation updates
+**IMPORTANT:** These are validation steps you'll perform during development, NOT separate TODO items.
 
-## Tenet-Enhanced Validation Checklist
+**Before Each Commit:**
+- Run `npm test` - all tests pass
+- Run `npm run typecheck` - no type errors
+- Run `npm run lint` - no lint errors
+- Manual smoke test of changes
 
-**Code Quality Gates:**
-- [ ] Run `npm test` - all tests pass
-- [ ] Run `npm run typecheck` - no type errors
-- [ ] Run `npm run lint` - no lint errors
-- [ ] Manual testing of happy path
-- [ ] Manual testing of error cases
+**🎯 Tenet Compliance (Self-Check):**
+- **Modularity**: Each component has single responsibility and clear interfaces
+- **Testability**: All components can be tested in isolation
+- **Design Evolution**: Refactoring opportunities identified and documented
+- **Automation**: Quality gates automated where possible
+- **Binding Compliance**: Relevant leyline bindings validated
 
-**🎯 Tenet Compliance Validation:**
-- [ ] **Modularity**: Each component has single responsibility and clear interfaces
-- [ ] **Testability**: All components can be tested in isolation
-- [ ] **Design Evolution**: Refactoring opportunities identified and documented
-- [ ] **Automation**: Quality gates automated where possible
-- [ ] **Binding Compliance**: Relevant leyline bindings validated
+**Quality Metrics (Monitor):**
+- Test coverage meets project standards
+- No circular dependencies introduced
+- Component complexity within acceptable limits
+- Performance benchmarks maintained
 
-**Quality Metrics:**
-- [ ] Test coverage meets project standards
-- [ ] No circular dependencies introduced
-- [ ] Component complexity within acceptable limits
-- [ ] Performance benchmarks maintained
+---
+
+## Next Steps After TODO.md Complete
+
+1. Run `/execute` to start implementation
+2. Use `/git-pr` when ready to create pull request
+3. See BACKLOG.md for future enhancements (if created)
+
+---
+
+## BACKLOG: Future Enhancements (Optional)
+
+*This section is an EXAMPLE of what goes in BACKLOG.md, NOT in TODO.md*
+
+```markdown
+# BACKLOG: [Feature Name]
+
+## Future Enhancements
+
+### Optional: Performance Optimizations
+- [ ] Add caching layer for frequently accessed data
+- [ ] Implement lazy loading for heavy components
+- [ ] Optimize bundle size with code splitting
+
+**Estimated effort:** ~1 day | **Priority:** Low | **Value:** Medium
+
+### Optional: Enhanced Error Handling
+- [ ] Add user-friendly error messages
+- [ ] Implement error boundary components
+- [ ] Add retry logic for transient failures
+
+**Estimated effort:** ~4 hours | **Priority:** Low | **Value:** Medium
+
+## Nice-to-Have Improvements
+- Better loading states with skeleton screens
+- Keyboard shortcuts for power users
+- Accessibility improvements (ARIA labels, keyboard navigation)
+
+## Technical Debt Opportunities
+- Refactor duplicated validation logic into shared utility
+- Extract common patterns into reusable hooks
+- Improve test coverage in edge case scenarios
+```
+
+*End of BACKLOG.md example - this goes in separate file, not TODO.md*
 ```
 
 ## 5. Implementation Hints
