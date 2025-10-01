@@ -8,6 +8,7 @@
 *.jsonl
 .update.lock
 TODO.md
+settings.json
 settings.local.json
 shell-snapshots/
 file-history/
