@@ -91,7 +91,7 @@ Task 1: "Research best practices for [task description]:
 Focus on production-ready solutions, not experiments."
 
 Task 2: "Find relevant documentation for [task description]:
-- Use Context7 MCP to resolve library IDs
+- Use Exa MCP to search for documentation and code examples
 - Extract critical APIs and usage patterns
 - Note version constraints and breaking changes
 - Identify configuration requirements

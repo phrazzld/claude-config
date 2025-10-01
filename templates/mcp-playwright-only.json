@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"],
-      "_description": "Playwright browser automation server - provides web scraping, testing, and interaction capabilities"
-    }
-  }
-}

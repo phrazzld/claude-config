@@ -58,8 +58,8 @@ For each approach, explicitly identify: dependencies on existing systems, assump
 Evaluate each approach against user/business outcomes - reject technically interesting but low-value solutions.
 Focus on production-proven solutions with real-world validation and clear user benefits."
 
-Task 2: "Find relevant documentation using Context7 MCP:
-- Resolve library IDs for potential technology choices
+Task 2: "Find relevant documentation using Exa MCP:
+- Search for documentation and code examples for potential technology choices
 - Compare APIs and capabilities of alternative solutions
 - Extract configuration patterns and best practices
 - Note version constraints, breaking changes, and migration paths
@@ -279,7 +279,7 @@ Task 1: "Refined solution research based on user requirements:
 Be extremely specific to their exact requirements."
 
 Task 2: "Technical validation for user's context:
-- Use Context7 MCP for [specific libraries] that fit requirements
+- Use Exa MCP to research [specific libraries] that fit requirements
 - Verify performance at [stated load] levels
 - Check compatibility with [mentioned integrations]
 - Validate feasibility within [stated timeline]
