@@ -1,4 +1,4 @@
-Transform vague ideas into precise specifications through deep investigation and clarification.
+Transform vague ideas into precise specifications through deep investigation and direct clarification.
 
 # SPEC
 
@@ -25,14 +25,6 @@ When specifying solutions, apply these design principles:
 **Strategic Specification**: This isn't just documenting features - it's investing in future velocity by creating clear abstractions that reduce system complexity.
 
 See [docs/tenets.md](../docs/tenets.md) and [docs/ousterhout-principles.md](../docs/ousterhout-principles.md) for detailed guidance.
-
-## State Detection
-
-**Check TASK.md to determine current state:**
-- If `## Refined Specification` exists → Specification complete
-- If `## Clarifying Questions` exists with answers → Continue with Phase 2
-- If `## Clarifying Questions` exists without answers → Waiting for user input
-- Otherwise → Start Phase 1
 
 ---
 
@@ -192,11 +184,13 @@ For each approach, consider:
 3. **Explicitness Check**: Ensure all dependencies and assumptions are documented
 4. **Risk Assessment**: Consider implementation complexity and team capabilities
 
-**Recommendation**: [Selected approach with justification using tenet decision matrix - prioritize user value, simplicity, and explicitness while managing implementation risk]
+**Preliminary Recommendation**: [Selected approach with justification using tenet decision matrix - prioritize user value, simplicity, and explicitness while managing implementation risk]
 
-## 5. Clarifying Questions Generation
+## 5. Generate Clarifying Questions
 
-**Generate concrete questions to refine the specification:**
+**Synthesize research into focused questions:**
+
+Based on the investigation, generate 5-10 critical questions that will refine the specification. Focus on:
 
 ### Critical Questions (Must answer before proceeding)
 1. **Scale**: What's the expected load? (users, requests/sec, data volume)
@@ -210,247 +204,572 @@ For each approach, consider:
 ### Design Questions (Shape the architecture)
 8. **Flexibility**: What needs to be configurable vs. hardcoded?
 9. **Evolution**: What features are likely to be added in 6 months?
-10. **[Add 1-3 context-specific questions based on research findings]**
+10. **[Add 2-4 context-specific questions based on research findings]**
 
-## 6. Update TASK.md with Investigation & Questions
+## 6. Ask User Directly
 
-**Append findings and questions to TASK.md:**
-```markdown
-## Investigation Summary
-- [Key finding 1 from research]
-- [Key finding 2 from research]
-- [Architecture tradeoffs discovered]
-- [Existing patterns that could be leveraged]
-- [Constraints identified]
+**Present questions directly to the user for immediate answers:**
 
-## Clarifying Questions
-Please answer these questions to refine the specification:
+Display investigation summary and questions in a clear, conversational format:
 
-1. **Scale**: What's the expected load? (users, requests/sec, data volume)
-2. **Constraints**: What are the hard limits? (budget, timeline, team size)
-3. **Integration**: What systems must this work with? What are their APIs?
-4. **Users**: Who exactly will use this? What's their technical level?
-5. **Success**: How will we measure success? What metrics matter?
-6. **Flexibility**: What needs to be configurable vs. hardcoded?
-7. **Evolution**: What features are likely to be added in 6 months?
-8. [Context-specific questions based on investigation]
+```
+# Investigation Summary
 
-*[Your answers here]*
+Based on research, here are the key findings:
+- [Finding 1: Industry pattern discovered]
+- [Finding 2: Architectural tradeoff identified]
+- [Finding 3: Existing codebase pattern found]
+- [Finding 4: Risk or constraint discovered]
+
+# Preliminary Approach
+
+I'm leaning toward [recommended approach] because:
+- [Reason 1: Simplicity/User Value/Explicitness]
+- [Reason 2: Fits constraints]
+- [Reason 3: Proven pattern]
+
+# Clarifying Questions
+
+To write a precise specification, I need answers to these questions:
+
+1. **Scale**: What's the expected load? (concurrent users, requests/sec, data volume)
+
+2. **Constraints**: What are the hard limits? (budget, timeline, team size, existing systems)
+
+3. **Integration**: What systems must this integrate with? Are there API contracts or data formats to follow?
+
+4. **Users**: Who will use this? What's their technical level and context?
+
+5. **Success Metrics**: How will we know this is working? What KPIs matter?
+
+6. **User Value**: What specific user problems are we solving? How will this improve their experience?
+
+7. **Flexibility**: What aspects need to be configurable vs. hardcoded?
+
+8. **Evolution**: What features are likely next? What should we design for extensibility?
+
+9. [Context-specific question 1]
+
+10. [Context-specific question 2]
+
+Please provide answers so I can write a detailed PRD.
 ```
 
-## 🛑 STOP HERE - PHASE 1 COMPLETE
+## 🛑 STOP HERE - Wait for User Answers
 
-**Your task:**
-1. Open TASK.md
-2. Add your answers below the questions (replace `*[Your answers here]*`)
-3. Save TASK.md
-4. Run `/spec` again to continue
-
-**Example of answered questions in TASK.md:**
-```markdown
-## Clarifying Questions
-Please answer these questions to refine the specification:
-
-1. **Scale**: What's the expected load?
-2. **Constraints**: What are the hard limits?
-[...questions...]
-
-We expect about 1000 concurrent users with 50 req/sec peak.
-Budget is $5000, timeline is 2 months with 3 developers.
-Must integrate with existing PostgreSQL and Stripe APIs.
-Users are non-technical business analysts.
-Success = 50% reduction in report generation time.
-API endpoints should be configurable, algorithms can be hardcoded.
-Likely to add webhook support and batch processing within 6 months.
-```
+Once user provides answers, continue to Phase 2.
 
 ---
 
-# PHASE 2: CONTEXTUAL REFINEMENT
-*This section executes only when answers are found in TASK.md*
+# PHASE 2: PRD GENERATION
 
-## 7. Read Context & User Answers
+*Execute this phase after receiving user's answers*
 
-**Read TASK.md to extract:**
-- Original task description
-- Investigation summary from Phase 1
-- Questions with user's answers
+## 7. Synthesize Answers
 
-**Process the answers to understand:**
-- Concrete scale and performance requirements
-- Actual timeline and resource constraints
-- Specific integration points and APIs
-- User personas and success metrics
+**Process user responses:**
+- Extract concrete requirements from answers
+- Identify scale, performance, and constraint parameters
+- Map to specific technology choices and architectural decisions
+- Note any new risks or considerations revealed
 
 ## 8. Targeted Refinement Research
 
-**Launch Phase 2 research based on user's specific answers:**
+**Conduct focused research based on user's specific context:**
 
 ```
-Task 1: "Refined solution research based on user requirements:
-- Use gemini --prompt to find solutions proven at [user's scale]
+Task 1: "Validate approach against user requirements:
+- Use gemini --prompt to verify [recommended approach] works at [user's scale]
 - Research [specific integrations] mentioned by user
-- Find patterns that fit [timeline/budget] constraints
-- Look for [specific features] user plans to add
-Be extremely specific to their exact requirements."
+- Find examples of [approach] with [user's tech stack]
+- Validate feasibility within [user's timeline/budget]"
 
-Task 2: "Technical validation for user's context:
-- Use Exa MCP to research [specific libraries] that fit requirements
-- Verify performance at [stated load] levels
-- Check compatibility with [mentioned integrations]
-- Validate feasibility within [stated timeline]
-Only recommend what's achievable with their constraints."
+Task 2: "Deep dive on implementation details:
+- Use Exa MCP to find production examples of [selected pattern]
+- Research [specific libraries/frameworks] needed
+- Find configuration examples for [user's use case]
+- Identify potential gotchas with [user's constraints]"
 
-Task 3: "Risk assessment for user's specific situation:
-- Identify risks specific to [their scale/timeline]
-- Find common failures with [their tech stack]
-- Assess complexity for [their team size]
-- Evaluate maintenance burden given constraints
-Be realistic about what could go wrong."
+Task 3: "Risk and mitigation planning:
+- Identify failure modes specific to [user's scale/context]
+- Research common issues with [selected approach + user's stack]
+- Find testing strategies that fit [user's team/timeline]
+- Plan for [user's evolution requirements]"
 ```
 
-## 9. Final Specification Generation
+## 9. Write Comprehensive PRD to TASK.md
 
-**Append the refined specification to TASK.md:**
+**Replace TASK.md contents with detailed Product Requirements Document:**
 
 ```markdown
+# [Feature/Project Name]
 
-## Refined Specification
-
-### Selected Approach
-[Chosen architecture with justification]
-
-### Requirements
-#### Functional (What it MUST do)
-- [ ] Invariant 1: [specific, testable]
-- [ ] Invariant 2: [measurable outcome]
-
-#### Non-Functional (How well it must do it)
-- Performance: [specific metrics based on research]
-- Security: [threat model from security analysis]
-- Reliability: [failure modes and recovery]
-
-### Dependencies (Explicit Documentation)
-- **External Systems**: [list all system dependencies with versions/contracts]
-- **Libraries/Frameworks**: [required dependencies with version constraints]
-- **Infrastructure**: [database, message queues, caches, etc.]
-- **Third-party Services**: [APIs, SaaS platforms, external integrations]
-
-### Assumptions (Make Implicit Explicit)
-- **Environment**: [deployment platform, resource availability, network topology]
-- **Scale**: [expected load, growth patterns, performance baselines]
-- **Users**: [technical level, usage patterns, device capabilities]
-- **Team**: [skill level, availability, knowledge constraints]
-
-### Constraints Discovered
-- **Technical**: [existing system boundaries found]
-- **Resource**: [realistic time/space limits]
-- **Integration**: [API contracts, data formats]
-- **Operational**: [deployment, monitoring, maintenance requirements]
-
-### Implementation Strategy
-#### Phase 1: Core Functionality
-- Minimal viable solution
-- Focus on critical path
-
-#### Phase 2: Hardening
-- Edge cases identified in research
-- Error handling patterns
-- Performance optimization opportunities
-
-### Success Criteria
-- [ ] All invariants hold
-- [ ] Performance meets targets
-- [ ] Security scan passes
-- [ ] Integration tests pass
-
-### Key Decisions
-- [Decision 1]: [Rationale]
-- [Decision 2]: [Rationale]
-
-### Open Questions (if any remain)
-- [Unresolved question needing user input]
-```
-
-
-## 10. Validation & Next Steps
-
-**The Hoare Test: "There are two ways of constructing a software design: One way is to make it so simple that there are obviously no deficiencies."**
-
-**Simplicity Validation**: Prefer the simplest solution that solves the problem completely.
-**Product Value First Validation**: Every approach must justify existence through demonstrable user value.
-**Explicitness Validation**: Make behavior obvious - surface and document all assumptions, dependencies, and constraints.
-
-Validate the specification:
-- Can this fail silently? → Document failure modes
-- What happens at the boundaries? → Define edge cases
-- **Is this the simplest solution?** → Justify every layer of complexity
-- **Could we solve this with fewer moving parts?** → Challenge each abstraction
-- **Would a newcomer understand this design?** → Test for obviousness
-- **How does this directly benefit users?** → Articulate clear user value proposition
-- **What user problems does this solve?** → Verify real user need exists
-- **Would users notice if we removed features/complexity?** → Eliminate vanity engineering
-- **Are all dependencies explicitly documented?** → List every external system dependency
-- **What assumptions are we making?** → Surface environment, scale, and user assumptions
-- **Are integration contracts clear?** → Define all interfaces and data flows explicitly
-- **What could break if assumptions change?** → Identify hidden coupling and constraints
-- Would Dijkstra approve? → Ensure mathematical precision
-
-**Next Command**: Run `/plan` to decompose this specification into actionable tasks
-
-Remember: **A good specification is not when there is nothing left to add, but when there is nothing left to take away.**
+*Generated: [Date]*
+*Approach: [Selected Architecture]*
 
 ---
-*For complete tenet definitions and vocabulary, see [docs/tenets.md](../docs/tenets.md)*
+
+## Executive Summary
+
+**Problem**: [1-2 sentences describing the user problem being solved]
+
+**Solution**: [1-2 sentences describing the proposed solution]
+
+**User Value**: [Clear statement of how users benefit]
+
+**Success Criteria**: [Primary metric for success]
+
+---
+
+## User Context
+
+### Target Users
+- **Who**: [User personas from answers]
+- **Technical Level**: [From user answers]
+- **Use Case**: [Primary scenarios]
+
+### User Problems Being Solved
+1. [Specific user problem 1]
+2. [Specific user problem 2]
+3. [Specific user problem 3]
+
+### Expected User Benefits
+- [Measurable benefit 1]
+- [Measurable benefit 2]
+- [Measurable benefit 3]
+
+---
+
+## Requirements
+
+### Functional Requirements (What it MUST do)
+
+**Core Functionality**:
+- [ ] [Invariant 1: Specific, testable requirement]
+- [ ] [Invariant 2: Specific, testable requirement]
+- [ ] [Invariant 3: Specific, testable requirement]
+
+**User Interactions**:
+- [ ] [User flow 1]
+- [ ] [User flow 2]
+- [ ] [Error handling scenario]
+
+**Integration Points**:
+- [ ] [System integration 1 from user answers]
+- [ ] [System integration 2 from user answers]
+- [ ] [Data exchange requirement]
+
+### Non-Functional Requirements (How well it must perform)
+
+**Performance** (Based on user scale requirements):
+- Throughput: [X requests/sec from user answers]
+- Latency: [P95 < Y ms]
+- Concurrent Users: [Z users from user answers]
+- Data Volume: [Expected scale from user answers]
+
+**Scalability**:
+- Initial capacity: [Current needs]
+- Growth plan: [6-month projection from user answers]
+- Scaling strategy: [Horizontal/vertical approach]
+
+**Security**:
+- Authentication: [Method based on user context]
+- Authorization: [Access control model]
+- Data protection: [Encryption, PII handling]
+- Threat model: [Key threats identified]
+
+**Reliability**:
+- Availability: [Target uptime]
+- Failure modes: [How system degrades]
+- Recovery: [RTO/RPO from user constraints]
+
+**Maintainability**:
+- Code organization: [Module structure]
+- Testing strategy: [Coverage and approach]
+- Documentation: [What needs docs]
+- Operational complexity: [Deployment, monitoring]
+
+---
+
+## Architectural Design
+
+### Selected Approach
+**[Architecture Name]**: [Brief description]
+
+**Rationale**:
+- **Simplicity**: [Why this is the simplest solution that works]
+- **User Value**: [How this maximizes user benefits]
+- **Explicitness**: [How this makes behavior obvious]
+- **Constraints**: [How this fits timeline/budget/team]
+
+### Alternative Approaches Considered
+
+| Approach | User Value | Simplicity | Risk | Why Not Selected |
+|----------|-----------|------------|------|------------------|
+| [Option 1] | [Score] | [Score] | [Score] | [Reason] |
+| [Option 2] | [Score] | [Score] | [Score] | [Reason] |
+
+### System Architecture
+
+**High-Level Components**:
+```
+[ASCII diagram or description of major components]
+
+Component 1 (Interface: simple) ──> Component 2 (Interface: simple)
+       │                                    │
+       └──> Shared Data Store <─────────────┘
+```
+
+**Module Boundaries** (Deep Module Design):
+- **[Module 1]**:
+  - Interface: [Simple, focused API]
+  - Responsibility: [Single, clear purpose]
+  - Hidden complexity: [What implementation details are internal]
+- **[Module 2]**:
+  - Interface: [Simple, focused API]
+  - Responsibility: [Single, clear purpose]
+  - Hidden complexity: [What implementation details are internal]
+
+**Abstraction Layers**:
+- **Layer 1 (Top)**: [User-facing abstraction]
+- **Layer 2 (Middle)**: [Business logic abstraction - different from Layer 1]
+- **Layer 3 (Bottom)**: [Infrastructure abstraction - different from Layer 2]
+
+*Note: Each layer changes vocabulary and abstraction level - no pass-through methods*
+
+### Technology Stack
+
+**Languages/Frameworks**:
+- [Technology 1]: [Version, rationale]
+- [Technology 2]: [Version, rationale]
+
+**Libraries/Dependencies**:
+- [Library 1]: [Version, purpose, why chosen]
+- [Library 2]: [Version, purpose, why chosen]
+
+**Infrastructure**:
+- Database: [Type, scale considerations]
+- Caching: [If needed, approach]
+- Message Queue: [If needed, approach]
+- Storage: [File storage, object storage]
+
+**Rationale**: [Why this stack serves users best, fits constraints, minimizes complexity]
+
+---
+
+## Dependencies & Assumptions
+
+### Explicit Dependencies
+**External Systems**:
+- [System 1]: [API version, contract, SLA]
+- [System 2]: [API version, contract, SLA]
+
+**Libraries/Services**:
+- [Dependency 1]: [Version constraint, criticality]
+- [Dependency 2]: [Version constraint, criticality]
+
+**Infrastructure Requirements**:
+- Compute: [Specification]
+- Storage: [Specification]
+- Network: [Requirements]
+
+### Documented Assumptions
+**Environment**:
+- Deployment platform: [From user answers]
+- Network topology: [Assumptions about connectivity]
+- Resource availability: [Compute/memory/storage]
+
+**Scale**:
+- Initial load: [From user answers]
+- Growth rate: [Projection]
+- Peak patterns: [Traffic characteristics]
+
+**Users**:
+- Technical capability: [From user answers]
+- Device/browser support: [Compatibility matrix]
+- Usage patterns: [How users will interact]
+
+**Team**:
+- Size: [From user answers]
+- Skill level: [Capabilities]
+- Timeline: [From user answers]
+
+### Identified Constraints
+**Technical**:
+- [Existing system constraint 1]
+- [Integration limitation 2]
+- [Technology restriction 3]
+
+**Resource**:
+- Budget: [From user answers]
+- Timeline: [From user answers]
+- Team capacity: [From user answers]
+
+**Operational**:
+- Deployment process: [Existing practices to follow]
+- Monitoring/alerting: [Existing tooling]
+- Compliance: [Regulatory requirements]
+
+---
+
+## Implementation Strategy
+
+### Phase 1: Core Functionality (MVP)
+**Goal**: Minimal viable solution proving core value
+
+**Scope**:
+- [ ] [Core feature 1]
+- [ ] [Core feature 2]
+- [ ] [Critical integration 1]
+- [ ] [Basic error handling]
+
+**Success Criteria**:
+- [ ] [Primary user flow works]
+- [ ] [Integration test passes]
+- [ ] [Performance baseline met]
+
+**Estimated Time**: [Based on user timeline]
+
+### Phase 2: Hardening & Polish
+**Goal**: Production-ready, robust implementation
+
+**Scope**:
+- [ ] [Edge case handling from research]
+- [ ] [Error recovery patterns]
+- [ ] [Performance optimization]
+- [ ] [Monitoring/observability]
+- [ ] [Documentation]
+
+**Success Criteria**:
+- [ ] [All error scenarios handled]
+- [ ] [Performance targets met]
+- [ ] [Security scan passes]
+- [ ] [Code review complete]
+
+**Estimated Time**: [Based on user timeline]
+
+### Phase 3: Evolution (Future)
+**Planned Extensions** (Based on user's 6-month projection):
+- [Future feature 1 from user answers]
+- [Future feature 2 from user answers]
+- [Scalability improvements]
+
+**Design Considerations**:
+- [What we're designing for extensibility]
+- [What we're intentionally hardcoding]
+- [Where we expect change]
+
+---
+
+## Testing Strategy
+
+### Test Pyramid
+
+**Unit Tests** (Fast, focused):
+- [ ] [Module 1: Core logic]
+- [ ] [Module 2: Business rules]
+- [ ] [Module 3: Utilities]
+- Target: 80%+ coverage of business logic
+
+**Integration Tests** (API contracts):
+- [ ] [Integration 1 from user requirements]
+- [ ] [Integration 2 from user requirements]
+- [ ] [Database interactions]
+- [ ] [External service mocking]
+
+**End-to-End Tests** (User scenarios):
+- [ ] [Critical user flow 1]
+- [ ] [Critical user flow 2]
+- [ ] [Error recovery scenario]
+
+**Performance Tests**:
+- [ ] Load test: [X req/sec sustained]
+- [ ] Stress test: [Peak load + 50%]
+- [ ] Soak test: [24hr stability]
+
+### Test Data & Environments
+- **Test Data**: [Strategy for realistic data]
+- **Staging**: [Environment matching production]
+- **CI/CD**: [Automated test runs]
+
+---
+
+## Success Metrics & KPIs
+
+### User Value Metrics (Primary)
+- [Metric 1 from user answers]: Target [X]
+- [Metric 2 from user answers]: Target [Y]
+- User satisfaction: Target [Z]
+
+### Technical Metrics (Secondary)
+- Performance: [Latency targets]
+- Reliability: [Uptime target]
+- Error rate: [< X% target]
+
+### Business Metrics (From user context)
+- [ROI metric from user answers]
+- [Business outcome from user answers]
+- [Adoption metric]
+
+### How We'll Measure
+- [Instrumentation approach]
+- [Analytics tooling]
+- [Reporting cadence]
+
+---
+
+## Risks & Mitigation
+
+### Technical Risks
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| [Risk 1 from research] | High/Med/Low | High/Med/Low | [Specific mitigation plan] |
+| [Risk 2 from research] | High/Med/Low | High/Med/Low | [Specific mitigation plan] |
+
+### Timeline Risks
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| [Schedule risk] | High/Med/Low | High/Med/Low | [Buffer, scope reduction] |
+| [Dependency risk] | High/Med/Low | High/Med/Low | [Early integration, mocking] |
+
+### Operational Risks
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| [Deployment risk] | High/Med/Low | High/Med/Low | [Rollback plan, feature flags] |
+| [Scale risk] | High/Med/Low | High/Med/Low | [Monitoring, auto-scaling] |
+
+---
+
+## Key Decisions & Rationale
+
+### Decision 1: [Technology/Architecture Choice]
+**Decision**: [What was decided]
+**Options Considered**: [Alternatives]
+**Rationale**: [Why this choice - user value, simplicity, explicitness]
+**Trade-offs**: [What we're giving up]
+
+### Decision 2: [Design Pattern Choice]
+**Decision**: [What was decided]
+**Options Considered**: [Alternatives]
+**Rationale**: [Why this choice]
+**Trade-offs**: [What we're giving up]
+
+### Decision 3: [Scope/Feature Choice]
+**Decision**: [What's in/out]
+**Rationale**: [Based on user priorities, timeline, value]
+
+---
+
+## Leyline Binding Compliance
+
+### Applicable Bindings for Implementation
+Based on detected technologies and architecture:
+
+**Core Bindings**:
+- hex-domain-purity: [How we're maintaining domain purity]
+- api-design: [Interface contracts defined]
+- automated-quality-gates: [CI/CD checks]
+- code-size: [Module size limits]
+
+**Technology-Specific Bindings**:
+- [Binding 1]: [Compliance approach]
+- [Binding 2]: [Compliance approach]
+
+**Validation Plan**:
+- Code review checklist includes binding compliance
+- Automated linting for applicable rules
+- Manual review for architectural bindings
+
+---
+
+## Open Questions (If Any)
+
+- [ ] [Unresolved question 1]: Needs [stakeholder] input
+- [ ] [Unresolved question 2]: Requires [technical research]
+
+*Note: These should be rare - most questions answered in clarification phase*
+
+---
+
+## Validation Checklist
+
+**Ousterhout Validation**:
+- [ ] **Deep Modules**: Are we creating simple interfaces hiding complex implementations?
+- [ ] **Information Hiding**: Are implementation details truly hidden?
+- [ ] **No Information Leakage**: Can we change internals without breaking callers?
+- [ ] **Different Abstractions**: Does each layer change vocabulary/concepts?
+- [ ] **Strategic Design**: Have we invested 10-20% time in design quality?
+
+**Tenet Validation**:
+- [ ] **Simplicity**: Is this the simplest solution that solves the problem completely?
+- [ ] **User Value**: Does every feature clearly benefit users?
+- [ ] **Explicitness**: Are all dependencies, assumptions, and constraints documented?
+- [ ] **Maintainability**: Would a developer understand this in 6 months?
+- [ ] **Observability**: Can we see what's happening in production?
+
+**Dijkstra Validation**:
+- [ ] All invariants explicitly stated?
+- [ ] Edge cases defined?
+- [ ] Failure modes documented?
+- [ ] Mathematical precision in requirements?
+
+---
+
+## Next Steps
+
+1. Review this PRD with stakeholders
+2. Get approval on approach and constraints
+3. Run `/plan` to decompose into actionable tasks
+4. Begin Phase 1 implementation
+
+**Ready for**: `/plan` command
+
+---
+
+*"A good specification is not when there is nothing left to add, but when there is nothing left to take away."*
+```
+
+## 10. Present PRD Summary
+
+After writing TASK.md, provide concise summary to user:
+
+```
+✅ Specification Complete
+
+I've written a comprehensive PRD to TASK.md covering:
+
+**Approach**: [Selected architecture]
+**User Value**: [Key benefits]
+**Timeline**: [Phase 1: X weeks, Phase 2: Y weeks]
+**Key Decisions**: [Major choice 1, Major choice 2]
+
+**Complexity Assessment**:
+- Dependencies: [Count and criticality]
+- Risk Level: [Low/Medium/High]
+- Confidence: [High/Medium based on research]
+
+**Next**: Run `/plan` to break this down into implementation tasks.
+
+Any questions or changes to the approach?
+```
+
+---
 
 ## Workflow Summary
 
-**Phase 1 (Initial Investigation):**
-1. Read TASK.md and ultrathink
-2. Conduct parallel research
-3. Evaluate architecture alternatives
-4. Append investigation summary to TASK.md
-5. Append clarifying questions to TASK.md
-6. STOP and wait for user to add answers
+**Single Continuous Flow**:
+1. Read TASK.md (user's initial request)
+2. Ultrathink and conduct parallel research
+3. Evaluate 3-5 architectural alternatives
+4. Generate focused clarifying questions
+5. **Ask user directly** (conversational, not file-based)
+6. **Wait for user's answers**
+7. Conduct targeted research based on answers
+8. **Write comprehensive PRD to TASK.md** (replacing original content)
+9. Present summary to user
 
-**Phase 2 (Post-Answer Refinement):**
-1. Read TASK.md with user's answers
-2. Conduct targeted research based on answers
-3. Refine approach with concrete constraints
-4. Append refined specification to TASK.md
+**Key Innovation**: Direct conversation for clarification, then comprehensive documentation in TASK.md. No intermediate file states, no manual editing required.
 
-**Key Innovation**: The specification evolves through natural language dialogue within TASK.md itself - no JSON, no temp files, just a living document that tells its own story.
+---
 
-## Implementation Notes
-
-**Phase 1 appends to TASK.md:**
-```markdown
-## Investigation Summary
-- Key findings from research
-- Architecture tradeoffs discovered
-- Existing patterns identified
-
-## Clarifying Questions
-Please answer these questions to refine the specification:
-1. Scale: What's the expected load?
-2. Constraints: What are the hard limits?
-[...more questions...]
-
-*[Your answers here]*
-```
-
-**Phase 2 appends to TASK.md:**
-```markdown
-## Refined Specification
-
-### Selected Approach
-[Chosen architecture based on answers]
-
-### Requirements
-[Functional and non-functional requirements]
-
-### Success Criteria
-[Measurable outcomes]
-```
-
-The entire specification process becomes a readable narrative in TASK.md.
+*For complete tenet definitions and vocabulary, see [docs/tenets.md](../docs/tenets.md)*
