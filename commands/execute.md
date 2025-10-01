@@ -6,8 +6,11 @@ Grab next task from TODO.md → Think about approach → Do the work → Commit 
 
 ## PROCESS
 
-1. **Find next task**: Look for first `[~]` (in-progress) or `[ ]` (not started) task in TODO.md
-2. **Mark in-progress**: Update `[ ]` to `[~]`
+1. **Find next task(s)**: Look for first `[~]` (in-progress) or `[ ]` (not started) task in TODO.md
+   - **Batch bite-sized tasks**: If multiple tasks are tiny and narrowly scoped (e.g., rename variable, fix typo, update import), execute them consecutively without returning to TODO.md between each one
+   - **Single complex tasks**: For substantial tasks requiring thought and planning, execute one at a time
+
+2. **Mark in-progress**: Update `[ ]` to `[~]` for all tasks you're about to work on
 3. **Think deeply before acting**:
    - Consider the approach carefully and plan your implementation
    - Look for existing patterns in the codebase to follow
@@ -22,11 +25,12 @@ Grab next task from TODO.md → Think about approach → Do the work → Commit 
    - **Be Explicit**: Make dependencies visible, avoid hidden state, ensure behavior is obvious from function signatures.
    - **Follow Technology Standards**: Apply the appropriate patterns and best practices for the language and framework you're using.
 5. **COMMIT ATOMICALLY**:
-   - Every completed task gets a commit. No exceptions.
+   - **For single tasks**: Every completed task gets a commit. No exceptions.
+   - **For batched bite-sized tasks**: Group related tiny changes into one semantic commit (e.g., multiple typo fixes → one "fix: correct typos" commit)
    - Stage relevant changes: `git add -p` or `git add [files]`
    - Write semantic commit message: `git commit -m "type: concise description"`
    - Types: `feat|fix|docs|style|refactor|test|chore`
-6. **Mark complete**: Update `[~]` to `[x]` when done
+6. **Mark complete**: Update `[~]` to `[x]` for all completed tasks
 
 ## THE CARMACK RULE
 
@@ -138,10 +142,11 @@ Identify the type of file being worked on and apply the relevant technology and 
 ## NOTES
 
 - Always think through the approach before diving into implementation
+- **Batch execution**: When you see a cluster of tiny, narrowly-scoped tasks (rename, typo fix, import update), execute them all in sequence
 - If task includes context or detailed steps, follow them
 - If blocked, mark as `[!]` with explanation in work log and move to next task
 - Only preserve work logs that contain valuable context for future reference
-- **ALWAYS commit changes after task completion** - no exceptions
+- **ALWAYS commit changes after task completion** - no exceptions (batch tiny tasks into one semantic commit)
 - **ALWAYS validate simplicity** - complexity is the enemy of reliability
 
 ---
