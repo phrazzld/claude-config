@@ -56,27 +56,21 @@ Two-phase quality review that first cleans up the code, then tears it apart with
 
 ## 4. Phase 3: Design Quality Review (Ousterhout Red Flags)
 
-**Complexity and Module Design Analysis**: Before checking binding compliance, scan for fundamental design issues.
+**Scan for six design red flags indicating accumulating complexity:**
 
-### Ousterhout Red Flags
+- [ ] **Information Leakage**: Implementation details visible through interfaces. If changing a module's internals breaks calling code, the implementation has leaked. Examples: returning raw database rows, exposing internal data structures, requiring callers to understand implementation details.
 
-Check for these six design red flags that indicate accumulating complexity:
+- [ ] **Temporal Decomposition**: Code organized by execution order rather than functionality. High-level functions that are just sequences of method calls with no added abstraction. Creates change amplification - simple changes require edits across multiple locations.
 
-**1. Information Leakage**: Implementation details visible through interfaces. If you change a module's internal structure and calling code breaks, the implementation has leaked. Example: Methods returning raw database rows, exposing internal data structures, or requiring callers to know implementation details.
+- [ ] **Over-exposure / Generic Names**: Vague names like Manager, Util, Helper, Context, Service without domain context. These suggest unfocused responsibility and often become dumping grounds for unrelated functionality.
 
-**2. Temporal Decomposition**: Code organized by execution order rather than functionality. High-level functions that are just sequences of method calls with no added abstraction. This creates change amplification - simple changes require edits across multiple locations.
+- [ ] **Pass-through Methods**: Methods that only call another method with same/similar signature. Indicate shallow, leaky abstractions that add no value. Each layer should change the abstraction level.
 
-**3. Over-exposure / Generic Names**: Classes or modules named `Manager`, `Util`, `Helper`, `Context`, `Service` without specific domain context. These vague names suggest unfocused responsibility and often hide dumping grounds for unrelated functionality.
+- [ ] **Configuration Overload**: Dozens of exposed parameters forcing users to understand implementation. Good modules have sensible defaults and hide internal knobs.
 
-**4. Pass-through Methods**: Methods that do nothing but call another method with the same or similar signature. These indicate shallow, leaky abstractions that add no value. Each layer should change the abstraction level.
+- [ ] **Shallow Modules**: Interface complexity ≈ implementation complexity. Wrapper classes exposing most of wrapped object's methods. Module Value = Functionality - Interface Complexity. Low value indicates shallow abstraction.
 
-**5. Configuration Overload**: Dozens of exposed configuration parameters forcing users to understand implementation details. Good modules have sensible defaults and hide internal knobs.
-
-**6. Shallow Modules**: Interface complexity approximately equals implementation complexity. Wrapper classes that expose most of wrapped object's methods. The module provides little value (value = functionality - interface complexity).
-
-**Red Flag Remediation**: For each red flag found, explain the specific violation and suggest how to deepen the module, hide implementation, or simplify the interface.
-
-See [docs/ousterhout-principles.md](../docs/ousterhout-principles.md) for detailed examples and patterns.
+**For each flag:** Explain specific violation, suggest how to deepen module/hide implementation/simplify interface.
 
 ## 5. Phase 4: Leyline Binding Validation Expert
 
