@@ -1,342 +1,143 @@
-Comprehensive quality review: cleanup, then brutal honesty.
+Comprehensive quality review: cleanup first, then brutal honesty.
 
 # CODE-REVIEW
 
-Two-phase quality review that first cleans up the code, then tears it apart with critical analysis.
+Two-phase approach: clean up the code, then tear it apart with critical analysis.
 
-## 1. Review Context Gathering
+## Review Scope
 
-**Determine review scope**:
-- Check if reviewing a PR: `gh pr view` or examine PR URL
-- If branch review: `git diff main...HEAD` (or appropriate base branch)
-- Note changed files, additions, deletions, and affected modules
-- For post-task review: `git diff HEAD~1` or check recently modified files
+Determine what you're reviewing:
+- PR review: `gh pr view` or examine PR URL
+- Branch review: `git diff main...HEAD` (or appropriate base)
+- Post-task: `git diff HEAD~1` or recent changes
+- Note changed files, affected modules, additions/deletions
 
-## 2. Phase 1: The Cleanup (Matt Shumer)
+## Phase 1: Cleanup (Matt Shumer's Rule)
 
-**"After successfully completing your goal, ask: Please clean up the code you worked on, remove any bloat you added, and document it very clearly."**
+"After completing your goal, clean up the code, remove bloat, and document clearly."
 
-**Cleanup Actions**:
-- Remove all console.logs, debug statements, and print debugging
-- Delete commented-out code and zombie imports
-- Fix inconsistent naming (variables, functions, classes)
-- Extract magic numbers and hardcoded strings to constants
-- Simplify overly complex logic and nested conditionals
-- Add clear documentation for complex sections
-- Remove any temporary hacks or workarounds
-- Ensure consistent code style and formatting
+**Remove the obvious problems**:
+- Debug statements (console.log, print, fmt.Println, debugger)
+- Commented-out code and dead imports
+- Inconsistent naming and magic numbers
+- Temporary hacks and workarounds
+- Missing documentation for complex sections
 
-**Documentation Check**:
-- Every public function has a clear purpose comment
-- Complex algorithms have step-by-step explanations
-- Non-obvious decisions are explained
-- Configuration and setup requirements are documented
+Make it code you'd be proud to show in a job interview.
 
-## 3. Phase 2: The Critical Analysis (Daniel Jeffries)
+## Phase 2: Brutal Honesty (Daniel Jeffries)
 
-**"That's great that its 'production ready' but let's pretend it's not. Go back and tell me what you missed, half assed or did wrong. Ferret out any magical code and hallucination bullshit. Analyze it with a critical eye like you are Linus Torvalds on a bender doing a code review. Prove that it works by designing a useful test. Output your understanding of what I just said and your plan once you have analyzed it."**
+"Pretend it's NOT production ready. What did you miss, half-ass, or do wrong? Analyze like Linus on a code review bender."
 
-**Brutal Honesty Questions**:
-- What did I miss, half-ass, or completely botch?
-- Where's the magical thinking and hallucination bullshit?
-- What would make Linus rage-quit this review?
-- What edge cases will definitely explode in production?
+**Ask yourself**:
+- Where's the magical thinking and hallucination?
+- What edge cases will explode in production?
 - Where did I copy-paste without understanding?
-- What tests would actually prove this garbage works?
-- What assumptions will bite us at 3am on a Sunday?
-- Where's the technical debt I'm hiding?
+- What assumptions will bite us at 3am?
+- What tests would actually prove this works?
 
-**Linus-Level Analysis**:
-- **Security**: What moron would expose user data like this?
-- **Performance**: This O(n²) loop is what - a DoS vulnerability you're gifting to attackers?
-- **Error Handling**: "It probably won't fail" is not error handling, genius
-- **Testing**: These tests test nothing but your ability to write useless tests
-- **Architecture**: This coupling is so tight it needs therapy
-- **Documentation**: "It's self-documenting" = "I'm too lazy to explain my mess"
+**Linus-Level Questions**:
+- **Security**: What exposes user data or creates vulnerabilities?
+- **Performance**: Where's the O(n²) loop becoming a DoS vulnerability?
+- **Error handling**: "It probably won't fail" isn't error handling
+- **Testing**: Do tests prove anything or just pass?
+- **Architecture**: Is coupling so tight it needs therapy?
 
-## 4. Phase 3: Design Quality Review (Ousterhout Red Flags)
+## Phase 3: Ousterhout Red Flags
 
-**Scan for six design red flags indicating accumulating complexity:**
+Scan for six complexity red flags:
 
-- [ ] **Information Leakage**: Implementation details visible through interfaces. If changing a module's internals breaks calling code, the implementation has leaked. Examples: returning raw database rows, exposing internal data structures, requiring callers to understand implementation details.
+**1. Information Leakage**: Implementation details visible through interfaces. If changing internals breaks callers, you have leakage. (Example: returning raw DB rows exposes schema to callers)
 
-- [ ] **Temporal Decomposition**: Code organized by execution order rather than functionality. High-level functions that are just sequences of method calls with no added abstraction. Creates change amplification - simple changes require edits across multiple locations.
+**2. Temporal Decomposition**: Code organized by execution order (step1, step2), not functionality. Creates change amplification where simple changes require edits across multiple locations.
 
-- [ ] **Over-exposure / Generic Names**: Vague names like Manager, Util, Helper, Context, Service without domain context. These suggest unfocused responsibility and often become dumping grounds for unrelated functionality.
+**3. Over-exposure / Generic Names**: Manager, Util, Helper, Context without domain meaning. Suggests unfocused responsibility, becomes dumping ground.
 
-- [ ] **Pass-through Methods**: Methods that only call another method with same/similar signature. Indicate shallow, leaky abstractions that add no value. Each layer should change the abstraction level.
+**4. Pass-through Methods**: Methods only calling another with same signature. Each layer should transform, not just forward.
 
-- [ ] **Configuration Overload**: Dozens of exposed parameters forcing users to understand implementation. Good modules have sensible defaults and hide internal knobs.
+**5. Configuration Overload**: Dozens of parameters forcing users to understand implementation. Good modules have defaults, hide internal knobs.
 
-- [ ] **Shallow Modules**: Interface complexity ≈ implementation complexity. Wrapper classes exposing most of wrapped object's methods. Module Value = Functionality - Interface Complexity. Low value indicates shallow abstraction.
+**6. Shallow Modules**: Interface complexity ≈ implementation complexity. Module Value = Functionality - Interface Complexity. Low value = shallow abstraction.
 
-**For each flag:** Explain specific violation, suggest how to deepen module/hide implementation/simplify interface.
+For each flag found: explain violation, suggest how to deepen module/hide implementation/simplify interface.
 
-## 5. Phase 4: Leyline Binding Validation Expert
+## Phase 4: Principle Compliance
 
-**Binding Compliance Review**: Validate all changes against applicable leyline bindings based on file types modified.
+Evaluate against core principles (weighted scoring):
 
-### File Type Detection & Binding Application
+**Simplicity (30%)**:
+- Is this the simplest solution or clever when boring would work?
+- **Violations**: Premature abstraction, unnecessary complexity, over-engineering
+- **Test**: Can you explain it in one sentence? Would a junior understand?
 
-Analyze the diff to identify which types of files have been modified and apply the appropriate validation rules for each technology.
+**Explicitness (25%)**:
+- Dependencies visible? Side effects obvious? Or hidden state and magic?
+- **Violations**: Hidden dependencies, magic behavior, undocumented assumptions
+- **Check**: Dependencies in signatures, return types clear, behavior understandable
 
-Detect whether changes include TypeScript, JavaScript, Go, Python, SQL, Rust, Java, Ruby, configuration files, or Docker files. Each file type has specific best practices and patterns that should be validated.
+**Modularity (25%)**:
+- Independent components with clear boundaries? Or god classes and tight coupling?
+- **Violations**: Mixed concerns, circular dependencies, can't test in isolation
+- **Verify**: Single responsibility, loose coupling, high cohesion, clear boundaries
 
-**Technology-Specific Validation Guidelines:**
+**Maintainability (20%)**:
+- Would future you understand this? Or cryptic names and missing docs?
+- **Violations**: Poor naming (a, temp, data, thing), no docs for complex logic
+- **Future test**: Clear intent, obvious extension points, well-documented
 
-**TypeScript/JavaScript**: Check for inappropriate use of 'any' types, ensure proper type annotations, verify strict null checking, validate React hooks usage and error boundaries, prefer modern async patterns over callbacks.
+## Phase 5: Technology-Specific Checks
 
-**Go**: Ensure all errors are explicitly handled rather than ignored, verify context propagation in APIs, check for proper interface design, validate goroutine lifecycle management and proper mutex usage.
+Based on file types changed:
 
-**Python**: Look for proper type hints, docstrings for public interfaces, appropriate exception handling, use of context managers for resources, and modern string formatting patterns.
+**Type Safety**: TypeScript 'any' without justification? Go errors ignored? Weak typing bypassing compile-time safety?
 
-**Rust**: Validate error handling patterns, check for unjustified use of unwrap, ensure proper lifetime management and borrowing patterns, verify that unsafe blocks are justified and necessary.
+**Architecture Patterns**:
+- **Domain Purity**: Business logic must be infrastructure-free. Flag direct database/HTTP/filesystem calls in domain code.
+- **Component Isolation**: Single responsibility, no circular dependencies, testable independently
+- **Interface Contracts**: Backward compatibility maintained, breaking changes versioned
+- **Dependency Direction**: High-level modules don't depend on low-level details
 
-**SQL/Migrations**: Check for proper constraints and indexes, validate naming conventions, ensure migrations are idempotent, avoid anti-patterns like SELECT * in production code.
+**Common Violations**:
+- Type safety issues (unjustified dynamic types, swallowed exceptions)
+- Architecture violations (business logic mixed with infrastructure)
+- Dependency problems (circular references, improper layering)
+- Testing impediments (tight coupling preventing isolation)
+- Performance issues (missing indexes, N+1 queries)
 
-**Docker**: Review for security best practices like non-root users, check for efficient layer caching, validate version pinning, ensure proper use of multi-stage builds where appropriate.
+## Categorize & Generate TODOs
 
-**Configuration Files**: Ensure no hardcoded secrets, verify environment-appropriate settings, check for proper structure and documentation of non-obvious values.
+### BLOCKERS (Production Risks)
+Security vulnerabilities, data loss scenarios, performance issues, breaking changes without migration, unhandled errors crashing everything
 
-### Architecture Principles Review
+### IMPROVEMENTS (Fix Before Merge)
+Code that works but makes no sense, missing critical tests, unhandled errors, technical debt accumulating
 
-**Domain Purity**: Verify that business logic remains free from infrastructure concerns. Check that domain code doesn't directly query databases or handle HTTP requests. Ensure business rules are expressed as pure functions where possible.
+### POLISH (Nice to Have)
+Style issues, better naming, refactoring opportunities
 
-**Component Isolation**: Review modules for single responsibility. Check for clear boundaries and interfaces between components. Identify and flag any circular dependencies. Verify components can be tested independently.
-
-**Interface Contracts**: Ensure backward compatibility is maintained in public APIs. Check that version changes are properly documented. Verify that breaking changes include appropriate versioning.
-
-**Dependency Management**: Validate that dependencies flow in the correct direction following clean architecture principles. Ensure high-level modules don't depend on low-level implementation details.
-
-### Binding Violation Detection
-
-Scan the code for common violations including:
-- Type safety issues like unjustified use of dynamic types
-- Error handling problems such as swallowed exceptions or ignored errors
-- Architecture violations where business logic is mixed with infrastructure
-- Dependency problems including circular references or improper layering
-- Testing impediments caused by tight coupling
-- Performance issues like missing database indexes or N+1 query patterns
-
-### Binding Review Report Format
-
-Document your binding compliance findings by:
-1. Listing which files were reviewed and what validation rules apply to each
-2. Noting what passed compliance checks successfully
-3. Identifying specific violations with file locations and severity levels
-4. Providing clear remediation steps for each violation found
-
-Organize violations by severity (HIGH for issues that will cause problems in production, MEDIUM for technical debt, LOW for style issues). Each violation should include the specific location, what rule was violated, and how to fix it.
-
-## 6. Phase 5: Tenet Compliance Review
-
-**Core Tenet Validation**: Evaluate all code changes against fundamental leyline tenets.
-
-### Simplicity Tenet Review
-**"Prefer the simplest solution that solves the problem completely"**
-
-**Simplicity Violations to Detect:**
-- Clever code where boring would work
-- Unnecessary abstractions (factories for single types)
-- Over-engineered solutions to simple problems
-- Premature optimization without metrics
-- Complex inheritance where composition would suffice
-- Configuration for values that never change
-
-**Simplicity Score:**
+**For each violation, generate specific TODO**:
 ```markdown
-✅ SIMPLE: Can explain in one sentence, junior dev would understand
-⚠️ MODERATE: Some complexity justified by requirements
-❌ COMPLEX: Over-engineered, needs simplification
+- [ ] [CRITICAL] Handle ignored error in api/handler.go:89
+  Principle: Explicitness (silent failures hide problems)
+  Problem: Database errors swallowed, data loss risk
+  Fix: Add error handling, return to caller or log with context
+  Time: 15min
 ```
 
-### Explicitness Tenet Review
-**"Make behavior obvious - explicit over implicit"**
+## Scoring & Decision
 
-**Implicit Behavior to Flag:**
-- Hidden dependencies not visible in signatures
-- Side effects not obvious from function names
-- Global state mutations
-- Magic numbers without context
-- Implicit type conversions
-- Undocumented assumptions
+Overall code quality score:
+- **90-100**: Exceptional, ready to merge
+- **70-89**: Minor improvements needed
+- **50-69**: Significant issues before merge
+- **Below 50**: Major revision required
 
-**Explicitness Checklist:**
-- [ ] All dependencies visible in function signatures
-- [ ] Return types clearly specified
-- [ ] Side effects obvious from naming
-- [ ] No hidden global state access
-- [ ] Configuration explicit and documented
+Score breakdown:
+- Code Quality (25%): Coverage, documentation, error handling
+- Principle Compliance (35%): Simplicity, explicitness, modularity, maintainability
+- Technology Best Practices (20%): Type safety, architecture, patterns
+- Architecture Alignment (20%): Clean architecture, proper layering
 
-### Modularity Tenet Review
-**"Build independent, focused components with clear boundaries"**
+**Merge Decision**: BLOCKED or APPROVED with frank explanation of issues and required fixes.
 
-**Modularity Violations:**
-- God classes/modules doing everything
-- Tight coupling between unrelated components
-- Circular dependencies
-- Mixed concerns in single module
-- Lack of clear boundaries
-- Components not testable in isolation
-
-**Module Health Check:**
-```yaml
-Single Responsibility: Each module has one clear purpose
-Loose Coupling: Modules interact through interfaces
-High Cohesion: Related functionality grouped together
-Clear Boundaries: Obvious what belongs where
-Independent Testing: Can test without dependencies
-```
-
-### Maintainability Tenet Review
-**"Write for the future developer (probably you in 6 months)"**
-
-**Maintainability Red Flags:**
-- Cryptic variable names (a, temp, data, thing)
-- Missing documentation for complex logic
-- Inconsistent patterns in similar code
-- No clear extension points for likely changes
-- Copy-paste code that should be extracted
-- Deep nesting making code hard to follow
-
-**Future Developer Test:**
-```markdown
-✅ MAINTAINABLE: Clear intent, obvious extension points, well-documented
-⚠️ UNCLEAR: Needs some documentation or refactoring
-❌ CRYPTIC: Would require archaeology to modify
-```
-
-### Tenet Compliance Assessment
-
-Evaluate the code against four core tenets, weighing their relative importance:
-- **Simplicity (30%)**: Is this the simplest solution that solves the problem completely?
-- **Explicitness (25%)**: Is behavior obvious with all dependencies visible?
-- **Modularity (25%)**: Are components independent and focused with clear boundaries?
-- **Maintainability (20%)**: Will future developers understand and be able to modify this code?
-
-### Tenet Review Reporting
-
-For each tenet, provide:
-1. A score reflecting compliance level
-2. Specific examples of what's done well
-3. Clear identification of violations
-4. Concrete suggestions for improvement
-
-Summarize with an overall compliance assessment and list the most critical issues that must be addressed. Focus on actionable feedback that will meaningfully improve code quality.
-
-## 7. Categorize Findings
-
-### BLOCKERS (This Will Burn In Production)
-- Security vulnerabilities that will get us pwned
-- Data loss scenarios that will lose customer data
-- Performance issues that will take down the server
-- Breaking changes with no migration path
-- Unhandled errors that will crash everything
-
-### IMPROVEMENTS (Should Fix Before Someone Notices)
-- Code that works but makes no sense
-- Missing tests for critical paths
-- Performance optimizations we're ignoring
-- Documentation that's wrong or missing
-- Technical debt we're accumulating
-
-### POLISH (Nice To Have If We Cared)
-- Style inconsistencies
-- Better naming conventions
-- Refactoring opportunities
-- Enhanced logging
-
-## 8. Generate TODO.md Items
-
-### Binding Violation TODO Generation
-
-When binding or tenet violations are found, automatically generate actionable TODO items:
-
-**For Each Binding Violation**:
-- Create a specific TODO item with the exact file and line number
-- Describe what binding or tenet was violated and why it matters
-- Provide concrete steps to fix the violation
-- Set priority based on risk (CRITICAL for production risks, HIGH for security/reliability, MEDIUM for maintainability)
-- Include the specific standard or pattern that should be followed instead
-
-**TODO Format for Violations**:
-Each generated TODO should clearly state:
-- The location of the violation (file:line)
-- The principle that was violated
-- Why this violation is problematic
-- The specific remediation required
-- Any context needed to understand the fix
-
-**Prioritization Guidelines**:
-- **CRITICAL**: Security vulnerabilities, data loss risks, production crashes
-- **HIGH**: Error handling gaps, architectural violations, missing critical tests
-- **MEDIUM**: Code quality issues, maintainability problems, missing documentation
-- **LOW**: Style issues, naming conventions, minor optimizations
-
-**Example TODO Generation**:
-When you find a TypeScript file using 'any' without justification, generate:
-"[HIGH] Fix untyped parameter in UserService.ts:45 - Replace 'any' with proper User interface type to maintain type safety"
-
-When you find ignored errors in Go code, generate:
-"[CRITICAL] Handle ignored error in api/handler.go:89 - Error from database query must be handled to prevent silent failures"
-
-**Add all BLOCKERS with brutal clarity**:
-
-Create TODO items that are impossible to misunderstand. Each blocker should explain what's broken, why it's dangerous, and what needs to be done. Write descriptions that would make any developer immediately understand the urgency and nature of the problem.
-
-## 9. Tenet-Aware Review Scoring
-
-### Comprehensive Quality Scoring
-
-Enhance the review with a scoring system that considers both traditional quality metrics and tenet compliance:
-
-**Scoring Dimensions**:
-- **Code Quality** (25%): Traditional metrics like test coverage, documentation, error handling
-- **Tenet Compliance** (35%): Adherence to simplicity, explicitness, modularity, maintainability principles
-- **Binding Adherence** (20%): Technology-specific best practices and patterns
-- **Architecture Alignment** (20%): Clean architecture principles, proper layering, dependency management
-
-**Scoring Scale**:
-- **90-100**: Exceptional - Ready to merge, exemplary code
-- **70-89**: Good - Minor improvements needed, can merge with small fixes
-- **50-69**: Needs Work - Significant issues to address before merge
-- **Below 50**: Requires Major Revision - Fundamental problems need resolution
-
-**Tenet Scoring Breakdown**:
-Evaluate each tenet and provide specific scores:
-- **Simplicity**: Is the solution as simple as possible? Are there unnecessary abstractions?
-- **Explicitness**: Are dependencies and behavior obvious? Is there hidden complexity?
-- **Modularity**: Are components properly isolated? Can they be tested independently?
-- **Maintainability**: Will future developers understand this? Is it easy to modify?
-
-**Score Calculation Guidance**:
-Weight the importance of each dimension based on the context. For critical production code, weight reliability and tenet compliance higher. For prototypes, weight speed of implementation higher. Always provide clear justification for scores.
-
-**Review Score Output**:
-Present the score with breakdown by dimension, specific strengths and weaknesses, and clear action items for improvement. The score should guide the merge decision but not replace human judgment.
-
-## 10. Review Summary Format
-
-Provide a brutally honest assessment covering:
-
-**What Was Half-Implemented**: Identify shortcuts taken, features that barely work, and code that was copied without full understanding.
-
-**Dangerous Assumptions**: Call out magical thinking, code that works by accident, and things that were pretended to be understood but weren't.
-
-**Critical Problems**: Highlight the broken parts that would cause production issues, security vulnerabilities, and performance disasters.
-
-**Missing Test Coverage**: Identify specific test cases that would expose bugs, edge cases that aren't handled, and scenarios that would break the system.
-
-**Merge Decision**: Provide a clear BLOCKED or APPROVED decision with a frank explanation of why the code should or shouldn't be merged.
-
-## Success Criteria
-
-✓ Code is cleaned up and properly documented
-✓ Brutal honest assessment completed
-✓ All magical thinking exposed
-✓ BLOCKERS identified with clear explanations
-✓ TODO.md updated with critical items
-✓ No sugar-coating or false confidence
-
----
-*For complete tenet definitions and vocabulary, see [docs/tenets.md](../docs/tenets.md)*
+Remember: No sugar-coating. Brutal honesty helps more than false confidence.
