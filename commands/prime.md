@@ -25,7 +25,7 @@ Gather intelligence first. Execute with confidence later.
 ## 3. Contextual Research
 - Web search for best practices on identified technologies
 - Exa MCP for web search and documentation
-- Review ./docs/leyline/ for project philosophy
+- Review project docs for philosophy and guidelines
 - Check CLAUDE.md for custom instructions
 
 ## 4. Pattern Discovery
