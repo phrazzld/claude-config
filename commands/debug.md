@@ -1,4 +1,4 @@
-Find bugs by thinking, not by guessing.
+Find bugs by thinking, not guessing.
 
 # DEBUG
 
@@ -6,127 +6,77 @@ Channel Kernighan: "The most effective debugging tool is still careful thought, 
 
 ## The Kernighan Principle
 
-*"Debugging is twice as hard as writing the code in the first place."*
+"Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it."
 
-If you wrote clever code, you're not smart enough to debug it. Write simple code.
+Write simple code. You'll thank yourself later.
 
-## 1. Understand the Problem
+## Understand the Problem
 
-**What would Kernighan ask first?**
-- Read @ISSUE.md carefully
-- What changed recently? (90% of bugs are in new code)
-- Can you reproduce it reliably?
-- What's the simplest failing case?
+Read @ISSUE.md carefully. What changed recently? (90% of bugs are in new code.) Can you reproduce it reliably? What's the simplest failing case?
 
-## 2. Form a Hypothesis
+## Form a Hypothesis
 
-**The Pike Philosophy: "Don't guess, measure"**
-
-Before touching code:
+**Before touching code**, think through:
 - What do you think is broken?
 - Why do you think that?
 - How will you prove it?
-- What will you do if you're wrong?
+- What if you're wrong?
 
-### Observability First
-
-**Make the System Visible**:
-Don't debug in the dark. Add instrumentation to see what's actually happening. Use logging, metrics, and tracing to understand system behavior. Make the invisible visible before trying to fix it.
-
-**Observability Strategy**:
+**Don't debug blind**—make the system visible first:
 - Add strategic logging at key decision points
-- Instrument the data flow through the system
+- Instrument data flow through the system
 - Capture state at critical transitions
-- Log inputs and outputs of failing functions
-- Use structured logging for better searchability
+- Log inputs/outputs of failing functions
+- Use structured logging for searchability
 
-**What to Observe**:
-- Input values that trigger the bug
-- State changes during execution
-- Timing and sequence of operations
-- Resource usage at failure point
-- Error propagation paths
+## Document Explicitly
 
-## 3. Systematic Investigation
-
-### Explicit Debugging Documentation
-
-**Document Actual vs Expected**:
-Before diving into code, explicitly document what you expect to happen versus what actually happens. Clear documentation of the discrepancy guides your investigation and prevents assumptions.
-
-**Explicit Bug Documentation**:
-- **Expected Behavior**: What should happen according to requirements
-- **Actual Behavior**: What is actually happening (be specific)
-- **Difference**: Precisely where reality diverges from expectation
-- **Reproduction Steps**: Exact steps to trigger the issue
+Before diving into code, write down:
+- **Expected behavior**: What should happen per requirements
+- **Actual behavior**: What's actually happening (be specific)
+- **Difference**: Where reality diverges from expectation
+- **Reproduction steps**: Exact steps to trigger issue
 - **Environment**: Specific conditions where bug occurs
 
-**Hypothesis Documentation**:
-Write down your hypothesis before testing it. Document why you think this is the cause. Record what evidence supports or refutes your hypothesis. Keep a log of what you've tried and learned.
+Write your hypothesis before testing it. Document evidence supporting or refuting it. Keep a log of what you tried and learned.
 
-**The Binary Search Method:**
+## Systematic Investigation
 
-Use systematic approaches to narrow down the problem:
-- Find when it broke using git history
-- Find where it breaks using search tools
-- Find why it breaks using targeted logging
-- Document each finding explicitly
+**Binary search the problem space**:
+- **When**: Find when it broke using git history
+- **Where**: Find where it breaks using search tools
+- **Why**: Find why it breaks using targeted logging
 
-## 4. Common Bug Patterns
+**Check usual suspects**:
+1. Off-by-one: boundaries, loops, array indices
+2. Null/undefined: missing checks, race conditions
+3. State mutations: shared state, side effects
+4. Async issues: race conditions, promise chains
+5. Type mismatches: string vs number, implicit conversions
 
-**The Thompson Test: "When in doubt, use brute force"**
+## Fix With Simplicity
 
-Check the usual suspects:
-1. **Off-by-one**: Boundaries, loops, array indices
-2. **Null/undefined**: Missing checks, race conditions
-3. **State mutations**: Shared state, side effects
-4. **Async issues**: Race conditions, promise chains
-5. **Type mismatches**: String vs number, implicit conversions
+**Choose the simplest fix that solves the problem completely**. Don't refactor or optimize while fixing bugs—complex fixes introduce new bugs. Save architectural improvements for separate tasks.
 
-## 5. Fix Strategy
+- Fix with minimal code change
+- Avoid clever workarounds when straightforward fix exists
+- Don't add abstractions to fix concrete problem
+- Resist fixing unrelated issues you notice
+- Keep focused on actual problem
 
-**The Ritchie Rule: "The only way to learn a new programming language is by writing programs in it"**
+**Can you explain the fix in one sentence?** If not, simplify.
 
-### Simplicity in Debug Solutions
+## Root Cause Documentation
 
-**Choose the Simplest Fix**:
-When debugging, prefer the simplest solution that solves the problem completely. Avoid the temptation to refactor or optimize while fixing bugs. Complex fixes often introduce new bugs. Save architectural improvements for separate tasks.
-
-**Simplicity Guidelines**:
-- Fix the bug with minimal code changes
-- Avoid clever workarounds when a straightforward fix exists
-- Don't add abstractions to fix a concrete problem
-- Resist the urge to fix unrelated issues you notice
-- Keep the fix focused on the actual problem
-
-**Simple Fix Checklist**:
-- Is this the smallest change that fixes the bug?
-- Can I explain the fix in one sentence?
-- Am I fixing just this bug or redesigning the system?
-- Will another developer understand this fix immediately?
-- Have I avoided adding complexity to work around the issue?
-
-**Root Cause Documentation**:
+Document what you found:
 - **What**: The specific failure mechanism
 - **Where**: Exact file and line number
 - **Why**: The actual reason (not symptoms)
 - **When**: Conditions that trigger the bug
 
-**Fix Approach**:
-- Implement the minimal change that fixes the issue
-- No clever refactoring while debugging
-- Add a test that captures this specific bug
-- Document why this simple fix is sufficient
+Add a test that captures this specific bug. Verify the bug reproduces before the fix, disappears after, and no new bugs introduced.
 
-**Verification**:
-- Bug reproduces reliably before the fix
-- Bug is eliminated after the fix
-- No new bugs introduced by the change
-- Test prevents regression of this issue
-
-## 6. Post-Mortem Questions
-
-**Channel Lamport: "A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable"**
+## Post-Mortem
 
 Ask yourself:
 - Why didn't tests catch this?
@@ -134,7 +84,7 @@ Ask yourself:
 - How can we prevent this class of bugs?
 - Is the fix simpler than the bug?
 
-## The Three Laws of Debugging
+## Three Laws of Debugging
 
 1. **It's always your code** (until proven otherwise)
 2. **The bug is not where you think it is** (check your assumptions)
