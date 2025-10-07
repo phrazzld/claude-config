@@ -1,100 +1,314 @@
-Conduct a comprehensive review of the codebase to identify opportunities for improvement across all dimensions.
+Conduct comprehensive multi-perspective codebase analysis to identify improvement opportunities across all quality dimensions.
 
 # GROOM
 
-Step back and see the whole system. What would make this better?
+Step back and see the whole system through six expert perspectives. What would make this better?
 
-## The Discovery Principle
+## The Multi-Perspective Discovery Principle
 
-*"The best problems to solve are the ones you find, not the ones you're given."* - Every Senior Engineer
+*"The best problems to solve are the ones you find, not the ones you're given."*
 
-Look for opportunities, not just problems. Think holistically about what would improve the product, the codebase, and the development experience.
+Look for opportunities, not just problems. Different perspectives reveal different truths. Complexity archaeologists find different issues than security sentinels. Architecture guardians see what performance pathfinders miss.
 
-## 1. Start Fresh
+By analyzing the codebase through multiple specialized lenses — each embodying specific Ousterhout principles and Leyline tenets — we discover the issues that truly matter.
 
-First, clean up any existing backlog. Archive what's done, remove what's obsolete, and group what remains by theme. This gives you a clean slate to work with.
+## Phase 1: Preparation
 
-Ask yourself: "Would I actually work on this in the next quarter?" If not, it probably doesn't belong in the active backlog.
+### 1. Clean the Slate
 
-## 2. Comprehensive Codebase Audit
+First, archive existing backlog. Remove noise, keep signal:
+- Archive completed items to BACKLOG-ARCHIVE.md
+- Remove obsolete tasks (would you work on this next quarter?)
+- Group remaining items by theme for context
 
-Use the helper agent to conduct a thorough quality analysis. Ask it to examine the codebase from multiple angles - security, performance, maintainability, test coverage, dependencies.
+This creates a clean foundation for comprehensive analysis.
 
-You're looking for anything that affects the health and velocity of the system. The agent should identify specific issues and opportunities, not vague concerns. Each finding should be actionable - something a developer could pick up and work on tomorrow.
+### 2. Understand Current Context
 
-## 3. Consider Development Principles
+Before launching the audit:
+- Check BACKLOG.md and PLAN.md for known issues
+- Review recent commits for areas of active change
+- Note any ongoing refactoring or migrations
+- Identify critical vs exploratory code areas
 
-As you review the codebase, think about where fundamental principles are being violated.
+## Phase 2: Parallel Multi-Perspective Audit
 
-Is there unnecessary complexity that could be simplified? Are there tightly coupled modules that should be independent? Is there hidden behavior that should be explicit? Would a new developer struggle to understand certain areas?
+Launch six specialized subagents concurrently. Each brings unique expertise and hunts different categories of issues:
 
-These principle violations often compound over time. A confusing abstraction in a core module affects everything built on top of it. Tightly coupled components make changes risky and slow. Hidden dependencies create debugging nightmares.
+### The Six Perspectives
 
-When you find these issues, consider their ripple effects. Sometimes fixing a fundamental problem in the architecture is worth more than adding three new features.
+**1. complexity-archaeologist** (Ousterhout Red Flags + Simplicity)
+- Shallow module detection (functionality ≈ interface complexity)
+- Information leakage through abstractions
+- Pass-through methods adding no value
+- Temporal decomposition (organized by execution order)
+- Manager/Util/Helper anti-patterns
+- Configuration overload
+- Strategic vs tactical debt mapping
 
-## 4. Technology-Specific Considerations
+**2. architecture-guardian** (Modularity + Explicitness)
+- Single responsibility violations
+- Tight coupling analysis
+- Dependency direction validation (high→low only)
+- Circular dependency detection
+- God object identification
+- Interface quality assessment
+- Module boundary violations
 
-Different technologies have their own patterns and pitfalls.
+**3. security-sentinel** (Security Bindings + OWASP)
+- Authentication & authorization gaps
+- Input validation & injection vulnerabilities
+- Secret & credential exposure
+- Error handling security (info disclosure)
+- Weak cryptography patterns
+- Access control issues (IDOR, privilege escalation)
+- Dependency vulnerabilities
 
-In TypeScript, are you bypassing the type system with 'any' types? In Go, are errors being ignored when they should be handled? In React, is state management clear and predictable? In your database layer, are queries optimized and migrations safe?
+**4. performance-pathfinder** (Performance + Efficiency)
+- Algorithmic complexity issues (O(n²) traps)
+- Database query optimization (N+1 queries, missing indexes)
+- Frontend performance (bundle size, re-renders)
+- Memory leaks & resource management
+- Network & I/O optimization
+- Asset optimization opportunities
 
-Security concerns cut across all technologies. Authentication bugs, authorization gaps, unvalidated inputs - these issues have real consequences and deserve attention regardless of where they appear.
+**5. maintainability-maven** (Maintainability Tenet)
+- Naming quality (unclear, misleading, inconsistent)
+- Documentation gaps (missing "why", stale docs, no contracts)
+- Test coverage analysis
+- Code consistency (error handling, async patterns, structure)
+- Comprehension barriers (complex conditionals, magic numbers)
+- Technical debt documentation
 
-When you find issues that violate both general principles and technology-specific best practices, they're usually worth addressing sooner rather than later. They tend to cause problems from multiple angles.
+**6. user-experience-advocate** (Product Value First)
+- Error message quality
+- User friction points (loading states, confusing flows)
+- Accessibility issues (WCAG compliance)
+- Missing high-value features
+- Data loss prevention
+- Performance as UX
+- Empty states
 
-## 5. Think About Impact and Priority
+### Launch Protocol
 
-Now comes the judgment call - what matters most?
+Use Task tool to run all 6 agents in parallel:
 
-Consider multiple dimensions: Will this improve the user experience? Will it make development faster? Will it prevent future problems? Will it reduce operational burden?
+```markdown
+Launching parallel codebase audit with 6 specialized perspectives...
 
-Some items are obviously critical - security vulnerabilities, data loss risks, broken core functionality. These go to the top of the list.
+Task 1: complexity-archaeologist
+"Analyze the codebase for Ousterhout red flags and complexity patterns.
+Hunt for: shallow modules, information leakage, pass-through methods, temporal decomposition, generic names (Manager/Util/Helper), configuration overload.
+Map tactical debt → strategic refactoring opportunities.
+Return: Prioritized findings with file:line, principle violated, remediation, effort+impact."
 
-Beyond the critical issues, use your engineering instincts. A performance improvement that affects every user might matter more than a new feature that helps a few. A refactoring that unblocks three other features might be worth doing first. A fix that prevents weekly firefighting could save more time than it costs.
+Task 2: architecture-guardian
+"Analyze the codebase for modularity and architectural quality.
+Hunt for: responsibility violations, tight coupling, dependency inversions, circular dependencies, god objects, poor interfaces, boundary violations.
+Return: Prioritized findings with coupling/cohesion metrics, concrete fixes, effort+impact."
 
-Don't overthink the prioritization. You know what matters. Trust your judgment about what would make the biggest positive impact on the product and the team.
+Task 3: security-sentinel
+"Analyze the codebase for security vulnerabilities and defensive coding gaps.
+Hunt for: auth/authz issues, injection vulnerabilities, secret exposure, weak crypto, access control bugs, dependency CVEs.
+Cover OWASP Top 10.
+Return: Prioritized findings with severity, attack scenario, remediation, effort+risk."
 
-## 6. Include Clear Next Steps
+Task 4: performance-pathfinder
+"Analyze the codebase for performance bottlenecks and optimization opportunities.
+Hunt for: algorithmic inefficiencies (O(n²)), N+1 queries, missing indexes, bundle bloat, memory leaks, inefficient I/O.
+Focus on user-facing impact only.
+Return: Prioritized findings with current metrics, user impact, optimization, effort+speedup."
 
-For each backlog item, briefly describe not just what the problem is, but how to approach fixing it.
+Task 5: maintainability-maven
+"Analyze the codebase for maintainability issues and comprehension barriers.
+Hunt for: poor naming, missing documentation, test gaps, inconsistent patterns, complex logic, undocumented debt.
+Return: Prioritized findings with developer impact, concrete improvements, effort+benefit."
 
-If something is overly complex, the fix might be to remove abstractions rather than add them. If modules are tightly coupled, identify where to draw boundaries. If behavior is hidden, surface it in function signatures or return values.
+Task 6: user-experience-advocate
+"Analyze the codebase from user perspective for UX issues and product gaps.
+Hunt for: poor error messages, friction points, accessibility issues, missing features, data loss risks, performance UX.
+Return: Prioritized findings with user impact, improved experience, effort+value."
+```
 
-The goal is to make each backlog item actionable. A developer should be able to pick it up and know where to start. They don't need step-by-step instructions, just enough context to approach the problem effectively.
+Run all 6 in single invocation for true parallelism.
 
-## 7. Organize Your Findings
+## Phase 3: Synthesis & Cross-Validation
 
-Structure your backlog in a way that makes sense for the team. Group related items together. Note any dependencies between tasks. Be clear about the value and effort of each item.
+### 1. Collect & Merge Findings
 
-A simple, effective structure might look like:
+When all agents return, collect their findings:
+- Group issues by file/module
+- Identify issues flagged by multiple perspectives (high priority signal)
+- Note principle violations (which tenets/bindings affected)
+- Calculate aggregate impact scores
+
+### 2. Cross-Validation Signals
+
+**Critical Priority** — Issues flagged by 3+ agents:
+- Indicates fundamental design problem affecting multiple quality dimensions
+- Example: God object flagged by complexity-archaeologist (shallow module) + architecture-guardian (responsibility violation) + maintainability-maven (comprehension barrier)
+
+**High Priority** — Issues flagged by 2 agents:
+- Multiple quality dimensions affected
+- Example: Poor error handling flagged by security-sentinel (info disclosure) + user-experience-advocate (user confusion)
+
+**Specialized** — Issues flagged by 1 agent:
+- Domain-specific concern
+- Still important, but narrower impact
+
+### 3. Principle Mapping
+
+For each issue, document which principles violated:
+- **Ousterhout**: Shallow module, information leakage, pass-through, temporal decomp, generic naming, config overload
+- **Leyline Tenets**: Simplicity, Modularity, Explicitness, Maintainability, etc.
+- **Bindings**: Specific implementation standards
+
+This creates traceability from issue → principle → fix rationale.
+
+## Phase 4: Prioritization
+
+Organize findings into clear priority tiers:
+
+### Immediate Concerns (Fix Now)
+- Security vulnerabilities (CRITICAL/HIGH severity)
+- Data loss scenarios
+- Broken core functionality
+- Performance issues causing >1s user-facing latency
+- Accessibility blockers
+
+**Criteria**: User-facing impact + risk severity
+
+### High-Value Improvements (Fix Soon)
+- Architectural issues blocking future development
+- God objects and tight coupling in core modules
+- Missing tests for financial/critical logic
+- Significant UX friction (confusing workflows, poor errors)
+- Performance improvements saving >100ms
+
+**Criteria**: Developer velocity + user experience improvement
+
+### Technical Debt Worth Paying (Schedule)
+- Complexity patterns compounding over time
+- Maintainability issues slowing development
+- Shallow modules that should be deepened
+- Inconsistent patterns across codebase
+- Missing documentation on complex logic
+
+**Criteria**: Long-term velocity + code health
+
+### Nice to Have (Opportunistic)
+- Minor naming improvements
+- Additional test coverage in stable code
+- Performance micro-optimizations
+- UX polish
+
+**Criteria**: Low effort + positive impact when touching that code anyway
+
+## Phase 5: Backlog Update
+
+Generate BACKLOG.md with comprehensive findings:
 
 ```markdown
 # BACKLOG.md
 
+Last groomed: [DATE]
+Analyzed by: 6 specialized perspectives
+
 ## Immediate Concerns
-Things that need attention right now - security issues, broken functionality, critical performance problems.
+
+### [Security] SQL Injection in Order Search
+**File**: api/orders.ts:89
+**Perspectives**: security-sentinel
+**Severity**: CRITICAL
+**Impact**: Database compromise, data exfiltration possible
+**Violation**: Input validation gap
+**Fix**: Use parameterized query: `db.query('SELECT * FROM orders WHERE id = $1', [id])`
+**Effort**: 5m | **Risk**: CRITICAL
+
+[... more immediate concerns]
 
 ## High-Value Improvements
-Changes that would significantly improve user experience, developer velocity, or system reliability.
+
+### [Architecture] UserManager God Object
+**File**: services/UserManager.ts:1-847
+**Perspectives**: complexity-archaeologist, architecture-guardian, maintainability-maven
+**Impact**: Blocks feature development, hard to test, maintenance bottleneck
+**Violations**:
+- Ousterhout: God object with 28 methods
+- Modularity: 5+ responsibilities (auth, profile, permissions, notifications, analytics)
+- Maintainability: 847 lines, comprehension barrier
+**Fix**: Extract UserAuth, UserProfile, UserPermissions, UserNotifier, UserAnalytics
+**Effort**: 8h | **Impact**: 847 lines → 5 focused 150-line modules
+
+[... more high-value improvements]
 
 ## Technical Debt Worth Paying
-Refactorings and cleanups that would make future development easier and faster.
+
+### [Complexity] Payment Processing Temporal Decomposition
+**File**: payment/workflow.ts:23-156
+**Perspectives**: complexity-archaeologist
+**Impact**: Change amplification — small changes require edits across many locations
+**Violation**: Ousterhout temporal decomposition (organized by execution order)
+**Fix**: Reorganize by functionality (validation, transformation, persistence)
+**Effort**: 3h | **Impact**: Reduces change amplification
+
+[... more technical debt]
 
 ## Nice to Have
-Improvements that would be valuable but aren't urgent - optimizations, new features, quality-of-life improvements.
 
-## Completed/Archived
-Track what's been done and what's been deliberately decided against.
+### [Maintainability] Improve Variable Naming in Parser
+**File**: utils/parser.ts:45
+**Perspectives**: maintainability-maven
+**Impact**: Minor comprehension barrier
+**Fix**: Rename `data` → `rawOrders`, `result` → `validatedOrders`, `temp` → `enrichedOrders`
+**Effort**: 10m | **Impact**: Clear data flow
+
+[... more nice-to-haves]
+
+## Completed / Archived
+[Track what's been done and decisions made]
 ```
 
-Use whatever organization makes sense for your context. The goal is clarity and actionability.
+### Format Requirements
 
-## What Success Looks Like
+Each backlog item must include:
+1. **Category** in brackets: [Security], [Architecture], [Performance], [Maintainability], [UX], [Complexity]
+2. **Title**: Clear, specific description
+3. **File**: Precise file:line reference
+4. **Perspectives**: Which agents flagged this (multi-agent = higher priority)
+5. **Impact**: User/developer effect
+6. **Violations**: Specific principles/tenets violated
+7. **Fix**: Concrete remediation approach
+8. **Effort + Impact/Risk/Benefit**: Time estimate + outcome
 
-You've done a good job if:
-- Each item is clear and actionable - a developer could pick it up and start working
-- The most important items are obvious - the team knows what to tackle first
-- There's a good mix of quick wins and important long-term improvements
-- The backlog reflects the real needs of both users and developers
+## Success Criteria
 
-The backlog should feel like a map of opportunities, not a list of complaints. It should energize the team about what's possible, not overwhelm them with what's broken.
+You've groomed well if:
+
+✅ **Comprehensive Coverage**: All 6 perspectives analyzed the codebase
+✅ **Actionable Items**: Every item has file:line + concrete fix approach
+✅ **Clear Priorities**: Most important issues obvious from organization
+✅ **Principle Traceability**: Each issue links to violated principles
+✅ **Cross-Validation**: Multi-agent issues surfaced and prioritized
+✅ **Balanced Mix**: Quick wins + strategic improvements + critical fixes
+✅ **Real Needs**: Reflects actual user and developer pain, not theoretical concerns
+
+The backlog should feel like a strategic map of opportunities, energizing the team about what's possible.
+
+## Philosophy
+
+> "Six perspectives see what one cannot. Complexity hides from single viewpoints but reveals itself under multiple lenses."
+
+Each specialized agent embodies different wisdom:
+- **Complexity archaeologist**: Ousterhout's depth philosophy
+- **Architecture guardian**: Modularity and clean architecture
+- **Security sentinel**: Defensive programming and OWASP
+- **Performance pathfinder**: User-facing speed and efficiency
+- **Maintainability maven**: Code for humans, not machines
+- **User experience advocate**: Product value above all
+
+Together, they see the whole system.
+
+---
+
+*Run this command periodically (monthly/quarterly) to maintain codebase health and discover strategic improvement opportunities.*
