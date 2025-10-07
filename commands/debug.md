@@ -12,7 +12,7 @@ Write simple code. You'll thank yourself later.
 
 ## Understand the Problem
 
-Read @ISSUE.md carefully. What changed recently? (90% of bugs are in new code.) Can you reproduce it reliably? What's the simplest failing case?
+Read ISSUE.md carefully. What changed recently? (90% of bugs are in new code.) Can you reproduce it reliably? What's the simplest failing case?
 
 ## Form a Hypothesis
 

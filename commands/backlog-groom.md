@@ -16,10 +16,11 @@ By analyzing the codebase through multiple specialized lenses — each embodying
 
 ### 1. Clean the Slate
 
-First, archive existing backlog. Remove noise, keep signal:
-- Archive completed items to BACKLOG-ARCHIVE.md
+First, refresh existing BACKLOG.md. Remove noise, keep signal:
+- Move completed items to "Completed / Archived" section at bottom
 - Remove obsolete tasks (would you work on this next quarter?)
-- Group remaining items by theme for context
+- Consolidate duplicate or related items
+- Keep everything in one unified BACKLOG.md — no separate archive files
 
 This creates a clean foundation for comprehensive analysis.
 
@@ -206,7 +207,7 @@ Organize findings into clear priority tiers:
 
 ## Phase 5: Backlog Update
 
-Generate BACKLOG.md with comprehensive findings:
+Update the ONE consolidated BACKLOG.md file. No archive files, no document clutter — everything lives here:
 
 ```markdown
 # BACKLOG.md
@@ -266,6 +267,7 @@ Analyzed by: 6 specialized perspectives
 [... more nice-to-haves]
 
 ## Completed / Archived
+[Completed items stay here - keep most recent ~10-20 for context, prune older ones]
 [Track what's been done and decisions made]
 ```
 
@@ -285,6 +287,7 @@ Each backlog item must include:
 
 You've groomed well if:
 
+✅ **Single Source of Truth**: All backlog items in ONE consolidated BACKLOG.md — no archive files
 ✅ **Comprehensive Coverage**: All 6 perspectives analyzed the codebase
 ✅ **Actionable Items**: Every item has file:line + concrete fix approach
 ✅ **Clear Priorities**: Most important issues obvious from organization
