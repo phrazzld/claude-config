@@ -1,16 +1,32 @@
-Audit and improve quality infrastructure.
+Audit and improve quality infrastructure, with emphasis on establishing useful git hooks.
 
 # GATES
 
-Channel platform engineering thinking: critically examine quality gates and identify improvements.
+Channel platform engineering thinking: critically examine quality gates and identify improvements. Focus on establishing git hooks that prevent real problems without slowing development.
 
 ## The Meta-Quality Principle
 
 "Are we testing the right things, or just testing things?"
 
-This command doesn't run quality checks—CI/CD does that. This audits whether your quality checks are even worth running.
+This command doesn't run quality checks—CI/CD does that. This audits whether your quality checks are even worth running, and **establishes git hooks** to catch issues locally before they hit CI.
 
 **Automation should catch real problems, not create bureaucracy**. Prefer simple checks preventing actual bugs over complex rules slowing development. If it can be automated, it should be—manual quality checks are bug-prone and time-consuming.
+
+## Git Hooks Strategy
+
+**The sweet spot**: Catch real problems locally, fail fast, don't duplicate CI.
+
+- **pre-commit**: Fast checks (linting, formatting, obvious errors) < 5s
+- **commit-msg**: Enforce commit conventions if team needs it
+- **pre-push**: Heavier checks (tests, type-checking) that prevent CI failures
+
+**Critical evaluation**:
+- Does this hook prevent a real CI failure or just annoy developers?
+- Is it fast enough that people won't bypass it?
+- Does it provide immediate, actionable feedback?
+- Can we parallelize checks to stay under 5-10s?
+
+**Setup recommendations**: Use `husky` or `lefthook` for managing hooks. Generate configurations that are useful, not oppressive.
 
 ## CI/CD Pipeline Analysis
 
@@ -76,6 +92,13 @@ What would Knuth measure?
 ```markdown
 ## Quality Infrastructure Audit
 
+### Git Hooks Setup
+- **Current state**: No hooks / Using X tool
+- **Recommendation**: Install `husky`/`lefthook` with following hooks:
+  - pre-commit: lint-staged for formatting (< 2s)
+  - pre-push: type check + unit tests (< 10s)
+- **Action**: Generate hook configuration files
+
 ### CI/CD Pipeline
 - **Waste**: Step X takes 5 minutes, catches nothing
 - **Improvement**: Parallelize Y and Z (saves 3 minutes)
@@ -95,6 +118,7 @@ What would Knuth measure?
 - **Fix**: Configure to alert only on exploitable issues
 
 ## Generated TODOs
+- [ ] [HIGH] Set up git hooks with useful pre-commit/pre-push checks
 - [ ] [HIGH] Add tests for payment processing (0% coverage on money code)
 - [ ] [MEDIUM] Parallelize CI steps 3 and 4 (saves 3min/build)
 - [ ] [LOW] Remove ESLint rule 'no-console' (disabled everywhere)

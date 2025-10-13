@@ -2,15 +2,15 @@ Conduct comprehensive multi-perspective codebase analysis to identify improvemen
 
 # GROOM
 
-Step back and see the whole system through six expert perspectives. What would make this better?
+Step back and see the whole system through seven expert perspectives. What would make this better?
 
 ## The Multi-Perspective Discovery Principle
 
 *"The best problems to solve are the ones you find, not the ones you're given."*
 
-Look for opportunities, not just problems. Different perspectives reveal different truths. Complexity archaeologists find different issues than security sentinels. Architecture guardians see what performance pathfinders miss.
+Look for opportunities, not just problems. Different perspectives reveal different truths. Complexity archaeologists find different issues than security sentinels. Architecture guardians see what performance pathfinders miss. Product visionaries see value creation opportunities that quality-focused agents overlook.
 
-By analyzing the codebase through multiple specialized lenses — each embodying specific Ousterhout principles and Leyline tenets — we discover the issues that truly matter.
+By analyzing the codebase through multiple specialized lenses — each embodying specific Ousterhout principles and Leyline tenets — we discover both the issues that truly matter AND the opportunities that create value.
 
 ## Phase 1: Preparation
 
@@ -34,9 +34,9 @@ Before launching the audit:
 
 ## Phase 2: Parallel Multi-Perspective Audit
 
-Launch six specialized subagents concurrently. Each brings unique expertise and hunts different categories of issues:
+Launch seven specialized subagents concurrently. Each brings unique expertise and hunts different categories of issues:
 
-### The Six Perspectives
+### The Seven Perspectives
 
 **1. complexity-archaeologist** (Ousterhout Red Flags + Simplicity)
 - Shallow module detection (functionality ≈ interface complexity)
@@ -90,12 +90,22 @@ Launch six specialized subagents concurrently. Each brings unique expertise and 
 - Performance as UX
 - Empty states
 
+**7. product-visionary** (Feature Value + Market Opportunity)
+- Missing core features preventing adoption
+- Competitive feature gaps
+- Workflow enhancement opportunities
+- Monetization and premium features
+- Integration and ecosystem plays
+- Innovation and differentiation opportunities
+- Vertical-specific customization
+- Platform expansion possibilities
+
 ### Launch Protocol
 
-Use Task tool to run all 6 agents in parallel:
+Use Task tool to run all 7 agents in parallel:
 
 ```markdown
-Launching parallel codebase audit with 6 specialized perspectives...
+Launching parallel codebase audit with 7 specialized perspectives...
 
 Task 1: complexity-archaeologist
 "Analyze the codebase for Ousterhout red flags and complexity patterns.
@@ -129,9 +139,15 @@ Task 6: user-experience-advocate
 "Analyze the codebase from user perspective for UX issues and product gaps.
 Hunt for: poor error messages, friction points, accessibility issues, missing features, data loss risks, performance UX.
 Return: Prioritized findings with user impact, improved experience, effort+value."
+
+Task 7: product-visionary
+"Analyze the product for feature opportunities and market gaps.
+Hunt for: missing core features, competitive gaps, workflow enhancements, monetization opportunities, integration plays, differentiation potential, vertical customization, platform expansion.
+Focus on what would make users choose and stick with this product beyond just code quality.
+Return: Prioritized opportunities with market analysis, user value, competitive impact, effort+business value."
 ```
 
-Run all 6 in single invocation for true parallelism.
+Run all 7 in single invocation for true parallelism.
 
 ## Phase 3: Synthesis & Cross-Validation
 
@@ -230,6 +246,18 @@ Analyzed by: 6 specialized perspectives
 
 ## High-Value Improvements
 
+### [Product] Missing User Authentication System
+**Scope**: New feature - auth system
+**Perspectives**: product-visionary, user-experience-advocate
+**Impact**: Prevents user retention, blocks 5+ downstream features (saved preferences, personal libraries, collaboration)
+**Market Opportunity**:
+- Competitive Gap: 90% of similar products have auth
+- Monetization: Enables premium tiers and user-specific features
+- Retention: Anonymous users have 10x higher churn than authenticated
+**Implementation**: Auth0/Clerk integration with email + social login
+**Effort**: 2d | **Value**: Foundation for premium features, enables $15/mo Pro tier
+**Dependencies**: Blocks collaboration, saved workspaces, analytics features
+
 ### [Architecture] UserManager God Object
 **File**: services/UserManager.ts:1-847
 **Perspectives**: complexity-archaeologist, architecture-guardian, maintainability-maven
@@ -274,33 +302,34 @@ Analyzed by: 6 specialized perspectives
 ### Format Requirements
 
 Each backlog item must include:
-1. **Category** in brackets: [Security], [Architecture], [Performance], [Maintainability], [UX], [Complexity]
+1. **Category** in brackets: [Security], [Architecture], [Performance], [Maintainability], [UX], [Complexity], [Product], [Feature]
 2. **Title**: Clear, specific description
-3. **File**: Precise file:line reference
+3. **File**: Precise file:line reference (or scope for new features)
 4. **Perspectives**: Which agents flagged this (multi-agent = higher priority)
-5. **Impact**: User/developer effect
-6. **Violations**: Specific principles/tenets violated
-7. **Fix**: Concrete remediation approach
-8. **Effort + Impact/Risk/Benefit**: Time estimate + outcome
+5. **Impact**: User/developer/business effect
+6. **Violations**: Specific principles/tenets violated (for quality issues) OR market opportunity (for features)
+7. **Fix**: Concrete remediation/implementation approach
+8. **Effort + Impact/Risk/Benefit/Value**: Time estimate + outcome
 
 ## Success Criteria
 
 You've groomed well if:
 
 ✅ **Single Source of Truth**: All backlog items in ONE consolidated BACKLOG.md — no archive files
-✅ **Comprehensive Coverage**: All 6 perspectives analyzed the codebase
+✅ **Comprehensive Coverage**: All 7 perspectives analyzed the codebase
 ✅ **Actionable Items**: Every item has file:line + concrete fix approach
 ✅ **Clear Priorities**: Most important issues obvious from organization
 ✅ **Principle Traceability**: Each issue links to violated principles
 ✅ **Cross-Validation**: Multi-agent issues surfaced and prioritized
-✅ **Balanced Mix**: Quick wins + strategic improvements + critical fixes
+✅ **Balanced Mix**: Quick wins + strategic improvements + critical fixes + feature opportunities
 ✅ **Real Needs**: Reflects actual user and developer pain, not theoretical concerns
+✅ **Product Value**: Includes features that drive adoption, not just quality improvements
 
 The backlog should feel like a strategic map of opportunities, energizing the team about what's possible.
 
 ## Philosophy
 
-> "Six perspectives see what one cannot. Complexity hides from single viewpoints but reveals itself under multiple lenses."
+> "Seven perspectives see what one cannot. Complexity hides from single viewpoints but reveals itself under multiple lenses. Value emerges when quality meets opportunity."
 
 Each specialized agent embodies different wisdom:
 - **Complexity archaeologist**: Ousterhout's depth philosophy
@@ -308,9 +337,10 @@ Each specialized agent embodies different wisdom:
 - **Security sentinel**: Defensive programming and OWASP
 - **Performance pathfinder**: User-facing speed and efficiency
 - **Maintainability maven**: Code for humans, not machines
-- **User experience advocate**: Product value above all
+- **User experience advocate**: Friction-free user journeys
+- **Product visionary**: Market opportunities and feature value
 
-Together, they see the whole system.
+Together, they see the whole system — both what needs fixing AND what's worth building.
 
 ---
 
