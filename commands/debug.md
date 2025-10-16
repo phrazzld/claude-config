@@ -12,7 +12,43 @@ Write simple code. You'll thank yourself later.
 
 ## Understand the Problem
 
-Read ISSUE.md carefully. What changed recently? (90% of bugs are in new code.) Can you reproduce it reliably? What's the simplest failing case?
+**Evidence Gathering** - Accept any format:
+- **ISSUE.md**: Structured issue description (optional)
+- **Inline description**: User describes issue conversationally
+- **Screenshots**: User pastes images showing visual issues
+- **Logs/Errors**: User pastes console output, stack traces
+- **Video**: User references screen recordings
+- **Multiple sources**: Combine any/all of above
+
+**Work with whatever evidence is provided** - flexible input formats supported.
+
+**Key questions**:
+- What changed recently? (90% of bugs are in new code)
+- Can you reproduce it reliably?
+- What's the simplest failing case?
+- What's the expected vs actual behavior?
+
+## Analyze Evidence
+
+**For screenshots/visual evidence**:
+- What UI state is shown?
+- What elements are missing or incorrect?
+- Console errors visible in dev tools?
+- Network failures in network tab?
+
+**For logs/stack traces**:
+- What's the error message (exact text)?
+- Where does the stack trace point? (file:line)
+- What was the triggering action?
+- What values were involved?
+
+**For descriptions**:
+- Clarify ambiguities: ask specific questions
+- Capture reproduction steps precisely
+- Understand expected vs actual behavior
+- Note any workarounds user discovered
+
+**Synthesize**: Combine all evidence into clear problem statement.
 
 ## Form a Hypothesis
 
@@ -22,7 +58,7 @@ Read ISSUE.md carefully. What changed recently? (90% of bugs are in new code.) C
 - How will you prove it?
 - What if you're wrong?
 
-**Don't debug blind**—make the system visible first:
+**Make the system visible** through instrumentation:
 - Add strategic logging at key decision points
 - Instrument data flow through the system
 - Capture state at critical transitions
@@ -56,15 +92,15 @@ Write your hypothesis before testing it. Document evidence supporting or refutin
 
 ## Fix With Simplicity
 
-**Choose the simplest fix that solves the problem completely**. Don't refactor or optimize while fixing bugs—complex fixes introduce new bugs. Save architectural improvements for separate tasks.
+**Choose the simplest fix that solves the problem completely**. Focus bug fixes specifically on the bug. Save refactoring and optimization for separate tasks—this keeps fixes isolated and testable.
 
 - Fix with minimal code change
-- Avoid clever workarounds when straightforward fix exists
-- Don't add abstractions to fix concrete problem
-- Resist fixing unrelated issues you notice
-- Keep focused on actual problem
+- Prefer straightforward fixes over clever workarounds
+- Keep fixes concrete rather than abstract
+- Stay focused on the specific problem
+- Address unrelated issues in separate commits
 
-**Can you explain the fix in one sentence?** If not, simplify.
+**Can you explain the fix in one sentence?** Aim for this level of clarity.
 
 ## Root Cause Documentation
 
@@ -86,8 +122,8 @@ Ask yourself:
 
 ## Three Laws of Debugging
 
-1. **It's always your code** (until proven otherwise)
-2. **The bug is not where you think it is** (check your assumptions)
-3. **Read the error message** (yes, the whole thing)
+1. **Start with your code** (most bugs originate here)
+2. **Check your assumptions** (bugs often hide in unexpected places)
+3. **Read the complete error message** (every word matters)
 
 Remember: **The best debugger is a fresh pair of eyes and a good night's sleep.**

@@ -94,7 +94,7 @@ Review `.github/workflows/`, `.gitlab-ci.yml`, or equivalent:
 **Actions**:
 - Set coverage floor for critical modules only
 - Track coverage trends
-- Delete tests that never fail
+- Remove tests that always pass (they provide false confidence)
 - Fail CI if critical path coverage drops
 
 ## Linting & Formatting Audit
@@ -123,7 +123,7 @@ Code conventions should be invisible, not obstacles.
 - **Dependabot/Renovate**: Auto dependency PRs (choose one)
 
 **Next.js specifics**:
-- Never `NEXT_PUBLIC_` prefix secrets
+- Keep secrets server-side only (avoid `NEXT_PUBLIC_` prefix for sensitive data)
 - Data Access Layer isolates `process.env`
 - `process.env.SECRET` in client code = exposed at build
 

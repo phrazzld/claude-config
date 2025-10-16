@@ -6,7 +6,7 @@ Channel Dijkstra's precision: "The question of whether a computer can think is n
 
 ## Your Mission
 
-You're defining what to build before building it. Read the initial request (usually TASK.md), investigate deeply, explore alternatives, then ask clarifying questions. Don't jump to solutions—understand the problem space first.
+You're defining what to build before building it. Read the initial request (usually TASK.md), investigate deeply, explore alternatives, then ask clarifying questions. Understand the problem space first, then develop solutions.
 
 ### Design Principles
 
@@ -57,7 +57,7 @@ Based on your investigation, generate 5-8 critical questions that will refine th
 - **Evolution**: What features are likely in 6 months?
 - [Add 2-3 context-specific questions based on research findings]
 
-**Present directly to the user** in conversational format—show investigation summary, preliminary approach with reasoning, then your questions. Don't create intermediate files.
+**Present directly to the user** in conversational format—show investigation summary, preliminary approach with reasoning, then your questions. Keep communication conversational rather than creating intermediate files.
 
 ## 🛑 Wait for User Answers
 
@@ -107,12 +107,12 @@ Before finalizing, check:
 - **Different abstractions**: Each layer changes vocabulary and abstraction level?
 - **Strategic design**: Investing in future velocity, not just feature completion?
 
-**Red Flags to Avoid**:
-- Premature abstraction (wait for 3+ pattern repetitions)
-- Information leakage (returning raw DB rows exposes schema)
-- Temporal decomposition (organizing by step1, step2 instead of functionality)
-- Generic names (Manager, Util, Helper without domain context)
-- Pass-through layers (each abstraction should transform, not just forward)
+**Design Quality Checks**:
+- Wait for 3+ pattern repetitions before abstracting
+- Hide implementation details (return domain objects, hide schema)
+- Organize by functionality rather than execution order
+- Use domain-specific names (UserAuthenticator, PriceCalculator)
+- Ensure each abstraction layer transforms concepts meaningfully
 
 ## Present Summary
 
