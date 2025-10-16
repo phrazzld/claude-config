@@ -12,7 +12,43 @@ Write simple code. You'll thank yourself later.
 
 ## Understand the Problem
 
-Read ISSUE.md carefully. What changed recently? (90% of bugs are in new code.) Can you reproduce it reliably? What's the simplest failing case?
+**Evidence Gathering** - Accept any format:
+- **ISSUE.md**: Structured issue description (if provided)
+- **Inline description**: User describes issue conversationally
+- **Screenshots**: User pastes images showing visual issues
+- **Logs/Errors**: User pastes console output, stack traces
+- **Video**: User references screen recordings
+- **Multiple sources**: Combine any/all of above
+
+**No ISSUE.md required** - work with whatever evidence is provided.
+
+**Key questions**:
+- What changed recently? (90% of bugs are in new code)
+- Can you reproduce it reliably?
+- What's the simplest failing case?
+- What's the expected vs actual behavior?
+
+## Analyze Evidence
+
+**For screenshots/visual evidence**:
+- What UI state is shown?
+- What elements are missing or incorrect?
+- Console errors visible in dev tools?
+- Network failures in network tab?
+
+**For logs/stack traces**:
+- What's the error message (exact text)?
+- Where does the stack trace point? (file:line)
+- What was the triggering action?
+- What values were involved?
+
+**For descriptions**:
+- Clarify ambiguities: ask specific questions
+- Capture reproduction steps precisely
+- Understand expected vs actual behavior
+- Note any workarounds user discovered
+
+**Synthesize**: Combine all evidence into clear problem statement.
 
 ## Form a Hypothesis
 

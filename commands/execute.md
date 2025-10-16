@@ -10,14 +10,43 @@ Grab next task → Think deeply → Implement with principles → Commit atomica
 - **Batch tiny tasks**: Multiple bite-sized tasks (typo fix, rename, import update)? Execute consecutively, one semantic commit.
 - **Single complex tasks**: Substantial tasks requiring thought? One at a time.
 
-**2. Mark in-progress**: Update `[ ]` to `[~]` for tasks you're working on
+**2. Assess task readiness** (auto-refinement):
 
-**3. Think before acting**:
+Before marking in-progress, evaluate if task is executable:
+
+**Ready signals** (✅ proceed to step 3):
+- Has specific file locations or clear scope
+- Has acceptance criteria or success conditions
+- Has approach outlined or pattern to follow
+- Dependencies are clear
+
+**Needs refinement** (🔍 refine before executing):
+- Vague description ("improve X", "fix Y")
+- No file locations or unclear scope
+- Missing acceptance criteria
+- Ambiguous dependencies
+
+**If needs refinement**, gather context inline:
+- Grep for related patterns in codebase
+- Read relevant files to understand context
+- Identify similar implementations
+- Form specific approach
+- Update task in TODO.md with:
+  - Approach: Step-by-step plan
+  - Files: Specific locations (file:line)
+  - Pattern: Reference to similar implementation
+  - Success criteria: What "done" looks like
+
+**Key insight**: No separate /flesh command needed - execute handles refinement automatically.
+
+**3. Mark in-progress**: Update `[ ]` to `[~]` for task(s) you're working on
+
+**4. Think before acting**:
 - What's the simplest solution that completely solves this?
 - What existing patterns should I follow?
 - Am I over-engineering this?
 
-**4. Implement with principles**:
+**5. Implement with principles**:
 
 **Simplicity**: Boring > clever. Obvious > terse. If you can't explain it in one sentence, simplify.
 
@@ -55,13 +84,13 @@ Before finalizing implementation, check:
 
 **Strategic vs Tactical**: Am I just making it work (tactical) or also improving design (strategic)? Tactical gets it done but accumulates debt. Strategic invests 10-20% in making the system better. Aim for strategic.
 
-**5. Commit atomically**:
+**6. Commit atomically**:
 - Every completed task → commit (no exceptions)
 - Batched tiny tasks → one semantic commit
-- `git add -p` or `git add [files]`, then `git commit -m "type: description"`
+- Create atomic commit with clear message describing what was done
 - Types: feat|fix|docs|refactor|test|chore
 
-**6. Mark complete**: Update `[~]` → `[x]`
+**7. Mark complete**: Update `[~]` → `[x]`
 
 ## The Carmack Rule
 
