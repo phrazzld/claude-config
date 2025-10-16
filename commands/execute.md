@@ -10,9 +10,7 @@ Grab next task → Think deeply → Implement with principles → Commit atomica
 - **Batch tiny tasks**: Multiple bite-sized tasks (typo fix, rename, import update)? Execute consecutively, one semantic commit.
 - **Single complex tasks**: Substantial tasks requiring thought? One at a time.
 
-**2. Assess task readiness** (auto-refinement):
-
-Before marking in-progress, evaluate if task is executable:
+**2. Assess task readiness**:
 
 **Ready signals** (✅ proceed to step 3):
 - Has specific file locations or clear scope
@@ -20,24 +18,13 @@ Before marking in-progress, evaluate if task is executable:
 - Has approach outlined or pattern to follow
 - Dependencies are clear
 
-**Needs refinement** (🔍 refine before executing):
+**Needs refinement** (🔍 delegate to /flesh):
 - Vague description ("improve X", "fix Y")
 - No file locations or unclear scope
 - Missing acceptance criteria
 - Ambiguous dependencies
 
-**If needs refinement**, gather context inline:
-- Grep for related patterns in codebase
-- Read relevant files to understand context
-- Identify similar implementations
-- Form specific approach
-- Update task in TODO.md with:
-  - Approach: Step-by-step plan
-  - Files: Specific locations (file:line)
-  - Pattern: Reference to similar implementation
-  - Success criteria: What "done" looks like
-
-**Key insight**: No separate /flesh command needed - execute handles refinement automatically.
+**If task needs refinement**, run /flesh on the task first, then continue.
 
 **3. Mark in-progress**: Update `[ ]` to `[~]` for task(s) you're working on
 

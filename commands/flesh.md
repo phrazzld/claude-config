@@ -1,115 +1,87 @@
-Transform skeletal TODOs into executable specifications through deep analysis.
+---
+description: Transform vague tasks into executable specifications with specific files, approach, and success criteria
+---
 
 # FLESH
 
-Channel Carmack: "Focus is a matter of deciding what things you're not going to do."
+Transform a skeletal TODO into an executable specification.
 
-## The Carmack Principle
+## Mission
 
-"The difference between a TODO and a specification is understanding."
+Take a vague task and make it specific enough to execute without questions. Identify files, approach, patterns, and success criteria.
 
-A vague task hides complexity. Flesh it out before you code it out.
+## Input
 
-## Find the Next Task
+Read TODO.md to find the task that needs refinement (typically the next `[ ]` or `[~]` task).
 
-Read TODO.md for first `[ ]` or `[~]` task. Copy the task description verbatim. Note any existing work log or context.
+Copy the task description verbatim. Note any existing work log or context.
 
-**Think deeply**: What does this task REALLY require?
-- Hidden dependencies and assumptions?
-- Edge cases lurking in the shadows?
-- Performance implications at scale?
-- Security considerations?
-- Testing requirements?
+## Analysis
 
-## Research & Analysis
+**What does this task REALLY require?**
+- Which specific files need changes? (use Grep to find them)
+- What pattern exists in the codebase to follow? (use ast-grep/Grep)
+- What are the hidden dependencies?
+- What edge cases matter?
+- What does "done" look like specifically?
 
-**Launch parallel research** (use Task tool for concurrent agents):
+## Context Gathering
 
-```
-Task 1: "Research best practices for [task description]:
-- Use gemini --prompt for current industry patterns
-- Find proven implementation approaches and common pitfalls
-- Security and performance considerations
-Focus on production-ready solutions, not experiments."
+**Quick tasks** (obvious scope):
+- Grep for similar patterns in codebase
+- Identify which files need changes
+- Find existing implementations to follow
 
-Task 2: "Find relevant documentation:
-- Use Exa MCP for documentation and code examples
-- Extract critical APIs and usage patterns
-- Note version constraints and breaking changes
-Only include what's needed for THIS task."
+**Complex tasks** (unclear scope):
+- Launch parallel research using Task tool:
+  - Codebase analysis: ast-grep for patterns, Grep for utilities
+  - External research: Use gemini/Exa for best practices if needed
+  - Documentation: Find relevant API docs and examples
+- Consider modularity: Can this be split into smaller tasks?
+- Identify testing needs: What scenarios must work?
 
-Task 3: "Analyze codebase patterns:
-- Use ast-grep to find similar implementations
-- Grep for existing utilities and helpers
-- Identify conventions to follow
-Don't reinvent what already exists here."
-```
+## Output
 
-## Task Expansion Principles
-
-**Modularity Analysis**:
-- Can task be split into smaller, testable modules?
-- What are natural module boundaries?
-- What parts can be parallelized?
-- What interfaces are required?
-- How does this integrate with existing modules?
-
-**Testability Strategy**:
-- What test scenarios? (unit/integration/e2e)
-- What needs mocking and why?
-- What test data is required?
-- Happy path, edge cases, error conditions
-- Minimum coverage requirements
-
-**Automation Opportunities**:
-- Repetitive patterns that could be automated?
-- Code generation opportunities?
-- Manual processes that slow development?
-- Boilerplate templates needed?
-
-## Flesh Out the TODO
-
-Expand the task with discovered intelligence:
+Update the task in TODO.md with specifics:
 
 ```markdown
 - [ ] [Original task description]
   ```
-  Approach: [Step-by-step based on research]
   Files: file1.ts:45, file2.py:120
-  Pattern: Follow existing implementation in Similar.tsx
+  Pattern: Follow existing implementation in Similar.tsx:30-50
 
-  Modularity:
-  - Components: [Independent modules identified]
-  - Interfaces: [Contracts between modules]
-  - Parallelizable: [What can be done simultaneously]
+  Approach:
+  1. [Specific step with file location]
+  2. [Specific step with file location]
+  3. [Specific step with file location]
 
-  Test Strategy:
-  - Unit: [Specific functions/modules to test]
-  - Integration: [Module interaction scenarios]
-  - Edge cases: [Specific conditions to validate]
-  - Coverage: [Minimum percentage or critical paths]
+  Success criteria:
+  - [Specific, testable outcome]
+  - [Specific, testable outcome]
 
-  Automation: [Identified repetitive patterns to script]
-
-  Success:
-  - [ ] [Specific, measurable outcome 1]
-  - [ ] [Specific, measurable outcome 2]
-  - [ ] Tests pass, module boundaries maintained
-
-  Constraints: [Dependencies, limitations, performance considerations]
-
-  Complexity: [SIMPLE|MEDIUM|COMPLEX]
-  Time: [15m|30m|1h|2h]
+  Edge cases: [List if any]
+  Dependencies: [List if any]
   ```
 ```
 
+**Essential elements**:
+- **Files**: Exact locations (file:line)
+- **Pattern**: Reference to similar code
+- **Approach**: Step-by-step with specifics
+- **Success criteria**: Binary pass/fail conditions
+
+**Optional** (add if relevant):
+- Edge cases to handle
+- Dependencies or blockers
+- Testing strategy
+- Performance considerations
+
 ## Validation
 
-Before marking fleshed:
-- Can someone else implement without questions?
-- Are success criteria binary (pass/fail)?
-- Are all discovered risks documented?
-- Is the approach the simplest that works?
-- Would Carmack start coding or keep thinking?
+Task is ready when:
+✅ Someone else could implement it without questions
+✅ Success criteria are specific and testable
+✅ File locations identified
+✅ Approach is clear and simple
 
-Remember: **A well-fleshed task is half-implemented. The other half is just typing.**
+Then mark task as refined and return control to /execute.
