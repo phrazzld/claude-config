@@ -1,102 +1,127 @@
-Execute the next available task from TODO.md.
+---
+description: Execute the next task from TODO.md with direct tactical focus
+---
+
+Execute the next task directly.
 
 # EXECUTE
 
-Grab next task → Think deeply → Implement with principles → Commit atomically → Mark complete
+Grab next task → Implement → Commit → Mark complete
+
+## Your Mission
+
+Execute the next available task in TODO.md. The decision to work on this task has already been made during planning. Your job: carry it out skillfully.
 
 ## Process
 
-**1. Find next task(s)**: Look for first `[~]` (in-progress) or `[ ]` (not started) in TODO.md
-- **Batch tiny tasks**: Multiple bite-sized tasks (typo fix, rename, import update)? Execute consecutively, one semantic commit.
-- **Single complex tasks**: Substantial tasks requiring thought? One at a time.
+**1. Find next task**: Read TODO.md, locate first `[~]` (in-progress) or `[ ]` (pending)
 
-**2. Assess task readiness**:
+Batch tiny tasks (typo fix, rename, import): Execute consecutively, one commit.
+Single substantial task: Execute it.
 
-**Ready signals** (✅ proceed to step 3):
-- Has specific file locations or clear scope
-- Has acceptance criteria or success conditions
-- Has approach outlined or pattern to follow
-- Dependencies are clear
+**2. Is task specific enough?**
 
-**Needs refinement** (🔍 delegate to /flesh):
-- Vague description ("improve X", "fix Y")
-- No file locations or unclear scope
-- Missing acceptance criteria
-- Ambiguous dependencies
+Ask only: **"Do I know exactly what to do?"**
 
-**If task needs refinement**, run /flesh on the task first, then continue.
+✅ Specific enough if task has:
+- File locations OR clear scope
+- Approach OR pattern to follow
+- Success criteria
 
-**3. Mark in-progress**: Update `[ ]` to `[~]` for task(s) you're working on
+✅ YES → Proceed to step 3
+🔍 NO → Run /flesh to make it specific, then proceed to step 3
 
-**4. Think before acting**:
-- What's the simplest solution that completely solves this?
-- What existing patterns should I follow?
-- Am I over-engineering this?
+**3. Mark in-progress**: Update `[ ]` → `[~]`
 
-**5. Implement with principles**:
+**4. Implement**
 
-**Simplicity**: Boring > clever. Obvious > terse. If you can't explain it in one sentence, simplify.
+Write the code. Follow existing patterns. Keep it simple.
 
-**Maintainability**: Write for yourself in 6 months. Names based on purpose, not mechanism. Document the "why" behind decisions.
+**Apply principles while coding**:
+- **Simplicity**: Prefer boring over clever. Aim for one-sentence explanations.
+- **Maintainability**: Choose names that reveal purpose. Document "why" over "what".
+- **Explicitness**: Make dependencies visible in signatures. Make side effects obvious from names.
+- **Strategic**: Improve design 10-20% while implementing.
 
-**Explicitness**: Dependencies visible in signatures, not hidden in globals. Behavior obvious from function signature. Side effects clear from naming (use verbs: update, delete, save).
+**Check implementation quality**:
+- Deep module? (Simple interface hiding powerful implementation)
+- Information hiding intact? (Changing internals preserves caller code)
+- Minimal complexity? (Few dependencies, clear behavior)
+- Red flags absent? (Generic names, pass-through methods, temporal decomposition)
 
-**Fix Broken Windows**: See a problem (<2min fix)? Fix it now. Dead code, poor names, magic numbers—fix on sight. Technical debt compounds.
+**5. Commit atomically**
 
-## Complexity Validation
+Every completed task → atomic commit with clear message.
+Types: feat|fix|docs|refactor|test|chore
 
-Before finalizing implementation, check:
+**6. Mark complete**: Update `[~]` → `[x]`
 
-**Deep vs Shallow Module**: Am I creating value or just wrapping?
-- Module Value = Functionality - Interface Complexity
-- **Deep**: Simple interface hiding powerful implementation (e.g., Unix file I/O: open/read/write/close hides filesystem complexity)
-- **Shallow**: Interface ≈ implementation (e.g., wrapper exposing most wrapped methods)
-- If shallow, either simplify interface or merge with underlying module
+**7. Continue or stop**: Proceed to next task when appropriate, or report completion.
 
-**Information Leakage**: If I change implementation, does calling code break?
-- **Leakage**: Returning raw DB rows forces callers to know schema
-- **Pure**: Returning domain objects hides data structure
-- Leakage couples modules—callers must understand internals
+## Execute Regardless Of
 
-**Complexity Sources** (Complexity = Dependencies + Obscurity):
-- **Dependencies**: Linkages between code. Does this add new module dependencies?
-- **Obscurity**: Non-obvious information. Does this make behavior less clear?
-- Both increase complexity—minimize aggressively
+**Execute when task is specific, regardless of:**
+- Task complexity (simple or complex)
+- Time estimates (15 minutes or 3 hours)
+- Session duration (first task or tenth task)
+- Implementation challenge (straightforward or intricate)
+- Task scope (focused or comprehensive)
 
-**Red Flags**:
-- **Generic names** (Manager, Util, Helper, Context) → suggest unfocused responsibility
-- **Pass-through methods** → only call another method with same signature. Each layer should transform.
-- **Configuration overload** → dozens of parameters forcing implementation understanding. Provide defaults.
-- **Temporal decomposition** → organizing by execution order (step1, step2) not functionality
+**These concerns were addressed upstream**:
+- Complexity → Handled in /plan (appropriate breakdown)
+- Risk → Handled in /flesh (clear approach)
+- Size → Handled in /plan (proper scoping)
 
-**Strategic vs Tactical**: Am I just making it work (tactical) or also improving design (strategic)? Tactical gets it done but accumulates debt. Strategic invests 10-20% in making the system better. Aim for strategic.
+**Valid reasons to pause**:
+- ✅ Task blocked by missing dependency requiring user input
+- ✅ Environment broken (build fails, tests unavailable, fundamental tool failure)
+- ✅ Task remains unclear even after /flesh
+- ✅ User explicitly requests pause
 
-**6. Commit atomically**:
-- Every completed task → commit (no exceptions)
-- Batched tiny tasks → one semantic commit
-- Create atomic commit with clear message describing what was done
-- Types: feat|fix|docs|refactor|test|chore
+## The Contract
 
-**7. Mark complete**: Update `[~]` → `[x]`
+By the time you run /execute, the decision to do this work **has been made**. That decision happened during:
+- `/plan` - Breaking work into appropriate tasks
+- `/flesh` - Understanding scope and approach
+- User running `/execute` - Choosing to proceed
 
-## The Carmack Rule
+**Your responsibility**: Carry out that decision skillfully.
 
-"A task without a commit is a task not done." Every completed task must result in an atomic commit.
+**Your focus**: How to implement (quality, simplicity, maintainability), rather than whether to implement.
+
+## Handling Complex Tasks
+
+**Ineffective approach**: Refuse to execute due to perceived complexity.
+
+**Effective approach**:
+1. Task genuinely unclear → Run /flesh to clarify
+2. Task clear but substantial → Execute it (this is the job)
+3. Discover task merits splitting → Add work log noting this for future planning
+
+**Key insight**: Complex tasks are normal in software engineering. Your role: handle them capably.
 
 ## Work Logs
 
-For complex tasks or discoveries, add work log under the task:
+For substantial tasks, document discoveries as you go:
 
 ```markdown
 - [~] Implement user authentication
   ```
   Work Log:
   - Found auth pattern in services/auth.ts
-  - Need JWT approach from api/middleware
-  - Blocked: clarify token expiry requirements
+  - Using JWT approach from api/middleware
+  - Preserved existing session handling
   ```
 ```
 
-Work logs serve as scratchpad for discoveries, decisions made, blockers noted, memory for resumed tasks.
+Work logs capture discoveries, decisions, learnings for continuity.
 
-Remember: **Simplicity enables reliability. Every line of code is a liability.**
+## The Carmack Rule
+
+**"A task without a commit is a task that's still pending."**
+
+Every completed task results in an atomic commit. This is the definition of "done".
+
+---
+
+**Remember**: Execute is tactical. Strategic thinking happens upstream in plan/flesh. Your job: implement with quality, commit changes, mark complete. Repeat for next task.
