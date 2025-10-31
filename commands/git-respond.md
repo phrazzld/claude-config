@@ -3,7 +3,21 @@ Systematically analyze all PR review feedback and comments, categorize them by p
 ## 1. Review Analysis
 - **Goal:** Comprehensively evaluate all PR comments and feedback.
 - **Actions:**
-    - Read through all comments, suggestions, and review feedback on the open pull request.
+    - **Collect all feedback types** - GitHub PRs have three distinct comment sources:
+        - **Review comments**: Inline code comments attached to specific file lines (where bots like Codex leave suggestions)
+        - **Issue comments**: General PR conversation comments
+        - **Review summaries**: Top-level review state and summary feedback
+        - Use pagination when fetching to ensure no comments are missed on large PRs
+    - **Parse bot-generated feedback** - Automated review bots (e.g., Codex, Danger, lint bots) often include:
+        - Priority/severity indicators (P0, P1, P2 badges or similar)
+        - Structured suggestions with specific line numbers and file paths
+        - Links to documentation or standards
+        - Extract and respect these priority signals when categorizing
+    - **Handle large PRs strategically** - For PRs with >1000 lines changed or >10 comments:
+        - First assess scope: count comments by type and priority
+        - Group related feedback by file/component
+        - Process high-priority/blocking items first to avoid context overflow
+        - Consider loading only changed portions of large files rather than full diffs
     - Think critically about each comment's legitimacy, scope, and impact.
     - Assess technical merit, alignment with project goals, and implementation complexity.
     - Consider reviewer expertise and context behind each suggestion.

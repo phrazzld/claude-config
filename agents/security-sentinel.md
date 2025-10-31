@@ -246,9 +246,19 @@ Effort: 30m | Severity: MEDIUM
 
 ## Analysis Protocol
 
+**CRITICAL**: Exclude all gitignored content (node_modules, dist, build, .next, .git, vendor, out, coverage, etc.) from analysis. Only analyze source code under version control.
+
+When using Grep, add exclusions:
+- Grep pattern: Use path parameter to limit scope or rely on ripgrep's built-in gitignore support
+- Example: Analyze src/, lib/, components/ directories only, not node_modules/
+- IMPORTANT: When scanning for secrets, use `git ls-files` to verify files are tracked
+
+When using Glob, exclude build artifacts:
+- Pattern: `src/**/*.ts` not `**/*.ts` (which includes node_modules)
+
 1. **Authentication Flow Analysis**: Trace auth from login → session → protected routes
 2. **Input Validation Scan**: Grep for user input used in queries, commands, file operations
-3. **Secret Scan**: Search for patterns like "password", "api_key", "token" = "..."
+3. **Secret Scan**: Search for patterns like "password", "api_key", "token" = "..." in git-tracked files only
 4. **Dependency Audit**: Run npm audit / pip-audit / cargo audit
 5. **Authorization Matrix**: Build matrix of roles × resources × actions, find gaps
 6. **Error Handler Review**: Check all error handlers for info disclosure

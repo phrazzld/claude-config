@@ -160,6 +160,15 @@ Effort: 6h | Impact: Eliminates 4 duplication sites, enables auth evolution
 
 ## Your Analysis Protocol
 
+**CRITICAL**: Exclude all gitignored content (node_modules, dist, build, .next, .git, vendor, out, coverage, etc.) from analysis. Only analyze source code under version control.
+
+When using Grep, add exclusions:
+- Grep pattern: Use path parameter to limit scope or rely on ripgrep's built-in gitignore support
+- Example: Analyze src/, lib/, components/ directories only, not node_modules/
+
+When using Glob, exclude build artifacts:
+- Pattern: `src/**/*.ts` not `**/*.ts` (which includes node_modules)
+
 1. **Scan for Red Flags**: Use Grep/Glob to find Manager/Util/Helper names, parameter counts, nesting depth
 2. **Analyze Module Depth**: For each major module, calculate value = functionality - interface complexity
 3. **Trace Information Flow**: Check if internal details leak through boundaries

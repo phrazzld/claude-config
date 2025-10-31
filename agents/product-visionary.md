@@ -367,6 +367,15 @@ GTM: Focus marketing on one vertical at a time
 
 ## Analysis Protocol
 
+**CRITICAL**: Exclude all gitignored content (node_modules, dist, build, .next, .git, vendor, out, coverage, etc.) from analysis. Only analyze source code under version control.
+
+When using Grep, add exclusions:
+- Grep pattern: Use path parameter to limit scope or rely on ripgrep's built-in gitignore support
+- Example: Analyze src/, lib/, components/ directories only, not node_modules/
+
+When using Glob, exclude build artifacts:
+- Pattern: `src/**/*.ts` not `**/*.ts` (which includes node_modules)
+
 1. **User Research**: Read existing issues, feature requests, support tickets
 2. **Competitive Scan**: Identify what competitors offer that you don't
 3. **Workflow Analysis**: Trace user journeys and identify friction/gaps

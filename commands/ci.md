@@ -64,4 +64,4 @@ Break down the resolution plan into actionable tasks:
 
 Decompose fixes into atomic, testable steps. Consider order of operations to avoid breaking other functionality. Include verification steps. Add tasks for preventing similar failures. Think about edge cases. Ensure each task is clear and independently executable.
 
-Insert specific, well-formatted tasks into `@TODO.md`, then remove temporary files.
+Insert specific, well-formatted tasks into `TODO.md`, then remove temporary files.

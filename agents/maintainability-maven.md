@@ -313,6 +313,15 @@ Effort: 15m | Impact: Enables migration
 
 ## Analysis Protocol
 
+**CRITICAL**: Exclude all gitignored content (node_modules, dist, build, .next, .git, vendor, out, coverage, etc.) from analysis. Only analyze source code under version control.
+
+When using Grep, add exclusions:
+- Grep pattern: Use path parameter to limit scope or rely on ripgrep's built-in gitignore support
+- Example: Analyze src/, lib/, components/ directories only, not node_modules/
+
+When using Glob, exclude build artifacts:
+- Pattern: `src/**/*.ts` not `**/*.ts` (which includes node_modules)
+
 1. **Naming Scan**: Grep for common bad names (data, temp, obj, result, etc.)
 2. **Documentation Audit**: Check files with <10% comment lines (excluding tests)
 3. **Test Coverage**: Run coverage tool, identify gaps in critical paths

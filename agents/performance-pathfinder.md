@@ -242,6 +242,15 @@ Effort: 20m | Impact: 5MB → 0MB repeat visit bandwidth
 
 ## Analysis Protocol
 
+**CRITICAL**: Exclude all gitignored content (node_modules, dist, build, .next, .git, vendor, out, coverage, etc.) from analysis. Only analyze source code under version control.
+
+When using Grep, add exclusions:
+- Grep pattern: Use path parameter to limit scope or rely on ripgrep's built-in gitignore support
+- Example: Analyze src/, lib/, components/ directories only, not node_modules/
+
+When using Glob, exclude build artifacts:
+- Pattern: `src/**/*.ts` not `**/*.ts` (which includes node_modules)
+
 1. **Profile First**: Don't guess — use profilers (Chrome DevTools, Node --inspect)
 2. **Measure Baseline**: Record current performance metrics
 3. **Identify Hotspots**: Focus on functions consuming >5% CPU or making >100 calls

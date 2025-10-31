@@ -111,9 +111,6 @@ Before finalizing:
 
 ## Next Steps
 
-After creating TODO.md:
-1. Run `/flesh` on complex tasks needing more detail
-2. Run `/execute` to start implementation
-3. Review BACKLOG.md for future enhancements (if created)
+After creating TODO.md, check out a new branch for this work.
 
 Remember: **The best plan gets code into production. Everything else is commentary.**
