@@ -37,15 +37,23 @@ Ask only: **"Do I know exactly what to do?"**
 
 **4. Implement**
 
-Write the code. Follow existing patterns. Keep it simple.
+Read DESIGN.md for architectural guidance—the "how" is decided. Follow the module design, implement the pseudocode, match the interfaces. Your job: clean implementation of the planned architecture.
+
+**Architecture blueprint** (from DESIGN.md):
+- Module interfaces (match these exactly)
+- Pseudocode algorithms (translate to real code)
+- Data structures (use these types)
+- Error handling strategy (follow this approach)
+- Integration points (connect as specified)
 
 **Apply principles while coding**:
 - **Simplicity**: Prefer boring over clever. Aim for one-sentence explanations.
 - **Maintainability**: Choose names that reveal purpose. Document "why" over "what".
 - **Explicitness**: Make dependencies visible in signatures. Make side effects obvious from names.
-- **Strategic**: Improve design 10-20% while implementing.
+- **Follow the blueprint**: Implement the architecture, don't redesign it.
 
 **Check implementation quality**:
+- Matches DESIGN.md? (Interface, behavior, error handling)
 - Deep module? (Simple interface hiding powerful implementation)
 - Information hiding intact? (Changing internals preserves caller code)
 - Minimal complexity? (Few dependencies, clear behavior)

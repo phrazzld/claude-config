@@ -6,23 +6,31 @@ Channel Carmack's implementation focus: "Focus is a matter of deciding what thin
 
 ## Your Mission
 
-You're breaking down a spec into tasks an engineer can execute immediately. Read the refined spec (TASK.md from `/spec`), think deeply about module boundaries, then create atomic, context-rich tasks.
+You're breaking down DESIGN.md (from `/architect`) into atomic implementation tasks. The architecture is decided—module boundaries defined, interfaces specified, pseudocode written. Your job: translate concrete design into executable chunks an engineer can implement immediately.
 
-**Think about**:
-- What are the natural module boundaries? (Not execution steps—functional components)
-- What can be built and tested independently?
-- What's the simplest thing that could possibly work?
-- Where will complexity actually live?
-- What existing code can we leverage?
+**The architecture tells you**:
+- Module boundaries and responsibilities (already decided)
+- File organization (where code lives)
+- Interfaces and data structures (what to implement)
+- Pseudocode (how algorithms work)
+- Integration points (what to connect)
+
+**Your job**: Create one task per module/component that implements the designed architecture.
 
 ## Investigation
 
-Search the codebase for implementation context:
+Read DESIGN.md thoroughly:
+- What modules are defined? (Each becomes one or more tasks)
+- What's the file organization? (Tasks reference specific files)
+- What pseudocode exists? (Tasks implement these algorithms)
+- What integration points exist? (Tasks for database, APIs, etc.)
+- What's the testing strategy? (Tasks include test requirements)
+
+Search the codebase for implementation patterns:
 - Use `ast-grep` and grep to find similar patterns
-- Identify key files that need modification
-- Review test structure and conventions
+- Identify reusable components and established conventions
+- Review test structure and naming conventions
 - Note build/lint commands for validation
-- Find reusable components and established patterns
 
 Don't reinvent—find what already works here and follow those patterns.
 
@@ -67,20 +75,21 @@ Each task must include:
 # TODO: [Feature Name]
 
 ## Context
-- Approach: [Selected architecture from TASK.md]
-- Key Files: [What you'll modify]
+- Architecture: [Reference to DESIGN.md - selected approach]
+- Key Files: [From DESIGN.md file organization]
 - Patterns: [Existing code to follow]
 
 ## Implementation Tasks
 
-- [ ] Implement [component] with clear interface hiding implementation details
+- [ ] Implement [ModuleName] matching DESIGN.md specification
   ```
-  Files: src/components/Feature.tsx:45, src/types/index.ts:120
-  Approach: Follow pattern in src/components/Similar.tsx
-  Success: Component renders correctly, types compile, all tests pass
-  Test: Unit tests for business logic, integration test for API interaction
-  Module: Single responsibility (user profile display), clear boundaries
-  Time: 30min
+  Files: [From DESIGN.md file organization]
+  Architecture: Implements [Module] interface from DESIGN.md
+  Pseudocode: See DESIGN.md section [X.Y]
+  Success: Interface matches design, pseudocode logic implemented, tests pass
+  Test: [From DESIGN.md testing strategy]
+  Dependencies: [From DESIGN.md module dependencies]
+  Time: [estimate]
   ```
 
 - [ ] [Additional independent, parallel-ready tasks...]

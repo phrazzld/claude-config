@@ -15,7 +15,8 @@ Eliminate "what command should I run next?" decisions. Analyzes your current wor
 Check what exists and determine workflow position:
 
 **Files to check**:
-- TASK.md: Does it exist? Is it spec'd (detailed approach, success criteria, constraints)?
+- TASK.md: Does it exist? Is it spec'd (detailed PRD with requirements, constraints)?
+- DESIGN.md: Does it exist? Is it complete (architecture, modules, pseudocode)?
 - TODO.md: Does it exist? Are there pending tasks `[ ]` or `[~]`? All complete `[x]`?
 - Recent commits: Work recently committed? PR created?
 - Git status: Branch state, uncommitted changes?
@@ -23,7 +24,8 @@ Check what exists and determine workflow position:
 **Workflow states**:
 - **IDLE**: No active work (no TASK.md or empty)
 - **NEEDS_SPEC**: TASK.md exists but not detailed/spec'd
-- **NEEDS_PLAN**: TASK.md spec'd but no TODO.md
+- **NEEDS_ARCHITECT**: TASK.md spec'd but no DESIGN.md
+- **NEEDS_PLAN**: DESIGN.md exists but no TODO.md
 - **IN_PROGRESS**: TODO.md has pending tasks
 - **READY_FOR_PR**: All tasks complete, work committed
 - **STALE_BRANCH**: Branch behind main
@@ -36,14 +38,19 @@ Based on detected state, execute appropriate command:
 Report: "No active work. Create TASK.md with feature description or run /backlog-groom to find work."
 
 ### NEEDS_SPEC State
-TASK.md exists but lacks detail (no clear approach, success criteria, or constraints).
+TASK.md exists but lacks detail (no clear requirements, success criteria, or constraints).
 
-**Action**: Run /spec to refine TASK.md into comprehensive specification.
+**Action**: Run /spec to refine TASK.md into comprehensive PRD.
+
+### NEEDS_ARCHITECT State
+TASK.md fully spec'd but no DESIGN.md exists.
+
+**Action**: Run /architect to create DESIGN.md with architecture, module design, and pseudocode.
 
 ### NEEDS_PLAN State
-TASK.md fully spec'd but no TODO.md exists.
+DESIGN.md exists but no TODO.md exists.
 
-**Action**: Run /plan to convert spec into actionable TODO.md tasks.
+**Action**: Run /plan to convert DESIGN.md architecture into actionable TODO.md tasks.
 
 ### IN_PROGRESS State
 TODO.md exists with tasks marked `[ ]` (pending) or `[~]` (in-progress).

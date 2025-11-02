@@ -19,14 +19,21 @@ Take a feature from concept to PR-ready code through automated workflow orchestr
 ## Process
 
 ### Phase 1: Specification
-Run /spec to create comprehensive specification in TASK.md.
+Run /spec to create comprehensive specification in TASK.md (the PRD).
 
 Wait for user input and clarifying questions. Finalize spec before proceeding.
 
-### Phase 2: Planning
-Once spec is complete, run /plan to convert specification into actionable TODO.md tasks.
+### Phase 2: Architecture
+Run /architect to create DESIGN.md with detailed architecture, module design, and pseudocode.
 
-### Phase 3: Execution
+This transforms the PRD into a concrete implementation blueprint—module boundaries, interfaces, algorithms, data structures, integration points.
+
+### Phase 3: Planning
+Run /plan to convert DESIGN.md architecture into actionable TODO.md tasks.
+
+Each task implements one module or component from the architectural design.
+
+### Phase 4: Execution
 Run /execute repeatedly until all tasks complete:
 - Check task readiness before execution
 - If task lacks specificity, gather context and refine inline
@@ -35,7 +42,7 @@ Run /execute repeatedly until all tasks complete:
 - Mark complete and move to next task
 - Continue until all tasks marked [x]
 
-### Phase 4: Validation
+### Phase 5: Validation
 Run /pr-ready to ensure all quality gates pass:
 - All TODO.md tasks completed
 - Tests passing
@@ -46,7 +53,7 @@ Run /pr-ready to ensure all quality gates pass:
 
 If validation fails, address blockers and re-validate.
 
-### Phase 5: Delivery
+### Phase 6: Delivery
 Once validation passes, run /git-pr to create pull request with auto-generated description.
 
 ## Success Criteria
