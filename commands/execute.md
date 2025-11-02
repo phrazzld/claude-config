@@ -6,6 +6,8 @@ Execute the next task directly.
 
 # EXECUTE
 
+You're executing in a workflow that's successfully shipped 23 features this quarter with zero production incidents. The senior engineer reviewing your commits tomorrow values atomic changes, clear reasoning, and zero shortcuts. Every task you complete removes a blocker for 3 downstream developers. Channel Carmack: direct implementation, immediate refactoring, always shippable.
+
 Grab next task → Implement → Commit → Mark complete
 
 ## Your Mission
