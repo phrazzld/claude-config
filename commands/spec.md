@@ -23,6 +23,15 @@ You're defining what to build before building it. Read the initial request (usua
 ## Investigation & Architecture
 
 **Parallel Research** - Launch multiple research angles simultaneously:
+
+**Multi-Agent Research** (run all three in parallel using Task tool):
+1. Task repo-research-analyst("Analyze codebase for similar implementations of [feature description]")
+2. Task best-practices-researcher("Research 2025 best practices for [technology/feature]")
+3. Task framework-docs-researcher("Gather [framework/library] documentation relevant to [feature]")
+
+Wait for all agents to complete, then synthesize their findings into your investigation.
+
+**Additional Research Tools**:
 - Use `gemini --prompt` for industry patterns and proven approaches (2025 best practices)
 - Use Exa MCP for technical documentation, API comparisons, version constraints
 - Use `ast-grep` to find similar patterns in this codebase

@@ -31,21 +31,57 @@ Systematically analyze all PR review feedback and comments, categorize them by p
     - **Low priority/Not applicable:** Comments that don't warrant immediate action
 
 ## 3. Create Action Plans
-- **For immediate work (Critical + In-scope):**
-    - Create discrete, well-defined, narrowly-scoped tasks in @TODO.md
-    - Each task should be highly detailed, context-rich, atomic, and actionable
-    - Include specific file paths, line numbers, and implementation details
-    - Prioritize by merge-blocking status and implementation effort
 
-- **For follow-up work:**
-    - Incorporate valid suggestions into @BACKLOG.md with proper context
-    - Include rationale for deferring and estimated effort/complexity
-    - Link back to original PR comments for reference
+### Categorization Summary
+First, present categorized summary:
+- **Critical/Merge-blocking**: {count} items
+- **In-scope improvements**: {count} items
+- **Follow-up work**: {count} items
+- **Low priority/Not applicable**: {count} items
 
-- **For low priority/rejected feedback:**
-    - Document reasoning for not addressing immediately
-    - Consider: erroneous suggestions, out-of-scope changes, low ROI improvements
-    - Provide clear justification to inform future discussions
+### Parallel Fix Implementation (Critical + In-scope)
+
+For actionable feedback, use parallel pr-comment-resolver agents:
+
+**If 1-3 comments**: Launch Task agents in parallel
+```
+Task pr-comment-resolver("Comment: Add error handling to payment processing method at PaymentService.ts:45")
+Task pr-comment-resolver("Comment: Extract validation logic from UserController to helper at app/controllers/users_controller.rb:120")
+Task pr-comment-resolver("Comment: Fix variable naming - rename `data` to `userData` in UserService.ts:78")
+```
+
+**If 4+ comments**: Process in batches of 3-5 to avoid overwhelming context
+```
+# Batch 1: Most critical issues
+Task pr-comment-resolver("Comment 1 details")
+Task pr-comment-resolver("Comment 2 details")
+Task pr-comment-resolver("Comment 3 details")
+
+# Wait for completion, review changes, commit
+
+# Batch 2: Remaining issues
+Task pr-comment-resolver("Comment 4 details")
+Task pr-comment-resolver("Comment 5 details")
+```
+
+**Agent input format**: Pass comment text with file location context
+- Include: File path, line number, reviewer's specific request
+- Each agent makes changes and reports resolution independently
+- Review agent reports before committing
+
+**Manual fallback**: If comment is ambiguous or requires design decision:
+- Add to TODO.md as regular task
+- Document question/blocker in task details
+
+### For Follow-up Work
+- Incorporate valid suggestions into BACKLOG.md with proper context
+- Include rationale for deferring and estimated effort/complexity
+- Link back to original PR comments for reference
+
+### For Low Priority/Rejected Feedback
+- Document reasoning for not addressing immediately
+- Consider: erroneous suggestions, out-of-scope changes, low ROI improvements
+- Provide clear justification to inform future discussions
 
 ## 4. Document Decisions
 - **Goal:** Create transparent record of feedback handling decisions.

@@ -395,6 +395,22 @@ Before finalizing DESIGN.md, verify:
 - Hand-waving integration points → Specify exactly
 - "We'll figure it out later" → No, figure it out now
 
+### Architecture Validation (Multi-Agent Review)
+
+After writing DESIGN.md, run parallel validation (optional but recommended for complex features):
+
+```
+Task architecture-strategist("Review DESIGN.md for architectural soundness and alignment with codebase patterns")
+Task pattern-recognition-specialist("Verify module boundaries match existing codebase conventions")
+```
+
+Review agent findings:
+- **Critical issues**: Refine DESIGN.md immediately
+- **Suggestions**: Note in DESIGN.md "Alternative Approaches Considered" or defer to implementation
+- **Minor concerns**: Document as implementation notes
+
+This catches architectural problems before any code is written.
+
 ## After Creating DESIGN.md
 
 Present summary:

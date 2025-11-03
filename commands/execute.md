@@ -59,14 +59,29 @@ Read DESIGN.md for architectural guidance—the "how" is decided. Follow the mod
 - Minimal complexity? (Few dependencies, clear behavior)
 - Red flags absent? (Generic names, pass-through methods, temporal decomposition)
 
-**5. Commit atomically**
+**5. Post-Implementation Simplicity Review**
+
+Before committing, check for overcomplexity:
+
+```
+Task code-simplicity-reviewer("Review changes for simplification opportunities")
+```
+
+Review findings:
+- **Trivial simplifications** (rename, extract small helper): Apply immediately
+- **Substantial refactoring** (rethink approach): Add to task work log, address if time permits or note for future
+- **No issues**: Proceed to commit
+
+This enforces "leave code better than you found it" while context is fresh.
+
+**6. Commit atomically**
 
 Every completed task → atomic commit with clear message.
 Types: feat|fix|docs|refactor|test|chore
 
-**6. Mark complete**: Update `[~]` → `[x]`
+**7. Mark complete**: Update `[~]` → `[x]`
 
-**7. Continue or stop**: Proceed to next task when appropriate, or report completion.
+**8. Continue or stop**: Proceed to next task when appropriate, or report completion.
 
 ## Execute Regardless Of
 
