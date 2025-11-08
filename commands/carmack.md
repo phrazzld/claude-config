@@ -1,57 +1,57 @@
-# CARMACK
+# CARMACK (WITH COOL-DOWN MODE)
 
-Take a step back and ultrathink: what would John Carmack do?
+Take a step back, breathe, and then attack the problem like Carmack would.
 
-## The Carmack Framework for Technical Problem-Solving
+## 0. Reset Ritual (Imported from /chill)
+1. Pause. Close eyes, dump assumptions.
+2. Re-center: restate task, constraints, success metrics.
+3. Scan leyline tenets/bindings for relevant quality bars.
+4. Decide: stay course or course-correct? Document the call.
 
-### 1. **First Principles Reset**
-- **Strip away assumptions**: What is the *actual* problem, divorced from implementation details?
-- **Understand the physics**: What are the fundamental constraints (hardware, performance, user needs)?
-- **Question everything**: Is this complexity necessary, or is it accumulated technical debt?
+## 1. First Principles Reset
+- Strip away assumptions: what is the *actual* problem?
+- Understand the physics: hardware limits, perf targets, user needs.
+- Question everything: which complexity is essential vs. accidental?
 
-### 2. **The Deep Stare Phase** 
-- **Mandatory pause**: Before writing code, stare at the problem and existing code
-- **Trace execution mentally**: Follow data flow and control paths without debugger
-- **Ask the hard questions**:
-  - What is the simplest thing that could possibly work?
-  - What would this look like if I built it from scratch today?
-  - Which abstractions are helping vs. hiding complexity?
+## 2. Deep Stare Phase
+- Mandatory pause before typing—trace flow mentally end to end.
+- Ask:
+  - Simplest thing that could possibly work?
+  - How would I build this from scratch today?
+  - Which abstractions help vs. obscure?
 
-### 3. **Gradient Descent Implementation**
-- **Start with the spike**: Build the most direct, inelegant solution first
-- **Measure everything**: Performance, memory, actual user impact
-- **Immediate refactoring**: Don't move on until the spike is cleaned up
-- **Make error impossible**: Design APIs and data flows to prevent misuse
+## 3. Gradient Descent Implementation
+- Spike the direct solution, measure, then immediately refactor clean.
+- Make misuse impossible via APIs/data flow.
+- Keep code always shippable.
 
-### 4. **Carmack's Decision Tree**
-For any technical choice, evaluate in this order:
-1. **User value**: Does this directly improve the end-user experience?
-2. **Simplicity**: Is this the most direct path to the solution?
-3. **Constraints**: Does this work within hardware/system limitations?
-4. **Maintenance**: Will this make sense to future developers?
-5. **Measurable**: Can I prove this works better than alternatives?
+## 4. Carmack Decision Tree
+Evaluate choices in this order:
+1. User value
+2. Simplicity
+3. Constraints (hardware/system)
+4. Maintenance clarity
+5. Measurability (can we prove it's better?)
 
-### 5. **Implementation Principles**
-- **No unnecessary abstractions**: If you can't trace code to hardware, it's too abstract
-- **Pure functions preferred**: Minimize side effects and global state
-- **Always shippable**: Every commit should leave the codebase in a working state
-- **Tools over heroics**: Invest in static analysis, linting, and automation
-- **Delete code aggressively**: The best code is code you don't have to maintain
+## 5. Implementation Principles
+- No unnecessary abstractions—if you can’t trace it to hardware, it's too abstract.
+- Prefer pure functions, explicit dependencies, zero global state.
+- Invest in tools (profilers, static analysis) over heroics.
+- Delete relentlessly; the best code is none.
 
-### 6. **When Stuck - The Carmack Debug Loop**
-1. **Isolate**: Create the minimal reproduction of the problem
-2. **Understand**: What specifically is happening vs. what you expected?
-3. **Hypothesize**: What is the most likely root cause?
-4. **Test**: Build the smallest possible test of your hypothesis
-5. **Measure**: Did it work? What did you learn?
-6. **Iterate**: Use the new information to refine understanding
+## 6. Stuck? Run The Debug Loop
+1. Isolate minimal repro.
+2. Understand: actual vs expected behavior.
+3. Hypothesize cause.
+4. Test the hypothesis fast.
+5. Measure results.
+6. Iterate using new info.
 
-### 7. **Red Flags That Would Make Carmack Cringe**
-- Adding frameworks before understanding the problem
-- "We might need this later" code
-- Abstractions that don't simplify the common case
-- Performance assumptions without measurement
-- Complex architectures for simple problems
-- Technical debt that compounds instead of being fixed immediately
+## 7. Red Flags
+- Adding frameworks before understanding the core problem.
+- "We might need this later" abstractions.
+- Performance assumptions without data.
+- Layers that don't simplify the common case.
+- Technical debt that compounds without a paydown plan.
 
-**Remember**: Carmack's superpower isn't just technical skill - it's the discipline to step back, think deeply, and choose the direct path over the clever one.
+Report outcome of the reset ("Approach validated" or "Course correction: ...") before diving back in.

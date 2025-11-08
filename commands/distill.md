@@ -1,22 +1,32 @@
-Distill CLAUDE.md into concise repository-specific operational guidance under 100 lines.
+# DISTILL (AND KEEP CLAUDE.md ALIVE)
 
-# DISTILL
+Single command to both shrink and refresh CLAUDE.md. Target ≤100 lines of razor-sharp, repo-specific direction that actually reflects how we work *today*.
 
-## GOAL
-Distill CLAUDE.md to ≤100 lines of repository-specific operational guidance.
+## 1. Baseline Scan
+- Read README.md, existing CLAUDE.md, recent TODO/TASK logs, leyline docs
+- Identify what makes this repo unique (tooling, workflows, constraints)
+- Note stale guidance, unused tools, or missing practices
 
-## ANALYZE FIRST
-- Read README.md, current CLAUDE.md, and leyline documents
-- Understand this repository's unique purpose and characteristics
-- Identify what Claude Code specifically needs to operate effectively here
-- Distinguish repository-specific guidance from generic best practices
+## 2. Extract the Signal
+- Keep only guidance Claude needs to operate here; drop generic advice
+- Promote patterns that repeatedly deliver value (command chains, tooling combos)
+- Document invariants, pitfalls, or project-specific quality bars
 
-## DISTILL PRINCIPLES
-- Repository-specific operational guidance only
-- Remove information easily found in README.md or obvious locations
-- Focus on unique workflows, tools, and constraints
-- Tight, high-level, actionable content
-- Eliminate redundancy while preserving critical context
+## 3. Refresh The Content
+- Evaluate each CLAUDE.md section (philosophy, tools, reasoning budgets, workflows)
+- Ask for every line: still true? still used? needs a newer example?
+- Add any new tools or principles that have become standard
 
-## EXECUTE
-Create concise CLAUDE.md that captures this repository's essential operational guidance without duplicating easily accessible information.
+## 4. Distill To ≤100 Lines
+- Collapse redundancy, prefer imperative sentences
+- Reference files/workflows instead of restating their contents
+- Highlight only the top-tier tools (rg, ast-grep, Task, etc.) with live examples
+
+## 5. Quality Bar
+- [ ] Repository-specific, zero fluff
+- [ ] Examples use real commands we run
+- [ ] Dead tools/info removed
+- [ ] New instructions easy to scan (headers, bullets, short sentences)
+- [ ] Final line count ≤100
+
+Deliverable: refreshed CLAUDE.md that feels like a living operations brief, not an archive.

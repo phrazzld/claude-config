@@ -2,38 +2,40 @@
 
 Streamlined command library for Claude Code CLI, providing an integrated development workflow from ideation to deployment.
 
-## Core Workflow Commands (29 Total)
+## Core Workflow Commands (23 Total)
 
 ### 🚀 Development Pipeline
 
 The main development flow follows this progression:
 
 ```
-/prime → /spec → /plan → /flesh → /execute → /git-pr → /git-code-review
+/prime → /spec → /architect → /plan → /flesh → /execute → /git-pr
 ```
 
 1. **prime.md** - Gather context from repository files (README, CLAUDE.md, package.json)
 2. **spec.md** - Research and specification generation with parallel experts
-3. **plan.md** - Convert specifications to actionable TODO items
-4. **flesh.md** - Transform skeletal TODOs into executable specifications with parallel research
-5. **execute.md** - Adaptive task execution with complexity-based reasoning
-6. **git-pr.md** - Create pull requests with auto-generated descriptions
-7. **git-code-review.md** - Multi-expert code review generating TODOs and backlog items
+3. **architect.md** - Transform PRD into DESIGN.md with modules, pseudocode, data flow
+4. **plan.md** - Convert architecture into actionable TODO items
+5. **flesh.md** - Transform skeletal TODOs into executable specifications with parallel research
+6. **execute.md** - Adaptive task execution with complexity-based reasoning
+7. **git-pr.md** - Create pull requests with auto-generated descriptions
 
 ### 📊 Analysis & Debugging
 
 - **debug.md** - Adaptive debugging with 8 domain experts using confidence scoring
 - **ci.md** - CI failure analysis and resolution task generation
 - **verify.md** - Pre-commit bypass validation
+- **ultrathink.md** - Steve Jobs/Ousterhout design review for risky plans
+- **gates.md** - Quality gate checklist before merging or pushing
 
 ### 📋 Task Management
 
-- **address.md** - Extract actionable blockers from code reviews
+- **backlog-groom.md** - Parallel expert backlog generation with 8 specialized agents
+- **plan.md** - Architecture-to-task conversion
 - **flesh.md** - Expand TODO items with deep analysis and parallel research
 - **ticket.md** - Convert plans into prioritized TODO.md items
-- **task-breakdown.md** - Break down TASK.md into discrete TODO entries
-- **scope.md** - Analyze and split oversized PRs
-- **shatter.md** - Decompose monolithic branches into atomic PRs
+- **tighten.md** - Slim TODO.md to execution-ready scope only
+- **skill-bootstrap.md** - Capture missing domain knowledge before building
 
 ### 🔀 Git Operations
 
@@ -41,23 +43,16 @@ The main development flow follows this progression:
 - **git-respond.md** - Handle PR feedback and reviews
 - **git-push.md** - Quality gate workflow before pushing
 - **git-simple-push.md** - Quick push without quality gates
-- **git-resolve-conflicts.md** - Specialized merge conflict resolution
 
 ### 📚 Documentation & Reflection
 
-- **docs-sync.md** - Extract patterns from work logs and update documentation
-- **distill.md** - Optimize CLAUDE.md to ≤100 lines
-- **carmack.md** - John Carmack-inspired technical problem-solving
-- **chill.md** - Structured reflection and stress reduction
-- **update-claude.md** - Session-based CLAUDE.md refinement
+- **distill.md** - Combined CLAUDE.md distillation + refresh workflow (≤100 lines, always current)
+- **carmack.md** - Carmack-style first-principles reset with built-in chill/reflect ritual
 
 ### 🛠️ Utilities
 
-- **backlog-groom.md** - Parallel expert backlog generation with 8 specialized agents
-- **branch.md** - Create git worktrees with proper configuration
-- **setup-mcp.md** - Configure MCP integrations (GitHub, Linear, Azure, Exa, Playwright)
-- **thinktank.md** - Interface with external expert consultation tool
-- **synthesize.md** - Create superior synthesis from multiple AI outputs
+- **spec.md / architect.md / ultrathink.md** embed the Steve Jobs ultrathink mindset so every stage feels inevitable
+- **ticket.md + tighten.md** keep TODO.md actionable and lean
 
 ## Key Features
 
@@ -76,7 +71,6 @@ Multiple commands use the Task tool for concurrent expert analysis:
 - `/flesh` - 3 research experts for TODO expansion
 - `/debug` - 8 domain experts with confidence assessment
 - `/backlog-groom` - 8 specialized backlog agents
-- `/git-code-review` - 8 review experts
 
 ### Live Progress Tracking
 
@@ -107,8 +101,7 @@ Commands update TODO.md in real-time with:
 
 ### Documentation Update
 ```bash
-/docs-sync                # Extract patterns and update docs
-/update-claude            # Refine CLAUDE.md with session insights
+/distill                  # Shrink + refresh CLAUDE.md into a 100-line living brief
 ```
 
 ## File Conventions
@@ -124,8 +117,8 @@ Commands update TODO.md in real-time with:
 1. **Start with context**: Use `/prime` to understand the codebase
 2. **Research thoroughly**: Use `/spec` for complex features
 3. **Track everything**: Let commands update TODO.md automatically
-4. **Review comprehensively**: Use `/git-code-review` before merging
-5. **Document learnings**: Run `/docs-sync` after major work
+4. **Stress test designs**: Run `/ultrathink` before building risky features
+5. **Document learnings**: Refresh CLAUDE.md via `/distill` after major work
 
 ## Command Philosophy
 
@@ -134,3 +127,4 @@ Commands update TODO.md in real-time with:
 - **Transparent**: Live logging shows what's happening
 - **Adaptive**: Complexity-based reasoning allocation
 - **Parallel**: Multi-expert analysis when beneficial
+- **Reality Distortion Mindset**: Spec → Architect → Plan → Execute → Ultrathink all embed the Steve Jobs ultrathink ritual for simplicity, iteration, and elegance
