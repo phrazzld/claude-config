@@ -41,6 +41,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 ### The Eight Perspectives
 
 **1. complexity-archaeologist** (Ousterhout Red Flags + Simplicity)
+- **Skills to apply**: `ousterhout-principles`
 - Shallow module detection (functionality ≈ interface complexity)
 - Information leakage through abstractions
 - Pass-through methods adding no value
@@ -50,6 +51,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - Strategic vs tactical debt mapping
 
 **2. architecture-guardian** (Modularity + Explicitness)
+- **Skills to apply**: `naming-conventions`, `ousterhout-principles`
 - Single responsibility violations
 - Tight coupling analysis
 - Dependency direction validation (high→low only)
@@ -59,6 +61,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - Module boundary violations
 
 **3. security-sentinel** (Security Bindings + OWASP)
+- **Skills to apply**: `code-review-checklist` (security section)
 - Authentication & authorization gaps
 - Input validation & injection vulnerabilities
 - Secret & credential exposure (git-tracked = CRITICAL, gitignored = LOW)
@@ -68,6 +71,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - Dependency vulnerabilities
 
 **4. performance-pathfinder** (Performance + Efficiency)
+- **Skills to apply**: `code-review-checklist` (performance section)
 - Algorithmic complexity issues (O(n²) traps)
 - Database query optimization (N+1 queries, missing indexes)
 - Frontend performance (bundle size, re-renders)
@@ -76,6 +80,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - Asset optimization opportunities
 
 **5. maintainability-maven** (Maintainability Tenet)
+- **Skills to apply**: `naming-conventions`, `documentation-standards`, `code-review-checklist`
 - Naming quality (unclear, misleading, inconsistent)
 - Documentation gaps (missing "why", stale docs, no contracts)
 - Test coverage analysis
@@ -84,6 +89,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - Technical debt documentation
 
 **6. user-experience-advocate** (Product Value First)
+- **Skills to apply**: `aesthetic-philosophy`
 - Error message quality
 - User friction points (loading states, confusing flows)
 - Accessibility issues (WCAG compliance)
@@ -93,6 +99,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - Empty states
 
 **7. product-visionary** (Feature Value + Market Opportunity)
+- **Skills to apply**: None (strategic business analysis)
 - Missing core features preventing adoption
 - Competitive feature gaps (table stakes vs differentiation)
 - Workflow enhancement opportunities (10x improvements, not 10%)
@@ -104,6 +111,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - **Apply 80/20**: Which 20% of features drive 80% of value?
 
 **8. design-systems-architect** (Design Systems + UI Consistency + Component Architecture)
+- **Skills to apply**: `aesthetic-philosophy`, `frontend-design`
 - Design token system gaps (hardcoded values vs tokens)
 - Component architecture issues (duplication, poor composition, shallow modules)
 - Visual consistency (typography, spacing, color, layout patterns)
@@ -119,23 +127,26 @@ Use Task tool to run all 8 agents in parallel:
 **IMPORTANT**: All agents must exclude gitignored content (node_modules, dist, build, .next, vendor, etc.) when searching. Only analyze source code under version control.
 
 ```markdown
-Launching parallel codebase audit with 7 specialized perspectives...
+Launching parallel codebase audit with 8 specialized perspectives...
 
 Task 1: complexity-archaeologist
-"Analyze the codebase for Ousterhout red flags and complexity patterns.
+"Apply principles from ousterhout-principles skill when evaluating code.
+Analyze the codebase for Ousterhout red flags and complexity patterns.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 Hunt for: shallow modules, information leakage, pass-through methods, temporal decomposition, generic names (Manager/Util/Helper), configuration overload.
 Map tactical debt → strategic refactoring opportunities.
 Return: Prioritized findings with file:line, principle violated, remediation, effort+impact."
 
 Task 2: architecture-guardian
-"Analyze the codebase for modularity and architectural quality.
+"Apply principles from naming-conventions and ousterhout-principles skills when evaluating architecture.
+Analyze the codebase for modularity and architectural quality.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 Hunt for: responsibility violations, tight coupling, dependency inversions, circular dependencies, god objects, poor interfaces, boundary violations.
 Return: Prioritized findings with coupling/cohesion metrics, concrete fixes, effort+impact."
 
 Task 3: security-sentinel
-"Analyze the codebase for security vulnerabilities and defensive coding gaps.
+"Apply security principles from code-review-checklist skill when evaluating security.
+Analyze the codebase for security vulnerabilities and defensive coding gaps.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 Hunt for: auth/authz issues, injection vulnerabilities, secret exposure IN GIT-TRACKED FILES (verify with git ls-files), weak crypto, access control bugs, dependency CVEs.
 For secrets in gitignored files (.env, .env.local, etc.): Flag as LOW priority defense-in-depth reminder only, NOT critical vulnerabilities.
@@ -143,20 +154,23 @@ Cover OWASP Top 10.
 Return: Prioritized findings with severity (CRITICAL only for tracked secrets), attack scenario, remediation, effort+risk."
 
 Task 4: performance-pathfinder
-"Analyze the codebase for performance bottlenecks and optimization opportunities.
+"Apply performance principles from code-review-checklist skill when evaluating performance.
+Analyze the codebase for performance bottlenecks and optimization opportunities.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 Hunt for: algorithmic inefficiencies (O(n²)), N+1 queries, missing indexes, bundle bloat, memory leaks, inefficient I/O.
 Focus on user-facing impact only.
 Return: Prioritized findings with current metrics, user impact, optimization, effort+speedup."
 
 Task 5: maintainability-maven
-"Analyze the codebase for maintainability issues and comprehension barriers.
+"Apply principles from naming-conventions, documentation-standards, and code-review-checklist skills.
+Analyze the codebase for maintainability issues and comprehension barriers.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 Hunt for: poor naming, missing documentation, test gaps, inconsistent patterns, complex logic, undocumented debt.
 Return: Prioritized findings with developer impact, concrete improvements, effort+benefit."
 
 Task 6: user-experience-advocate
-"Analyze the codebase from user perspective for UX issues and product gaps.
+"Apply principles from aesthetic-philosophy skill when evaluating user experience.
+Analyze the codebase from user perspective for UX issues and product gaps.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 Hunt for: poor error messages, friction points, accessibility issues, missing features, data loss risks, performance UX.
 Return: Prioritized findings with user impact, improved experience, effort+value."
@@ -171,12 +185,14 @@ Require business justification: adoption driver? retention hook? revenue enabler
 Return: Prioritized opportunities with market analysis, user value, competitive impact, business case, effort+strategic value."
 
 Task 8: design-systems-architect
-"Analyze the frontend for design systems, UI consistency, and component architecture.
+"Apply principles from aesthetic-philosophy and frontend-design skills when evaluating design systems.
+Analyze the frontend for design systems, UI consistency, and component architecture.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 First: Detect stack from package.json (React/Vue/Svelte, Tailwind/CSS-in-JS, component libraries). Adapt analysis to the stack present.
 Hunt for: hardcoded values vs design tokens, component duplication and shallow modules, typography/spacing/color inconsistencies, UI state pattern variations (loading, forms, data fetching), frontend tooling gaps (docs, tests, CSS architecture).
 Apply Ousterhout principles: Identify shallow component modules where interface ≈ implementation.
 Focus on reusability opportunities, visual consistency, and component composition patterns.
+Check for generic AI aesthetics (Inter/Roboto fonts, purple gradients, predictable layouts) per frontend-design skill.
 Return: Prioritized findings with stack context, pattern prevalence, refactoring opportunities, effort+impact, migration strategies."
 ```
 

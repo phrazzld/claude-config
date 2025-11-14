@@ -45,6 +45,25 @@ Transform TASK.md (PRD from `/spec`) into a concrete architectural blueprint (DE
 - Search for similar implementations in the codebase
 - Consider 3-5 fundamentally different architectural approaches
 
+## Skill Integration
+
+Before designing, load relevant skills for domain-specific expertise:
+
+**Core Architecture Skills**:
+- **ousterhout-principles**: Module depth, information hiding, complexity management
+- **naming-conventions**: Intention-revealing names, domain language, avoiding Manager/Helper/Util
+
+**Domain-Specific Skills** (load if applicable):
+- **frontend-design** + **aesthetic-philosophy**: For UI components, design systems, visual architecture
+- **schema-design**: For database architecture, data models, migrations
+- **testing-philosophy**: For test architecture, mocking strategy, coverage approach
+- **documentation-standards**: For API documentation, architectural decision records
+
+**Apply skills throughout**:
+- Use `ousterhout-principles` when evaluating module boundaries
+- Use `naming-conventions` when defining component/function names
+- Use domain skills when designing specific subsystems
+
 ## Design Thinking
 
 **Core principle**: Design twice, build once. Explore alternatives before committing.
@@ -60,7 +79,7 @@ For each alternative architecture:
 
 **Evaluate each alternative**:
 - **Simplicity** (40%): Fewest concepts to understand? Obvious implementation?
-- **Module Depth** (30%): Simple interfaces hiding powerful implementations?
+- **Module Depth** (30%): Simple interfaces hiding powerful implementations? (Apply `ousterhout-principles`)
 - **Explicitness** (20%): Dependencies and assumptions clear?
 - **Robustness** (10%): Handles errors gracefully? Scales appropriately?
 
@@ -94,6 +113,12 @@ Create DESIGN.md with these sections:
 ### 2. Module Design (Deep Dive)
 
 For each module, specify:
+
+**Apply skills when designing modules**:
+- `ousterhout-principles`: Ensure deep modules (simple interface, powerful implementation)
+- `naming-conventions`: Use intention-revealing names for interfaces and functions
+- `frontend-design`: For UI components, consider typography, animations, layout patterns
+- `schema-design`: For data models, apply normalization and constraint principles
 
 ```markdown
 ## Module: [ModuleName]
@@ -364,25 +389,32 @@ CREATE INDEX idx_users_email ON users(email);
 
 ### 11. Alternative Architectures Considered
 
+**Apply `ousterhout-principles` when evaluating alternatives**: Which architecture minimizes complexity? Which has the deepest modules (simplest interfaces hiding most functionality)?
+
 ```markdown
 ## Alternative Architectures Considered
 
 ### Alternative A: Monolithic Auth Module
 - **Pros**: Simple, one file
 - **Cons**: Poor separation of concerns, hard to test
+- **Ousterhout Analysis**: Shallow module - interface complexity ≈ implementation complexity
 - **Verdict**: Rejected - violates modularity principles
 
 ### Alternative B: Microservice
 - **Pros**: Independent deployment, dedicated scaling
 - **Cons**: Network latency, operational complexity, overkill for current scale
-- **Verdict**: Rejected - premature optimization
+- **Ousterhout Analysis**: Adds network dependency (complexity source), distributed state management (obscurity)
+- **Verdict**: Rejected - premature optimization, increases overall system complexity
 
 ### Alternative C: Serverless Functions
 - **Pros**: Auto-scaling, pay-per-use
 - **Cons**: Cold starts (100ms+), vendor lock-in, harder debugging
-- **Verdict**: Rejected - cold starts hurt UX, not worth tradeoffs
+- **Ousterhout Analysis**: Hidden cold start complexity leaks into interface (unpredictable latency)
+- **Verdict**: Rejected - cold starts hurt UX, information leakage through performance
 
 **Selected**: Modular monolith with clear boundaries (can extract later if needed)
+- **Ousterhout Justification**: Deep modules with simple interfaces, minimal dependencies, obvious behavior
+- **Skills Applied**: `ousterhout-principles` for module evaluation, `naming-conventions` for component naming
 ```
 
 ## Quality Validation

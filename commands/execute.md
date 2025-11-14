@@ -67,9 +67,39 @@ Read DESIGN.md for architectural guidance—the "how" is decided. Follow the mod
 - Minimal complexity? (Few dependencies, clear behavior)
 - Red flags absent? (Generic names, pass-through methods, temporal decomposition)
 
-**5. Post-Implementation Simplicity Review**
+**5. Post-Implementation Quality Review**
 
-Before committing, check for overcomplexity:
+Before committing, apply relevant skills and quality checks based on what you implemented:
+
+**A. Load Relevant Skills (Conditional)**
+
+Based on file types modified, explicitly load applicable skills:
+
+```bash
+# Frontend files (.tsx, .jsx, .vue, .svelte, .css, .scss)
+→ Load: frontend-design, aesthetic-philosophy skills
+→ Check: Typography, colors, animations, layout patterns, generic AI aesthetics
+
+# Test files (*.test.*, *.spec.*, __tests__/*)
+→ Load: testing-philosophy skill
+→ Check: Test behavior not implementation, AAA structure, minimal mocks
+
+# Documentation (*.md, docs/*, README.*)
+→ Load: documentation-standards skill
+→ Check: Why over what, minimal comments, maintained README
+
+# Database/Schema (migrations/*, schema.*, models/*)
+→ Load: schema-design skill
+→ Check: Normalization, constraints, data types, indexes
+
+# General code quality (all files)
+→ Load: naming-conventions skill
+→ Check: Intention-revealing names, domain language, verb+noun functions
+```
+
+**B. Simplicity Review**
+
+Always run code-simplicity-reviewer to catch overcomplexity:
 
 ```
 Task code-simplicity-reviewer("Review changes for simplification opportunities")
@@ -80,7 +110,32 @@ Review findings:
 - **Substantial refactoring** (rethink approach): Add to task work log, address if time permits or note for future
 - **No issues**: Proceed to commit
 
-This enforces "leave code better than you found it" while context is fresh.
+**C. Skill-Specific Quality Checks**
+
+If skills were loaded, perform domain-specific validation:
+
+**Frontend code**:
+- Typography: Distinctive fonts? Or Inter/Roboto defaults?
+- Colors: Cohesive palette? Or scattered hex codes?
+- Animations: Purposeful motion? Or generic transitions?
+- Layout: Visual interest? Or predictable grids?
+
+**Tests**:
+- Behavior tests? Or implementation details?
+- Minimal mocks? Or heavy stubbing?
+- Clear AAA structure? Or obscure test logic?
+
+**Documentation**:
+- Why documented? Or just what?
+- Minimal comments? Or excessive noise?
+- Up-to-date? Or stale references?
+
+**Schema**:
+- Proper normalization? Or data duplication?
+- Constraints enforced? Or application-level only?
+- Appropriate indexes? Or missing performance optimizations?
+
+This enforces "leave code better than you found it" while context is fresh and skills provide expert guidance.
 
 **6. Commit atomically**
 
