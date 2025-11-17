@@ -92,6 +92,18 @@ Based on file types modified, explicitly load applicable skills:
 → Load: schema-design skill
 → Check: Normalization, constraints, data types, indexes
 
+# Infrastructure files (lefthook.yml, .github/workflows/*, utils/logger.ts, **/sentry.*)
+→ Load: quality-gates, structured-logging, changelog-automation skills (as applicable)
+→ Check: Quality gate completeness, logging patterns, version automation, error tracking setup
+
+# Design system files (globals.css with @theme, tailwind.config.*)
+→ Load: design-tokens, frontend-design skills
+→ Check: Semantic token naming, OKLCH colors, typography scales, brand consistency
+
+# Toolchain files (mobile/*, extension/*, cli/*)
+→ Load: mobile-toolchain, extension-toolchain, cli-toolchain skills (as applicable)
+→ Check: Framework best practices, manifest configuration, testing setup
+
 # General code quality (all files)
 → Load: naming-conventions skill
 → Check: Intention-revealing names, domain language, verb+noun functions
@@ -134,6 +146,30 @@ If skills were loaded, perform domain-specific validation:
 - Proper normalization? Or data duplication?
 - Constraints enforced? Or application-level only?
 - Appropriate indexes? Or missing performance optimizations?
+
+**Infrastructure (Quality Gates)**:
+- Pre-commit hooks configured? (lint, format, typecheck)
+- Pre-push tests running? Or skippable?
+- CI/CD pipeline complete? Or missing steps?
+- Branch protection enabled? Or direct main pushes allowed?
+
+**Infrastructure (Logging)**:
+- Structured JSON logging? Or console.log?
+- Correlation IDs for request tracing? Or isolated logs?
+- Sensitive data redacted? (passwords, tokens, PII)
+- Log levels appropriate? (info/warn/error, not all debug)
+
+**Infrastructure (Design Tokens)**:
+- Semantic naming? (--color-primary) Or descriptive? (--color-blue-500)
+- OKLCH colors for perceptual uniformity? Or hex codes?
+- Design tokens in @theme? Or JavaScript config?
+- Typography scales defined? Or magic numbers?
+
+**Infrastructure (Changelog)**:
+- Changesets created for changes? Or manual changelog?
+- Conventional commit format? Or arbitrary messages?
+- Version bump strategy clear? (MAJOR.MINOR.PATCH)
+- Release automation configured? Or manual process?
 
 This enforces "leave code better than you found it" while context is fresh and skills provide expert guidance.
 

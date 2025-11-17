@@ -50,8 +50,8 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - Configuration overload
 - Strategic vs tactical debt mapping
 
-**2. architecture-guardian** (Modularity + Explicitness)
-- **Skills to apply**: `naming-conventions`, `ousterhout-principles`
+**2. architecture-guardian** (Modularity + Explicitness + Infrastructure)
+- **Skills to apply**: `naming-conventions`, `ousterhout-principles`, `quality-gates`, `structured-logging`
 - Single responsibility violations
 - Tight coupling analysis
 - Dependency direction validation (high→low only)
@@ -59,6 +59,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - God object identification
 - Interface quality assessment
 - Module boundary violations
+- **Infrastructure gaps**: Missing quality gates (Lefthook), structured logging (Pino), error tracking (Sentry)
 
 **3. security-sentinel** (Security Bindings + OWASP)
 - **Skills to apply**: `code-review-checklist` (security section)
@@ -111,14 +112,14 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - **Apply 80/20**: Which 20% of features drive 80% of value?
 
 **8. design-systems-architect** (Design Systems + UI Consistency + Component Architecture)
-- **Skills to apply**: `aesthetic-philosophy`, `frontend-design`
-- Design token system gaps (hardcoded values vs tokens)
+- **Skills to apply**: `frontend-design` (primary), `aesthetic-philosophy`, `design-tokens`
+- Design token system gaps (hardcoded values vs tokens, missing @theme directive, non-semantic naming)
 - Component architecture issues (duplication, poor composition, shallow modules)
 - Visual consistency (typography, spacing, color, layout patterns)
 - UI state patterns (loading states, forms, data fetching inconsistencies)
 - Frontend tooling (component docs, testing, CSS architecture)
 - Reusable component opportunities
-- Design system infrastructure
+- Design system infrastructure (Tailwind 4 @theme, OKLCH colors, semantic token naming)
 
 ### Launch Protocol
 
@@ -138,11 +139,12 @@ Map tactical debt → strategic refactoring opportunities.
 Return: Prioritized findings with file:line, principle violated, remediation, effort+impact."
 
 Task 2: architecture-guardian
-"Apply principles from naming-conventions and ousterhout-principles skills when evaluating architecture.
+"Apply principles from naming-conventions, ousterhout-principles, quality-gates, and structured-logging skills when evaluating architecture.
 Analyze the codebase for modularity and architectural quality.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 Hunt for: responsibility violations, tight coupling, dependency inversions, circular dependencies, god objects, poor interfaces, boundary violations.
-Return: Prioritized findings with coupling/cohesion metrics, concrete fixes, effort+impact."
+ALSO check infrastructure gaps: Missing Lefthook configuration (quality-gates skill), missing structured logging with Pino (structured-logging skill), missing Sentry error tracking, missing analytics, missing changelog automation (Changesets/semantic-release).
+Return: Prioritized findings with coupling/cohesion metrics, infrastructure gaps, concrete fixes, effort+impact."
 
 Task 3: security-sentinel
 "Apply security principles from code-review-checklist skill when evaluating security.
@@ -185,15 +187,16 @@ Require business justification: adoption driver? retention hook? revenue enabler
 Return: Prioritized opportunities with market analysis, user value, competitive impact, business case, effort+strategic value."
 
 Task 8: design-systems-architect
-"Apply principles from aesthetic-philosophy and frontend-design skills when evaluating design systems.
+"Apply principles from frontend-design (primary), aesthetic-philosophy, and design-tokens skills when evaluating design systems.
 Analyze the frontend for design systems, UI consistency, and component architecture.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 First: Detect stack from package.json (React/Vue/Svelte, Tailwind/CSS-in-JS, component libraries). Adapt analysis to the stack present.
 Hunt for: hardcoded values vs design tokens, component duplication and shallow modules, typography/spacing/color inconsistencies, UI state pattern variations (loading, forms, data fetching), frontend tooling gaps (docs, tests, CSS architecture).
+ALSO check design token infrastructure: Missing Tailwind 4 @theme directive (design-tokens skill), non-semantic token naming (--color-primary vs --color-blue-500), missing OKLCH colors for perceptual uniformity, missing typography/spacing scales.
 Apply Ousterhout principles: Identify shallow component modules where interface ≈ implementation.
 Focus on reusability opportunities, visual consistency, and component composition patterns.
-Check for generic AI aesthetics (Inter/Roboto fonts, purple gradients, predictable layouts) per frontend-design skill.
-Return: Prioritized findings with stack context, pattern prevalence, refactoring opportunities, effort+impact, migration strategies."
+Check for generic AI aesthetics (Inter/Roboto fonts, purple gradients, predictable layouts) per frontend-design skill - flag and suggest distinctive alternatives.
+Return: Prioritized findings with stack context, pattern prevalence, design token migration needs, refactoring opportunities, effort+impact, migration strategies."
 ```
 
 Run all 8 in single invocation for true parallelism.

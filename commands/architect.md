@@ -31,6 +31,7 @@ Transform TASK.md (PRD from `/spec`) into a concrete architectural blueprint (DE
 - What are the functional requirements?
 - What are the constraints (scale, performance, integration)?
 - What architecture was recommended in the PRD?
+- **Check for infrastructure requirements**: Does TASK.md flag quality gates, logging, error tracking, analytics, changelog, or design system gaps? If yes, load infrastructure skills and include infrastructure design in DESIGN.md.
 
 **Explore the codebase**:
 - Use `ast-grep` to find similar patterns and existing architectures
@@ -58,6 +59,17 @@ Before designing, load relevant skills for domain-specific expertise:
 - **schema-design**: For database architecture, data models, migrations
 - **testing-philosophy**: For test architecture, mocking strategy, coverage approach
 - **documentation-standards**: For API documentation, architectural decision records
+
+**Infrastructure Skills** (load if TASK.md flags infrastructure gaps):
+- **quality-gates**: Lefthook configuration, CI/CD pipelines, branch protection, pre-commit/pre-push hooks
+- **structured-logging**: Pino setup, correlation IDs, log levels, sensitive data redaction patterns
+- **design-tokens**: Tailwind 4 @theme directive, OKLCH colors, semantic token naming, brand consistency
+- **changelog-automation**: Changesets (monorepos) or semantic-release (single packages), versioning strategy
+
+**Toolchain Skills** (load for new project types):
+- **mobile-toolchain**: Expo/React Native/Tauri for iOS/Android apps
+- **extension-toolchain**: WXT/Plasmo/CRXJS for browser extensions
+- **cli-toolchain**: Commander.js/oclif/Ink for CLI tools
 
 **Apply skills throughout**:
 - Use `ousterhout-principles` when evaluating module boundaries
@@ -387,7 +399,136 @@ CREATE INDEX idx_users_email ON users(email);
 - Set security headers (HSTS, CSP, X-Frame-Options)
 ```
 
-### 11. Alternative Architectures Considered
+### 11. Infrastructure Design
+
+**If TASK.md flagged infrastructure gaps**, design infrastructure alongside feature architecture:
+
+```markdown
+## Infrastructure Design
+
+**Quality Gates** (apply `quality-gates` skill):
+```yaml
+# lefthook.yml
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{ts,tsx}"
+      run: pnpm eslint --fix {staged_files}
+      stage_fixed: true
+    format:
+      glob: "*.{ts,tsx,json,md,css}"
+      run: pnpm prettier --write {staged_files}
+      stage_fixed: true
+    typecheck:
+      run: pnpm tsc --noEmit
+
+pre-push:
+  commands:
+    test:
+      run: pnpm test
+```
+
+**Structured Logging** (apply `structured-logging` skill):
+```typescript
+// utils/logger.ts
+import pino from 'pino'
+
+export const logger = pino({
+  level: process.env.LOG_LEVEL || 'info',
+  redact: {
+    paths: ['password', 'apiKey', 'token', '*.secret'],
+    censor: '[REDACTED]',
+  },
+})
+
+// Usage with correlation IDs
+export function withRequestId<T>(fn: (logger: Logger) => T): T {
+  const requestId = generateRequestId()
+  const childLogger = logger.child({ requestId })
+  return fn(childLogger)
+}
+```
+
+**Error Tracking** (Sentry integration):
+```typescript
+// utils/sentry.ts
+import * as Sentry from '@sentry/nextjs'
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: 1.0,
+  beforeSend(event) {
+    // Redact sensitive data
+    if (event.request) {
+      delete event.request.cookies
+      delete event.request.headers?.authorization
+    }
+    return event
+  },
+})
+```
+
+**Design System** (apply `design-tokens` skill):
+```css
+/* app/globals.css */
+@import "tailwindcss";
+
+@theme {
+  /* Brand colors (OKLCH for perceptual uniformity) */
+  --color-primary: oklch(0.6 0.2 250);
+  --color-secondary: oklch(0.7 0.15 180);
+
+  /* Typography */
+  --font-display: "Clash Display", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* Spacing scale */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+}
+```
+
+**Changelog Automation** (apply `changelog-automation` skill):
+```bash
+# For monorepos: Changesets
+pnpm add -D @changesets/cli
+pnpm changeset init
+
+# For single packages: semantic-release
+pnpm add -D semantic-release @semantic-release/git @semantic-release/changelog
+```
+
+**CI/CD Pipeline**:
+```yaml
+# .github/workflows/ci.yml
+name: CI
+
+on: [pull_request]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+```
+```
+
+### 12. Alternative Architectures Considered
 
 **Apply `ousterhout-principles` when evaluating alternatives**: Which architecture minimizes complexity? Which has the deepest modules (simplest interfaces hiding most functionality)?
 
@@ -427,6 +568,7 @@ Before finalizing DESIGN.md, verify:
 **✅ Simplicity**: Is this the simplest architecture that meets requirements?
 **✅ Deep Modules**: Do modules hide complexity behind simple interfaces?
 **✅ Explicit Dependencies**: Are all integrations and assumptions documented?
+**✅ Infrastructure Design**: If TASK.md flagged infrastructure gaps, is infrastructure designed (quality gates, logging, error tracking, design tokens, changelog)?
 
 **Red Flags**:
 - Vague interfaces ("handle authentication") → Make concrete

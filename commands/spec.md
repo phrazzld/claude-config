@@ -30,6 +30,8 @@ You're defining what to build before building it. Read the initial request (usua
 
 ## Investigation & Architecture
 
+**Determine Project Context**: Is this a new project or enhancing existing codebase? Check for package.json, git history, existing infrastructure.
+
 **Parallel Research** - Launch multiple research angles simultaneously:
 
 **Multi-Agent Research** (run all three in parallel using Task tool):
@@ -38,6 +40,16 @@ You're defining what to build before building it. Read the initial request (usua
 3. Task framework-docs-researcher("Gather [framework/library] documentation relevant to [feature]")
 
 Wait for all agents to complete, then synthesize their findings into your investigation.
+
+**Infrastructure Assessment** (especially for new projects):
+- Check if project has quality gates (Lefthook, pre-commit hooks, CI/CD)
+- Verify structured logging setup (Pino, correlation IDs, redaction patterns)
+- Confirm error tracking (Sentry integration, source maps, release tracking)
+- Review analytics setup (Vercel Analytics, user tracking)
+- Assess changelog automation (Changesets, semantic-release, conventional commits)
+- Validate design system (Tailwind config, design tokens, brand consistency)
+
+If infrastructure gaps exist, note in TASK.md that architect should design infrastructure alongside feature architecture.
 
 **Additional Research Tools**:
 - Use `gemini --prompt` for industry patterns and proven approaches (2025 best practices)
@@ -101,6 +113,17 @@ Who uses this, problems being solved, measurable benefits
 - Alternatives Considered: Table showing value, simplicity, risk, why not chosen
 - Module Boundaries: Each module's interface, responsibility, hidden complexity
 - Abstraction Layers: How each layer changes vocabulary
+
+**Infrastructure Requirements** (if gaps identified):
+Note what architect should design alongside feature architecture:
+- **Quality Gates**: Lefthook hooks (pre-commit linting/formatting, pre-push tests), GitHub Actions CI/CD
+- **Logging**: Pino structured logging with correlation IDs, sensitive data redaction, log levels
+- **Error Tracking**: Sentry integration with source maps, release tracking, user context
+- **Analytics**: Vercel Analytics for performance monitoring, user behavior tracking
+- **Changelog**: Changesets (monorepos) or semantic-release (single packages), conventional commits
+- **Design System**: Tailwind 4 @theme directive, design tokens, typography/color scales
+
+Reference skills: quality-gates, structured-logging, design-tokens, changelog-automation, frontend-design
 
 **Dependencies & Assumptions**:
 Make everything explicit—external systems, scale expectations, team constraints, environment requirements. No hidden assumptions.

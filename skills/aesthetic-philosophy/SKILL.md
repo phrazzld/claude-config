@@ -7,6 +7,14 @@ description: "Apply aesthetic philosophy to UI/design decisions: favor minimalis
 
 Design principles for creating clean, sophisticated interfaces through restraint and intention.
 
+## Skill Integration
+
+**For UI implementation**: Use `frontend-design` skill as primary — it provides practical implementation guidance, component patterns, and code examples.
+
+**This skill (aesthetic-philosophy)**: Provides high-level design philosophy and aesthetic principles that inform frontend-design decisions.
+
+**Together**: frontend-design handles "how to build it", aesthetic-philosophy ensures "why it looks good".
+
 ## Core Principle
 
 **"The best UI is no UI."**

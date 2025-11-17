@@ -33,6 +33,7 @@ Read DESIGN.md thoroughly:
 - What pseudocode exists? (Tasks implement these algorithms)
 - What integration points exist? (Tasks for database, APIs, etc.)
 - What's the testing strategy? (Tasks include test requirements)
+- **Infrastructure design**: Does DESIGN.md include quality gates, logging, error tracking, design tokens, or changelog setup? (These become setup tasks)
 
 Search the codebase for implementation patterns:
 - Use `ast-grep` and grep to find similar patterns
@@ -87,6 +88,68 @@ Each task must include:
 - Key Files: [From DESIGN.md file organization]
 - Patterns: [Existing code to follow]
 
+## Infrastructure Tasks (if DESIGN.md includes infrastructure)
+
+**Quality Gates**:
+- [ ] Configure Lefthook (lefthook.yml)
+  ```
+  Files: lefthook.yml (new), .github/workflows/ci.yml (new)
+  Architecture: Pre-commit hooks for linting/formatting, pre-push for tests
+  Pseudocode: See DESIGN.md Infrastructure Design - Quality Gates
+  Success: Hooks prevent bad commits, CI runs on PRs
+  Test: git commit with bad code → blocked, git push with failing tests → blocked
+  Dependencies: None (first task - enables quality for all other tasks)
+  Time: 30min
+  ```
+
+**Structured Logging** (if included in DESIGN.md):
+- [ ] Setup Pino logger with correlation IDs and redaction
+  ```
+  Files: utils/logger.ts (new)
+  Architecture: Centralized logger with structured JSON, request correlation
+  Pseudocode: See DESIGN.md Infrastructure Design - Structured Logging
+  Success: Logger available, sensitive data redacted, correlation IDs working
+  Test: Log password field → redacted, child logger includes requestId
+  Dependencies: None
+  Time: 30min
+  ```
+
+**Error Tracking** (if included in DESIGN.md):
+- [ ] Configure Sentry with source maps and release tracking
+  ```
+  Files: utils/sentry.ts (new), next.config.js (modify)
+  Architecture: Automatic error capture, sensitive data redaction
+  Pseudocode: See DESIGN.md Infrastructure Design - Error Tracking
+  Success: Errors sent to Sentry, source maps uploaded, sensitive data redacted
+  Test: Throw error → appears in Sentry with source map, auth tokens not logged
+  Dependencies: None
+  Time: 45min
+  ```
+
+**Design System** (if included in DESIGN.md):
+- [ ] Setup Tailwind 4 with @theme directive and design tokens
+  ```
+  Files: app/globals.css (modify), tailwind.config.ts (remove - CSS-first approach)
+  Architecture: Design tokens in CSS using @theme, OKLCH colors
+  Pseudocode: See DESIGN.md Infrastructure Design - Design System
+  Success: Design tokens available in CSS, colors use OKLCH, typography scales defined
+  Test: Use --color-primary in component → resolves to OKLCH value
+  Dependencies: None
+  Time: 30min
+  ```
+
+**Changelog Automation** (if included in DESIGN.md):
+- [ ] Setup Changesets or semantic-release for version management
+  ```
+  Files: .changeset/config.json (new) OR .releaserc.js (new), .github/workflows/release.yml (new)
+  Architecture: Automated version bumping and changelog generation
+  Pseudocode: See DESIGN.md Infrastructure Design - Changelog Automation
+  Success: Changesets create version PRs OR semantic-release auto-publishes
+  Test: Create changeset → Version Packages PR created, conventional commit → version bumped
+  Dependencies: None
+  Time: 45min
+  ```
+
 ## Implementation Tasks
 
 - [ ] Implement [ModuleName] matching DESIGN.md specification
@@ -119,6 +182,7 @@ Before finalizing:
 - Are module boundaries clear and dependencies explicit?
 - Can tasks be tested independently?
 - Is this the simplest breakdown that works?
+- **Infrastructure tasks included**: If DESIGN.md has infrastructure design, are setup tasks for quality gates, logging, error tracking, design tokens, and changelog included?
 
 **Red Flags**:
 - Shallow modules (just wrapping existing functionality)
