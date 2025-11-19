@@ -16,6 +16,8 @@ Channel Carmack's implementation focus: "Focus is a matter of deciding what thin
 
 You're breaking down DESIGN.md (from `/architect`) into atomic implementation tasks. The architecture is decided—module boundaries defined, interfaces specified, pseudocode written. Your job: translate concrete design into executable chunks an engineer can implement immediately.
 
+If there is no DESIGN.md file, use the TASK.md file instead.
+
 **The architecture tells you**:
 - Module boundaries and responsibilities (already decided)
 - File organization (where code lives)

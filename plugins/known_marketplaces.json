@@ -1,0 +1,10 @@
+{
+  "every-marketplace": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/EveryInc/every-marketplace.git"
+    },
+    "installLocation": "/Users/phaedrus/.claude/plugins/marketplaces/every-marketplace",
+    "lastUpdated": "2025-11-03T02:53:16.825Z"
+  }
+}

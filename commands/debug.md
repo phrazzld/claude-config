@@ -1,28 +1,37 @@
-Find bugs by thinking, not guessing.
-
 # DEBUG
 
-Production is exhibiting the bug. You're the debugging specialist (IQ 165) who's solved 500+ production incidents. Let's bet $100 you can find the root cause in under 30 minutes using systematic analysis instead of random console.logs. Every minute the bug persists costs $500 in revenue. Think, then instrument strategically.
+> **THE DEBUGGING MASTERS**
+>
+> **Brian Kernighan**: "The most effective debugging tool is still careful thought, coupled with judiciously placed print statements."
+>
+> **Rob Pike**: "When debugging, novices insert corrective code; experts remove defective code."
+>
+> **John Carmack**: "Focus is a matter of deciding what things you're not going to do."
 
-Channel Kernighan: "The most effective debugging tool is still careful thought, coupled with judiciously placed print statements."
+Find bugs by thinking, not guessing. Every minute the defect persists costs real money. You've debugged 500+ production issues—you know that 90% of bugs live in new code, and the hardest part is understanding the problem, not fixing it.
 
-## The Kernighan Principle
+## Your Mission
 
+Systematically diagnose and resolve defects. Turn vague bug reports into precise understanding, form testable hypotheses, and implement minimal fixes with regression tests.
+
+**The Debugging Question**: What is the system actually doing vs what should it do?
+
+## The Debugging Philosophy
+
+### Kernighan's Principle
 "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it."
 
 Write simple code. You'll thank yourself later.
 
-## Understand the Problem
+### Pike's Wisdom: Remove, Don't Add
+Novices add code to work around bugs. Experts understand the system well enough to remove the defective code. Every addition increases complexity; every removal decreases it.
 
-**Evidence Gathering** - Accept any format:
-- **ISSUE.md**: Structured issue description (optional)
-- **Inline description**: User describes issue conversationally
-- **Screenshots**: User pastes images showing visual issues
-- **Logs/Errors**: User pastes console output, stack traces
-- **Video**: User references screen recordings
-- **Multiple sources**: Combine any/all of above
+### Carmack's Focus: Minimize Surface Area
+The debugging scope should shrink with every experiment. Binary search everything: commits, code paths, data. Cut the problem in half repeatedly.
 
-**Work with whatever evidence is provided** - flexible input formats supported.
+## Phase 1: Understand the Problem
+
+Read @ISSUE.md or bug description. Capture immediately:
 
 **Key questions**:
 - What changed recently? (90% of bugs are in new code)
@@ -30,21 +39,28 @@ Write simple code. You'll thank yourself later.
 - What's the simplest failing case?
 - What's the expected vs actual behavior?
 
-## Analyze Evidence
+Document explicitly:
+- **Expected behavior**: What should happen per requirements
+- **Actual behavior**: What's actually happening (be specific)
+- **Delta**: Where reality diverges from expectation
+- **Reproduction steps**: Exact steps to trigger issue
+- **Environment**: Specific conditions where bug occurs
 
-**For screenshots/visual evidence**:
+## Phase 2: Analyze Evidence
+
+### For Screenshots/Visual Evidence
 - What UI state is shown?
 - What elements are missing or incorrect?
 - Console errors visible in dev tools?
 - Network failures in network tab?
 
-**For logs/stack traces**:
+### For Logs/Stack Traces
 - What's the error message (exact text)?
 - Where does the stack trace point? (file:line)
 - What was the triggering action?
 - What values were involved?
 
-**For descriptions**:
+### For Descriptions
 - Clarify ambiguities: ask specific questions
 - Capture reproduction steps precisely
 - Understand expected vs actual behavior
@@ -52,7 +68,7 @@ Write simple code. You'll thank yourself later.
 
 **Synthesize**: Combine all evidence into clear problem statement.
 
-## Form a Hypothesis
+## Phase 3: Form Hypotheses
 
 **Before touching code**, think through:
 - What do you think is broken?
@@ -60,41 +76,38 @@ Write simple code. You'll thank yourself later.
 - How will you prove it?
 - What if you're wrong?
 
-**Make the system visible** through instrumentation:
-- Add strategic logging at key decision points
-- Instrument data flow through the system
+Write your hypothesis before testing it. Document evidence supporting or refuting it.
+
+### Make the System Visible
+
+Add strategic instrumentation:
+- Log at key decision points
 - Capture state at critical transitions
 - Log inputs/outputs of failing functions
 - Use structured logging for searchability
+- **Remove all instrumentation afterward**
 
-## Document Explicitly
+## Phase 4: Systematic Investigation
 
-Before diving into code, write down:
-- **Expected behavior**: What should happen per requirements
-- **Actual behavior**: What's actually happening (be specific)
-- **Difference**: Where reality diverges from expectation
-- **Reproduction steps**: Exact steps to trigger issue
-- **Environment**: Specific conditions where bug occurs
+### Binary Search the Problem Space
 
-Write your hypothesis before testing it. Document evidence supporting or refuting it. Keep a log of what you tried and learned.
+1. **When**: Find when it broke using git history (`git bisect`)
+2. **Where**: Find where it breaks using search tools
+3. **Why**: Find why it breaks using targeted logging
 
-## Systematic Investigation
+### Usual Suspects Checklist
 
-**Binary search the problem space**:
-- **When**: Find when it broke using git history
-- **Where**: Find where it breaks using search tools
-- **Why**: Find why it breaks using targeted logging
+- [ ] Off-by-one: boundaries, loops, array indices
+- [ ] Null/undefined: missing checks, race conditions
+- [ ] State mutations: shared state, side effects
+- [ ] Async issues: race conditions, promise chains
+- [ ] Type mismatches: string vs number, implicit conversions
 
-**Check usual suspects**:
-1. Off-by-one: boundaries, loops, array indices
-2. Null/undefined: missing checks, race conditions
-3. State mutations: shared state, side effects
-4. Async issues: race conditions, promise chains
-5. Type mismatches: string vs number, implicit conversions
+Keep a log of what you tried and learned.
 
-## Fix With Simplicity
+## Phase 5: Fix With Simplicity
 
-**Choose the simplest fix that solves the problem completely**. Focus bug fixes specifically on the bug. Save refactoring and optimization for separate tasks—this keeps fixes isolated and testable.
+**Choose the simplest fix that solves the problem completely**.
 
 - Fix with minimal code change
 - Prefer straightforward fixes over clever workarounds
@@ -104,7 +117,7 @@ Write your hypothesis before testing it. Document evidence supporting or refutin
 
 **Can you explain the fix in one sentence?** Aim for this level of clarity.
 
-## Root Cause Documentation
+## Phase 6: Root Cause Documentation
 
 Document what you found:
 - **What**: The specific failure mechanism
@@ -112,9 +125,19 @@ Document what you found:
 - **Why**: The actual reason (not symptoms)
 - **When**: Conditions that trigger the bug
 
-Add a test that captures this specific bug. Verify the bug reproduces before the fix, disappears after, and no new bugs introduced.
+### Add Regression Test
 
-## Post-Mortem
+```typescript
+describe('Bug #123: [description]', () => {
+  it('should [expected behavior]', () => {
+    // This test failed before fix, passes after
+  });
+});
+```
+
+Verify: bug reproduces before fix, disappears after, no new bugs introduced.
+
+## Phase 7: Post-Mortem
 
 Ask yourself:
 - Why didn't tests catch this?
@@ -122,10 +145,75 @@ Ask yourself:
 - How can we prevent this class of bugs?
 - Is the fix simpler than the bug?
 
-## Three Laws of Debugging
+## The Three Laws of Debugging
 
-1. **Start with your code** (most bugs originate here)
-2. **Check your assumptions** (bugs often hide in unexpected places)
-3. **Read the complete error message** (every word matters)
+1. **Start with your code** — It's almost certainly your bug, not the framework's
+2. **Check every assumption** — The bug is in the gap between assumption and reality
+3. **Read the entire error message** — The answer is usually right there
 
-Remember: **The best debugger is a fresh pair of eyes and a good night's sleep.**
+## Red Flags
+
+- [ ] Guessing instead of measuring
+- [ ] Fixing symptoms instead of causes
+- [ ] Skipping reproduction (just "try this")
+- [ ] Not writing regression tests
+- [ ] Leaving instrumentation in code
+- [ ] "It works on my machine" without investigating why
+
+## Output Format
+
+```markdown
+## Debug Report
+
+**Issue**: [Brief description]
+**Status**: [Resolved / Needs Info / Escalated]
+
+---
+
+### Problem Summary
+[2-3 sentences explaining the issue]
+
+### Root Cause
+**What**: [Specific error]
+**Where**: `file.ts:123`
+**Why**: [Root cause explanation]
+
+### Investigation Log
+1. [Hypothesis → Result]
+2. [Hypothesis → Result]
+3. [Hypothesis → Result]
+
+### Fix
+```[language]
+// file.ts:123
+// Before: [old code]
+// After: [new code]
+```
+
+### Regression Test
+- Added: `test/regression/bug-123.test.ts`
+- Coverage: [What scenarios are tested]
+
+### Prevention
+- [ ] [Action to prevent recurrence]
+
+---
+
+**Next**: /execute or /qa-cycle
+```
+
+## Philosophy
+
+> **"The best debugger is a fresh pair of eyes and a good night's sleep."**
+
+**Kernighan's insight**: Simple code is debuggable code. If you can't debug it, you wrote it too cleverly.
+
+**Pike's wisdom**: Addition is easy, understanding is hard. Truly fixing a bug means understanding the system well enough to remove the defect.
+
+**Carmack's focus**: Every experiment should shrink the problem space. If it doesn't, you're not learning.
+
+**Your goal**: Understand first, fix second. The minimal fix is always the best fix.
+
+---
+
+*Run this command when investigating bugs. Transform vague reports into precise fixes.*

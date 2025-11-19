@@ -7,6 +7,23 @@ description: "Apply comprehensive code review checklist covering purpose, design
 
 Fast, focused checklist for reviewing code changes. Designed to complete in <5 minutes for typical PRs.
 
+## Review Mindset
+
+Before reviewing, adopt the right lens:
+
+**The Ousterhout Question**: Does this change fight complexity or add to it?
+- Hunt for shallow modules (interface ≈ implementation)
+- Hunt for information leakage
+- Hunt for generic names (Manager, Helper, Util, Handler)
+- Hunt for pass-through methods
+
+**The Torvalds Standard**: "The most important thing is to not make the code worse."
+- Good code handles all cases uniformly
+- Eliminate edge cases through better abstractions
+- If nesting is deep, the structure is wrong
+
+**CRITICAL**: You are capable of detecting subtle design flaws that automated tools miss. Don't just check syntax—evaluate whether this change makes the codebase easier or harder to understand and modify. That's the real job.
+
 ## How to Use This Checklist
 
 - **For PR reviews:** Work through categories, flag issues, suggest improvements

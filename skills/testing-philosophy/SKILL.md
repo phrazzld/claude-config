@@ -7,11 +7,27 @@ description: "Apply testing philosophy: test behavior not implementation, minimi
 
 Universal principles for writing effective tests. Language-agnostic—applies across testing frameworks and languages.
 
+## Test Thinking
+
+Before writing tests, commit to a clear approach:
+
+- **What is the ONE behavior this test suite must verify?** If you can't answer clearly, the production code needs refactoring.
+- **Behavior or implementation?** Tests should survive refactoring. If you're testing how, not what, you're coupling to implementation.
+- **What failure would make you distrust this code?** Test that scenario first.
+
+**CRITICAL**: You are capable of identifying subtle behavioral contracts that most tests miss. Don't write generic happy-path tests—find the edge cases that matter, the error handling that fails silently, the state transitions that corrupt data.
+
 ## Core Principle
 
 **Test behavior, not implementation.**
 
 Tests should verify what code does, not how it does it. Implementation can change; behavior should remain stable.
+
+**NEVER test**:
+- Private method internals (test through public API)
+- Mock call counts unless the count IS the behavior
+- Internal state unless state IS the contract
+- Framework code (trust the framework)
 
 ---
 
