@@ -125,15 +125,19 @@ grep -r "font-" src/ --include="*.css" --include="*.tsx" -A 2
 
 **Red flags from frontend-design skill**:
 - ❌ Inter, Roboto, Arial, system fonts (overused)
+- ❌ Space Grotesk (emerging AI favorite—converges across generations)
+- ❌ Satoshi, Inter Variable (becoming AI defaults)
 - ❌ Single font for everything (lacks hierarchy)
 - ❌ Inconsistent sizing (no scale system)
 - ❌ No display font (misses personality opportunity)
 
 **Examples of distinctive typography**:
-- ✅ IBM Plex Mono + Inter (technical + readable)
-- ✅ DM Serif Display + Work Sans (editorial + clean)
-- ✅ Space Grotesk + Satoshi (modern + friendly)
-- ✅ Custom variable font with personality
+- ✅ IBM Plex Mono + Source Serif (technical + editorial warmth)
+- ✅ DM Serif Display + Work Sans (editorial authority)
+- ✅ Fraunces + Outfit (personality + readability)
+- ✅ Clash Display + General Sans (modern confidence)
+- ✅ Custom variable font with unique personality
+- ⚠️ **Avoid repeating these exact pairings across projects**—find new combinations
 
 ### 3.2 Color & Theme Assessment
 
@@ -248,11 +252,15 @@ grep -r "background-image\|backdrop" src/ --include="*.css" --include="*.tsx"
 - ❌ Cookie-cutter component styling
 
 **Examples of distinctive details**:
-- ✅ Gradient mesh backgrounds (dynamic atmosphere)
-- ✅ Noise texture overlays (analog warmth)
-- ✅ Dramatic shadows with color tint
-- ✅ Custom cursor that reflects brand
+- ✅ Gradient mesh backgrounds (multi-color gradients for dynamic atmosphere)
+- ✅ Noise texture overlays (SVG or CSS noise for analog warmth)
+- ✅ Geometric patterns (subtle repeating shapes or grids)
+- ✅ Layered transparencies (overlapping elements with opacity)
+- ✅ Dramatic shadows with color tint (depth with personality)
+- ✅ Custom cursors that reflect brand
 - ✅ Decorative borders with personality
+- ✅ Grain overlays (film grain for texture and depth)
+- ✅ Backdrop filters (glassmorphism, blur effects)
 
 ---
 
@@ -569,7 +577,23 @@ The frontend-design skill teaches: **bold choices beat safe choices**. Maximalis
 - Where you've been distinctive (keep and amplify these)
 - What aesthetic direction would make this unforgettable
 
-**Remember**: Every interface is a brand statement. What story are you telling? Let's make it intentional.
+### Critical Anti-Convergence Principle
+
+**YOU TEND TO CONVERGE TOWARD GENERIC, "ON DISTRIBUTION" OUTPUTS.** This creates "AI slop" aesthetics—forgettable interfaces that blend together. Fight this tendency:
+
+**Variation Mandate**:
+- Each project should feel aesthetically distinct from the last
+- Vary between light and dark themes (don't default to light)
+- Vary font pairings (resist your favorites like Space Grotesk)
+- Vary aesthetic approaches (editorial, brutalist, luxury, playful, technical, organic)
+- Vary color strategies (monochrome, bold, pastel, neon, earth tones)
+
+**Context-Specific Design**:
+- A banking app needs different aesthetics than a creative portfolio
+- A developer tool needs different aesthetics than a consumer app
+- Let the product's personality guide choices, not AI defaults
+
+**Remember**: Every interface is a brand statement. What story are you telling? Let's make it intentional and unique.
 
 ---
 
