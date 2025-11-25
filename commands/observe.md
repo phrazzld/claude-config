@@ -130,15 +130,38 @@ exa-code:
 
 ### 2.3 Gemini CLI for Comparative Analysis
 
+**Why Gemini**: Web-grounded research provides current pricing, feature comparisons, and 2025 best practices that may have changed since training data cutoff.
+
 **Research questions:**
+```bash
+# Tool comparison with current information
+gemini "Compare Sentry vs Datadog vs Grafana Cloud for Next.js error tracking in 2025:
+- Current pricing and free tiers
+- Feature completeness
+- Integration quality with Vercel/Next.js
+- Performance impact
+- Community support"
+
+# Best practices research
+gemini "Best practices for OpenTelemetry sampling in production
+- Cost optimization strategies
+- Sampling strategies for different traffic levels
+- Real-world examples from 2025"
+
+# Cost optimization
+gemini "How to implement cost-effective observability on free tiers
+- Tool combinations for <$50/month
+- Alert threshold optimization
+- Sampling strategies"
+
+# Compliance and security
+gemini "PII redaction strategies for error tracking compliance
+- GDPR/CCPA considerations
+- Automatic redaction patterns
+- Best practices for 2025"
 ```
-gemini --prompt:
-- "Compare Sentry vs Datadog vs Grafana Cloud for Next.js error tracking"
-- "Best practices for OpenTelemetry sampling in production"
-- "How to implement cost-effective observability on free tiers"
-- "PII redaction strategies for error tracking compliance"
-- "CLI-first monitoring automation patterns"
-```
+
+**Integration tip**: Use `/research` for deeper investigation of specific tools or patterns.
 
 ---
 

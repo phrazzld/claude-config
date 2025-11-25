@@ -173,6 +173,54 @@ git push --no-verify
 LEFTHOOK_EXCLUDE=test git push
 ```
 
+## Coverage Gates (GitHub Actions)
+
+Use `vitest-coverage-report-action` for PR comments:
+- Shows coverage diff (before/after)
+- Links to uncovered lines in PR
+- Zero external service required
+- Free for private repos
+
+**Setup**:
+```yaml
+- uses: davelosert/vitest-coverage-report-action@v2
+  permissions:
+    contents: write
+    pull-requests: write
+  with:
+    file-coverage-mode: changes  # Only show changed files
+```
+
+**Standards**:
+- **Patch coverage**: 80%+ for new/changed code (block if lower)
+- **Overall coverage**: Track but don't block
+- **Critical paths**: 90%+ (payment, auth, data integrity)
+
+## PR Size Gates
+
+Use `pr-size-labeler` for automatic size labeling:
+- Auto-labels: xs (<50), s (<150), m (<300), l (<500), xl (>500)
+- Optional: fail workflow if XL
+- Configure thresholds in workflow YAML
+
+**Setup**:
+```yaml
+- uses: CodelyTV/pr-size-labeler@v1
+  with:
+    xs_max_size: '50'
+    s_max_size: '150'
+    m_max_size: '300'
+    l_max_size: '500'
+    fail_if_xl: 'true'
+    message_if_xl: 'PR exceeds 500 lines. Please split into smaller PRs.'
+```
+
+**Benefits**:
+- Automatic PR labeling
+- Visual size feedback
+- Optional hard enforcement
+- Free, no external service
+
 ## Testing Strategy: Vitest
 
 **Why Vitest:**

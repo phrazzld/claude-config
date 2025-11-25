@@ -49,6 +49,8 @@ Wait for all agents to complete, then synthesize their findings into your invest
 - Assess changelog automation (Changesets, semantic-release, conventional commits)
 - Validate design system (Tailwind config, design tokens, brand consistency)
 
+**The Friday Afternoon Test**: Can you merge to production Friday at 5pm and turn your phone off? If NO, infrastructure gaps are blocking supremely confident deployments.
+
 If infrastructure gaps exist, note in TASK.md that architect should design infrastructure alongside feature architecture.
 
 **Additional Research Tools**:
@@ -71,6 +73,21 @@ If infrastructure gaps exist, note in TASK.md that architect should design infra
 - **Risk** (10%): What could realistically go wrong? Prefer proven over experimental.
 
 For each approach, explicitly document: dependencies on existing systems, assumptions about environment/users/scale, integration requirements, potential side effects.
+
+## Test List Generation
+
+Before writing PRD, generate comprehensive test list:
+
+**Use AI to brainstorm**:
+- "Generate test scenarios for [feature] covering all edge cases"
+- Include: happy path, error conditions, boundary values, null/empty inputs
+- Output test list in TASK.md under "## Test Scenarios"
+
+**ADR Check**:
+- Is this decision costly to reverse? (migrations, vendor lock-in, framework choice)
+- Multiple viable alternatives with meaningful trade-offs?
+- If yes → Note "ADR Required" in TASK.md
+- Defer ADR creation to /architect phase
 
 ## Clarifying Questions
 

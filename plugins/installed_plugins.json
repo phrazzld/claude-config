@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "plugins": {
+    "compounding-engineering@every-marketplace": {
+      "version": "1.0.0",
+      "installedAt": "2025-11-24T21:58:45.345Z",
+      "lastUpdated": "2025-11-24T21:58:45.345Z",
+      "installPath": "/Users/phaedrus/.claude/plugins/marketplaces/every-marketplace/plugins/compounding-engineering",
+      "gitCommitSha": "4e2a828117385649470ab5208452f439f850d8bb",
+      "isLocal": true
+    }
+  }
+}

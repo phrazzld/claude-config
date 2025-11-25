@@ -32,6 +32,7 @@ Transform TASK.md (PRD from `/spec`) into a concrete architectural blueprint (DE
 - What are the constraints (scale, performance, integration)?
 - What architecture was recommended in the PRD?
 - **Check for infrastructure requirements**: Does TASK.md flag quality gates, logging, error tracking, analytics, changelog, or design system gaps? If yes, load infrastructure skills and include infrastructure design in DESIGN.md.
+- **Check for ADR requirement**: Does TASK.md note "ADR Required"? If yes, prepare to create ADR after architecture design.
 
 **Explore the codebase**:
 - Use `ast-grep` to find similar patterns and existing architectures
@@ -41,10 +42,31 @@ Transform TASK.md (PRD from `/spec`) into a concrete architectural blueprint (DE
 - Note build system, deployment model, tech stack constraints
 
 **Research alternatives** (parallel execution):
-- Use `gemini --prompt` for architectural patterns (2025 best practices)
+- **Use Gemini CLI** for web-grounded research on architectural patterns:
+  ```bash
+  gemini "What are current best practices for [architecture pattern] in 2025?"
+  gemini "Compare architectural approaches for [use case]: pros/cons, scalability, maintenance"
+  ```
+  Gemini's Google Search grounding gives you latest patterns, real-world examples, and current best practices
 - Use Exa MCP for technical documentation on relevant libraries/frameworks
 - Search for similar implementations in the codebase
 - Consider 3-5 fundamentally different architectural approaches
+
+**Pro tip**: If facing an unfamiliar domain, run `/research "[topic]"` first to leverage Gemini's web grounding and sophisticated reasoning before architecting.
+
+**Optional: Generate Architecture Diagrams**:
+After designing architecture, consider using `gemini-imagegen` to create visual diagrams:
+```bash
+# Generate system architecture diagram
+~/.claude/skills/gemini-imagegen/scripts/generate_image.py \
+  "Clean technical architecture diagram showing [modules], data flow arrows, [components], system design, technical illustration style, white background" \
+  architecture-diagram.png --model gemini-3-pro-image-preview --aspect 16:9
+
+# Generate component relationship diagram
+~/.claude/skills/gemini-imagegen/scripts/generate_image.py \
+  "Component interaction diagram for [system], showing interfaces, dependencies, module boundaries, software architecture visualization" \
+  components-diagram.png --aspect 16:9
+```
 
 ## Skill Integration
 
@@ -125,6 +147,17 @@ Create DESIGN.md with these sections:
 ### 2. Module Design (Deep Dive)
 
 For each module, specify:
+
+**Test Strategy Design**:
+
+For each module, specify:
+- **Test boundaries**: What gets tested (public API), what doesn't (internals)
+- **Coverage targets**:
+  - Critical modules (payment, auth): 90%+
+  - Standard modules: 80%+
+  - Low-risk utilities: 70%+
+- **Mocking strategy**: What to mock (external APIs), what to use real (domain logic)
+- **Test data structures**: Example inputs/outputs for each interface
 
 **Apply skills when designing modules**:
 - `ousterhout-principles`: Ensure deep modules (simple interface, powerful implementation)
@@ -592,6 +625,40 @@ Review agent findings:
 - **Minor concerns**: Document as implementation notes
 
 This catches architectural problems before any code is written.
+
+## ADR Creation (If Required)
+
+If TASK.md flagged "ADR Required":
+
+1. **Create `/docs/adr/` directory** (if first ADR)
+2. **Determine next number**: Count existing ADRs + 1
+3. **Create ADR file** using MADR Light template:
+
+```markdown
+# ADR-{NUMBER}: {Short Title}
+
+Date: YYYY-MM-DD
+Status: proposed
+
+## Context and Problem Statement
+[What problem requires this decision?]
+
+## Considered Options
+* Option 1: [description]
+* Option 2: [description]
+* Option 3: [description]
+
+## Decision Outcome
+Chosen: [option] because [rationale: simplicity/user value/explicitness]
+
+### Consequences
+* Good: [benefits]
+* Bad: [costs/downsides]
+```
+
+4. **Save as**: `docs/adr/{number}-{slug}.md`
+5. **Reference in DESIGN.md**: "See ADR-{NUMBER} for decision rationale"
+6. **Update `/docs/adr/README.md`** with entry for new ADR
 
 ## After Creating DESIGN.md
 

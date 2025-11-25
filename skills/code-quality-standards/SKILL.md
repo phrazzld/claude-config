@@ -67,7 +67,26 @@ describe('Module Name', () => {
 - Don't use coverage as success metric
 - 60% meaningful coverage > 95% meaningless coverage
 
-### Coverage Integration: Codecov
+## Differential Coverage (Patch Coverage)
+
+**Focus on new code, not absolute project coverage.**
+
+**GitHub Actions Setup** (zero external services):
+```yaml
+# .github/workflows/test.yml
+- uses: davelosert/vitest-coverage-report-action@v2
+  with:
+    file-coverage-mode: changes  # Only show changed files
+```
+
+**Standards**:
+- **Patch coverage**: 80%+ for new/changed code (enforced)
+- **Overall coverage**: Track but don't block (diagnostic only)
+- **Critical paths**: 90%+ (payment, auth, data integrity)
+
+**PR Comments**: Automatic via GitHub Action, no Codecov needed
+
+### Coverage Integration: GitHub Actions (Recommended)
 
 **Why Codecov:**
 - GitHub integration for PR coverage reports

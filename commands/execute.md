@@ -29,7 +29,20 @@ Execute the next available task in TODO.md. The decision to work on this task ha
 Batch tiny tasks (typo fix, rename, import): Execute consecutively, one commit.
 Single substantial task: Execute it.
 
-**2. Is task specific enough?**
+**2. Does task need research first?**
+
+Ask: **"Am I familiar with the domain/patterns/tools required?"**
+
+❓ Need research if:
+- Implementing with unfamiliar framework/library
+- Uncertain about current best practices
+- Dealing with errors that need web research
+- Evaluating multiple technical approaches
+
+❓ YES, need research → Run `/research [topic]` to leverage Gemini's web grounding, then proceed
+✅ NO, ready to implement → Proceed to step 3
+
+**3. Is task specific enough?**
 
 Ask only: **"Do I know exactly what to do?"**
 
@@ -38,12 +51,45 @@ Ask only: **"Do I know exactly what to do?"**
 - Approach OR pattern to follow
 - Success criteria
 
-✅ YES → Proceed to step 3
-🔍 NO → Run /flesh to make it specific, then proceed to step 3
+✅ YES → Proceed to step 4
+🔍 NO → Run /flesh to make it specific, then proceed to step 4
 
-**3. Mark in-progress**: Update `[ ]` → `[~]`
+**4. Test-First Check**:
 
-**4. Implement**
+For non-trivial tasks (>20 lines, core logic, new features):
+
+Ask: **"Do tests exist for this?"**
+- Check for `*.test.ts`, `*.spec.ts` files for this module
+- If YES → Proceed to step 5 (Implementation)
+- If NO → Prompt:
+
+  ```
+  This task likely needs tests. Write tests first?
+  [y] Yes, write tests now (TDD)
+  [n] No, prototype first then add tests
+  [s] Skip - not needed for this task
+  ```
+
+**If TDD (y)**:
+1. Generate test list from task description
+2. Write failing tests for first scenario
+3. Implement to make tests pass
+4. Refactor while keeping tests green
+5. Commit tests separately: `test: add tests for [feature]`
+6. Commit implementation: `feat: implement [feature]`
+
+**If prototype-first (n)**:
+1. Implement feature quickly
+2. After proving approach, add tests
+3. Commit together: `feat: add [feature] with tests`
+
+**If skip (s)**:
+- Trivial changes only (typo fixes, renaming, simple refactors)
+- Document why skipped in commit or work log
+
+**4. Mark in-progress**: Update `[ ]` → `[~]`
+
+**5. Implement**
 
 Read DESIGN.md for architectural guidance—the "how" is decided. Follow the module design, implement the pseudocode, match the interfaces. Your job: clean implementation of the planned architecture.
 
@@ -67,7 +113,20 @@ Read DESIGN.md for architectural guidance—the "how" is decided. Follow the mod
 - Minimal complexity? (Few dependencies, clear behavior)
 - Red flags absent? (Generic names, pass-through methods, temporal decomposition)
 
-**5. Post-Implementation Quality Review**
+**6. Coverage Check** (if tests were added/modified):
+
+Run locally:
+```bash
+pnpm test -- --coverage --changed
+```
+
+Check patch coverage for files you changed:
+- If <80% → Add tests for critical uncovered paths
+- If 80%+ → Proceed to commit
+
+Note: Full coverage report will appear in PR automatically via GitHub Actions.
+
+**7. Post-Implementation Quality Review**
 
 Before committing, apply relevant skills and quality checks based on what you implemented:
 
@@ -173,14 +232,14 @@ If skills were loaded, perform domain-specific validation:
 
 This enforces "leave code better than you found it" while context is fresh and skills provide expert guidance.
 
-**6. Commit atomically**
+**8. Commit atomically**
 
 Every completed task → atomic commit with clear message.
 Types: feat|fix|docs|refactor|test|chore
 
-**7. Mark complete**: Update `[~]` → `[x]`
+**9. Mark complete**: Update `[~]` → `[x]`
 
-**8. Continue or stop**: Proceed to next task when appropriate, or report completion.
+**10. Continue or stop**: Proceed to next task when appropriate, or report completion.
 
 ## Execute Regardless Of
 

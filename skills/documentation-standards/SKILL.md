@@ -243,6 +243,37 @@ Wrong documentation is worse than no documentation—it wastes time and builds m
 - Onboarding new team members
 - Open sourcing project
 
+## Automated Documentation Quality
+
+**Link Checking** (lychee - Rust binary):
+```bash
+lychee **/*.md --offline --cache
+```
+- Single binary, no Node.js
+- ~40x faster than markdown-link-check
+- Works offline completely
+- Install: `brew install lychee`
+
+**Style Linting** (Vale - Go binary):
+```bash
+vale docs/
+```
+- Enforces style guides (Google, Microsoft, write-good)
+- Single binary, 100% offline
+- YAML configuration (`.vale.ini`)
+- Install: `brew install vale`
+
+**Freshness Detection** (git-based):
+```bash
+# Find docs not updated in 90 days
+find docs -name '*.md' | while read f; do
+  age=$(( ($(date +%s) - $(git log -1 --format=%ct -- "$f")) / 86400 ))
+  [ $age -gt 90 ] && echo "$f: $age days stale"
+done
+```
+
+**CI Integration**: All run in GitHub Actions without external services
+
 ---
 
 ## Diagrams

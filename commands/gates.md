@@ -4,11 +4,23 @@ Audit and improve quality infrastructure.
 
 Channel platform engineering thinking: critically examine quality gates and identify improvements.
 
+## The North Star
+
+> **"Merge to production Friday afternoon and turn your phone off."**
+>
+> If you can't do this, quality gates are either missing or not working. This command finds what's blocking supremely confident deployments.
+
 ## The Meta-Quality Principle
 
 "Are we testing the right things, or just testing things?"
 
-This command audits whether quality checks are worth running. **Establish git hooks** to catch issues locally before CI. Automation should catch real problems, not create bureaucracy.
+This command audits whether quality checks are worth running. **Establish git hooks** to catch issues locally before CI. Automation should enable deployment confidence, not create bureaucracy.
+
+**The Friday Afternoon Test:**
+- All checks green = production ready
+- Zero manual verification needed
+- No fear of weekend on-call
+- AI agents maintain quality autonomously
 
 ## Git Hooks
 
@@ -58,6 +70,63 @@ Review `.github/workflows/`, `.gitlab-ci.yml`, or equivalent:
 - Parallelize independent CI steps
 - Fix or delete flaky tests
 
+## PR Size Automation
+
+**The problem**: Large PRs are hard to review, slow to merge, and risky to deploy.
+
+**Target sizes**:
+- ≤200 lines: Perfect size (thorough review possible)
+- 201-400 lines: Acceptable (larger but manageable)
+- 401-500 lines: Large (justify or split)
+- >500 lines: Too large (requires splitting or stacking)
+
+**Automated labeling** (free, CLI-only):
+```yaml
+# .github/workflows/pr-size-labeler.yml
+name: PR Size Labeler
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  size-label:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: codelytv/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          xs_label: 'size/XS'
+          xs_max_size: 10
+          s_label: 'size/S'
+          s_max_size: 100
+          m_label: 'size/M'
+          m_max_size: 200
+          l_label: 'size/L'
+          l_max_size: 400
+          xl_label: 'size/XL'
+```
+
+**Why this approach**:
+- $0 cost (GitHub Action only)
+- Automatic visibility into PR size
+- No external service dependencies
+- CLI-based via `gh pr list --label "size/XL"`
+
+**Splitting strategies**:
+- **Vertical slicing**: Feature by feature (each PR adds value)
+- **Architectural layering**: Backend → Frontend → Tests
+- **Stacked PRs**: Use `git-spr` for dependent changes
+- **Feature flags**: Ship incomplete work behind toggles
+
+**Actions**:
+- Set up pr-size-labeler workflow
+- Establish team norm: Justify any PR >400 lines
+- Use `git-spr` for stacking when needed
+- Review size distribution monthly (too many XL = process issue)
+
 ## Testing & Coverage
 
 **Kent Beck principle**: "Test until fear turns to boredom, then stop."
@@ -87,15 +156,39 @@ Review `.github/workflows/`, `.gitlab-ci.yml`, or equivalent:
 - Coverage trends (delta, not absolute)
 
 **Tools**:
-- **Vitest**: Fast Next.js/React testing
+- **Vitest**: Fast Next.js/React testing with built-in coverage
 - **Playwright**: E2E tests
 - **Stryker**: Mutation testing (tests your tests)
 
+**Coverage Automation (Zero External Services)**:
+```yaml
+# .github/workflows/ci.yml
+- name: Test Coverage
+  run: pnpm test -- --coverage
+
+- name: Report Coverage
+  if: always()
+  uses: davelosert/vitest-coverage-report-action@v2
+```
+
+**Why this approach**:
+- $0 cost (no Codecov, Coveralls subscription)
+- PR comments with patch coverage % (new code only)
+- Works offline, no external dependencies
+- Differential coverage: Focus on what changed, not legacy code
+
+**Coverage standards**:
+- **Patch coverage** (new code): 80%+ target
+- **Critical paths** (payment, auth): 90%+ target
+- **Standard modules**: 70%+ acceptable
+- Don't chase absolute percentages on legacy code
+
 **Actions**:
 - Set coverage floor for critical modules only
-- Track coverage trends
+- Track coverage trends via GitHub Action PR comments
 - Remove tests that always pass (they provide false confidence)
 - Fail CI if critical path coverage drops
+- Use `pnpm test -- --coverage --changed` locally before push
 
 ## Linting & Formatting Audit
 
@@ -128,6 +221,71 @@ Code conventions should be invisible, not obstacles.
 - `process.env.SECRET` in client code = exposed at build
 
 **Action**: Configure HIGH/CRITICAL alerts only. Generate improvements, not noise.
+
+## Documentation Quality Automation
+
+**The problem**: Docs rot faster than code. Broken links, stale examples, inconsistent style.
+
+**Automated checks** (all CLI-first, offline, $0):
+
+### 1. Link Checking (lychee - Rust binary)
+```bash
+# Install once
+brew install lychee
+
+# Check all markdown files
+lychee **/*.md --offline --cache
+
+# Add to CI
+- name: Check Links
+  run: lychee **/*.md --offline
+```
+
+**Why lychee**:
+- 40x faster than markdown-link-check (Rust vs Node.js)
+- Single binary, no npm packages
+- Works completely offline
+- Caches results for speed
+
+### 2. Style Linting (Vale - Go binary)
+```bash
+# Install once
+brew install vale
+
+# Check documentation style
+vale docs/
+
+# Add to CI
+- name: Lint Docs
+  run: vale docs/
+```
+
+**Why Vale**:
+- Enforces style guides (Google, Microsoft, write-good)
+- Single binary, 100% offline
+- YAML configuration (.vale.ini)
+- No external dependencies
+
+### 3. Freshness Detection (git-based)
+```bash
+# Find docs not updated in 90 days
+find docs -name '*.md' | while read f; do
+  age=$(( ($(date +%s) - $(git log -1 --format=%ct -- "$f")) / 86400 ))
+  [ $age -gt 90 ] && echo "$f: $age days stale"
+done
+```
+
+**Documentation discipline**:
+- Update docs in same PR as code changes
+- README Quick Start section always current
+- ADRs for architectural decisions (never delete, only supersede)
+- Living documentation over static docs
+
+**Actions**:
+- Install lychee and Vale locally
+- Add both to pre-push hooks (fast fail on broken links)
+- Run freshness check monthly
+- Configure Vale with project style guide
 
 ## Changelog & Release Management
 
@@ -230,7 +388,29 @@ coverage: {
 - **Problem**: 200 tests for UI, 0 tests for payment logic
 - **Fix**: Add payment integration tests (target >80% on critical paths)
 - **Speed**: Replace heavy E2E with targeted unit tests
-- **Action**: Configure Vitest with coverage thresholds for critical modules only
+- **Coverage automation**: Add vitest-coverage-report-action to CI
+  - $0 cost, PR comments with patch coverage
+  - Focus on differential coverage (new code only)
+  - Target: 80%+ patch, 90%+ critical paths
+- **Action**: Configure GitHub Action for automated coverage reporting
+
+### PR Size Management
+- **Current state**: PRs average 600 lines, slow review cycle
+- **Problem**: Large PRs = shallow reviews, delayed feedback
+- **Fix**: Set up pr-size-labeler GitHub Action
+  - Automatic size labeling (XS/S/M/L/XL)
+  - Team norm: Justify any PR >400 lines
+  - Use git-spr for stacked PRs when needed
+- **Action**: Create .github/workflows/pr-size-labeler.yml
+
+### Documentation Quality
+- **Current**: No link checking, inconsistent style, 50% of docs >1yr old
+- **Tools installed**: None
+- **Fix**: Install lychee and Vale (single binaries, 100% offline)
+  - lychee for link checking (40x faster than alternatives)
+  - Vale for style guide enforcement
+  - Git-based freshness detection script
+- **Action**: Add to pre-push hooks, integrate into CI
 
 ### Linting
 - **Noise**: Rule X disabled 500 times
@@ -258,17 +438,40 @@ coverage: {
 
 ## Generated TODOs
 - [ ] [HIGH] Set up Lefthook with pre-commit/pre-push checks
+- [ ] [HIGH] Add vitest-coverage-report-action to CI workflow
 - [ ] [HIGH] Add tests for payment processing (0% coverage on money code)
 - [ ] [HIGH] Configure Convex deploy in Vercel build command
+- [ ] [MEDIUM] Set up pr-size-labeler GitHub Action workflow
+- [ ] [MEDIUM] Install lychee and Vale for documentation quality
 - [ ] [MEDIUM] Add Gitleaks pre-commit hook for secrets scanning
 - [ ] [MEDIUM] Parallelize CI steps 3 and 4 (saves 3min/build)
 - [ ] [MEDIUM] Set up Changesets for changelog automation
 - [ ] [LOW] Remove ESLint rule 'no-console' (disabled everywhere)
-- [ ] [LOW] Add coverage tracking for critical paths only
+- [ ] [LOW] Add lychee and Vale to pre-push hooks
+- [ ] [LOW] Create freshness detection script for docs
 ```
 
 ## The Philosophy
 
 Quality gates should be like a bouncer at a club—keeping out actual troublemakers, not hassling everyone about their shoes. If a gate isn't preventing real problems, it's just theater.
 
-Remember: **The goal isn't to have quality gates. The goal is to ship quality code.**
+Remember: **The goal isn't to have quality gates. The goal is to ship quality code with supreme confidence.**
+
+### The Friday Afternoon Standard
+
+**Can you merge to production Friday at 5pm and turn your phone off?**
+
+If NO:
+- Gates are missing (no pre-commit hooks, no CI/CD)
+- Gates are too slow (devs bypass with `--no-verify`)
+- Gates are too noisy (false positives, flaky tests)
+- Gates miss real bugs (no coverage, shallow checks)
+
+If YES:
+- All checks green = production ready
+- Zero manual verification needed
+- No fear of weekend on-call
+- Fast feedback (< 10s pre-commit, < 5min CI)
+- Catches real bugs (secret leaks, type errors, test failures, build breaks)
+
+**Quality gates enable fearless deployments. That's the only metric that matters.**

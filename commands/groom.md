@@ -59,7 +59,7 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - God object identification
 - Interface quality assessment
 - Module boundary violations
-- **Infrastructure gaps**: Missing quality gates (Lefthook), structured logging (Pino), error tracking (Sentry)
+- **Infrastructure gaps** (blocks Friday afternoon deploys): Missing quality gates (Lefthook), structured logging (Pino), error tracking (Sentry), coverage tracking, flaky tests, manual verification steps
 
 **3. security-sentinel** (Security Bindings + OWASP)
 - **Skills to apply**: `code-review-checklist` (security section)
@@ -143,8 +143,8 @@ Task 2: architecture-guardian
 Analyze the codebase for modularity and architectural quality.
 EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
 Hunt for: responsibility violations, tight coupling, dependency inversions, circular dependencies, god objects, poor interfaces, boundary violations.
-ALSO check infrastructure gaps: Missing Lefthook configuration (quality-gates skill), missing structured logging with Pino (structured-logging skill), missing Sentry error tracking, missing analytics, missing changelog automation (Changesets/semantic-release).
-Return: Prioritized findings with coupling/cohesion metrics, infrastructure gaps, concrete fixes, effort+impact."
+CRITICAL: Check deployment confidence infrastructure gaps (blocks Friday afternoon deploys): Missing Lefthook configuration (quality-gates skill), missing structured logging with Pino (structured-logging skill), missing Sentry error tracking, missing coverage tracking, flaky tests requiring manual reruns, manual verification steps, missing analytics, missing changelog automation (Changesets/semantic-release).
+Return: Prioritized findings with coupling/cohesion metrics, infrastructure gaps (flag deployment confidence blockers as HIGH priority), concrete fixes, effort+impact."
 
 Task 3: security-sentinel
 "Apply security principles from code-review-checklist skill when evaluating security.
@@ -201,6 +201,84 @@ Return: Prioritized findings with stack context, pattern prevalence, design toke
 
 Run all 8 in single invocation for true parallelism.
 
+---
+
+## Phase 2.5: Competitive Intelligence Scout
+
+After the 8 local agents complete, add external market context using Gemini CLI.
+
+```bash
+# Prepare context from Phase 1 findings
+TECH_STACK="[detected from Phase 1]"
+PRODUCT_DOMAIN="[inferred product type from codebase]"
+KEY_CHALLENGES="[emerging themes from 8 agent reports]"
+
+# Invoke gemini for competitive intelligence research
+gemini "Conduct competitive intelligence analysis for this codebase:
+
+## Context
+- Tech stack: ${TECH_STACK}
+- Domain: ${PRODUCT_DOMAIN}
+- Key challenges: ${KEY_CHALLENGES}
+
+## Research Mission
+
+1. **Competitive Landscape**: How do competitors solve similar problems?
+   - Identify 3-5 direct/adjacent competitors
+   - Analyze their approach (libraries, patterns, architecture)
+   - What do they do differently?
+
+2. **Ecosystem Evolution**: Has the tech landscape moved beyond our approach?
+   - Framework/library updates that change best practices
+   - New patterns that supersede current architecture
+   - Deprecated approaches we're still using
+
+3. **Best Practice Currency**: What's table stakes vs differentiation now (2025)?
+   - Industry standards for ${PRODUCT_DOMAIN}
+   - Expected features in this product category
+   - Security/performance baselines
+
+4. **Opportunity Gaps**: What are users asking for in this space?
+   - GitHub issues/discussions in similar projects
+   - Reddit/HN discussions about pain points
+   - Feature requests we haven't considered
+
+Return: Competitive gap analysis, modernization opportunities, user-driven feature ideas."
+```
+
+**Document Gemini's Response**:
+
+```markdown
+## Competitive Intelligence Analysis
+
+[Gemini's full competitive research]
+
+### Competitive Gaps
+- [What competitors do that we don't]
+- [Libraries/patterns they use]
+
+### Ecosystem Modernization
+- [Deprecated patterns to replace]
+- [New best practices to adopt]
+
+### User Opportunity Signals
+- [Feature requests from similar products]
+- [Pain points to address]
+```
+
+**Note**: This competitive context will inform prioritization in Phase 4, helping distinguish "internal debt" from "competitive gaps".
+
+**If Gemini CLI unavailable**:
+```markdown
+## Competitive Intelligence Analysis (Unavailable)
+
+Gemini CLI not available. Proceeding with 8 local agent perspectives only.
+External competitive context unavailable - prioritization will rely on internal findings.
+To enable: Ensure gemini CLI installed and GEMINI_API_KEY set in ~/.secrets.
+```
+
+---
+
 ## Phase 3: Synthesis & Cross-Validation
 
 ### 1. Collect & Merge Findings
@@ -240,6 +318,7 @@ Think like a CEO allocating scarce resources. Organize by time horizon and strat
 
 ### Now (Sprint-Ready, <2 weeks)
 **Unblocked, high-confidence, immediate impact:**
+- **Deployment confidence blockers** (quality gates missing, flaky tests, manual verification required)
 - Security vulnerabilities (CRITICAL/HIGH)
 - Data loss scenarios / broken core functionality
 - User-facing performance issues (>1s latency)
@@ -248,6 +327,7 @@ Think like a CEO allocating scarce resources. Organize by time horizon and strat
 
 **Require:** file:line, effort estimate, acceptance criteria
 **Ask:** "If we only shipped 3 things this month, would this make the list?"
+**North Star:** "Does this enable Friday afternoon deploys with phone off?"
 
 ### Next (This Quarter, <3 months)
 **Directionally clear, needs refinement:**

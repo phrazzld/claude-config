@@ -23,6 +23,28 @@ Before writing tests, commit to a clear approach:
 
 Tests should verify what code does, not how it does it. Implementation can change; behavior should remain stable.
 
+## Test-First Workflow (Canon TDD)
+
+**When to TDD**:
+- ✅ Core domain logic, algorithms, business rules
+- ✅ Well-defined requirements
+- ✅ Production code (not prototypes)
+- ✅ AI-assisted development (tests guard against hallucinations)
+- ❌ UI prototyping, exploration, fuzzy requirements
+
+**Canon TDD Pattern** (Kent Beck 2024):
+1. **Write test list** - enumerate all scenarios (happy, edge, error)
+2. **Turn one into failing test** - focus on interface design
+3. **Make it pass** - minimal implementation
+4. **Refactor** - improve design while green
+5. **Repeat** until list empty
+
+**AI-Assisted TDD**:
+- AI generates test list from requirements
+- AI implements code to pass tests (human reviews)
+- Tests are specifications in executable form
+- Commit tests separately before implementation
+
 **NEVER test**:
 - Private method internals (test through public API)
 - Mock call counts unless the count IS the behavior

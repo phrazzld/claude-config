@@ -10,6 +10,58 @@ Open a pull request for current branch with punchy title and comprehensive descr
 - **Get file changes**: `!git diff --name-only main..HEAD` to understand scope of changes
 - **Get stats**: `!git diff --stat main..HEAD` for change magnitude
 
+## 1b. Pre-PR Quality Checks
+
+**Size Check**:
+```bash
+# Show lines changed
+git diff --stat main
+
+# Count total lines
+LINES=$(git diff --shortstat main | awk '{print $4+$6}')
+echo "Total lines changed: $LINES"
+```
+
+**Size guidance**:
+- ≤200 lines: ✅ Perfect size
+- 201-400 lines: ✅ Good size
+- 401-500 lines: ⚠️ Large - justify in PR description
+- >500 lines: 🛑 Too large - strongly consider splitting
+
+**If >400 lines**, ask:
+```
+This PR is large ($LINES lines). Options:
+1. Proceed anyway (provide justification in PR)
+2. Split into smaller PRs (recommended)
+3. Use git-spr to create stacked PRs
+
+Choice (1/2/3):
+```
+
+**Coverage Check** (if tests present):
+```bash
+# Show coverage for changed files
+pnpm test -- --coverage --changed
+```
+
+If patch coverage <80%, warn:
+```
+⚠️ Coverage for new code is below 80%
+Untested files: [list files with <80% coverage]
+
+Add tests before creating PR? (y/n)
+```
+
+**Documentation Check**:
+Ask: "Did you update relevant documentation? Check all that apply:"
+- [ ] README (if installation/usage changed)
+- [ ] API docs (if public interfaces changed)
+- [ ] ADR (if architectural decision made)
+- [ ] Code comments (for complex logic)
+- [ ] N/A - no docs needed
+
+Add checklist to PR description.
+
 ## 2. Generate PR Title
 - **Think hard about the work**: Analyze all commits to identify the main theme/goal
 - **Create punchy title**: 50 characters or less, action-oriented, specific
@@ -34,6 +86,19 @@ Open a pull request for current branch with punchy title and comprehensive descr
 
   ## Technical Details
   [Brief explanation of implementation approach, key decisions, or architectural changes]
+
+  ## PR Size
+  - Lines changed: {LINES}
+  - Files changed: {FILES}
+  {If >400 lines: Justification for size: ...}
+
+  ## Coverage
+  - Patch coverage: {PERCENTAGE}%
+  {If <80%: Justification: ...}
+
+  ## Documentation Updated
+  {Checkboxes from documentation check above}
+  {If ADR created: Link to ADR-00XX}
 
   ## Testing
   - [ ] Core functionality works end-to-end
