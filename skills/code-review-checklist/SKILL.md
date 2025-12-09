@@ -1,6 +1,10 @@
 ---
 name: code-review-checklist
 description: "Apply comprehensive code review checklist covering purpose, design, quality, correctness, security, performance, testing, and documentation. Use when reviewing pull requests, conducting code reviews, or self-reviewing changes before committing."
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
 ---
 
 # Code Review Checklist

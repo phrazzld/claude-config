@@ -89,3 +89,274 @@ Task pr-comment-resolver("Comment 5 details")
     - Summarize analysis approach and decision criteria
     - For each comment category, explain rationale and next steps
     - Ensure all feedback is acknowledged and appropriately addressed
+
+## 5. Learning Codification (Feedback Pattern Detection)
+
+After resolving PR feedback, detect recurring patterns that should be enforced automatically:
+
+**Ask yourself**: Is this feedback recurring? Have I seen this pattern before?
+
+✅ **Codifiable feedback patterns** (worth automating):
+- Same feedback given 3+ times across PRs
+- Structural pattern enforceable as rule (DRY violations, naming conventions, missing tests, etc.)
+- Security/performance/correctness issues that can be detected automatically
+- Code quality standards repeatedly mentioned
+- Framework-specific best practices violated repeatedly
+
+❌ **Not worth codifying** (one-off or subjective):
+- One-time suggestion specific to this PR
+- Subjective style preferences without clear rule
+- Context-dependent decisions
+- Design discussions
+
+**After resolving all feedback, prompt**:
+
+```
+✅ PR feedback resolved: {count} comments addressed
+
+Recurring feedback pattern detected?
+[y] Yes - Analyze PR feedback history and codify pattern
+[l] Later - Note pattern for batch codification
+[n] No - All feedback is one-off
+
+> _
+```
+
+**If user selects [y]**:
+```bash
+Task learning-codifier("Analyze recent PR feedback history and detect recurring patterns worth codifying into automated enforcement")
+
+# Agent will:
+# 1. Search PR history for similar feedback (gh pr list + comments)
+# 2. Count occurrences of feedback patterns
+# 3. Categorize patterns (code quality, testing, security, architecture, naming, etc.)
+# 4. Recommend codification targets (agent updates, ESLint rules, pre-commit hooks)
+# 5. Launch agent-updater for high-confidence patterns
+# 6. Commit with "codify: Automate {pattern} enforcement from PR feedback"
+```
+
+**Codification priority for PR feedback**:
+1. **Agent Updates** (HIGHEST - catch in /groom before review)
+2. **ESLint/Lint Rules** (catch at development time)
+3. **Pre-commit Hooks** (block commit if violated)
+4. **Tests** (if feedback is about missing test coverage)
+5. **Documentation** (if feedback is about missing docs)
+
+**If user selects [l]**:
+```markdown
+Add to work log:
+PR FEEDBACK PATTERN: [summary]
+OCCURRENCES: [this is Nth time]
+POTENTIAL CODIFICATION: [agent/eslint/hook/test/docs]
+```
+
+**If user selects [n]**:
+Complete PR response cycle.
+
+**Examples**:
+
+<details>
+<summary>Example 1: "Extract to Helper" (3rd Occurrence) → Agent Update</summary>
+
+```
+✅ PR feedback resolved: 5 comments addressed
+  - Extract validation logic to helper (UserController.ts:120)
+  - Fix naming convention (PaymentService.ts:45)
+  - Add error handling (OrderService.ts:89)
+  - Add JSDoc comments (ProductService.ts:234)
+  - Extract repeated query to helper (ReportController.ts:167)
+
+Recurring feedback pattern detected?
+[y] Yes - Analyze PR feedback history and codify pattern
+[l] Later - Note pattern for batch codification
+[n] No - All feedback is one-off
+
+> y
+
+Analyzing PR feedback history...
+
+Searching recent PRs for similar feedback patterns:
+  gh pr list --state all --limit 50 --json number,reviews
+
+Pattern detected: "Extract to helper" feedback
+  - PR #123: "Extract validation to helper" (UserController)
+  - PR #145: "Extract formatting logic to utility" (ReportService)
+  - PR #167: "This should be a helper function" (PaymentProcessor)
+  - PR #189: "Extract to helper" (UserController + OrderService)
+  - **This PR (3rd occurrence this month)**
+
+Pattern: DRY Violations - Repeated logic not extracted (HIGH confidence)
+Occurrences: 5 times in last 50 PRs
+Impact: HIGH (review time, code maintainability)
+
+Recommended codifications:
+  [ ] Code abstraction - Case-by-case, not general
+  [ ] Tests - Not applicable
+  [ ] Skill - Not applicable
+  [ ] Command - Not applicable
+  [✓] Agent update - Add to complexity-archaeologist checklist
+  [✓] ESLint rule - Configure no-duplicate-code plugins
+  [ ] Docs - Already documented in Ousterhout principles
+
+Proceed with agent + eslint? [y/N]
+> y
+
+Launching agent-updater...
+
+Which agent should enforce "Extract repeated logic" pattern?
+1. complexity-archaeologist (DRY violations, shallow modules)
+2. maintainability-maven (code organization, naming)
+> 1
+
+✅ Updated: agents/complexity-archaeologist.md
+  Added check:
+    "- [ ] Repeated logic (>10 lines, appears 2+ times) extracted to helper/utility
+     - [ ] Helper functions have clear single responsibility
+     - [ ] Helpers are well-named and documented"
+✅ Committed: codify: Add DRY violation detection to complexity-archaeologist
+
+Configuring ESLint...
+✅ Updated: .eslintrc.json
+  Added: sonarjs/no-duplicate-string, sonarjs/no-identical-functions
+✅ Committed: codify: Configure ESLint to detect code duplication
+
+Syncing configs...
+✅ Synced to ~/.codex/agents/complexity-archaeologist.md
+✅ Synced to ~/.gemini/system-instructions/complexity-archaeologist.txt
+
+✅ Codification complete
+Prevention: /groom will now catch DRY violations before PR, ESLint catches during dev
+Next: This feedback pattern should not recur
+```
+</details>
+
+<details>
+<summary>Example 2: "Add Tests" (2nd Occurrence) → Agent + Hook</summary>
+
+```
+✅ PR feedback resolved: 3 comments addressed
+  - Add unit tests for PaymentProcessor
+  - Add integration tests for OrderFlow
+  - Increase coverage to 80%+
+
+Recurring feedback pattern detected?
+[y] Yes - Analyze PR feedback history and codify pattern
+[l] Later - Note pattern for batch codification
+[n] No - All feedback is one-off
+
+> y
+
+Analyzing PR feedback history...
+
+Pattern detected: "Add tests" / "Coverage too low" feedback
+  - PR #134: "Add tests for authentication flow"
+  - **This PR (2nd occurrence)**
+
+Pattern: Missing Tests (MEDIUM confidence)
+Occurrences: 2 times in last 50 PRs
+Impact: HIGH (production bugs, confidence)
+
+Recommended codifications:
+  [ ] Code abstraction - Not applicable
+  [✓] Tests - Already added in this PR
+  [ ] Skill - Not applicable
+  [ ] Command - Already have /execute test-first prompt
+  [✓] Agent update - Strengthen test-strategy-architect
+  [✓] Pre-commit hook - Block commit if patch coverage <80%
+  [ ] Docs - Already documented in testing-philosophy
+
+Proceed with agent + hook? [y/N]
+> y
+
+Launching agent-updater...
+✅ Updated: agents/test-strategy-architect.md
+  Strengthened check:
+    "- [ ] NEW CODE: Must have 80%+ patch coverage (or explicit justification)
+     - [ ] Core logic: Must have unit tests
+     - [ ] User flows: Must have integration tests
+     - [ ] API endpoints: Must have E2E tests"
+✅ Committed: codify: Strengthen test coverage requirements in test-strategy-architect
+
+Configuring git hooks...
+✅ Updated: .lefthook.yml
+  Added pre-push hook:
+    ```yaml
+    pre-push:
+      commands:
+        coverage-check:
+          run: pnpm test --coverage --changed
+          fail_text: "Patch coverage below 80%. Add tests or use --no-verify with justification."
+    ```
+✅ Committed: codify: Add patch coverage pre-push hook (80% threshold)
+
+Syncing configs...
+✅ Synced to ~/.codex/agents/test-strategy-architect.md
+
+✅ Codification complete
+Prevention: Pre-push hook blocks low coverage, /groom enforces in review
+Next: Test coverage requirements now enforced automatically
+```
+</details>
+
+<details>
+<summary>Example 3: Security Issue (1st Occurrence) → Immediate Agent Update</summary>
+
+```
+✅ PR feedback resolved: 1 critical comment addressed
+  - Security: Use parameterized queries, not string concatenation (SearchController.ts:89)
+
+Recurring feedback pattern detected?
+[y] Yes - Analyze PR feedback history and codify pattern
+[l] Later - Note pattern for batch codification
+[n] No - All feedback is one-off
+
+> y
+
+Analyzing PR feedback history...
+
+Pattern detected: SQL injection vulnerability pattern
+  - **This PR (1st occurrence - CRITICAL)**
+
+Pattern: SQL Injection Vulnerability (CRITICAL confidence despite single occurrence)
+Occurrences: 1 time (but CRITICAL severity warrants immediate codification)
+Impact: CRITICAL (security breach, data loss)
+
+Recommended codifications:
+  [✓] Code abstraction - Safe query builder utility
+  [✓] Tests - Security regression tests
+  [ ] Skill - Not applicable
+  [ ] Command - Not applicable
+  [✓] Agent update - Add to security-sentinel (CRITICAL priority)
+  [✓] ESLint rule - Detect SQL string concatenation
+  [✓] Docs - Update SECURITY.md
+
+Proceed with full codification? [y/N]
+> y
+
+Note: Even though this is first occurrence, CRITICAL security issues
+warrant immediate codification to prevent future vulnerabilities.
+
+[Same codification flow as debug SQL injection example...]
+
+✅ Codification complete
+Prevention: Multi-layer defense prevents SQL injection from ever reaching PR again
+```
+</details>
+
+**Philosophy**:
+
+PR feedback patterns are the highest-value signal for what to automate. When reviewers repeatedly mention the same issue, it means:
+1. The pattern is common enough to recur
+2. It's not obvious enough to prevent proactively
+3. It wastes reviewer time every time it appears
+
+**"If you say it 3 times, automate it."** - Transform recurring PR feedback into automated enforcement that catches issues before human review.
+
+**The codification loop**:
+1. **PR feedback** reveals pattern
+2. **Agent update** catches pattern in /groom
+3. **ESLint/hooks** catch pattern before commit
+4. **Tests** prevent regression
+5. **Future PRs** don't have this feedback anymore
+
+This is compounding engineering: each unit of review work improves the system's ability to catch issues automatically, reducing future review burden and increasing code quality baseline.

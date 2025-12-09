@@ -158,6 +158,119 @@ For each major decision: what, alternatives, rationale (user value, simplicity, 
 
 Keep the PRD tight—if you can't explain a section in 2 paragraphs, it's probably too complex.
 
+## Jobs + Domain Expert Review (Parallel Composition)
+
+*After drafting the PRD, invoke Jobs to assess craft/simplicity/excellence alongside domain experts for technical validation.*
+
+**Always invoke Jobs first** - his vision and ruthless simplicity filter applies to every spec:
+
+```bash
+Task jobs("Review this specification through the lens of excellence, simplicity, and user delight")
+Prompt:
+You are Steve Jobs. Evaluate this specification:
+- **Think Different**: Is this solving the real problem or just doing what's expected?
+- **Simplicity**: Can we remove features and make it stronger?
+- **Craft**: Do the details sing? Is every choice intentional?
+- **User Focus**: Does this disappear into the background or delight the user?
+- **Say No**: What should we NOT build? (Most important question)
+Report: Simplification opportunities, craft improvements, features to remove, what makes this insanely great
+Remember: "Simple can be harder than complex. You have to work hard to get your thinking clean to make it simple."
+```
+
+**Then invoke domain experts** based on feature type:
+
+```bash
+# API/Backend feature → api-design-specialist
+Task api-design-specialist("Review API design in specification")
+Prompt:
+Evaluate API specification:
+- REST/GraphQL design: Proper resource modeling, HTTP semantics
+- Error handling: Comprehensive error responses
+- Versioning strategy: Breaking changes managed how?
+- Idempotency: Which endpoints must be idempotent?
+Report: API design issues, missing error cases, versioning recommendations
+
+# Database/Data feature → data-integrity-guardian
+Task data-integrity-guardian("Review data model and integrity in specification")
+Prompt:
+Evaluate data specification:
+- Schema design: Normalization, constraints, indexes
+- Migration safety: How will existing data migrate?
+- Referential integrity: Foreign keys, cascades
+- Transaction boundaries: What operations must be atomic?
+Report: Data model issues, migration risks, integrity recommendations
+
+# Frontend/UI feature → user-experience-advocate
+Task user-experience-advocate("Review user experience in specification")
+Prompt:
+Evaluate UX specification:
+- User friction points: Where do users get confused?
+- Error states: How do we handle failures gracefully?
+- Loading states: What happens during async operations?
+- Accessibility: WCAG compliance, keyboard navigation
+Report: UX gaps, friction reduction opportunities, accessibility issues
+
+# Security feature → security-sentinel
+Task security-sentinel("Review security implications in specification")
+Prompt:
+Evaluate security specification:
+- Threat model: What attacks are we defending against?
+- Auth/authz: Proper authentication and authorization?
+- Data protection: Sensitive data encrypted, properly scoped?
+- Attack surface: What new vulnerabilities introduced?
+Report: Security gaps, threat assessment, defense recommendations
+
+# Infrastructure/Quality feature → infrastructure-guardian
+Task infrastructure-guardian("Review infrastructure requirements in specification")
+Prompt:
+Evaluate infrastructure specification:
+- Quality gates: Proper testing, linting, CI/CD?
+- Observability: Logging, monitoring, error tracking?
+- Performance: Measurement and budgets defined?
+- Deployment: Safe rollout strategy?
+Report: Infrastructure gaps, observability needs, deployment risks
+
+# Test infrastructure → test-strategy-architect
+Task test-strategy-architect("Review testing strategy in specification")
+Prompt:
+Evaluate test specification:
+- Test pyramid: Proper balance unit/integration/e2e?
+- Coverage targets: What coverage is sufficient?
+- Test scenarios: All edge cases covered?
+- Flakiness prevention: Tests deterministic?
+Report: Testing gaps, coverage recommendations, flakiness risks
+```
+
+**Compose based on feature type**:
+- **API/Backend** → Jobs + api-design-specialist + data-integrity-guardian
+- **Frontend/UI** → Jobs + user-experience-advocate + test-strategy-architect
+- **Security** → Jobs + security-sentinel + api-design-specialist
+- **Infrastructure** → Jobs + infrastructure-guardian + test-strategy-architect
+- **Full-stack feature** → Jobs + api-design-specialist + user-experience-advocate + data-integrity-guardian
+
+**Invoke in parallel** (single message with multiple Task calls):
+```markdown
+# Example: Full-stack authentication feature
+Task jobs("Review auth specification for simplicity and craft")
+Task api-design-specialist("Review auth API endpoints")
+Task security-sentinel("Review auth security implications")
+Task data-integrity-guardian("Review user data model and sessions")
+```
+
+**Synthesis after agents return**:
+- **Jobs's vision**: Simplifications, features to remove, craft improvements
+- **Domain experts**: Technical validation, gaps, risks
+- **Reconcile conflicts**: Jobs says remove, expert says required → validate with user value
+- **Update PRD**: Incorporate feedback, tighten scope, improve technical design
+
+**Jobs + Experts Integration**:
+- **Jobs** provides ruthless simplification and user-centric vision
+- **Experts** validate technical soundness and identify gaps
+- **Together** they ensure specs are both excellent AND correct
+- **Tension is healthy**: When Jobs wants to remove and expert wants to add, the conversation reveals what truly matters
+
+---
+
 ## Quality Validation
 
 Before finalizing, check:
@@ -181,6 +294,43 @@ After writing TASK.md, provide concise summary:
 - Timeline estimate
 - Key decisions and complexity assessment
 
-**Next**: Run `/plan` to break this down into implementation tasks.
+After summary, offer worktree creation (see next section).
 
 Remember: "A good specification is not when there's nothing left to add, but nothing left to take away."
+
+---
+
+## Worktree Creation (Optional)
+
+After presenting the spec summary, offer to create an isolated worktree for implementation.
+
+**Extract branch name from TASK.md:**
+- Slugify first H1 heading: lowercase, hyphens, prefix "feature/", max 50 chars
+- Example: "User Authentication with OAuth 2.0" → `feature/user-authentication-oauth`
+- Fallback: Ask user for branch name
+
+**Ask user for confirmation:**
+```markdown
+---
+
+## Ready to Implement?
+
+I can create an isolated worktree for implementing this spec:
+- Branch: feature/[auto-generated-name]
+- Location: ../[project]-worktree-[branch-name]
+- TASK.md will be copied to the worktree root
+
+Create worktree now? [y/N]
+```
+
+**If user confirms:**
+1. Create worktree in `../{project}-worktree-{branch-slug}`
+2. Copy over what's needed to make it work:
+   - Environment files (.env, .env.local, .env.development)
+   - TASK.md to worktree root
+   - Run `pnpm install`
+   - Run `lefthook install` if present
+3. Report success with next steps (open terminal, cd to worktree, run `/plan` then `/execute`)
+
+**If user declines:**
+- End with: "Next: Run `/plan` to break this down into implementation tasks."

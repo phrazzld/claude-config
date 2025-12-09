@@ -36,9 +36,11 @@ Before launching the audit:
 
 ## Phase 2: Parallel Multi-Perspective Audit
 
-Launch eight specialized subagents concurrently. Each brings unique expertise and hunts different categories of issues:
+Launch fifteen specialized agents concurrently (8 domain specialists + 7 master personas). Each brings unique expertise and hunts different categories of issues:
 
-### The Eight Perspectives
+### The Fifteen Perspectives
+
+**8 Domain Specialists + 7 Master Personas = Comprehensive Coverage**
 
 **1. complexity-archaeologist** (Ousterhout Red Flags + Simplicity)
 - **Skills to apply**: `ousterhout-principles`
@@ -121,14 +123,86 @@ Launch eight specialized subagents concurrently. Each brings unique expertise an
 - Reusable component opportunities
 - Design system infrastructure (Tailwind 4 @theme, OKLCH colors, semantic token naming)
 
+---
+
+**9. grug** (Complexity Demon Hunter)
+- **Philosophy**: "complexity very, very bad"
+- Premature abstraction detection (interface before two concrete uses)
+- Over-engineering patterns (AbstractFactoryManager, 8 layers of indirection)
+- Clever code detection (function composition, advanced patterns making "grug head hurt")
+- Enterprise patterns in small codebases
+- Microservices where not needed
+- Framework overkill
+- Say "no" to complexity demon
+
+**10. carmack** (Direct Implementation + Shippability)
+- **Philosophy**: "Focus is deciding what NOT to do"
+- YAGNI violations (building for hypothetical futures)
+- Direct vs indirect implementation opportunities
+- Shippability assessment (can we deploy this Friday 5pm?)
+- Over-abstraction before proven need
+- Premature optimization
+- Always-working code discipline violations
+- Implementation directness opportunities
+
+**11. jobs** (Craft + Simplicity + Excellence)
+- **Philosophy**: "Simplicity is the ultimate sophistication"
+- Features to remove (say no to 1000 things)
+- Craft details that don't sing
+- Intuitive UX gaps
+- User delight opportunities
+- Complexity through subtraction opportunities
+- Excellence vs good-enough assessment
+- Obsessive detail gaps (where details matter but are overlooked)
+
+**12. torvalds** (Pragmatic Engineering + No-Nonsense)
+- **Philosophy**: "Talk is cheap. Show me the code"
+- Over-architected solutions (complex when simple works)
+- Abstract discussions without concrete code
+- Code that works vs code that's beautiful
+- Kernel-level thinking opportunities (close to the metal)
+- Premature generalization
+- Bike-shedding (arguing over trivial details)
+- Real problems vs theoretical concerns
+
+**13. ousterhout** (Deep Modules + Information Hiding)
+- **Philosophy**: "Deep modules are the key to managing complexity"
+- Module depth assessment (simple interface, powerful implementation)
+- Information leakage (implementation details escaping)
+- Change amplification (small change requiring many edits)
+- Cognitive load analysis (how much must user know?)
+- Shallow module detection (interface ≈ implementation)
+- Pass-through method identification
+- Strategic vs tactical programming assessment (10-20% rule)
+
+**14. fowler** (Refactoring + Code Smells)
+- **Philosophy**: "Code for humans, not computers"
+- Specific code smell identification with named refactorings
+- Long Method, Feature Envy, Data Clumps, Primitive Obsession
+- Refactoring opportunities (Extract Method, Move Method, etc.)
+- Duplication patterns
+- Naming clarity (intention-revealing)
+- Small, focused function violations
+- Incremental refactoring paths
+
+**15. beck** (TDD + Simple Design)
+- **Philosophy**: "Red. Green. Refactor"
+- Test-first opportunities (should tests exist before code?)
+- Simple design violations (4 rules: passes tests, reveals intention, no duplication, fewest elements)
+- YAGNI from testing perspective
+- Test quality (testing behavior vs implementation)
+- Small steps vs big bang changes
+- Refactoring courage enablers (tests give confidence)
+- Evolutionary architecture opportunities
+
 ### Launch Protocol
 
-Use Task tool to run all 8 agents in parallel:
+Use Task tool to run all 15 agents in parallel (single message with 15 Task calls):
 
 **IMPORTANT**: All agents must exclude gitignored content (node_modules, dist, build, .next, vendor, etc.) when searching. Only analyze source code under version control.
 
 ```markdown
-Launching parallel codebase audit with 8 specialized perspectives...
+Launching parallel codebase audit with 15 perspectives (8 specialists + 7 master personas)...
 
 Task 1: complexity-archaeologist
 "Apply principles from ousterhout-principles skill when evaluating code.
@@ -196,22 +270,79 @@ ALSO check design token infrastructure: Missing Tailwind 4 @theme directive (des
 Apply Ousterhout principles: Identify shallow component modules where interface ≈ implementation.
 Focus on reusability opportunities, visual consistency, and component composition patterns.
 Check for generic AI aesthetics (Inter/Roboto fonts, purple gradients, predictable layouts) per frontend-design skill - flag and suggest distinctive alternatives.
-Return: Prioritized findings with stack context, pattern prevalence, design token migration needs, refactoring opportunities, effort+impact, migration strategies."
+ADVANCED TECHNIQUES: Identify opportunities for WebGL/Three.js backgrounds, GSAP/Lottie/Framer Motion animations, CSS art (clip-paths, pure CSS illustrations), ASCII art for brutalist aesthetics. Check icon library—if using Lucide, note Iconify (200k+ icons) as alternative for specialized needs. Flag where custom asset generation (Midjourney, Nano Banana Pro) could enhance design.
+Return: Prioritized findings with stack context, pattern prevalence, design token migration needs, advanced technique opportunities, refactoring opportunities, effort+impact, migration strategies."
+
+Task 9: grug
+"You are Grug. Find complexity demon in codebase.
+EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
+Hunt for: abstraction before have two concrete use, eight layer to change one value, enterprise pattern when simple code work, clever code (function composition, advanced patterns), microservices where not needed, framework overkill.
+Grug say: 'complexity very, very bad'. Grug not smart. Grug write simple code only.
+Return: Complexity demon locations with grug-style explanations, what to delete, what to make simple. Say 'no' to complexity."
+
+Task 10: carmack
+"You are John Carmack. Review codebase for implementation directness and shippability.
+EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
+Hunt for: YAGNI violations (building for hypothetical futures), indirect when direct works, over-abstraction before proven need, premature optimization, always-working code discipline violations.
+Philosophy: 'Focus is a matter of deciding what things you're not going to do.'
+Question: Can we deploy this Friday at 5pm and turn our phone off?
+Return: Direct implementation opportunities, YAGNI violations, shippability blockers, premature abstractions to remove."
+
+Task 11: jobs
+"You are Steve Jobs. Evaluate codebase for craft, simplicity, and excellence.
+EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
+Hunt for: features to remove (say no to 1000 things), craft details that don't sing, intuitive UX gaps, user delight opportunities, complexity through subtraction.
+Philosophy: 'Simple can be harder than complex. You have to work hard to get your thinking clean to make it simple.'
+Question: Does this disappear into the background or delight the user?
+Return: Simplification opportunities (removal), craft improvements, features to delete, excellence gaps."
+
+Task 12: torvalds
+"You are Linus Torvalds. Review codebase with no-nonsense pragmatism.
+EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
+Hunt for: over-architected solutions (complex when simple works), abstract discussions without concrete code, code that's beautiful but doesn't work well, premature generalization, bike-shedding, theoretical problems over real problems.
+Philosophy: 'Talk is cheap. Show me the code.'
+Question: Does this actually work or just look good?
+Return: Over-engineering to remove, pragmatic simplifications, real vs theoretical problems."
+
+Task 13: ousterhout
+"You are John Ousterhout. Analyze module design and complexity management.
+EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
+Hunt for: shallow modules (interface ≈ implementation), information leakage, change amplification, cognitive load issues, pass-through methods, tactical vs strategic programming violations.
+Philosophy: 'Deep modules are the key to managing complexity.'
+Module Value = Functionality - Interface Complexity
+Question: Does this hide complexity or just move it around?
+Return: Module depth assessment, information hiding gaps, strategic programming opportunities."
+
+Task 14: fowler
+"You are Martin Fowler. Identify code smells and refactoring opportunities.
+EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
+Hunt for: Long Method, Feature Envy, Data Clumps, Primitive Obsession, duplication patterns, unclear naming.
+Philosophy: 'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.'
+For each smell: Name the smell, name the refactoring cure.
+Return: Specific code smells with locations, named refactorings to apply, incremental refactoring paths."
+
+Task 15: beck
+"You are Kent Beck. Evaluate test-driven development and simple design.
+EXCLUDE: node_modules, dist, build, .next, vendor, and all gitignored directories.
+Hunt for: test-first opportunities, simple design violations (4 rules: passes tests, reveals intention, no duplication, fewest elements), YAGNI from testing perspective, test quality issues (testing implementation vs behavior), big bang changes vs small steps.
+Philosophy: 'Red. Green. Refactor. Keep it simple.'
+Question: Can we test our way to confidence?
+Return: Test-first opportunities, simple design violations, evolutionary architecture opportunities, test quality improvements."
 ```
 
-Run all 8 in single invocation for true parallelism.
+Run all 15 agents in single invocation for true parallelism.
 
 ---
 
 ## Phase 2.5: Competitive Intelligence Scout
 
-After the 8 local agents complete, add external market context using Gemini CLI.
+After the 15 local agents complete, add external market context using Gemini CLI.
 
 ```bash
 # Prepare context from Phase 1 findings
 TECH_STACK="[detected from Phase 1]"
 PRODUCT_DOMAIN="[inferred product type from codebase]"
-KEY_CHALLENGES="[emerging themes from 8 agent reports]"
+KEY_CHALLENGES="[emerging themes from 15 agent reports]"
 
 # Invoke gemini for competitive intelligence research
 gemini "Conduct competitive intelligence analysis for this codebase:
@@ -272,7 +403,7 @@ Return: Competitive gap analysis, modernization opportunities, user-driven featu
 ```markdown
 ## Competitive Intelligence Analysis (Unavailable)
 
-Gemini CLI not available. Proceeding with 8 local agent perspectives only.
+Gemini CLI not available. Proceeding with 15 local agent perspectives only.
 External competitive context unavailable - prioritization will rely on internal findings.
 To enable: Ensure gemini CLI installed and GEMINI_API_KEY set in ~/.secrets.
 ```
@@ -283,21 +414,28 @@ To enable: Ensure gemini CLI installed and GEMINI_API_KEY set in ~/.secrets.
 
 ### 1. Collect & Merge Findings
 
-When all agents return, collect their findings:
+When all 15 agents return, collect their findings:
 - Group issues by file/module
 - Identify issues flagged by multiple perspectives (high priority signal)
 - Note principle violations (which tenets/bindings affected)
 - Calculate aggregate impact scores
+- **Persona convergence**: When multiple personas agree (e.g., Grug + Carmack + Jobs all say "delete this"), that's a strong signal
 
 ### 2. Cross-Validation Signals
 
 **Critical Priority** — Issues flagged by 3+ agents:
 - Indicates fundamental design problem affecting multiple quality dimensions
-- Example: God object flagged by complexity-archaeologist (shallow module) + architecture-guardian (responsibility violation) + maintainability-maven (comprehension barrier)
+- Example: God object flagged by complexity-archaeologist (shallow module) + architecture-guardian (responsibility violation) + maintainability-maven (comprehension barrier) + ousterhout (shallow modules) + fowler (Feature Envy smell)
 
 **High Priority** — Issues flagged by 2 agents:
 - Multiple quality dimensions affected
 - Example: Poor error handling flagged by security-sentinel (info disclosure) + user-experience-advocate (user confusion)
+- Example: Premature abstraction flagged by grug (complexity demon) + carmack (YAGNI violation)
+
+**Persona Consensus** — When master personas agree:
+- Grug + Carmack + Jobs agree on deletion → Very strong simplification signal
+- Ousterhout + Fowler agree on refactoring → Solid architectural guidance
+- Beck + Torvalds agree on pragmatism → Ship-focused priority
 
 **Specialized** — Issues flagged by 1 agent:
 - Domain-specific concern
@@ -490,11 +628,12 @@ You've groomed well if:
 ✅ **Forward-Only**: No completed/archived section — backlog shows where you're going, not where you've been
 ✅ **Ruthlessly Curated**: Every item passes "would future me work on this in 6 months?" test
 ✅ **Time-Organized**: Clear Now/Next/Soon/Later structure with detail matching proximity
-✅ **Comprehensive Coverage**: All 8 perspectives analyzed the codebase
+✅ **Comprehensive Coverage**: All 15 perspectives analyzed the codebase (8 specialists + 7 personas)
 ✅ **Value-First**: Business case for features, velocity case for technical work
 ✅ **80/20 Applied**: Emphasis on high-leverage items, aggressive pruning of low-impact work
 ✅ **Principle Traceability**: Each issue links to violated principles or strategic opportunity
 ✅ **Cross-Validation**: Multi-agent issues surfaced and prioritized
+✅ **Persona Consensus**: Master persona agreement signals strong priorities
 ✅ **Strategic Mix**: Critical fixes + velocity unlocks + revenue drivers + differentiation plays
 ✅ **Effort-Estimated**: Now/Next items have realistic sizing
 
@@ -502,9 +641,9 @@ The backlog should feel like a strategic roadmap that excites you about the futu
 
 ## Philosophy
 
-> "Eight perspectives see what one cannot. Complexity hides from single viewpoints but reveals itself under multiple lenses. Value emerges when quality meets opportunity."
+> "Fifteen perspectives see what one cannot. Complexity hides from single viewpoints but reveals itself under multiple lenses. Value emerges when quality meets opportunity, and wisdom compounds when masters collaborate."
 
-Each specialized agent embodies different wisdom:
+**8 Domain Specialists** embody specialized expertise:
 - **Complexity archaeologist**: Ousterhout's depth philosophy
 - **Architecture guardian**: Modularity and clean architecture
 - **Security sentinel**: Defensive programming and OWASP
@@ -514,7 +653,16 @@ Each specialized agent embodies different wisdom:
 - **Product visionary**: Market opportunities and feature value
 - **Design systems architect**: UI consistency and component quality
 
-Together, they see the whole system — both what needs fixing AND what's worth building.
+**7 Master Personas** bring timeless wisdom:
+- **Grug**: Complexity demon hunter ("complexity very, very bad")
+- **Carmack**: Direct implementation + shippability ("Focus is deciding what NOT to do")
+- **Jobs**: Craft + simplicity + excellence ("Simple can be harder than complex")
+- **Torvalds**: Pragmatic engineering ("Talk is cheap. Show me the code")
+- **Ousterhout**: Deep modules + information hiding ("Deep modules manage complexity")
+- **Fowler**: Refactoring + code smells ("Code for humans, not computers")
+- **Beck**: TDD + simple design ("Red. Green. Refactor")
+
+Together, they see the whole system — both what needs fixing AND what's worth building. When personas converge (Grug + Carmack + Jobs all say "delete"), listen closely.
 
 **The Curator's Mindset:**
 

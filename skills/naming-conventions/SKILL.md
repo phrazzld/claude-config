@@ -1,6 +1,9 @@
 ---
 name: naming-conventions
 description: "Apply universal naming principles: avoid Manager/Helper/Util, use intention-revealing names, domain language, verb+noun functions. Use when naming variables, functions, classes, reviewing names, or refactoring for clarity. Language-agnostic principles."
+allowed-tools:
+  - Read
+  - Grep
 ---
 
 # Naming Conventions

@@ -275,6 +275,14 @@ grep -r "container\|wrapper\|section" src/ --include="*.tsx" | head -20
 **The Council asks:**
 > "Is the emptiness empty—or is it active? Does the design create space for the user to project their intent? Is there room to breathe, or is every pixel claimed?"
 
+**The Whisper of Brand (Brand-Tinted Neutrals):**
+Hara teaches that emptiness is not void—it's receptive space.
+- Do the "empty" spaces (backgrounds, margins, borders) carry brand DNA?
+- Are neutrals pure gray (void) or brand-tinted (receptive)?
+- Does the white space whisper the brand, or is it truly empty?
+
+A well-designed interface has no truly neutral elements. Even the lightest background carries a breath of brand. Check: `oklch(0.995 0.005 brandHue)` vs `oklch(1 0 0)`. The difference is imperceptible individually but creates cohesive feeling.
+
 ### 3.6 Visual Details: The Craft
 
 *Through the lens of Care (Jobs/Ive)*
@@ -300,6 +308,49 @@ grep -r "background-image\|backdrop" src/ --include="*.css" --include="*.tsx"
 | Generic box-shadow | Dramatic shadows with color tint, layered depth |
 | No texture | Grain overlays, subtle patterns, haptic quality |
 | Standard cursor | Custom cursor reflecting brand personality |
+
+### 3.7 Advanced Visual Techniques
+
+*Beyond CSS—when projects demand more*
+
+**WebGL & Shader Effects:**
+For hero sections and backgrounds needing wow factor:
+- **Three.js Backgrounds**: Animated gradient meshes, particle systems, procedural noise
+- **GLSL Shaders**: Dynamic noise, color distortion, blur effects, interactive depth
+- **Use when**: Landing pages competing for attention, creative portfolios, immersive experiences
+
+**SVG Animation Libraries:**
+For complex choreographed motion:
+- **Lottie**: JSON animations from After Effects, LottieFiles marketplace
+- **GSAP**: Professional timeline animation, ScrollTrigger for scroll-driven sequences
+- **Framer Motion**: React-first layout animations, shared element transitions
+- **Use when**: Onboarding flows, data visualizations, interactive illustrations
+
+**CSS Art Techniques:**
+For themeable, asset-free illustrations:
+- **Pure CSS Illustrations**: box-shadow stacking, pseudo-elements, gradients
+- **Advanced Clip-paths**: Non-rectangular containers, reveal animations
+- **CSS Houdini**: Custom paint worklets for procedural patterns
+- **Use when**: Decorative elements matching theme colors, lightweight alternatives to images
+
+**ASCII Art & Terminal Aesthetics:**
+For brutalist or retro designs:
+- **Character-based visuals**: Logos, borders, illustrations in monospace
+- **Tools**: figlet (text banners), boxes (frames)
+- **Use when**: Developer tools, CLI-adjacent products, intentional anti-polish aesthetic
+
+**Icon Libraries Beyond Lucide:**
+**Iconify** (https://icon-sets.iconify.design/) — 200,000+ icons:
+- Material Design, Phosphor, Tabler, Carbon, FontAwesome, and 145+ more sets
+- Different styles: outlined, filled, duotone, animated
+- **Use when**: Lucide lacks needed icons, matching specific aesthetic (Material for Google feel)
+
+**Custom Asset Generation:**
+When designs need imagery that doesn't exist, suggest to user:
+> "This design would benefit from [custom illustration/texture/icon].
+> Consider generating with **Midjourney** (photorealistic, illustrations) or
+> **Gemini Nano Banana Pro** (`gemini-imagegen` skill, quick iterations, text-in-image).
+> Prompt suggestion: [specific prompt matching brand aesthetic]"
 
 ---
 

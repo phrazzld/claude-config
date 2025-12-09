@@ -1,6 +1,11 @@
 ---
 name: testing-philosophy
 description: "Apply testing philosophy: test behavior not implementation, minimize mocks, AAA structure, coverage for confidence not percentage. Use when writing tests, reviewing test quality, discussing TDD, or evaluating test strategies."
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
 ---
 
 # Testing Philosophy

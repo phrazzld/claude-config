@@ -43,8 +43,11 @@ pnpm add tailwindcss@next @tailwindcss/postcss@next
 @import "tailwindcss";
 
 @theme {
+  /* Brand hue - extract from your primary color's hue value */
+  --brand-hue: 250;  /* Blue (change this to match your brand) */
+
   /* Color System */
-  --color-primary: oklch(0.6 0.2 250);
+  --color-primary: oklch(0.6 0.2 var(--brand-hue));
   --color-secondary: oklch(0.5 0.15 180);
   --color-accent: oklch(0.7 0.25 30);
 
@@ -52,10 +55,11 @@ pnpm add tailwindcss@next @tailwindcss/postcss@next
   --color-warning: oklch(0.7 0.2 80);
   --color-error: oklch(0.6 0.22 20);
 
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.2 0 0);
-  --color-muted: oklch(0.95 0 0);
-  --color-border: oklch(0.9 0 0);
+  /* Brand-tinted neutrals (imperceptible tint creates cohesive feeling) */
+  --color-background: oklch(0.995 0.005 var(--brand-hue));  /* Not pure white */
+  --color-foreground: oklch(0.15 0.02 var(--brand-hue));    /* Not pure black */
+  --color-muted: oklch(0.94 0.01 var(--brand-hue));
+  --color-border: oklch(0.88 0.015 var(--brand-hue));
 
   /* Typography Scale */
   --font-size-xs: 0.75rem;      /* 12px */
@@ -116,22 +120,24 @@ pnpm add tailwindcss@next @tailwindcss/postcss@next
 
 ## Dark Mode
 
-Define dark mode variants using `@media (prefers-color-scheme: dark)`:
+Define dark mode variants using `@media (prefers-color-scheme: dark)`. **Keep brand hue in dark mode** - just invert lightness:
 
 ```css
 @theme {
-  /* Light mode (default) */
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.2 0 0);
-  --color-muted: oklch(0.95 0 0);
-  --color-border: oklch(0.9 0 0);
+  --brand-hue: 250;
+
+  /* Light mode (default) - brand-tinted */
+  --color-background: oklch(0.995 0.005 var(--brand-hue));
+  --color-foreground: oklch(0.15 0.02 var(--brand-hue));
+  --color-muted: oklch(0.94 0.01 var(--brand-hue));
+  --color-border: oklch(0.88 0.015 var(--brand-hue));
 
   @media (prefers-color-scheme: dark) {
-    /* Dark mode overrides */
-    --color-background: oklch(0.15 0 0);
-    --color-foreground: oklch(0.95 0 0);
-    --color-muted: oklch(0.2 0 0);
-    --color-border: oklch(0.3 0 0);
+    /* Dark mode - same hue, inverted lightness */
+    --color-background: oklch(0.12 0.015 var(--brand-hue));
+    --color-foreground: oklch(0.95 0.01 var(--brand-hue));
+    --color-muted: oklch(0.22 0.02 var(--brand-hue));
+    --color-border: oklch(0.28 0.025 var(--brand-hue));
   }
 }
 ```
@@ -140,13 +146,14 @@ Define dark mode variants using `@media (prefers-color-scheme: dark)`:
 
 ```css
 @theme {
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.2 0 0);
+  --brand-hue: 250;
+  --color-background: oklch(0.995 0.005 var(--brand-hue));
+  --color-foreground: oklch(0.15 0.02 var(--brand-hue));
 }
 
 .dark {
-  --color-background: oklch(0.15 0 0);
-  --color-foreground: oklch(0.95 0 0);
+  --color-background: oklch(0.12 0.015 var(--brand-hue));
+  --color-foreground: oklch(0.95 0.01 var(--brand-hue));
 }
 ```
 
@@ -267,6 +274,9 @@ Access tokens via CSS variables:
 
 ```css
 @theme {
+  /* Brand hue - single source of truth */
+  --brand-hue: 250;  /* Extract from your primary color */
+
   /* Base palette */
   --color-brand-blue: oklch(0.6 0.2 250);
   --color-brand-purple: oklch(0.65 0.25 290);
@@ -277,30 +287,32 @@ Access tokens via CSS variables:
   --color-secondary: var(--color-brand-purple);
   --color-accent: var(--color-brand-green);
 
-  /* State colors */
+  /* State colors (keep distinct hues for clarity) */
   --color-success: oklch(0.65 0.18 140);  /* Green */
   --color-warning: oklch(0.7 0.2 80);     /* Yellow */
   --color-error: oklch(0.6 0.22 20);      /* Red */
   --color-info: oklch(0.65 0.2 230);      /* Blue */
 
-  /* Surface colors */
-  --color-background: oklch(1 0 0);       /* White */
-  --color-foreground: oklch(0.2 0 0);     /* Near-black */
-  --color-surface: oklch(0.98 0 0);       /* Off-white */
-  --color-surface-hover: oklch(0.95 0 0);
+  /* Surface colors - brand-tinted (chroma 0.005-0.02) */
+  --color-background: oklch(0.995 0.005 var(--brand-hue));
+  --color-foreground: oklch(0.15 0.02 var(--brand-hue));
+  --color-surface: oklch(0.98 0.008 var(--brand-hue));
+  --color-surface-hover: oklch(0.96 0.01 var(--brand-hue));
 
-  /* Border colors */
-  --color-border: oklch(0.9 0 0);
-  --color-border-hover: oklch(0.8 0 0);
+  /* Border colors - brand-tinted */
+  --color-border: oklch(0.88 0.015 var(--brand-hue));
+  --color-border-hover: oklch(0.8 0.02 var(--brand-hue));
   --color-border-focus: var(--color-primary);
 
-  /* Text colors */
+  /* Text colors - brand-tinted */
   --color-text-primary: var(--color-foreground);
-  --color-text-secondary: oklch(0.5 0 0);
-  --color-text-muted: oklch(0.6 0 0);
-  --color-text-disabled: oklch(0.7 0 0);
+  --color-text-secondary: oklch(0.45 0.015 var(--brand-hue));
+  --color-text-muted: oklch(0.55 0.01 var(--brand-hue));
+  --color-text-disabled: oklch(0.65 0.008 var(--brand-hue));
 }
 ```
+
+**Why brand-tinted neutrals?** Pure grays (`oklch(x 0 0)`) feel generic. Adding imperceptible brand tint (chroma 0.005-0.02) creates cohesive "feeling" without visible color. Especially effective when semantic colors (red/green/blue) dominate.
 
 ## Typography System
 
@@ -508,6 +520,37 @@ Define component-specific tokens for consistency:
 }
 ```
 
+### WebGL & Shader Integration
+
+When using Three.js or GLSL shaders, export tokens in formats shaders can consume:
+
+```css
+@theme {
+  /* Shader-compatible color format (RGB normalized 0-1) */
+  /* Use these for uniforms in GLSL */
+  --color-primary-rgb: 0.376 0.510 0.965;  /* oklch(0.6 0.2 250) → RGB */
+  --color-accent-rgb: 0.878 0.420 0.420;
+
+  /* Animation timing for GSAP/Lottie sync */
+  --duration-stagger: 50ms;      /* Delay between staggered elements */
+  --duration-reveal: 600ms;      /* Page reveal animations */
+  --duration-scroll: 1000ms;     /* Scroll-triggered sequences */
+
+  /* Spring physics (for Framer Motion / GSAP) */
+  --spring-stiffness: 300;
+  --spring-damping: 30;
+  --spring-mass: 1;
+}
+```
+
+**Accessing tokens in JavaScript for Three.js:**
+```tsx
+const styles = getComputedStyle(document.documentElement)
+const primaryRGB = styles.getPropertyValue('--color-primary-rgb')
+  .split(' ')
+  .map(Number) // [0.376, 0.510, 0.965]
+```
+
 ## Integration with frontend-design Skill
 
 **Design tokens provide the foundation; frontend-design provides the aesthetic direction.**
@@ -540,6 +583,7 @@ When implementing UI:
 - **Define once, use everywhere**: Single source of truth
 - **Support dark mode**: Plan from the start
 - **Use OKLCH colors**: Better than RGB/HSL
+- **Tint neutrals with brand hue**: `oklch(0.95 0.01 brandHue)` not `oklch(0.95 0 0)`
 - **Follow 8-point grid**: For spacing consistency
 - **Create component tokens**: Card, button, input-specific values
 - **Document your system**: Include usage examples
@@ -550,6 +594,7 @@ When implementing UI:
 - **Don't hardcode values**: Always use tokens
 - **Don't use descriptive names**: Semantic intent over implementation
 - **Don't skip dark mode**: Users expect it (2025)
+- **Don't use pure grays**: Tint neutrals with brand hue (chroma 0.005-0.02)
 - **Don't use generic fonts**: Avoid Inter/Roboto/Arial (per frontend-design)
 - **Don't create too many tokens**: Start minimal, expand as needed
 - **Don't ignore accessibility**: Ensure adequate contrast ratios
@@ -571,9 +616,10 @@ When agents design UI systems, they should:
 - Use Tailwind 4 @theme directive (not tailwind.config.js)
 - Define semantic color tokens (primary, secondary, accent, not blue-500)
 - Use OKLCH color space for perceptual uniformity
+- **Tint all neutrals with brand hue** (chroma 0.005-0.02, not pure gray)
 - Follow 8-point spacing grid
 - Create modular type scale (1.200 ratio recommended)
-- Support dark mode from the start
+- Support dark mode from the start (same brand hue, inverted lightness)
 - Avoid generic fonts (per frontend-design skill)
 - Define component-specific tokens for consistency
 - Document the design system with usage examples

@@ -1,6 +1,10 @@
 ---
 name: ousterhout-principles
 description: "Apply Ousterhout's software design principles: detect shallow modules, information leakage, and complexity red flags. Use when reviewing code, designing modules, refactoring, or discussing architecture."
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
 ---
 
 # Ousterhout's Software Design Principles

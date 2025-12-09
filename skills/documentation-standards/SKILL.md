@@ -1,6 +1,10 @@
 ---
 name: documentation-standards
 description: "Apply documentation standards: comment why not what, minimal comments (prefer clear code), maintain README with quick start, update docs with breaking changes. Use when writing comments, creating docs, reviewing documentation, or discussing what to document."
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
 ---
 
 # Documentation Standards

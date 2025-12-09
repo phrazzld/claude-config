@@ -6,13 +6,13 @@ Audit and improve observability infrastructure.
 
 # OBSERVE
 
-Systematically audit error tracking, performance monitoring, analytics, and logging infrastructure. Identify gaps, research modern patterns, generate actionable CLI-based improvements.
+Systematically audit error tracking, performance monitoring, analytics, and logging. Identify gaps, research modern patterns, generate actionable improvements.
 
 ## The Observability-First Principle
 
 *"You can't improve what you don't measure. You can't debug what you don't observe."*
 
-Production systems without comprehensive observability are invisible failures waiting to happen. This command audits whether you have the instrumentation to:
+Production systems without comprehensive observability are invisible failures waiting to happen. This command audits whether you have instrumentation to:
 - **Catch errors** before users report them
 - **Debug production issues** without guessing
 - **Understand user behavior** to drive product decisions
@@ -23,690 +23,249 @@ Production systems without comprehensive observability are invisible failures wa
 
 ---
 
-## Phase 1: Detect Current Setup
+## Your Approach
 
-### 1.1 Scan for Observability Tools
+### 1. Detect Current Setup
 
-**Search codebase for:**
-```bash
-# Error tracking
-package.json dependencies: @sentry/*, sentry-*, @bugsnag/*, rollbar, airbrake
-
-# OpenTelemetry
-package.json dependencies: @opentelemetry/*, @vercel/otel, spectacle
-
-# Analytics
-package.json dependencies: @vercel/analytics, @vercel/speed-insights, posthog-*, mixpanel, amplitude-*, plausible
-
-# Logging
-package.json dependencies: pino, winston, bunyan, @opentelemetry/instrumentation-pino
-
-# APM/Tracing
-package.json dependencies: dd-trace, newrelic, elastic-apm-node
-
-# Monitoring
-package.json dependencies: @grafana/*, prometheus-*
-```
+**Scan for observability tools:**
+- Error tracking (Sentry, Bugsnag, Rollbar)
+- OpenTelemetry instrumentation
+- Analytics (Vercel Analytics, PostHog, Plausible)
+- Logging (Pino, Winston, structured logging)
+- APM/Tracing (Datadog, New Relic, Elastic APM)
+- Monitoring (Grafana, Prometheus)
 
 **Check configurations:**
+- Sentry configs (sentry.*.config.ts, instrumentation.ts)
+- OpenTelemetry setup (otel.config.ts, telemetry files)
+- Analytics integrations (_app.tsx, middleware.ts, layout.tsx)
+- GitHub Actions workflows (Sentry releases, deployment notifications)
+- CLI automation scripts (observe/alert/monitor scripts)
+
+**Audit environment variables:**
+- Sentry: DSN, AUTH_TOKEN, ORG, PROJECT
+- OpenTelemetry: EXPORTER endpoints, Grafana Cloud
+- Analytics: IDs and public keys
+- Logging: LOG_LEVEL, structured logging config
+- Check Vercel/Convex env vars if applicable
+
+**Verify deployment integration:**
+- Automated Sentry release creation on deploy
+- Deployment notifications (GitHub webhooks, Slack)
+- Source map uploads for error tracking
+
+### 2. Identify Gaps (Four Pillars)
+
+**Error Tracking:**
+- Is Sentry/error tracker installed and configured?
+- Are errors being captured across all environments (client, server, edge)?
+- Are source maps uploaded for production error debugging?
+- Are releases tracked to correlate errors with deployments?
+- Is error grouping/deduplication working well?
+
+**Performance Monitoring:**
+- Is APM installed (Sentry Performance, OpenTelemetry, Datadog)?
+- Are key transactions instrumented (API endpoints, database queries)?
+- Is Web Vitals tracking enabled (Core Web Vitals for UX)?
+- Are slow queries and N+1 issues detectable?
+- Can you trace requests across services?
+
+**Analytics & Product Insights:**
+- Is analytics installed (Vercel Analytics, PostHog, Plausible)?
+- Are key user actions tracked (sign-ups, conversions, feature usage)?
+- Is funnel analysis possible (onboarding, checkout flows)?
+- Are A/B tests measurable?
+- Is retention/churn trackable?
+
+**Logging & Debugging:**
+- Is structured logging enabled (JSON logs with context)?
+- Are logs searchable and aggregated (CloudWatch, Datadog, Grafana Loki)?
+- Do logs include correlation IDs for request tracing?
+- Is sensitive data redacted (PII, secrets)?
+- Are log levels configurable per environment?
+
+### 3. Research Modern Patterns (Optional)
+
+**When to research:**
+If current setup seems inadequate or you're unfamiliar with modern observability practices.
+
+**Use Gemini CLI for deep research:**
 ```bash
-# Sentry configs
-Find: sentry.*.config.{ts,js}, instrumentation.ts with Sentry imports
-
-# OpenTelemetry instrumentation
-Find: instrumentation.ts, otel.config.{ts,js}, telemetry setup files
-
-# Analytics integrations
-Find: _app.tsx with analytics, middleware.ts with tracking, layout.tsx imports
-
-# GitHub Actions observability
-Find: .github/workflows/* with Sentry releases, deployment notifications
-
-# CLI automation scripts
-Find: scripts/*sentry*, scripts/*alert*, scripts/*grafana*, scripts/*observe*
+gemini "Research modern observability patterns for [your stack]:
+1. Error tracking best practices (Sentry vs alternatives)
+2. OpenTelemetry adoption patterns and benefits
+3. Privacy-focused analytics (PostHog, Plausible vs Google Analytics)
+4. Structured logging standards (JSON, correlation IDs, log levels)
+5. Cost-effective monitoring for [scale/budget]"
 ```
 
-### 1.2 Environment Variable Audit
+**When to skip:**
+If setup is current and comprehensive.
 
-**Search for observability env vars:**
+### 4. Generate Improvement Plan
+
+**Categorize improvements by impact:**
+
+**Critical (Do Immediately):**
+- Missing error tracking entirely
+- No source maps (can't debug production errors)
+- No deployment tracking (can't correlate errors to releases)
+- Secrets logged in production
+
+**High Priority (Next Sprint):**
+- Missing performance monitoring
+- No user analytics (flying blind on product decisions)
+- Unstructured logging (difficult debugging)
+- Missing key transaction instrumentation
+
+**Medium Priority (Backlog):**
+- Advanced tracing (OpenTelemetry adoption)
+- Custom dashboards and alerts
+- Funnel analysis and A/B testing
+- Log aggregation and search
+
+**Low Priority (Nice to Have):**
+- Advanced APM features
+- Custom metrics and instrumentation
+- Real user monitoring enhancements
+
+### 5. Provide CLI Commands
+
+**For each improvement, generate executable CLI commands:**
+
+**Example - Add Sentry to Next.js project:**
 ```bash
-# Check .env.example, .env.local, vercel.json, README
-Grep for:
-- SENTRY_DSN, SENTRY_AUTH_TOKEN, SENTRY_ORG, SENTRY_PROJECT
-- OTEL_EXPORTER_OTLP_ENDPOINT, GRAFANA_CLOUD_*
-- VERCEL_ANALYTICS_ID, NEXT_PUBLIC_ANALYTICS_*
-- LOG_LEVEL, PINO_LOG_LEVEL
+# Install
+pnpm add @sentry/nextjs
 
-# Check Vercel environment variables (if applicable)
-vercel env ls | grep -E "SENTRY|OTEL|ANALYTICS|GRAFANA"
+# Configure (wizard)
+npx @sentry/wizard@latest -i nextjs
 
-# Check Convex environment (if using Convex backend)
-npx convex env ls | grep -E "SENTRY|OTEL"
+# Add env vars to Vercel
+printf '%s' "$SENTRY_DSN" | vercel env add SENTRY_DSN production
+printf '%s' "$SENTRY_AUTH_TOKEN" | vercel env add SENTRY_AUTH_TOKEN production
+
+# Enable source maps in next.config.js
+# (Wizard handles this)
+
+# Test
+pnpm build
 ```
 
-### 1.3 Deployment Integration Check
-
-**GitHub integration status:**
+**Example - Add structured logging with Pino:**
 ```bash
-# Check if Sentry releases are automated
-gh workflow list | grep -i sentry
-gh workflow view <workflow-name> | grep -i release
+# Install
+pnpm add pino pino-pretty
 
-# Check deployment notifications
-gh api repos/:owner/:repo/hooks | grep -E "sentry|grafana|slack"
+# Create logger utility (lib/logger.ts)
+# (Provide code template)
+
+# Add to env
+echo "LOG_LEVEL=info" >> .env.local
+
+# Test
+node -e "require('./lib/logger').info('test')"
 ```
 
 ---
 
-## Phase 2: Deep Research
+## Observability Stack Recommendations
 
-Use all available research tools to understand modern patterns for detected stack:
+**Error Tracking:**
+- **Sentry** (recommended): Best-in-class error tracking, free tier generous
+- Bugsnag: Good alternative, better for mobile
+- Rollbar: Simple, effective for smaller teams
 
-### 2.1 Web Search for Latest Patterns
+**Performance Monitoring:**
+- **Sentry Performance** (if using Sentry): Integrated APM, transaction tracing
+- OpenTelemetry: Vendor-neutral, future-proof, more complex setup
+- Vercel Speed Insights: Built-in for Vercel deployments
 
-**Research queries:**
-```
-WebSearch:
-- "Vercel Analytics vs Sentry Performance 2025"
-- "OpenTelemetry Next.js production setup 2025"
-- "Sentry Session Replay cost optimization"
-- "Grafana Cloud free tier intelligent sampling"
-- "Vercel Speed Insights best practices"
-- "CLI-based Sentry alert automation"
-- "GitHub Actions observability monitoring"
-```
+**Analytics:**
+- **Vercel Analytics** (Vercel projects): Privacy-focused, zero config
+- **PostHog** (self-hostable): Product analytics, session replay, feature flags
+- Plausible: Privacy-focused, simple, ethical alternative to Google Analytics
 
-### 2.2 Exa MCP for Technical Documentation
+**Logging:**
+- **Pino** (Node.js): Fastest, structured JSON logging
+- Winston: More features, slightly slower
+- OpenTelemetry Logs: Unified observability
 
-**Fetch docs for detected libraries:**
-```
-exa-code:
-- "@sentry/nextjs configuration options"
-- "@vercel/otel Grafana Cloud integration"
-- "@vercel/analytics custom events API"
-- "OpenTelemetry instrumentation-pino setup"
-- "Next.js instrumentation.ts patterns"
-```
-
-### 2.3 Gemini CLI for Comparative Analysis
-
-**Why Gemini**: Web-grounded research provides current pricing, feature comparisons, and 2025 best practices that may have changed since training data cutoff.
-
-**Research questions:**
-```bash
-# Tool comparison with current information
-gemini "Compare Sentry vs Datadog vs Grafana Cloud for Next.js error tracking in 2025:
-- Current pricing and free tiers
-- Feature completeness
-- Integration quality with Vercel/Next.js
-- Performance impact
-- Community support"
-
-# Best practices research
-gemini "Best practices for OpenTelemetry sampling in production
-- Cost optimization strategies
-- Sampling strategies for different traffic levels
-- Real-world examples from 2025"
-
-# Cost optimization
-gemini "How to implement cost-effective observability on free tiers
-- Tool combinations for <$50/month
-- Alert threshold optimization
-- Sampling strategies"
-
-# Compliance and security
-gemini "PII redaction strategies for error tracking compliance
-- GDPR/CCPA considerations
-- Automatic redaction patterns
-- Best practices for 2025"
-```
-
-**Integration tip**: Use `/research` for deeper investigation of specific tools or patterns.
+**Monitoring:**
+- Vercel deployment monitoring (built-in)
+- Sentry Crons (cron job monitoring)
+- Grafana Cloud (open-source, flexible)
 
 ---
 
-## Phase 3: Gap Analysis
+## Key Principles
 
-Evaluate across six observability dimensions:
+**1. Observability as Code**
+- All configs in version control
+- Infrastructure-as-code (Terraform, Pulumi)
+- CLI-driven setup (no manual dashboard clicks)
 
-### 3.1 Error Tracking (Sentry / Bugsnag / Rollbar)
+**2. Privacy-First**
+- Redact PII from logs and errors
+- Use privacy-focused analytics when possible
+- GDPR/CCPA compliance by default
 
-**Audit checklist:**
-- ✅ **Setup Quality**
-  - [ ] Using Vercel Integration (not manual tokens)?
-  - [ ] Clean environment naming ("production" not "vercel-production")?
-  - [ ] Source maps uploading automatically?
-  - [ ] Test error route exists (`/test-error` or similar)?
+**3. Cost-Effective**
+- Leverage free tiers (Sentry, Vercel, PostHog)
+- Sample high-volume data appropriately
+- Avoid vendor lock-in (prefer OpenTelemetry)
 
-- ✅ **Security & Privacy**
-  - [ ] PII redaction configured (`beforeSend`, `sendDefaultPii: false`)?
-  - [ ] Email scrubbing active?
-  - [ ] Authorization headers filtered?
-  - [ ] IP addresses removed?
-  - [ ] Source maps hidden from production bundle?
+**4. Actionable Alerts**
+- Alert on symptoms, not causes
+- Reduce alert fatigue (tune thresholds)
+- Use Slack/email integrations wisely
 
-- ✅ **Alert Automation**
-  - [ ] CLI-based alert configuration exists?
-  - [ ] New error type alerts configured?
-  - [ ] Error frequency spike alerts?
-  - [ ] Version-controlled alert rules (scripts/)?
-
-- ✅ **Cost Optimization**
-  - [ ] Sample rates tuned (not 100% traces)?
-  - [ ] Session Replay configured (0% routine, 100% error)?
-  - [ ] Health check endpoints excluded?
-  - [ ] Static asset requests filtered?
-
-- ✅ **Backend Coverage**
-  - [ ] Convex actions instrumented?
-  - [ ] API routes tracked?
-  - [ ] Serverless functions monitored?
-
-**Red flags:**
-- ❌ Manual token setup (will break on preview deploys)
-- ❌ No PII redaction (compliance violation)
-- ❌ Uncontrolled sample rates (quota exceeded)
-- ❌ Manual alert clicking (not version-controlled)
-- ❌ Errors only found via user reports (blind spots)
-
-### 3.2 Performance Monitoring (OpenTelemetry / APM)
-
-**Audit checklist:**
-- ✅ **Trace Instrumentation**
-  - [ ] OTLP exporter configured?
-  - [ ] HTTP requests traced?
-  - [ ] External API calls traced (fetch instrumentation)?
-  - [ ] Database queries traced?
-  - [ ] Custom business logic spans?
-
-- ✅ **Sampling Strategy**
-  - [ ] Intelligent sampler active (not naive random)?
-  - [ ] 100% error trace capture?
-  - [ ] Base rate appropriate (10-20% typical)?
-  - [ ] Health checks excluded from sampling?
-  - [ ] Custom URL patterns (high-value endpoints 100%)?
-
-- ✅ **Backend Integration**
-  - [ ] Convex actions export traces?
-  - [ ] Trace context propagation (traceparent headers)?
-  - [ ] Service mesh / multi-service tracing?
-
-- ✅ **Visualization**
-  - [ ] Grafana dashboards exist?
-  - [ ] Latency percentiles tracked (p50, p99)?
-  - [ ] Error rate visualizations?
-  - [ ] Service dependency graphs?
-
-**Red flags:**
-- ❌ No tracing setup (flying blind on performance)
-- ❌ 100% trace sampling (expensive, unnecessary)
-- ❌ Missing trace context propagation (broken distributed traces)
-- ❌ No performance baselines (can't detect regressions)
-
-### 3.3 Analytics (Vercel Analytics / PostHog / Plausible)
-
-**Audit checklist:**
-- ✅ **User Analytics**
-  - [ ] Vercel Analytics enabled?
-  - [ ] Custom event tracking?
-  - [ ] Conversion funnel measurement?
-  - [ ] User journey analysis?
-
-- ✅ **Performance Analytics**
-  - [ ] Vercel Speed Insights active?
-  - [ ] Core Web Vitals tracked?
-  - [ ] Real User Monitoring (RUM)?
-
-- ✅ **Privacy Compliance**
-  - [ ] Cookie consent implemented?
-  - [ ] Analytics respects DNT?
-  - [ ] GDPR-compliant (if EU users)?
-
-- ✅ **Product Insights**
-  - [ ] Feature usage tracked?
-  - [ ] A/B test instrumentation?
-  - [ ] Drop-off point identification?
-
-**Red flags:**
-- ❌ No analytics (guessing at product decisions)
-- ❌ Only server-side analytics (missing client behavior)
-- ❌ Privacy violations (tracking without consent)
-- ❌ Vanity metrics only (page views, not conversions)
-
-### 3.4 Logging (Pino / Winston / Structured Logging)
-
-**Audit checklist:**
-- ✅ **Structured Logging**
-  - [ ] JSON-formatted logs?
-  - [ ] Consistent log levels (info, warn, error)?
-  - [ ] Request ID / correlation ID?
-  - [ ] Trace ID injection (OpenTelemetry integration)?
-
-- ✅ **Log Aggregation**
-  - [ ] Logs sent to centralized system (Grafana Loki, Datadog)?
-  - [ ] Log retention policy?
-  - [ ] Log-based alerting?
-
-- ✅ **Development Experience**
-  - [ ] Pretty-printed logs in dev (pino-pretty)?
-  - [ ] Log filtering by level?
-  - [ ] Sensitive data scrubbed (passwords, tokens)?
-
-**Red flags:**
-- ❌ console.log() everywhere (not queryable)
-- ❌ Logs only in Vercel dashboard (disappear after 30 days)
-- ❌ No correlation between logs and traces
-- ❌ Secrets in logs (security issue)
-
-### 3.5 Infrastructure Observability (CI/CD, Deployments, GitHub)
-
-**Audit checklist:**
-- ✅ **Deployment Tracking**
-  - [ ] Sentry releases created on deploy?
-  - [ ] Grafana annotations on deploy?
-  - [ ] GitHub deployment events tracked?
-  - [ ] Rollback detection?
-
-- ✅ **CI/CD Monitoring**
-  - [ ] GitHub Actions success rates tracked?
-  - [ ] Build duration trends?
-  - [ ] Test flakiness detection?
-  - [ ] Deploy frequency / lead time metrics?
-
-- ✅ **Health Checks**
-  - [ ] `/health` or `/api/health` endpoint exists?
-  - [ ] Uptime monitoring (UptimeRobot, BetterUptime)?
-  - [ ] Synthetic checks from multiple regions?
-
-**Red flags:**
-- ❌ No deployment tracking (can't correlate errors with releases)
-- ❌ Health checks missing (downtime detection delayed)
-- ❌ GitHub Actions failures not monitored
-- ❌ No rollback automation
-
-### 3.6 Cost & Retention
-
-**Audit checklist:**
-- ✅ **Free Tier Utilization**
-  - [ ] Sentry quota tracking (5k errors/month)?
-  - [ ] Grafana Cloud limits known (10k series, 50GB traces)?
-  - [ ] Sampling tuned to stay within free tier?
-
-- ✅ **Data Retention**
-  - [ ] Logs retention policy (7d? 30d?)?
-  - [ ] Traces retention (24h? 7d?)?
-  - [ ] Replay retention (30d?)?
-
-- ✅ **Cost Alerts**
-  - [ ] Quota usage monitoring?
-  - [ ] Spend alerts configured?
-
-**Red flags:**
-- ❌ Exceeded free tier without realizing
-- ❌ No retention policy (data lost or paying unnecessarily)
-- ❌ Sampling too aggressive (missing critical data)
+**5. Deployment Correlation**
+- Track releases in error tracker
+- Annotate deployments in monitoring
+- Enable automatic rollback triggers
 
 ---
 
-## Phase 4: Generate Recommendations
+## Your Output
 
-Based on gaps found, create prioritized improvements with exact CLI commands.
+**Current State:**
+- Tools detected and their configurations
+- Environment variable status
+- Deployment integration status
 
-### Output Format
+**Gap Analysis:**
+- Missing pillars (error tracking, performance, analytics, logging)
+- Configuration issues
+- Integration gaps
 
-```markdown
-## Observability Infrastructure Audit
+**Improvement Plan:**
+- Critical/High/Medium/Low priority improvements
+- CLI commands for each improvement
+- Time/cost estimates
+- Recommended tools and rationale
 
-**Project**: [detected project name]
-**Stack**: [Next.js/React/Node/etc + detected tools]
-**Audit Date**: [timestamp]
-
----
-
-### 🔴 CRITICAL Gaps (Fix Immediately)
-
-#### [Gap Name]
-- **Current State**: [what's missing/broken]
-- **Impact**: [user/business consequence]
-- **Fix**: [exact CLI commands or code changes]
-- **Effort**: [time estimate]
-- **Priority**: CRITICAL
-
-**Example:**
-#### No PII Redaction in Sentry
-- **Current State**: Raw user emails sent to Sentry (violates GDPR)
-- **Impact**: Compliance violation, potential fines, user trust breach
-- **Fix**:
-  ```typescript
-  // lib/sentry.ts
-  export const sanitizeEvent = (event: Event): Event => {
-    if (event.user?.email) event.user.email = '[EMAIL_REDACTED]';
-    return event;
-  };
-
-  // sentry.client.config.ts
-  Sentry.init({
-    sendDefaultPii: false,
-    beforeSend: (event) => sanitizeEvent(event),
-  });
-  ```
-- **Effort**: 15 min
-- **Priority**: CRITICAL
+**Quick Wins:**
+- 1-2 improvements that provide immediate value with minimal effort
+- Executable CLI commands to implement them now
 
 ---
 
-### 🟠 HIGH Priority (This Sprint)
-
-#### [Gap Name]
-- **Current State**: [description]
-- **Impact**: [consequence]
-- **Fix**: [CLI commands]
-- **Effort**: [estimate]
-
-**Example:**
-#### No CLI-Based Alert Automation
-- **Current State**: Alerts manually configured in Sentry dashboard
-- **Impact**: Alert configs lost if workspace reset, no version control
-- **Fix**:
-  ```bash
-  # Create scripts/configure-sentry-alerts.sh
-  curl -X POST https://sentry.io/api/0/projects/$ORG/$PROJECT/rules/ \
-    -H "Authorization: Bearer $SENTRY_API_TOKEN" \
-    -d '{
-      "name": "New Error Type",
-      "conditions": [{"id": "sentry.rules.conditions.first_seen_event.FirstSeenEventCondition"}],
-      "actions": [{"id": "sentry.mail.actions.NotifyEmailAction"}]
-    }'
-  ```
-  Commit script to repo, run on new environments
-- **Effort**: 30 min
-
----
-
-### 🟡 MEDIUM Priority (This Quarter)
-
-[Same format as above, for lower-priority improvements]
-
----
-
-### 🟢 LOW Priority (Nice to Have)
-
-[Same format as above, for polish items]
-
----
-
-## Generated TODOs (Ready for BACKLOG.md)
-
-- [ ] [CRITICAL] Add PII redaction to Sentry config (15m)
-- [ ] [HIGH] Create CLI-based alert automation script (30m)
-- [ ] [HIGH] Enable Vercel Analytics + Speed Insights (5m)
-- [ ] [MEDIUM] Set up Grafana dashboard for API latency (2h)
-- [ ] [MEDIUM] Add OpenTelemetry trace context to Convex (1h)
-- [ ] [LOW] Configure Session Replay with 5% sampling (10m)
-
----
-
-## Research Summary
-
-**Key Findings from Research:**
-- [Insight from WebSearch about industry patterns]
-- [Insight from Exa MCP about library capabilities]
-- [Insight from Gemini about tool comparisons]
-
-**Recommended Stack for This Project:**
-- Error Tracking: [Tool + rationale]
-- Performance Monitoring: [Tool + rationale]
-- Analytics: [Tool + rationale]
-- Logging: [Tool + rationale]
-
-**Cost Estimate:**
-- Current monthly cost: $X (or "free tier")
-- Projected with improvements: $Y
-- Free tier headroom: [X% of limits used]
-
----
-
-## Quick Wins (< 30 min)
-
-1. **[Action]**: [One-line description]
-   ```bash
-   [exact command]
-   ```
-
-2. **[Action]**: [One-line description]
-   ```bash
-   [exact command]
-   ```
-
-[Continue for all sub-30-minute improvements]
-
----
-
-## Next Steps
-
-1. **Immediate**: Fix CRITICAL gaps (estimated: [total time])
-2. **This Week**: Implement HIGH priority items
-3. **This Month**: Tackle MEDIUM priority improvements
-4. **Ongoing**: Monitor quotas, tune sample rates, review dashboards
-
-**Success Criteria:**
-- ✅ All errors surfaced before user reports
-- ✅ p99 latency < [target]ms tracked
-- ✅ Cost within free tier (or < $X/month)
-- ✅ All observability configs in version control
-- ✅ Deployment-correlated error tracking active
-```
-
----
-
-## Philosophy
-
-**Invisible Systems Stay Broken**: Production without observability = debugging by intuition. Instruments before incidents.
-
-**CLI Over Dashboard**: `scripts/configure-alerts.sh` > clicking. Version control > tribal knowledge.
-
-**Cost-Conscious Observability**: Free tiers (Sentry 5k errors, Grafana 10k series) handle most startups. Intelligent sampling > naive 100%.
-
-**Privacy First**: PII redaction not negotiable. `[EMAIL_REDACTED]` > compliance fines.
-
-**Correlation is Key**: Traces ↔ logs ↔ errors ↔ deployments. Isolated tools = context-free debugging.
-
-**Automate Releases**: Sentry releases on deploy. Grafana annotations on deploy. GitHub deployment events tracked. Every deploy = observability checkpoint.
-
----
-
-## Anti-Patterns to Detect
-
-### ❌ Observability Theater
-**Symptom**: Tools installed but not configured / not used
-**Detection**: Dependencies present, no env vars / dashboards unused
-**Fix**: Remove unused tools or configure properly
-
-### ❌ Manual Dashboard Configuration
-**Symptom**: Alerts/dashboards created by clicking
-**Detection**: No `scripts/` automation, tribal knowledge
-**Fix**: Export configs, create CLI scripts, commit to repo
-
-### ❌ 100% Sampling Everywhere
-**Symptom**: Sentry tracesSampleRate=1.0, OTLP base sampling 100%
-**Detection**: High quota usage, no sampling strategy
-**Fix**: Implement intelligent sampler (10% base, 100% errors)
-
-### ❌ No Error -> Deploy Correlation
-**Symptom**: Can't tell which deploy introduced error
-**Detection**: No Sentry releases, no Grafana annotations
-**Fix**: Automate release creation in CI/CD
-
-### ❌ Logs-Only Error Tracking
-**Symptom**: Grepping Vercel logs for errors
-**Detection**: No Sentry/error tracker, console.log() debugging
-**Fix**: Install proper error tracker with stack traces
-
-### ❌ Analytics-Free Product
-**Symptom**: Product decisions by gut feel
-**Detection**: No Vercel Analytics, no event tracking
-**Fix**: Enable Vercel Analytics + custom events
-
----
-
-## Tool Decision Trees
-
-### Should I use Sentry or Grafana for errors?
-
-```
-Do you need Session Replay (visual debugging)?
-├─ YES → Sentry (session replay built-in)
-│
-└─ NO → Are you already using Grafana Cloud for traces?
-    ├─ YES → Grafana (unified observability)
-    └─ NO → Sentry (easier setup, Vercel Integration)
-```
-
-### Should I use OpenTelemetry or Sentry Performance?
-
-```
-Do you need custom business metrics (orders/sec, cache hits)?
-├─ YES → OpenTelemetry (flexible metrics)
-│
-└─ NO → Are you on Vercel?
-    ├─ YES → Sentry Performance (Vercel Integration, simpler)
-    └─ NO → OpenTelemetry (vendor-neutral, future-proof)
-```
-
-### Should I use Vercel Analytics or PostHog?
-
-```
-Do you need feature flags, A/B testing, or session recording?
-├─ YES → PostHog (full product analytics suite)
-│
-└─ NO → Are you on Vercel?
-    ├─ YES → Vercel Analytics (zero-config, privacy-first)
-    └─ NO → Plausible (privacy-first alternative)
-```
-
----
-
-## Quick Reference: CLI Commands
-
-### Sentry
-
-```bash
-# Check Vercel Integration status
-vercel env ls | grep SENTRY
-
-# Test error capture
-curl https://your-app.vercel.app/test-error
-
-# Create alert via CLI
-curl -X POST https://sentry.io/api/0/projects/$ORG/$PROJECT/rules/ \
-  -H "Authorization: Bearer $SENTRY_API_TOKEN" \
-  -d '{"name": "New Errors", "conditions": [...], "actions": [...]}'
-
-# List existing alerts
-curl -H "Authorization: Bearer $SENTRY_API_TOKEN" \
-  https://sentry.io/api/0/projects/$ORG/$PROJECT/rules/
-
-# Configure Convex backend
-npx convex env set SENTRY_DSN "https://...@sentry.io/123" --prod
-```
-
-### OpenTelemetry / Grafana
-
-```bash
-# Check Grafana Cloud env vars
-vercel env ls | grep GRAFANA
-
-# Test OTLP endpoint
-curl -X POST https://otlp-gateway-prod-us-east-0.grafana.net/otlp/v1/traces \
-  -H "Authorization: Basic $(echo -n "$GRAFANA_INSTANCE_ID:$GRAFANA_API_KEY" | base64)" \
-  -H "Content-Type: application/json" \
-  -d '{"resourceSpans":[]}'
-
-# View recent traces (if Grafana CLI configured)
-grafana-cli traces query --from=-1h
-
-# Check spectacle library version
-npm list spectacle
-```
-
-### Vercel Analytics
-
-```bash
-# Enable analytics
-vercel env add VERCEL_ANALYTICS_ID
-
-# Enable Speed Insights
-npm install @vercel/speed-insights
-# Add to app/layout.tsx: <SpeedInsights />
-
-# View analytics CLI (limited, prefer dashboard)
-vercel analytics --from=7d
-```
-
-### GitHub
-
-```bash
-# Check deployment tracking
-gh api repos/:owner/:repo/deployments | jq '.[] | {id, environment, created_at}'
-
-# Check workflow runs
-gh run list --workflow=deploy.yml --limit 10
-
-# Check if Sentry GitHub integration active
-gh api repos/:owner/:repo/hooks | jq '.[] | select(.config.url | contains("sentry"))'
-```
-
----
-
-## Checklist: Comprehensive Observability
-
-Use this as final validation:
-
-**Error Tracking**
-- [ ] Sentry (or equivalent) installed
-- [ ] Vercel Integration configured (not manual tokens)
-- [ ] PII redaction active
-- [ ] Source maps uploading
-- [ ] Alert automation via CLI
-- [ ] Test error route verified
-- [ ] Backend (Convex/API) covered
-
-**Performance Monitoring**
-- [ ] OpenTelemetry SDK initialized
-- [ ] Intelligent sampler (10% base, 100% error)
-- [ ] HTTP/fetch instrumentation active
-- [ ] Trace context propagates to backend
-- [ ] Grafana dashboards created
-- [ ] p99 latency < [target]ms
-
-**Analytics**
-- [ ] Vercel Analytics enabled
-- [ ] Speed Insights installed
-- [ ] Custom events tracked
-- [ ] Conversion funnels defined
-- [ ] Privacy-compliant (cookie consent)
-
-**Logging**
-- [ ] Structured logging (JSON)
-- [ ] Trace ID injection
-- [ ] Centralized aggregation
-- [ ] Retention policy set
-- [ ] PII scrubbed from logs
-
-**Infrastructure**
-- [ ] Deployment tracking (Sentry releases)
-- [ ] Health check endpoint
-- [ ] Uptime monitoring
-- [ ] CI/CD observability
-- [ ] Rollback automation
-
-**Cost & Governance**
-- [ ] Free tier limits known
-- [ ] Quota monitoring active
-- [ ] Sampling tuned
-- [ ] Retention policies set
-- [ ] All configs version-controlled
-
----
-
-*Run this command when setting up new projects or quarterly audits of existing observability infrastructure.*
+## Success Criteria
+
+**Comprehensive observability means:**
+- ✓ All production errors captured and debuggable
+- ✓ Performance bottlenecks visible and measurable
+- ✓ User behavior tracked for product decisions
+- ✓ Deployments correlated with error spikes
+- ✓ Logs searchable with full context
+- ✓ Alerts actionable and low-noise
+
+**If you can answer these questions, you have good observability:**
+- What errors happened in the last 24 hours?
+- Which API endpoint is slowest?
+- How many users completed checkout this week?
+- Did the latest deployment cause any new errors?
+- Why did this specific request fail?
+
+If you can't answer these: You have observability gaps to fill.

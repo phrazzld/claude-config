@@ -19,3 +19,9 @@ lessons/
 
 # Debug logs
 debug/
+
+# Session plans (temporary artifacts)
+plans/
+
+# External plugin repositories (managed separately)
+plugins/marketplaces/claude-code-plugins/

@@ -8,6 +8,46 @@
       "installPath": "/Users/phaedrus/.claude/plugins/marketplaces/every-marketplace/plugins/compounding-engineering",
       "gitCommitSha": "4e2a828117385649470ab5208452f439f850d8bb",
       "isLocal": true
+    },
+    "code-review@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2025-11-27T01:08:12.426Z",
+      "lastUpdated": "2025-11-27T01:08:12.426Z",
+      "installPath": "/Users/phaedrus/.claude/plugins/marketplaces/claude-code-plugins/plugins/code-review",
+      "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
+      "isLocal": true
+    },
+    "commit-commands@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2025-11-27T01:08:12.426Z",
+      "lastUpdated": "2025-11-27T01:08:12.426Z",
+      "installPath": "/Users/phaedrus/.claude/plugins/marketplaces/claude-code-plugins/plugins/commit-commands",
+      "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
+      "isLocal": true
+    },
+    "feature-dev@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2025-11-27T01:08:12.426Z",
+      "lastUpdated": "2025-11-27T01:08:12.426Z",
+      "installPath": "/Users/phaedrus/.claude/plugins/marketplaces/claude-code-plugins/plugins/feature-dev",
+      "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
+      "isLocal": true
+    },
+    "frontend-design@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2025-11-27T01:08:12.426Z",
+      "lastUpdated": "2025-11-27T01:08:12.426Z",
+      "installPath": "/Users/phaedrus/.claude/plugins/marketplaces/claude-code-plugins/plugins/frontend-design",
+      "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
+      "isLocal": true
+    },
+    "pr-review-toolkit@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2025-11-27T01:08:12.426Z",
+      "lastUpdated": "2025-11-27T01:08:12.426Z",
+      "installPath": "/Users/phaedrus/.claude/plugins/marketplaces/claude-code-plugins/plugins/pr-review-toolkit",
+      "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
+      "isLocal": true
     }
   }
 }

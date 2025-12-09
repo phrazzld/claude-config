@@ -147,6 +147,7 @@ Analyze the current state and suggest next steps.
 | Refactor existing code | **Claude** | File operations + patterns |
 | Understand new library API | **Gemini** | Latest docs via Search |
 | Run slash commands | **Claude** | Designed for Claude's workflow |
+| Design/UX research before frontend work | **Gemini** | Current trends, real examples, anti-convergence |
 
 ## Integration Patterns
 
@@ -183,6 +184,15 @@ Terminal 3: gemini "Research API design best practices"
 # Consolidate findings in Claude
 ```
 
+### Pattern 4: Design Research → Implement
+```
+1. Gemini researches design direction
+   gemini -p "Research distinctive approaches for [component type]"
+
+2. Claude synthesizes and implements
+   /skill frontend-design (apply research to implementation)
+```
+
 ## When to Explicitly Suggest Gemini
 
 Claude should proactively suggest delegating to Gemini when:
@@ -201,6 +211,12 @@ Claude should proactively suggest delegating to Gemini when:
 - Working with an unfamiliar codebase
 - Facing an error that needs web research
 - Evaluating multiple technical options
+
+### Frontend/UX Work (ALWAYS):
+- Building any new UI component
+- Designing page layouts
+- Choosing typography, colors, or visual direction
+- Creating user flows or interactions
 
 ### Example Response:
 ```

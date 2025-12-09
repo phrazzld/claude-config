@@ -310,6 +310,27 @@ Effort: 2h to define palette + 6h to migrate all colors
 Impact: Consistent brand, accessibility, maintainable
 ```
 
+**Missing Brand-Tinted Neutrals**:
+```
+[PURE NEUTRALS] theme/colors.ts
+Pattern Detected: Neutral colors have chroma = 0
+  background: oklch(1 0 0)      ← Pure white
+  foreground: oklch(0.2 0 0)    ← Pure gray-black
+  border: oklch(0.9 0 0)        ← Pure gray
+Brand Color: oklch(0.6 0.2 250) ← Blue (hue 250)
+Problem: Neutrals don't carry brand DNA
+Impact: Interface feels generic despite having brand color
+Opportunity: Tint all neutrals with brand hue at low chroma (0.005-0.02)
+Fix: Apply brand hue to neutrals:
+  --brand-hue: 250;  // Extract from primary color
+  --color-background: oklch(0.995 0.005 var(--brand-hue));
+  --color-foreground: oklch(0.15 0.02 var(--brand-hue));
+  --color-border: oklch(0.88 0.015 var(--brand-hue));
+Result: Imperceptible individually, cohesive brand feeling
+Effort: 30m to update token values
+Impact: Professional "brand feeling" without visible color changes
+```
+
 **Layout Pattern Inconsistency**:
 ```
 [LAYOUT PATTERNS] components/
@@ -536,6 +557,65 @@ For every design systems issue:
 7. **Effort + Impact**: Time estimate + strategic value
 8. **Migration Strategy**: How to adopt incrementally if needed
 
+### 6. Advanced Visual Techniques
+
+**WebGL/Shader Opportunities**:
+```
+[ADVANCED TECHNIQUE OPPORTUNITY] Hero Section
+Current: Static gradient background
+Opportunity: Three.js animated gradient mesh or particle system
+Use when: Landing pages competing for attention, creative portfolios
+Implementation: @react-three/fiber + custom shader
+Effort: 4-8h | Impact: High visual differentiation
+```
+
+**Animation Library Opportunities**:
+```
+[ANIMATION OPPORTUNITY] Onboarding Flow
+Current: Instant state transitions
+Opportunity: Choreographed sequence with Lottie/GSAP
+Options:
+- Lottie: Pre-made animations from LottieFiles
+- GSAP: Custom timeline with ScrollTrigger
+- Framer Motion: React-native layout animations
+Effort: 2-6h per flow | Impact: User delight, professional feel
+```
+
+**CSS Art Techniques**:
+```
+[CSS ART OPPORTUNITY] Decorative Elements
+Current: Image-based decorations or none
+Opportunity: Pure CSS illustrations, advanced clip-paths
+Benefits: Themeable, lightweight, infinitely scalable
+Techniques: box-shadow stacking, conic gradients, clip-path shapes
+Effort: 1-3h per element | Impact: Unique, brand-aligned visuals
+```
+
+**Icon Library Assessment**:
+```
+[ICON LIBRARY] Current: Lucide
+Assessment: Limited to Lucide's ~1400 icons
+Alternative: Iconify (https://icon-sets.iconify.design/)
+- 200,000+ icons from 150+ sets (Material, Phosphor, Tabler, Carbon, etc.)
+- Different styles: outlined, filled, duotone
+When to suggest: Need icons Lucide lacks (brands, flags, specialized)
+Install: pnpm add @iconify/react
+Usage: <Icon icon="ph:rocket-launch" />
+```
+
+**Custom Asset Generation**:
+```
+[ASSET GENERATION NEEDED] Hero Illustration
+Current: Stock image or placeholder
+Opportunity: Custom illustration matching brand aesthetic
+Suggest to user:
+> "This design would benefit from custom illustration.
+> Consider generating with:
+> - Midjourney: Photorealistic images, illustrations, textures
+> - Gemini Nano Banana Pro (gemini-imagegen skill): Quick iterations, text-in-image
+> Prompt suggestion: [specific prompt matching brand]"
+```
+
 ## Priority Signals
 
 **CRITICAL** (blocking design system):
@@ -557,12 +637,14 @@ For every design systems issue:
 - Layout pattern inconsistency
 - CSS architecture issues
 - Data fetching pattern variations
+- Advanced technique opportunities (WebGL, animations, CSS art)
 
 **LOW** (polish):
 - Minor naming inconsistencies
 - Optional TypeScript improvements
 - Documentation enhancements
 - Tooling upgrades
+- Icon library alternatives
 
 ## Output Format
 

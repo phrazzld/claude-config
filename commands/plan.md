@@ -192,6 +192,51 @@ Before finalizing:
 - Temporal organization (step1, step2 instead of components)
 - Heavy coupling preventing parallel work
 
+## Grug Complexity Review
+
+Before finalizing TODO.md, invoke Grug to check for complexity demon:
+
+```bash
+Task grug("Review plan for complexity demon. Check for over-abstraction, unnecessary layers, premature patterns")
+```
+
+**Grug checks for**:
+- **Abstraction too early**: Interface before have two concrete use?
+- **Too many layer**: Eight layer to change one value?
+- **Big brain pattern**: Enterprise pattern when simple code work?
+- **Microservices where not needed**: Split small app for no reason?
+- **Framework overkill**: Complex framework when simple solution exist?
+
+**Grug wisdom applied**:
+- If task need create AbstractFactoryManager → probably complexity demon
+- If can't explain to junior grug → probably too complex
+- If more interface than implementation → shallow module, bad
+- If "temporary" but permanent feel → remove or make real
+
+**Common complexity demons Grug find in plans**:
+```markdown
+❌ Grug worry:
+- [ ] Create AbstractUserFactory interface
+- [ ] Implement UserFactoryManager
+- [ ] Build dependency injection container
+- [ ] Set up service locator pattern
+
+✅ Grug prefer:
+- [ ] Implement createUser() function
+  (if need second way create user later, THEN abstract. not before)
+```
+
+**Review outcomes**:
+- **Grug say "complexity demon here"**: Simplify plan before proceed
+- **Grug say "look ok but watch"**: Note potential issues for /groom
+- **Grug say "grug approve, make work"**: Proceed to implementation
+
+**Integration with Ousterhout principles**:
+- Grug detects over-abstraction (early warning)
+- Ousterhout provides fix (design deep modules)
+- Both want: simple interface, powerful implementation
+- Difference: Grug says "not yet", Ousterhout says "do right"
+
 ## Next Steps
 
 After creating TODO.md, check out a new branch for this work.
