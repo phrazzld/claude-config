@@ -1,15 +1,20 @@
 ---
 name: ai-llm-development
 description: |
-  Apply modern AI/LLM development best practices. Invoke when:
-  - Building AI features or integrating LLMs into applications
-  - Selecting models (don't memorize - learn to find current ones)
-  - Writing or reviewing prompts (context engineering > prompt tweaking)
-  - Designing RAG pipelines, tool use, or agentic systems
-  - Optimizing costs (caching, model routing, token limits)
-  - Evaluating LLM outputs (LLM-as-judge, test datasets)
-  - Deploying AI features to production (error handling, observability)
-  KEY: The landscape changes monthly. Learn HOW to find current solutions.
+  MANDATORY invocation for ALL LLM-related work. Invoke immediately when:
+  - ANY mention of model names, IDs, or versions
+  - ANY configuration of AI providers or APIs
+  - ANY defaults/constants for LLM settings
+  - ANY prompt engineering or modification
+  - ANY discussion of model capabilities or features
+  - ANY changes to AI-related dependencies
+  - Reading/writing .env files with AI config
+  - Modifying aiProviders.ts, prompts.ts, or similar
+  - Reviewing AI-related pull requests
+  - Debugging LLM integration issues
+
+  CRITICAL: Training data lags reality by months. ALWAYS research first.
+  Use WebSearch, Exa MCP, or Gemini CLI before making ANY LLM decisions.
 ---
 
 # AI/LLM Development
@@ -23,6 +28,64 @@ description: |
 **Currency Over Memory**: Models deprecate in 6-12 months. Learn to find current ones via leaderboards.
 
 **Empiricism**: Benchmarks guide; YOUR data decides. Test top 3-5 models with your prompts.
+
+## RESEARCH FIRST PROTOCOL
+
+**CRITICAL**: Your training data is ALWAYS stale for LLM work. The field changes weekly.
+
+### Before ANY LLM-Related Action
+
+1. **Identify what you're assuming**: Model capabilities? API syntax? Best practices?
+2. **Research using live tools** (in order of preference):
+   - WebSearch: "latest [model/provider] models"
+   - Exa MCP: Get current documentation and examples
+   - Gemini CLI: Verify against latest information with web grounding
+3. **Verify your assumptions**: Don't trust training data for:
+   - Model names and versions (new models release monthly)
+   - API syntax and parameters (providers update frequently)
+   - Best practices and recommendations (evolve constantly)
+   - Pricing and limits (change without notice)
+   - Deprecation status (models removed regularly)
+
+### Research Query Templates
+
+**Model Selection**:
+- "latest [provider] models"
+- "[model-name] release date and capabilities"
+- "is [model-name] deprecated or superseded"
+- "[provider] newest models announced"
+
+**API Syntax**:
+- "[provider] API documentation [specific-feature]"
+- "[sdk-name] current version and usage"
+- "OpenRouter model ID format current"
+
+**Best Practices**:
+- "[task] LLM best practices latest"
+- "current recommendations for [architecture pattern]"
+- "[framework] latest patterns and examples"
+
+### Red Flags That Trigger Mandatory Research
+
+❌ Making assumptions about version numbers (3.0 vs 2.5 doesn't mean newer)
+❌ Changing model defaults without verification
+❌ Assuming API syntax from training data
+❌ Selecting models based on memory of capabilities
+❌ Following "best practices" without checking if still current
+❌ Any action based on "I think..." or "probably..." for LLM topics
+
+### Research Before Action Checklist
+
+Before committing any LLM-related change:
+
+- [ ] Searched for latest information on involved models/APIs
+- [ ] Verified current state vs. training data assumptions
+- [ ] Checked provider documentation for API syntax
+- [ ] Confirmed model is not deprecated or superseded
+- [ ] Validated best practices are still current
+- [ ] Tested configuration syntax in provider console/playground
+
+**Mantra**: "When in doubt about LLM tech, RESEARCH. When certain about LLM tech, STILL RESEARCH."
 
 ## Decision Trees
 
@@ -76,3 +139,18 @@ See: `references/prompt-engineering.md`, `references/production-checklist.md`
 - `references/prompt-engineering.md` - Caching, structured outputs, CoT, model-specific styles
 - `references/architecture-patterns.md` - Complexity ladder, RAG, tool use, caching
 - `references/production-checklist.md` - Cost, errors, security, observability, evaluation
+
+## Live Research Tools
+
+**Use these BEFORE relying on training data:**
+
+- **WebSearch**: Latest model releases, deprecations, best practices
+- **Exa MCP** (`mcp__exa__web_search_exa`): Current documentation and code examples
+- **Gemini CLI** (`gemini`): Sophisticated reasoning with Google Search grounding
+- **Provider Playgrounds**: OpenRouter, Google AI Studio, Anthropic Console
+
+**Research Flow**:
+1. WebSearch for latest information
+2. Exa MCP for documentation and examples
+3. Gemini CLI for complex verification and comparison
+4. Provider playground for syntax testing
