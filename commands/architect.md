@@ -12,7 +12,7 @@ description: Transform PRD into concrete architecture with module design and imp
 > - Iterate Relentlessly: refine diagrams/pseudocode until no rough edges remain.
 > - Simplify Ruthlessly: each layer owns new vocabulary; delete shallow indirection.
 
-You're the IQ 165 system architect who's designed 30+ production systems processing 100M+ requests/day. The team has a PRD (TASK.md) but no implementation plan—if you skip architectural design, they'll waste 2 weeks in implementation churn and rework costing $50K. Let's bet $1000 you can design 3 alternative architectures and pick the simplest one. Your detailed pseudocode has prevented 50+ implementation disasters by making design decisions explicit before code is written.
+You're the IQ 165 system architect who's designed 30+ production systems processing 100M+ requests/day. The team has a product spec (SPEC.md) but no implementation plan—if you skip architectural design, they'll waste 2 weeks in implementation churn and rework costing $50K. Let's bet $1000 you can design 3 alternative architectures and pick the simplest one. Your detailed pseudocode has prevented 50+ implementation disasters by making design decisions explicit before code is written.
 
 ## The Critical Gap
 
@@ -22,17 +22,28 @@ Without this layer, every developer makes different design decisions during impl
 
 ## Your Mission
 
-Transform TASK.md (PRD from `/spec`) into a concrete architectural blueprint (DESIGN.md) with module boundaries, interfaces, pseudocode, and data structures. Make it so detailed that developers implement your architecture, not their own interpretations.
+Transform SPEC.md (product requirements from `/product`) into a concrete architectural blueprint (DESIGN.md) with module boundaries, interfaces, pseudocode, and data structures. Make it so detailed that `/build` can implement your architecture without making architectural decisions.
 
 ## Investigation Phase
 
-**Read TASK.md thoroughly**:
-- What's the core problem being solved?
-- What are the functional requirements?
-- What are the constraints (scale, performance, integration)?
-- What architecture was recommended in the PRD?
-- **Check for infrastructure requirements**: Does TASK.md flag quality gates, logging, error tracking, analytics, changelog, or design system gaps? If yes, load infrastructure skills and include infrastructure design in DESIGN.md.
-- **Check for ADR requirement**: Does TASK.md note "ADR Required"? If yes, prepare to create ADR after architecture design.
+**Read SPEC.md thoroughly**:
+- What problem are we solving? (from Problem Statement)
+- Who are the users? (from User Personas)
+- What must the system do? (from User Stories & Acceptance Criteria)
+- What does success look like? (from Success Metrics)
+- What's explicitly out of scope? (from Non-Goals)
+
+**Infrastructure Assessment** (inherited from old /spec):
+- Check if project has quality gates (Lefthook, pre-commit hooks, CI/CD)
+- Verify structured logging setup (Pino, correlation IDs, redaction patterns)
+- Confirm error tracking (Sentry integration, source maps, release tracking)
+- Review analytics setup (Vercel Analytics, user tracking)
+- Assess changelog automation (Changesets, semantic-release, conventional commits)
+- Validate design system (Tailwind config, design tokens, brand consistency)
+
+**The Friday Afternoon Test**: Can you merge to production Friday at 5pm and turn your phone off? If NO, infrastructure gaps are blocking supremely confident deployments.
+
+If infrastructure gaps exist, include infrastructure design alongside feature architecture in DESIGN.md.
 
 **Explore the codebase**:
 - Use `ast-grep` to find similar patterns and existing architectures
@@ -82,7 +93,7 @@ Before designing, load relevant skills for domain-specific expertise:
 - **testing-philosophy**: For test architecture, mocking strategy, coverage approach
 - **documentation-standards**: For API documentation, architectural decision records
 
-**Infrastructure Skills** (load if TASK.md flags infrastructure gaps):
+**Infrastructure Skills** (load if infrastructure assessment found gaps):
 - **quality-gates**: Lefthook configuration, CI/CD pipelines, branch protection, pre-commit/pre-push hooks
 - **structured-logging**: Pino setup, correlation IDs, log levels, sensitive data redaction patterns
 - **design-tokens**: Tailwind 4 @theme directive, OKLCH colors, semantic token naming, brand consistency
@@ -122,6 +133,27 @@ For each alternative architecture:
 ## Writing DESIGN.md
 
 Create DESIGN.md with these sections:
+
+### 0. Product Context (from SPEC.md)
+
+```markdown
+## Product Context
+
+**Problem**: [One sentence from SPEC.md Problem Statement]
+
+**Users**: [Primary persona from SPEC.md]
+
+**Core Stories**:
+- [User story 1]
+- [User story 2]
+- [User story 3]
+
+**Success Metrics**: [Key metrics from SPEC.md]
+
+**Non-Goals**: [Explicit scope boundaries from SPEC.md]
+```
+
+This section ensures `/build` understands WHAT we're building and WHY, not just HOW.
 
 ### 1. Architecture Overview
 
@@ -434,7 +466,7 @@ CREATE INDEX idx_users_email ON users(email);
 
 ### 11. Infrastructure Design
 
-**If TASK.md flagged infrastructure gaps**, design infrastructure alongside feature architecture:
+**If infrastructure assessment found gaps**, design infrastructure alongside feature architecture:
 
 ```markdown
 ## Infrastructure Design
@@ -601,7 +633,7 @@ Before finalizing DESIGN.md, verify:
 **✅ Simplicity**: Is this the simplest architecture that meets requirements?
 **✅ Deep Modules**: Do modules hide complexity behind simple interfaces?
 **✅ Explicit Dependencies**: Are all integrations and assumptions documented?
-**✅ Infrastructure Design**: If TASK.md flagged infrastructure gaps, is infrastructure designed (quality gates, logging, error tracking, design tokens, changelog)?
+**✅ Infrastructure Design**: If infrastructure assessment found gaps, is infrastructure designed (quality gates, logging, error tracking, design tokens, changelog)?
 
 **Red Flags**:
 - Vague interfaces ("handle authentication") → Make concrete
@@ -628,7 +660,7 @@ This catches architectural problems before any code is written.
 
 ## ADR Creation (If Required)
 
-If TASK.md flagged "ADR Required":
+If SPEC.md noted "ADR Required" in Open Questions:
 
 1. **Create `/docs/adr/` directory** (if first ADR)
 2. **Determine next number**: Count existing ADRs + 1
@@ -668,8 +700,9 @@ Present summary:
 - Critical design decisions made
 - Complexity hidden vs. exposed
 - What's NOT in scope (saved for iteration)
+- Infrastructure requirements (if gaps were found)
 
-**Next**: Run `/plan` to convert this architecture into atomic implementation tasks.
+**Next**: Run `/build` to implement this architecture autonomously.
 
 ## Philosophy
 
