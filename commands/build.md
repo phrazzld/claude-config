@@ -153,6 +153,14 @@ pnpm build        # production build
 pnpm typecheck    # if TypeScript
 ```
 
+**Documentation freshness**:
+Check if any documentation is stale for directories you modified:
+```bash
+# Get directories with changes on this branch
+git diff --name-only master | xargs -I {} dirname {} | sort -u
+```
+For each directory, check if README.md exists and is older than modified files. If stale docs found, update them before declaring complete.
+
 **Final review** (invoke at end, not per-commit):
 ```bash
 Task carmack("Review implementation for directness and shippability")

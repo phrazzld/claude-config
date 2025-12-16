@@ -127,7 +127,58 @@ See: `references/prompt-engineering.md`, `references/production-checklist.md`
 - **SDK**: Vercel AI SDK (streaming, React hooks, provider-agnostic)
 - **Provider**: OpenRouter (400+ models, easy A/B testing, fallbacks)
 - **Vectors**: Postgres pgvector (95% of use cases, $20-50/month)
-- **Observability**: Simple logging or Langfuse (self-hosted)
+- **Observability**: Langfuse (self-hostable, generous free tier)
+- **Evaluation**: Promptfoo (CI/CD integration, security testing)
+
+## Quality Infrastructure
+
+**Production-grade LLM apps need:**
+
+1. **Model Gateway** (OpenRouter, LiteLLM)
+   - Multi-provider access
+   - Fallback chains
+   - Cost routing
+   - See: `llm-gateway-routing` skill
+
+2. **Evaluation & Testing** (Promptfoo)
+   - Regression testing in CI/CD
+   - Security scanning (red team)
+   - Quality gates
+   - See: `llm-evaluation` skill
+
+3. **Production Observability** (Langfuse)
+   - Full trace debugging
+   - Cost tracking
+   - Latency monitoring
+   - See: `langfuse-observability` skill
+
+4. **Quality Audit**
+   - Run `/llm-gates` command to audit your LLM infrastructure
+   - Identifies gaps in routing, testing, observability, security, cost
+
+### Quick Setup
+
+```bash
+# Evaluation (Promptfoo)
+npx promptfoo@latest init
+npx promptfoo@latest eval
+
+# Observability (Langfuse)
+pnpm add langfuse
+# Sign up at langfuse.com, add keys to .env
+
+# Gateway (OpenRouter)
+# Sign up at openrouter.ai, add OPENROUTER_API_KEY to .env
+```
+
+### Quality Gate Standards
+
+| Stage | Checks | Time Budget |
+|-------|--------|-------------|
+| Pre-commit | Prompt validation, secrets scan | < 5s |
+| Pre-push | Regression suite, cost estimate | < 15s |
+| CI/CD | Full eval, security scan, A/B comparison | < 5 min |
+| Production | Traces, cost alerts, error monitoring | Continuous |
 
 ## Scripts
 
@@ -139,6 +190,17 @@ See: `references/prompt-engineering.md`, `references/production-checklist.md`
 - `references/prompt-engineering.md` - Caching, structured outputs, CoT, model-specific styles
 - `references/architecture-patterns.md` - Complexity ladder, RAG, tool use, caching
 - `references/production-checklist.md` - Cost, errors, security, observability, evaluation
+
+## Related Skills
+
+- `llm-evaluation` - Promptfoo setup, CI/CD integration, security testing
+- `llm-gateway-routing` - OpenRouter, LiteLLM, routing strategies
+- `langfuse-observability` - Tracing, cost tracking, production debugging
+
+## Related Commands
+
+- `/llm-gates` - Audit LLM infrastructure quality across 5 pillars
+- `/observe` - General observability audit (includes LLM section)
 
 ## Live Research Tools
 

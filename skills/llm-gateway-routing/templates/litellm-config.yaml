@@ -1,0 +1,156 @@
+# LiteLLM Proxy Configuration Template
+# Copy to your project and customize
+
+# ============================================
+# Model Definitions
+# ============================================
+model_list:
+  # Anthropic Claude
+  - model_name: claude-sonnet
+    litellm_params:
+      model: anthropic/claude-3-5-sonnet-latest
+      api_key: ${ANTHROPIC_API_KEY}
+
+  - model_name: claude-haiku
+    litellm_params:
+      model: anthropic/claude-3-5-haiku-latest
+      api_key: ${ANTHROPIC_API_KEY}
+
+  # OpenAI
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: ${OPENAI_API_KEY}
+
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: ${OPENAI_API_KEY}
+
+  # Google (via AI Studio)
+  - model_name: gemini-pro
+    litellm_params:
+      model: gemini/gemini-1.5-pro-latest
+      api_key: ${GOOGLE_API_KEY}
+
+  - model_name: gemini-flash
+    litellm_params:
+      model: gemini/gemini-1.5-flash-latest
+      api_key: ${GOOGLE_API_KEY}
+
+  # Load balanced model (requests distributed across providers)
+  - model_name: fast-model
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: ${OPENAI_API_KEY}
+
+  - model_name: fast-model
+    litellm_params:
+      model: anthropic/claude-3-5-haiku-latest
+      api_key: ${ANTHROPIC_API_KEY}
+
+  # Embeddings
+  - model_name: embed
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: ${OPENAI_API_KEY}
+
+# ============================================
+# Router Settings
+# ============================================
+router_settings:
+  # Routing strategy
+  # Options: simple-shuffle, least-busy, latency-based-routing
+  routing_strategy: simple-shuffle
+
+  # Retry settings
+  num_retries: 3
+  timeout: 60
+  retry_after: 5
+
+  # Fallbacks (model_name -> fallback models)
+  fallbacks:
+    claude-sonnet:
+      - gpt-4o
+      - gemini-pro
+    gpt-4o:
+      - claude-sonnet
+      - gemini-pro
+
+  # Cooldown for failed models
+  cooldown_time: 60
+
+# ============================================
+# General Settings
+# ============================================
+general_settings:
+  # Master key for admin operations
+  master_key: ${LITELLM_MASTER_KEY}
+
+  # Database for key management and spend tracking
+  # database_url: postgresql://user:pass@localhost/litellm
+
+  # Allow specific routes without auth
+  # enable_public_routes: true
+
+# ============================================
+# LiteLLM Settings
+# ============================================
+litellm_settings:
+  # Callbacks for observability
+  success_callback: ["langfuse"]
+  failure_callback: ["langfuse"]
+
+  # Caching
+  cache: true
+  cache_params:
+    type: local  # or redis
+    # Redis config:
+    # type: redis
+    # host: localhost
+    # port: 6379
+    # ttl: 3600
+
+  # Budget limits
+  max_budget: 100  # $100/month
+  budget_duration: monthly
+
+  # Rate limits
+  # max_requests_per_minute: 1000
+  # max_tokens_per_minute: 100000
+
+  # Drop unsupported params (prevents errors)
+  drop_params: true
+
+  # Set default model
+  default_model: gpt-4o-mini
+
+# ============================================
+# Environment Variables
+# ============================================
+environment_variables:
+  # Langfuse (observability)
+  LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
+  LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
+  LANGFUSE_HOST: https://us.cloud.langfuse.com
+
+# ============================================
+# Usage
+# ============================================
+# Start proxy:
+#   litellm --config config.yaml --port 4000
+#
+# Or with Docker:
+#   docker run -p 4000:4000 \
+#     -v $(pwd)/config.yaml:/app/config.yaml \
+#     -e OPENAI_API_KEY=$OPENAI_API_KEY \
+#     -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
+#     -e LITELLM_MASTER_KEY=$LITELLM_MASTER_KEY \
+#     ghcr.io/berriai/litellm:main-latest \
+#     --config /app/config.yaml
+#
+# Test:
+#   curl http://localhost:4000/v1/chat/completions \
+#     -H "Authorization: Bearer $LITELLM_MASTER_KEY" \
+#     -H "Content-Type: application/json" \
+#     -d '{"model": "claude-sonnet", "messages": [{"role": "user", "content": "Hello!"}]}'

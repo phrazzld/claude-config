@@ -1,0 +1,94 @@
+# GitHub Action for LLM Evaluation
+# Copy to .github/workflows/llm-eval.yml
+
+name: 'LLM Evaluation'
+
+on:
+  pull_request:
+    paths:
+      - 'prompts/**'
+      - 'src/**/*prompt*'
+      - 'promptfooconfig.yaml'
+      - 'promptfooconfig.json'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  evaluate:
+    name: Evaluate Prompts
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Cache Promptfoo for faster runs
+      - name: Cache Promptfoo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.promptfoo
+            node_modules/.cache/promptfoo
+          key: ${{ runner.os }}-promptfoo-${{ hashFiles('promptfooconfig.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-promptfoo-
+
+      # Run evaluation using official action
+      - name: Run Evaluation
+        uses: promptfoo/promptfoo-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Uncomment to customize:
+          # config-path: ./promptfooconfig.yaml
+          # cache: true
+          # no-progress-bar: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    # Run weekly or on demand, not on every PR
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Red Team Scan
+        run: npx promptfoo@latest redteam run
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Generate Security Report
+        run: npx promptfoo@latest redteam report --output security-report.html
+
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.html
+          retention-days: 30
+
+      - name: Check for Critical Vulnerabilities
+        run: |
+          # Parse report for critical issues
+          if grep -q "CRITICAL" security-report.html; then
+            echo "❌ Critical security vulnerabilities found!"
+            exit 1
+          fi
+          echo "✅ No critical vulnerabilities"

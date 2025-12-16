@@ -5,20 +5,20 @@ Create pull request with auto-generated title and description from commit histor
 Open a pull request for current branch with punchy title and comprehensive description generated from commit history.
 
 ## 1. Analyze Branch Changes
-- **Get commit history**: `!git log main..HEAD --oneline` to see all commits on current branch
-- **Get detailed changes**: `!git log main..HEAD --pretty=format:"%h %s%n%b" --no-merges` for full commit details
-- **Get file changes**: `!git diff --name-only main..HEAD` to understand scope of changes
-- **Get stats**: `!git diff --stat main..HEAD` for change magnitude
+- **Get commit history**: `!git log master..HEAD --oneline` to see all commits on current branch
+- **Get detailed changes**: `!git log master..HEAD --pretty=format:"%h %s%n%b" --no-merges` for full commit details
+- **Get file changes**: `!git diff --name-only master..HEAD` to understand scope of changes
+- **Get stats**: `!git diff --stat master..HEAD` for change magnitude
 
 ## 1b. Pre-PR Quality Checks
 
 **Size Check**:
 ```bash
 # Show lines changed
-git diff --stat main
+git diff --stat master
 
 # Count total lines
-LINES=$(git diff --shortstat main | awk '{print $4+$6}')
+LINES=$(git diff --shortstat master | awk '{print $4+$6}')
 echo "Total lines changed: $LINES"
 ```
 
@@ -52,7 +52,34 @@ Untested files: [list files with <80% coverage]
 Add tests before creating PR? (y/n)
 ```
 
-**Documentation Check**:
+**Documentation Staleness Check**:
+Before creating PR, audit documentation freshness for changed directories:
+
+```bash
+# Get directories with changes
+git diff --name-only master | xargs -I {} dirname {} | sort -u
+```
+
+For each directory with changes:
+1. Check if README.md/DOCS.md exists
+2. Compare doc mtime vs changed file mtimes
+3. Flag stale docs (doc older than changed files)
+
+If stale docs found, report:
+```
+Documentation may need updates:
+
+Files you changed in directories with stale docs:
+  src/auth/login.ts, src/auth/logout.ts
+    -> src/auth/README.md last updated 30 days ago
+
+  src/api/routes.ts
+    -> src/api/README.md last updated 14 days ago
+
+Consider updating these READMEs before creating PR.
+```
+
+**Documentation Check** (manual):
 Ask: "Did you update relevant documentation? Check all that apply:"
 - [ ] README (if installation/usage changed)
 - [ ] API docs (if public interfaces changed)

@@ -269,3 +269,19 @@ node -e "require('./lib/logger').info('test')"
 - Why did this specific request fail?
 
 If you can't answer these: You have observability gaps to fill.
+
+## LLM-Specific Observability
+
+**Building LLM-powered apps?** Use `/llm-gates` for specialized LLM observability:
+
+- **Langfuse** for trace debugging, prompt management, cost tracking
+- **Promptfoo** for evaluation and regression testing
+- **OpenRouter** metrics for model performance comparison
+
+LLM apps have unique observability needs:
+- Token usage and cost per request
+- Prompt/response logging for debugging
+- Model latency and error rates
+- Hallucination and quality monitoring
+
+Run `/llm-gates` for a comprehensive LLM infrastructure audit.

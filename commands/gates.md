@@ -39,7 +39,7 @@ This command audits whether quality checks are worth running. **Establish git ho
 pre-commit (parallel):
   - format: prettier --write {staged_files}
   - lint: eslint --fix --cache {staged_files}
-  - secrets: gitleaks protect --staged
+  - secrets: trufflehog git file://. --only-verified --fail
 
 pre-push (sequential ok):
   - type-check: tsc --noEmit --incremental
@@ -153,12 +153,77 @@ jobs:
 - Regression test for every production bug
 - Tests fail when behavior changes
 - Integration tests for cross-module flows
+- **E2E tests for every critical happy path** (auth, checkout, core features)
 - Coverage trends (delta, not absolute)
 
 **Tools**:
 - **Vitest**: Fast Next.js/React testing with built-in coverage
-- **Playwright**: E2E tests
+- **Playwright**: E2E tests (preferred - faster, more reliable)
 - **Stryker**: Mutation testing (tests your tests)
+
+## E2E Happy Path Tests (Critical)
+
+**The non-negotiable**: If a user can't complete core flows, nothing else matters.
+
+Unit tests prove components work. E2E tests prove the **product** works. Happy path e2e tests are the final gate before confident deployment—they catch the integration failures that unit tests miss.
+
+**What are happy paths?**
+- The journeys that make or break your product
+- **Auth**: signup → login → password reset
+- **Commerce**: browse → add to cart → checkout → confirmation
+- **Core feature**: the main thing users come for
+- **Onboarding**: first-time user experience
+
+**Target**: 100% coverage of critical user journeys. Not 100% of all scenarios—just the paths that matter.
+
+**Why e2e for happy paths specifically?**
+- Unit tests miss integration failures (API + UI + DB working together)
+- Happy paths = highest traffic, highest impact if broken
+- A failing happy path test = **blocked deploy** (not optional)
+- Catch regressions before users do
+
+**The Friday connection**: You can't turn your phone off if the signup flow might be broken.
+
+**Implementation standards**:
+```typescript
+// Playwright example - auth happy path
+test('user can sign up and access dashboard', async ({ page }) => {
+  await page.goto('/signup');
+  await page.fill('[name="email"]', 'test@example.com');
+  await page.fill('[name="password"]', 'SecurePass123!');
+  await page.click('button[type="submit"]');
+
+  await expect(page).toHaveURL('/dashboard');
+  await expect(page.locator('h1')).toContainText('Welcome');
+});
+```
+
+**Tagging convention**: Use `@happy-path` tag on critical journey tests. These run on every PR. Other e2e tests run nightly or on main only.
+
+**Speed optimizations**:
+- Parallel execution across browsers/workers
+- Shared auth state (login once, reuse session)
+- Skip redundant setup (seed data once per suite)
+- Run critical paths on every PR, full suite nightly
+
+**CI integration**:
+```yaml
+# Run happy paths on every PR (fast, critical)
+- name: E2E Happy Paths
+  run: pnpm exec playwright test --grep @happy-path
+
+# Full suite on main branch only
+- name: E2E Full Suite
+  if: github.ref == 'refs/heads/main'
+  run: pnpm exec playwright test
+```
+
+**Red flags**:
+- No e2e tests at all (shipping blind)
+- E2e tests exist but skip core flows
+- Tests only run manually or "when we remember"
+- Happy path tests flaky (fix immediately or they become ignored)
+- E2E only in nightly builds (regressions discovered too late)
 
 **Coverage Automation (Zero External Services)**:
 ```yaml
@@ -210,9 +275,9 @@ Code conventions should be invisible, not obstacles.
 - 500 "low severity" issues we ignore?
 
 **Tools (2025)**:
-- **Gitleaks** (pre-commit): Secrets detection
+- **TruffleHog** (preferred, pre-commit): Secrets detection with verification (fewer false positives)
+- **Gitleaks** (alternative): Secrets detection, faster but more false positives
 - **Trivy** (CI): Dependencies, containers, misconfigs, licenses
-- **TruffleHog**: Git history secrets
 - **Dependabot/Renovate**: Auto dependency PRs (choose one)
 
 **Next.js specifics**:
@@ -394,6 +459,16 @@ coverage: {
   - Target: 80%+ patch, 90%+ critical paths
 - **Action**: Configure GitHub Action for automated coverage reporting
 
+### E2E Happy Path Tests
+- **Current state**: No e2e tests / E2E exists but missing critical paths
+- **Critical paths covered**: [List which flows have e2e tests]
+- **Missing flows**: signup, checkout, [core feature X]
+- **Fix**: Add Playwright tests for all critical user journeys
+  - Tag with `@happy-path` for PR-level runs
+  - Run on every PR (fast feedback on regressions)
+- **Speed**: Parallelize, share auth state, target <2min for happy paths
+- **Action**: Create e2e tests for: auth flow, checkout flow, [core feature]
+
 ### PR Size Management
 - **Current state**: PRs average 600 lines, slow review cycle
 - **Problem**: Large PRs = shallow reviews, delayed feedback
@@ -420,7 +495,7 @@ coverage: {
 - **Current**: npm audit / Dependabot / None
 - **Finding**: 50 vulnerabilities, 49 false positives
 - **Recommendation**:
-  - Add Gitleaks pre-commit hook (secrets detection)
+  - Add TruffleHog pre-commit hook (secrets detection with verification)
   - Add Trivy to CI (comprehensive scanning)
 - **Fix**: Configure to alert only on HIGH/CRITICAL severity
 
@@ -438,18 +513,31 @@ coverage: {
 
 ## Generated TODOs
 - [ ] [HIGH] Set up Lefthook with pre-commit/pre-push checks
+- [ ] [HIGH] Add e2e tests for critical happy paths (auth, checkout, core features)
+- [ ] [HIGH] Configure @happy-path tagged tests to run on every PR
 - [ ] [HIGH] Add vitest-coverage-report-action to CI workflow
 - [ ] [HIGH] Add tests for payment processing (0% coverage on money code)
 - [ ] [HIGH] Configure Convex deploy in Vercel build command
 - [ ] [MEDIUM] Set up pr-size-labeler GitHub Action workflow
 - [ ] [MEDIUM] Install lychee and Vale for documentation quality
-- [ ] [MEDIUM] Add Gitleaks pre-commit hook for secrets scanning
+- [ ] [MEDIUM] Add TruffleHog pre-commit hook for secrets scanning
 - [ ] [MEDIUM] Parallelize CI steps 3 and 4 (saves 3min/build)
 - [ ] [MEDIUM] Set up Changesets for changelog automation
 - [ ] [LOW] Remove ESLint rule 'no-console' (disabled everywhere)
 - [ ] [LOW] Add lychee and Vale to pre-push hooks
 - [ ] [LOW] Create freshness detection script for docs
 ```
+
+## LLM-Specific Quality Gates
+
+**Building LLM-powered apps?** Use `/llm-gates` for specialized audit covering:
+- Model selection & routing (OpenRouter, fallbacks)
+- Prompt testing & CI/CD (Promptfoo, regression tests)
+- LLM observability (Langfuse, cost tracking)
+- Security (red teaming, jailbreak protection)
+- Cost control (token budgets, alerts)
+
+This command focuses on traditional software quality. LLM apps need additional gates that `/llm-gates` provides.
 
 ## The Philosophy
 
