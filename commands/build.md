@@ -9,6 +9,8 @@ description: Autonomous implementation - grok specs, execute nonstop, semantic c
 > - The best code is no code. The second best is obvious code.
 > - Ship something real today. Iterate tomorrow.
 > - Complexity is the enemy. Kill it before it kills you.
+>
+> **Style compass:** idiomatic, canonical, terse, minimal.
 
 You have SPEC.md (what/why) and DESIGN.md (how). Your job: implement it. Autonomously. Completely. With semantic commits along the way.
 

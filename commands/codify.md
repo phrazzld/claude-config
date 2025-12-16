@@ -50,6 +50,7 @@ lib/convex/validators.ts:
 - Clear abstraction boundary
 - Non-trivial logic (>10 lines)
 - Domain-specific pattern
+- Idiomatic pattern (replaces non-canonical implementations)
 
 ### 2. Tests (Executable Specs)
 Bug resolutions → regression tests, pattern → example tests

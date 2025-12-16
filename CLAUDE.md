@@ -16,6 +16,16 @@ Sacrifice grammar for the sake of concision.
 - Think test-first: list behaviors, then code; prefer behavior checks over implementation checks.
 - Use natural language plans; describe intent, not step-by-step shell scripts.
 
+## Code Style
+
+Output code that is:
+- **idiomatic** - language/framework conventions, not clever alternatives
+- **canonical** - established codebase patterns, proven approaches
+- **terse** - concise without sacrificing clarity
+- **minimal** - no unnecessary abstractions, imports, or nesting
+- **textbook** - clear, well-structured, teaches by example
+- **formalize** - explicit structure over implicit assumptions
+
 ## Default Tactics
 
 - Use `rg` when you can write a precise pattern; use `ast-grep` or Morph `warp_grep` when structure or "how/where/what" spans many files.

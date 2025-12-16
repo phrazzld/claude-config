@@ -634,6 +634,7 @@ Before finalizing DESIGN.md, verify:
 **✅ Deep Modules**: Do modules hide complexity behind simple interfaces?
 **✅ Explicit Dependencies**: Are all integrations and assumptions documented?
 **✅ Infrastructure Design**: If infrastructure assessment found gaps, is infrastructure designed (quality gates, logging, error tracking, design tokens, changelog)?
+**✅ Style-Enabling**: Does the architecture enable idiomatic, canonical, terse implementations?
 
 **Red Flags**:
 - Vague interfaces ("handle authentication") → Make concrete
