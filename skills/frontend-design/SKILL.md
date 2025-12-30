@@ -46,6 +46,43 @@ Before coding, commit to a BOLD aesthetic direction:
 
 See: `references/aesthetics-guidelines.md`
 
+## Quality Bar: Stripe-Level Excellence
+
+Reference these as quality exemplars:
+- **Stripe**: Obsessive typography, micro-interactions, developer delight
+- **Linear**: Keyboard-first, performance as design, smooth motion
+- **Vercel**: Minimalist clarity, dramatic contrast, confident hierarchy
+
+**The Gasp Test**: Would users gasp at how stunning this is? If no, keep iterating.
+
+**Quality Checkpoints:**
+- [ ] Typography that makes people stop and notice
+- [ ] Layout that surprises with intentionality
+- [ ] Motion that feels physically satisfying
+- [ ] Details that show obsessive care
+- [ ] Mobile experience that doesn't "suck"
+
+## Mobile Excellence (Separate Optimization)
+
+Mobile is NOT just responsive—it requires separate design thinking.
+
+### Touch Libraries to Consider
+- **@use-gesture/react**: Touch, mouse, drag, pinch gestures unified
+- **react-spring**: Gesture-aware animations with physical springs
+- **swiper**: Touch slider with native feel
+- **framer-motion**: Gesture recognition + animation
+- **@capacitor/haptics**: Haptics for Capacitor/mobile apps
+
+### Mobile-Specific Quality Checks
+- Touch targets: 44x44px minimum (Apple HIG)
+- Swipe gestures: Natural, discoverable, satisfying
+- Haptic feedback: Confirm actions with tactile response
+- Pull-to-refresh: Physical bounce, not instant
+- Bottom navigation: Thumb-reachable actions
+- Momentum scrolling: Physics-based scroll
+
+See: `references/mobile-excellence.md`
+
 ## Anti-Convergence
 
 **YOU TEND TOWARD GENERIC OUTPUTS.** Before implementing, ask:

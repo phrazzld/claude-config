@@ -35,8 +35,8 @@ Gather:
 ## Phase 2: Task Intelligence
 
 Review:
-- `@TODO.md` for current commitments
-- `@BACKLOG.md` / `@TASK.md` / `@ISSUE.md` for outstanding work
+- `TODO.md` for current commitments
+- `BACKLOG.md` / `TASK.md` / `ISSUE.md` for outstanding work
 - Tag blockers or dependencies
 - Classify: quick win, deep work, needs clarification
 
@@ -70,7 +70,7 @@ Output a clear, actionable summary:
 ### Project Health
 - **Configuration**: [package.json present, deps reasonable]
 - **Documentation**: [README, CLAUDE.md status]
-- **Task tracking**: [@TODO.md, @TASK.md status]
+- **Task tracking**: [TODO.md, TASK.md status]
 
 ### Next Tasks
 1. [Most important next task]
@@ -96,15 +96,15 @@ Output a clear, actionable summary:
 
 Based on project state:
 
-**No @TASK.md?** → `/spec` (define what we're building)
+**No TASK.md?** → `/spec` (define what we're building)
 
-**@TASK.md exists, no @DESIGN.md?** → `/architect` (design the system)
+**TASK.md exists, no DESIGN.md?** → `/architect` (design the system)
 
-**@DESIGN.md exists, no @TODO.md?** → `/plan` (break into tasks)
+**DESIGN.md exists, no TODO.md?** → `/plan` (break into tasks)
 
-**@TODO.md has vague tasks?** → `/flesh` (add specifics)
+**TODO.md has vague tasks?** → `/flesh` (add specifics)
 
-**@TODO.md has specific tasks?** → `/execute` (build it)
+**TODO.md has specific tasks?** → `/execute` (build it)
 
 **Feeling stuck?** → `/carmack` (reset to first principles)
 

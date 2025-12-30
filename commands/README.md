@@ -239,13 +239,13 @@ Separate Claude sessions for parallel development:
 
 ## File Conventions
 
-- **@TODO.md** - Active task queue with live progress logs
-- **@TASK.md** - Detailed task specifications
-- **@BACKLOG.md** - Project ideas and future work
-- **@ISSUE.md** - Problem descriptions for debugging
-- **@CLAUDE.md** - Project-specific instructions
-- **@DESIGN.md** - Architecture from /architect
-- **@LEARNINGS.md** - Codified learnings for batch processing
+- **TODO.md** - Active task queue with live progress logs
+- **TASK.md** - Detailed task specifications
+- **BACKLOG.md** - Project ideas and future work
+- **ISSUE.md** - Problem descriptions for debugging
+- **CLAUDE.md** - Project-specific instructions
+- **DESIGN.md** - Architecture from /architect
+- **LEARNINGS.md** - Codified learnings for batch processing
 
 ## Best Practices
 

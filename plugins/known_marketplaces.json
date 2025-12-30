@@ -14,5 +14,13 @@
     },
     "installLocation": "/Users/phaedrus/.claude/plugins/marketplaces/claude-code-plugins",
     "lastUpdated": "2025-11-26T22:16:23.773Z"
+  },
+  "claude-plugins-official": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    "installLocation": "/Users/phaedrus/.claude/plugins/marketplaces/claude-plugins-official",
+    "lastUpdated": "2025-12-24T05:54:36.397Z"
   }
 }

@@ -74,7 +74,7 @@ Note: Bypassed type check due to CI outage (incident #123)
 TODO: Run type check manually after CI restored
 ```
 
-2. **Create @TODO.md entry**:
+2. **Create TODO.md entry**:
 ```markdown
 - [ ] Fix pre-commit check bypassed in abc1234 <!-- priority: high -->
   Issue: Type check was bypassed
@@ -176,7 +176,7 @@ Time to fix: ~[estimate]
    Note: Bypassed [check] due to [reason]. TODO: [fix plan]
    ```
 
-2. Create @TODO.md entry:
+2. Create TODO.md entry:
    ```markdown
    - [ ] Fix [check] bypassed in [commit] <!-- priority: high -->
    ```

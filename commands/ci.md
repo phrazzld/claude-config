@@ -230,4 +230,4 @@ Update PR or create summary with:
 
 ---
 
-*Run this command when CI fails. Insert specific tasks into @TODO.md, then remove temporary files.*
+*Run this command when CI fails. Insert specific tasks into TODO.md, then remove temporary files.*

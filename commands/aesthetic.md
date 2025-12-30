@@ -59,6 +59,7 @@ Assess the application's emerging identity and summon 1-2 additional perspective
 | Craftsmanship/Premium | Jony Ive, Apple HIG, Hermès approach |
 | Edge/Rebellion | Neville Brody, David Carson, Emigre era |
 | Structural Honesty | Brutalist web, Zaha Hadid, exposed systems |
+| Technical/Developer Tools | Stripe engineering blog, Linear app, Vercel dashboard |
 
 ---
 
@@ -352,6 +353,38 @@ When designs need imagery that doesn't exist, suggest to user:
 > **Gemini Nano Banana Pro** (`gemini-imagegen` skill, quick iterations, text-in-image).
 > Prompt suggestion: [specific prompt matching brand aesthetic]"
 
+### 3.8 Mobile Experience: The Other Half
+
+*Through the lens of Jobs' iPhone obsession*
+
+Mobile is not responsive—it's a different product. Assess separately:
+
+**Current State:**
+- Touch target sizes (44px minimum?)
+- Gesture vocabulary (swipe, pinch, pull?)
+- Haptic feedback (confirmations, errors?)
+- Thumb-zone optimization (critical actions reachable?)
+
+**The Council asks:**
+> "If Steve Jobs demoed this app at an unveiling, would he be proud of the mobile experience? Or would he throw it at the wall?"
+
+**From Default to Intentional:**
+
+| Default Territory | Intentional Mobile |
+|-------------------|-------------------|
+| Hamburger menu hiding everything | Bottom tab bar for key actions |
+| Pinch-to-zoom disabled | Intentional zoom where useful |
+| Click events on touch | Touch events with haptic feedback |
+| Desktop layout squeezed | Mobile-native composition |
+| No gestures beyond tap | Swipe, pull-refresh, long-press |
+
+**Touch Library Opportunities:**
+- **@use-gesture/react**: Unified gesture recognition
+- **react-spring**: Physics-based animations
+- **Capacitor Haptics**: Native haptic feedback
+
+See: `frontend-design` skill `references/mobile-excellence.md`
+
 ---
 
 ## Phase 4: Perspectives (Parallel Review)
@@ -492,6 +525,11 @@ Now synthesize insights from **four perspectives**: The-Essentialist, The-Humani
 [Analogy: a zen garden / a confident cockpit / a warm studio / a gallery opening / a beloved tool that fits the hand]
 
 **The gap**: [What's missing in the translation from intention to execution?]
+
+**The Gasp Question:**
+> "Show this to 10 strangers. Would any literally gasp at how polished/beautiful/satisfying it is? If not, what would need to change to make that happen?"
+
+Reference quality bar: Stripe, Linear, Vercel—designs that make people stop and notice.
 ```
 
 ### 5.2 From Default to Intentional

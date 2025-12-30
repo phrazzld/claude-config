@@ -29,7 +29,7 @@ Every specific task implies a hundred things we're NOT doing. The fleshed spec m
 
 ## Phase 1: Task Capture
 
-Read @TODO.md to find the task needing refinement (typically the next `[ ]` or `[~]` task).
+Read TODO.md to find the task needing refinement (typically the next `[ ]` or `[~]` task).
 
 Copy the task description verbatim. Note any existing work log or context.
 
@@ -86,7 +86,7 @@ Ask and answer:
 
 ## Phase 4: Specification Output
 
-Update the task in @TODO.md with full specification:
+Update the task in TODO.md with full specification:
 
 ```markdown
 - [ ] [Original task description]

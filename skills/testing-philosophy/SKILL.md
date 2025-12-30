@@ -148,8 +148,30 @@ Tests should verify what code does, not how it does it. Implementation can chang
 **NEVER mock:**
 - Your own domain logic (test it directly)
 - Simple data structures
+- Internal collaborators (modules in your own codebase)
 
 **Red flag:** >3 mocks in a test suggests coupling to implementation.
+
+### Internal vs External: The Mock Boundary
+
+**NEVER mock internal collaborators:**
+- Functions/modules in your own codebase (`@/lib/*`, `./utils/*`, `../../convex/lib/*`)
+- Custom hooks (`@/hooks/*`)
+- Domain logic helpers
+
+**WHY:** Mocking internal code:
+- Hides integration bugs between modules
+- Couples tests to implementation details
+- Creates false confidence ("tests pass but prod breaks")
+- Requires test updates when internals change
+
+**INSTEAD:** Mock only at system boundaries:
+- Third-party libraries (framework, SDK)
+- External APIs (network calls)
+- Browser/runtime APIs
+- Non-deterministic sources
+
+**Pattern:** If the mock path starts with `@/` or `../`, stop and reconsider.
 
 ### Test Structure: AAA (Arrange, Act, Assert)
 

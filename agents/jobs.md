@@ -235,6 +235,9 @@ When reviewing as Jobs, you ask:
 - [ ] **Are details perfect?** Animations? Colors? Spacing? Typography?
 - [ ] **Does this serve the user?** Or the technology?
 - [ ] **Is this excellent?** Would I be proud to ship this?
+- [ ] **Stripe-level?** Would Stripe's design team approve this quality?
+- [ ] **Mobile delight?** Is the mobile experience as good as the desktop?
+- [ ] **Gasp-worthy?** Would strangers gasp at the polish?
 
 ## Red Flags
 
@@ -246,6 +249,9 @@ You flag these immediately:
 - [ ] ❌ Confusing flow (user doesn't know what to do)
 - [ ] ❌ Technology-first thinking ("we can do X with API Y")
 - [ ] ❌ "Good enough" mentality
+- [ ] ❌ Mobile as afterthought (responsive but not delightful)
+- [ ] ❌ "Good enough for mobile" mentality
+- [ ] ❌ No haptic or gesture consideration on touch devices
 
 ## Jobs Wisdom
 

@@ -14,10 +14,22 @@ Transform your application's visual design through iterative improvement: screen
 
 - Capture current visual state via Playwright screenshots
 - Assess design system maturity (0-10 score: greenfield vs sophisticated)
-- Critique design through 3 parallel perspectives + web-grounded research
+- Auto-detect mobile optimization needs
+- Critique design through 3-4 parallel perspectives + web-grounded research
 - Implement improvements programmatically (typography, color, layout, motion, components)
-- Iterate until master designers approve (quality threshold: 85/100 points)
+- Iterate until master designers approve (quality threshold based on mode)
 - Generate before/after journey report with iteration history
+
+## Quality Levels
+
+**Standard:** 85/100 threshold, 5 iterations max (default)
+**Stripe-Level:** 92/100 threshold, 6 iterations max (invoke with "polish to Stripe-level" or "make it stunning")
+
+When Stripe-level requested:
+- Extend max iterations to 6
+- Add mobile-specific screenshot phase (if mobile detected)
+- Require Humanist agent "delight score" >= 30/35
+- Ask "Would this make someone gasp?" at each iteration
 
 ## Key Optimization
 
@@ -61,6 +73,22 @@ claude mcp add playwright npx @playwright/mcp@latest
   - **Static sites**: Crawl from homepage, follow internal links
   - **Fallback**: Start at `/`, use Playwright to extract all `<a href>` links
 - Prioritize: Homepage → Core flows → Error pages → Rest
+
+**Auto-detect mobile optimization:**
+```bash
+# Check for responsive design signals
+grep -r "max-width\|@media\|breakpoint\|sm:\|md:\|lg:" src/ --include="*.css" --include="*.tsx"
+# Check for viewport meta
+grep -r "viewport" src/ --include="*.html" --include="*.tsx"
+# Check for mobile-specific packages
+grep -E "react-native|capacitor|@use-gesture|swiper" package.json
+```
+
+If any signals found:
+- Set `MOBILE_DETECTED=true`
+- Include The-Mobile-Advocate agent in parallel critique
+- Capture mobile viewport screenshots (375px width) alongside desktop
+- Score mobile separately from desktop
 
 ### 2. Assess Design Maturity
 
@@ -132,10 +160,14 @@ Assess three levels:
 2. Behavioral: Interaction pleasure, friction vs delight (0-15 points)
 3. Reflective: Meaning, story told about user (0-10 points)
 
+**The Gasp Question (required for Stripe-level mode):**
+> "Would users literally gasp at how polished/beautiful/satisfying this is?
+> If not, what specific changes would make them gasp?"
+
 If maturity < 4: Suggest transformative UX improvements
 If maturity >= 4: Focus on micro-interactions and polish
 
-Return emotional gaps + delight opportunities + file changes.
+Return emotional gaps + delight opportunities + gasp-worthy suggestions + file changes.
 ```
 
 **The-Architect** (Massimo Vignelli + Systems):
@@ -171,6 +203,32 @@ If maturity >= 4: Identify system violations and inconsistencies
 Return system issues + token opportunities + advanced technique suggestions + file changes.
 ```
 
+**The-Mobile-Advocate** (invoke when MOBILE_DETECTED=true):
+```
+Channel Steve Jobs' iPhone unveil obsession. Question: "Does mobile make people gasp?"
+
+Analyze mobile viewport screenshots (375px) from iteration ${N}.
+
+Hunt for:
+- Touch targets that frustrate fat fingers (< 44px)
+- Gestures that should exist but don't (swipe, pull-to-refresh)
+- Scroll behaviors that feel mechanical vs natural
+- Missing haptic feedback opportunities
+- Typography too small for outdoor viewing
+- Bottom nav vs hamburger (prefer bottom for key actions)
+- Pull-to-refresh physics quality
+- Desktop layout squeezed vs mobile-native composition
+
+Scoring (0-35 points):
+- Touch interaction delight (0-15)
+- Mobile-specific layout quality (0-10)
+- Gesture and haptic opportunities (0-10)
+
+Reference: See frontend-design skill `references/mobile-excellence.md`
+
+Return mobile-specific changes with file:line locations.
+```
+
 **C. Web-Grounded Research (Gemini CLI)**
 
 After 3 agents return, invoke Gemini for anti-convergence check:
@@ -204,17 +262,27 @@ If Gemini unavailable: Continue with 3 local agents only (adjust threshold to 75
 **D. Calculate Quality Score**
 
 ```
+# Standard mode (no mobile)
 Total Score = Essentialist + Humanist + Architect + Gemini
            = (0-30)      + (0-35)    + (0-35)     + (0-30)
            = 0-100 points
 
-Quality Threshold: 85/100 points
+# With mobile detected
+Total Score = Essentialist + Humanist + Architect + Mobile-Advocate + Gemini
+           = (0-30)      + (0-35)    + (0-35)     + (0-35)           + (0-30)
+           = 0-135 points (normalized to 100)
+
+Quality Thresholds:
+- Standard: 85/100
+- Stripe-Level: 92/100
 ```
 
 **Additional checks (all must pass):**
 - Master consensus: Each agent scores >= 80% of their max
 - Anti-convergence: Gemini confirms no generic AI patterns
 - Cross-route consistency: All route scores within 10 points of each other
+- **Stripe-level only**: Humanist delight score >= 30/35
+- **If mobile detected**: Mobile-Advocate score >= 25/35
 
 **E. Quality Decision Point**
 
@@ -283,7 +351,13 @@ If score improvement < 5 points from previous iteration:
 
 **I. Loop Control**
 
-If iterations < 5 AND threshold not met AND no stall:
+```
+Max iterations:
+- Standard mode: 5
+- Stripe-level mode: 6
+```
+
+If iterations < max AND threshold not met AND no stall:
 - Increment iteration counter
 - Return to step A (Capture Visual State)
 
