@@ -14,6 +14,10 @@ Implement Issue #$1. Autonomous execution with semantic commits.
 
 Execute the product spec and technical design from Issue #$1. Ship working, tested, committed code.
 
+## Prerequisites
+
+If on `master` or `main`, checkout a work branch named after the issue (e.g., `feature/issue-$1` or `fix/issue-$1` depending on issue type).
+
 ## Startup
 
 ```bash
