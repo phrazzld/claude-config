@@ -518,7 +518,7 @@ docs/
     ADR-0002-database-choice.md
 ```
 
-**When to create ADRs** (from /spec and /architect):
+**When to create ADRs** (from /product and /architect):
 - Decision is costly to reverse (migrations, vendor lock-in, framework choice)
 - Multiple viable alternatives with meaningful trade-offs
 - Affects team workflow or system architecture

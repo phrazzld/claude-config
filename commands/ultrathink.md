@@ -240,7 +240,7 @@ Consider these fundamentally different designs:
 
 ## When to Run Ultrathink
 
-- **After /spec, before /plan**: Validate specification design
+- **After /product, before /plan**: Validate specification design
 - **After /plan, before /execute**: Review task decomposition
 - **Before major refactoring**: Ensure approach reduces complexity
 - **When something feels complex**: Trust your instincts, investigate

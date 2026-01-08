@@ -2,23 +2,34 @@
 
 Streamlined command library for Claude Code CLI, providing an integrated development workflow from ideation to deployment with compounding quality improvements.
 
-## Core Workflow Commands (40 Total)
+## Core Workflow Commands (42 Total)
 
 ### 🚀 Development Pipeline
 
-The main development flow follows this progression:
+**Meta-commands** (consolidated workflows):
+
+| Command | Flow |
+|---------|------|
+| `/autopilot` | discover → spec → design → build → PR |
+| `/deliver $N` | spec → design → build → PR → CI (for known issue) |
+| `/ship` | PR → CI (for manual builds) |
+
+**Granular commands** (when you need control):
 
 ```
-/prime → /spec → /architect → /plan → /execute → /git-pr
+/prime → /product → /architect → /plan → /execute → /git-pr
 ```
 
-1. **prime.md** - Gather context from repository files (README, CLAUDE.md, package.json)
-2. **spec.md** - Research and specification generation with Jobs + domain expert composition
-3. **architect.md** - Transform PRD into DESIGN.md with modules, pseudocode, data flow
-4. **plan.md** - Convert architecture into actionable TODO items with Grug complexity review
-5. **flesh.md** - Transform skeletal TODOs into executable specifications with parallel research
-6. **execute.md** - Adaptive task execution with Carmack + Ousterhout quality review
-7. **git-pr.md** - Create pull requests with auto-generated descriptions
+1. **autopilot.md** - Full autonomous: discover highest-priority issue → deliver → PR
+2. **deliver.md** - End-to-end issue delivery with CI verification (chains: product → architect → build → git-pr → ci)
+3. **ship.md** - Post-build shipping: create PR and wait for CI
+4. **prime.md** - Gather context from repository files (README, CLAUDE.md, package.json)
+5. **product.md** - Product specification with user interviews and success metrics
+6. **architect.md** - Transform PRD into DESIGN.md with modules, pseudocode, data flow
+7. **plan.md** - Convert architecture into actionable TODO items with Grug complexity review
+8. **flesh.md** - Transform skeletal TODOs into executable specifications with parallel research
+9. **execute.md** - Adaptive task execution with Carmack + Ousterhout quality review
+10. **git-pr.md** - Create pull requests with auto-generated descriptions
 
 ### 📊 Analysis & Debugging
 
@@ -131,13 +142,10 @@ Commands intelligently compose agents based on context:
 - **Security bugs** → security-sentinel
 - **Performance bugs** → performance-oracle
 
-### /spec - Visionary + Technical Validation
-- **Jobs** (simplicity, craft, excellence - always invoked)
-- Plus domain experts based on feature type:
-  - API/Backend → api-design-specialist + data-integrity-guardian
-  - Frontend/UI → user-experience-advocate + test-strategy-architect
-  - Security → security-sentinel + api-design-specialist
-  - Infrastructure → infrastructure-guardian + test-strategy-architect
+### /product - Product Specification
+- User interviews via AskUserQuestion (context, scope, success, edge cases)
+- Research: users, pain points, competitive landscape
+- Structured spec: Problem, Users, User Stories, Success Metrics, Non-Goals
 
 ### /groom - Comprehensive 15-Agent Audit
 - All 8 specialists + all 7 personas in parallel
@@ -158,7 +166,7 @@ The `/execute` command assesses task complexity and allocates reasoning accordin
 ### Parallel Processing
 
 Multiple commands use the Task tool for concurrent expert analysis:
-- `/spec` - Jobs + domain experts (3-4 agents)
+- `/product` - User interviews + product spec
 - `/flesh` - 3 research experts for TODO expansion
 - `/debug` - Specialist routing (1-2 agents based on bug type)
 - `/groom` - 15 agents (8 specialists + 7 personas)
@@ -189,15 +197,36 @@ Separate Claude sessions for parallel development:
 
 ## Workflow Examples
 
-### Feature Development
+### Consolidated Issue Delivery (Recommended)
+```bash
+/groom                    # Creates GitHub issues from 15-agent audit
+/deliver 42               # Spec → Design → Build → PR → CI (one command)
+                          # Await review
+/git-respond              # Handle review feedback
+```
+
+### Full Autonomous (Discover + Deliver)
+```bash
+/autopilot                # Discovers highest-priority issue
+                          # Runs spec → design → build → PR automatically
+```
+
+### Manual Build → Ship
+```bash
+# (write code manually)
+/ship                     # Create PR + wait for CI
+/git-respond              # Handle review feedback
+```
+
+### Granular Control (When Needed)
 ```bash
 /prime                    # Understand the codebase
-/spec                     # Jobs + domain experts research and specify
+/product                  # Interview user, research, write product spec
 /architect                # Design modules and interfaces
 /plan                     # Break down with Grug complexity review
 /execute                  # Work through with Carmack + Ousterhout review
-                          # Codification auto-prompt appears
 /git-pr                   # Create pull request
+/ci                       # Verify CI passes
 ```
 
 ### Debugging Session
@@ -205,7 +234,7 @@ Separate Claude sessions for parallel development:
 /debug                    # Intelligent specialist routing
                           # Codification auto-prompt for bug patterns
 /execute                  # Fix identified issues
-/git-push                 # Push fixes with quality checks
+/ship                     # PR + CI verification
 ```
 
 ### Codebase Grooming
@@ -214,7 +243,7 @@ Separate Claude sessions for parallel development:
                           # Gemini CLI competitive intelligence
                           # Cross-validation signals
                           # Persona consensus
-                          # Updated BACKLOG.md
+                          # Creates GitHub issues
 ```
 
 ### Parallel Development
@@ -222,7 +251,7 @@ Separate Claude sessions for parallel development:
 /git-worktree-create feature/auth  # Create isolated worktree
 # Navigate to worktree, new Claude session
 /prime
-/spec
+/product
 /plan
 /execute
 # Back to main
@@ -250,7 +279,7 @@ Separate Claude sessions for parallel development:
 ## Best Practices
 
 1. **Start with context**: Use `/prime` to understand the codebase
-2. **Research thoroughly**: Use `/spec` (Jobs + experts) for complex features
+2. **Research thoroughly**: Use `/product` to interview users and define specs
 3. **Track everything**: Let commands update TODO.md automatically
 4. **Stress test designs**: Run `/ultrathink` before building risky features
 5. **Codify learnings**: Accept codification prompts in `/execute`, `/debug`, `/git-respond`

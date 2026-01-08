@@ -87,7 +87,7 @@ Output a clear, actionable summary:
 - [Any identified blockers or concerns]
 
 ### Recommended Action
-**Ready for**: [/spec | /architect | /plan | /flesh | /execute]
+**Ready for**: [/product | /architect | /plan | /flesh | /execute]
 
 [1-2 sentences explaining why this is the right next step]
 ```
@@ -96,7 +96,7 @@ Output a clear, actionable summary:
 
 Based on project state:
 
-**No TASK.md?** → `/spec` (define what we're building)
+**No TASK.md?** → `/product` (define what we're building)
 
 **TASK.md exists, no DESIGN.md?** → `/architect` (design the system)
 

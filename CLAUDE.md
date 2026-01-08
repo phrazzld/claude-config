@@ -37,7 +37,7 @@ Output code that is:
 
 ## Key Tools
 
-- `gemini` CLI: terminal Gemini 2.5 agent with web search and ~1M-token context; use for web-grounded research, multi-page docs/codebase analysis, and design comparison, then bring back only the conclusions.
+- `gemini` CLI: terminal Gemini 3 agent with web search and ~1M-token context; use for web-grounded research, multi-page docs/codebase analysis, and design comparison, then bring back only the conclusions.
 - Morph MCP (`edit_file`, `warp_grep`): fast, high-accuracy file edits and deep code search; prefer Morph `edit_file` for non-trivial edits and `warp_grep` for fuzzy "how/where/what" queries when `rg` is too narrow.
 
 ## Design & Frontend Work
