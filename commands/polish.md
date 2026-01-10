@@ -6,6 +6,72 @@ Iteratively polish visual design through automated critique and implementation c
 
 # POLISH
 
+## Invocation Modes
+
+### Quick Pass Mode
+**Trigger**: "polish pass", "one more pass", "quick polish", "incremental"
+
+Lightweight single-pass refinement designed for repeated execution:
+- ONE high-impact change per invocation
+- No agent spawning (direct analysis)
+- Run repeatedly for cumulative improvement (10+ passes compound!)
+- Desktop and mobile analyzed SEPARATELY each pass
+- Uses Chrome MCP for live screenshots
+
+**Usage**: `/polish pass` or "do a quick polish pass"
+
+### Full Polish Mode (Default)
+**Trigger**: Standard `/polish` invocation
+
+Full multi-iteration loop with Design Council (existing behavior below).
+
+### Overhaul Mode
+**Trigger**: "it sucks", "dogshit", "terrible", "overhaul", "dramatic", "radical", "from scratch"
+
+Aggressive transformation for broken designs:
+- Force maturity score to 0 (greenfield treatment)
+- Bold changes acceptable, no preservation instinct
+- Higher iteration count (8 max vs 5)
+- "DRAMATICALLY improve" framing throughout
+- Leverage existing libraries to their full potential
+- Apply the full prompt: "I NEED you to do a spectacular job building absolutely world-class UI/UX"
+
+---
+
+## The Agreement Frame
+
+When analyzing (all modes), engage with this motivational framing:
+
+> "I still think there are strong opportunities to enhance the UI/UX look and feel.
+> Make everything more intuitive, user-friendly, visually appealing, polished, slick—
+> world-class by Stripe/Linear/Vercel standards. Don't you agree?"
+
+This explicit agreement framing activates deeper engagement with polish opportunities.
+
+---
+
+## Desktop vs Mobile: Separate Optimization
+
+**CRITICAL**: Desktop and mobile are different products, not responsive variations.
+Hyper-optimize each SEPARATELY to play to the specifics of each modality.
+
+**Desktop-Specific Analysis:**
+- Hover states and micro-interactions?
+- Keyboard navigation and shortcuts?
+- Information density appropriate for large screens?
+- Mouse precision affordances?
+- Multi-column layouts leveraging width?
+
+**Mobile-Specific Analysis:**
+- Touch targets 44px minimum?
+- Thumb-reachable critical actions (bottom nav)?
+- Gesture vocabulary (swipe, pull-to-refresh, pinch)?
+- Mobile-native composition vs squeezed desktop?
+- Haptic feedback opportunities?
+- Momentum scrolling physics?
+
+---
+
 Transform your application's visual design through iterative improvement: screenshot routes with Playwright, critique through master designer perspectives, implement changes programmatically, repeat until design reaches quality bar set by Rams, Hara, Norman, and Vignelli.
 
 **What makes this different:** Adaptive approach based on project maturity. Early-stage projects get bold transformations. Sophisticated design systems get respectful refinements.
@@ -110,6 +176,29 @@ Score 8-10: Production-grade (refinement mode - preserve investments)
 - Low maturity: Suggest transformative changes (new fonts, color systems, layout restructuring)
 - High maturity: Focus on refinements (token value adjustments, consistency fixes, polish)
 
+### 2.5 Infer Current DNA
+
+Analyze screenshots and config to detect current design DNA:
+
+```
+DNA Axes (one per dimension):
+- Layout: [centered|asymmetric|grid-breaking|full-bleed|bento|editorial]
+- Color: [dark|light|monochrome|gradient|high-contrast|brand-tinted]
+- Typography: [display-heavy|text-forward|minimal|expressive|editorial]
+- Motion: [orchestrated|subtle|aggressive|none|scroll-triggered]
+- Density: [spacious|compact|mixed|full-bleed]
+- Background: [solid|gradient|textured|patterned|layered]
+
+Log: "Current DNA: [layout, color, typography, motion, density, background]"
+```
+
+**DNA Constraint by Mode:**
+- Quick pass: Stay within DNA (refine, don't shift)
+- Full polish: Can shift 1-2 axes if justified
+- Overhaul: Complete DNA redefinition allowed
+
+See: `aesthetic-system` skill `references/dna-codes.md` for full DNA system.
+
 ### 3. The Polish Loop
 
 **Iterate until quality threshold met (max 5 iterations):**
@@ -131,6 +220,10 @@ Launch 3 agents concurrently using Task tool (single message, 3 calls):
 Channel Rick Rubin and Dieter Rams. Question: "What can be removed?"
 
 Analyze screenshots from iteration ${N}. Current maturity: ${SCORE}/10.
+Current DNA: ${DNA} (inferred in 2.5)
+
+**DNA Constraint:** Improvements should stay within current DNA for quick pass,
+can shift 1-2 axes for full polish, or redefine entirely for overhaul.
 
 Hunt for:
 - Visual noise preventing content from singing
@@ -154,6 +247,7 @@ Return specific changes with file:line locations.
 Channel Don Norman and Steve Jobs. Question: "How does it feel to be human here?"
 
 Analyze screenshots from iteration ${N}. Current maturity: ${SCORE}/10.
+Current DNA: ${DNA} — improvements should align with this aesthetic direction.
 
 Assess three levels:
 1. Visceral: First impression, gut reaction (0-10 points)
@@ -175,6 +269,9 @@ Return emotional gaps + delight opportunities + gasp-worthy suggestions + file c
 Channel Massimo Vignelli. Question: "Is there intellectual elegance through structure?"
 
 Analyze screenshots from iteration ${N}. Current maturity: ${SCORE}/10.
+Current DNA: ${DNA} — structural suggestions should work within this aesthetic.
+
+Check banned patterns: See aesthetic-system/references/banned-patterns.md
 
 Check:
 - Grid discipline and intentional breaks (0-15 points)
@@ -224,7 +321,7 @@ Scoring (0-35 points):
 - Mobile-specific layout quality (0-10)
 - Gesture and haptic opportunities (0-10)
 
-Reference: See frontend-design skill `references/mobile-excellence.md`
+Reference: See aesthetic-system skill `references/mobile-excellence.md`
 
 Return mobile-specific changes with file:line locations.
 ```
@@ -586,6 +683,64 @@ Better to stop at 2 iterations with 87/100 than force 5 iterations chasing 95/10
 
 **Master Consensus Matters:**
 When Essentialist, Humanist, Architect, and Gemini all approve, trust them. They embody centuries of design wisdom: Rams' functionalism, Hara's emptiness, Norman's emotion, Vignelli's systems thinking.
+
+---
+
+## Quick Pass Mode Workflow
+
+When triggered with "polish pass", "quick polish", or "one more pass":
+
+### 1. Screenshot Current State (Chrome MCP)
+
+```
+Use mcp__claude-in-chrome__tabs_context_mcp
+Navigate to localhost:3000 (or specified route)
+
+Desktop capture:
+- mcp__claude-in-chrome__resize_window (1440x900)
+- mcp__claude-in-chrome__computer screenshot
+
+Mobile capture:
+- mcp__claude-in-chrome__resize_window (375x812)
+- mcp__claude-in-chrome__computer screenshot
+```
+
+### 2. Deep Analysis (SEPARATE for each modality)
+
+Apply the Agreement Frame, then analyze:
+
+**Desktop**: What's the single highest-impact improvement? What would Stripe do?
+**Mobile**: What's blocking thumb-zone usability? What gesture is missing?
+
+### 3. Identify ONE Change
+
+Don't fix everything. Pick THE most impactful improvement:
+1. User friction (blocks tasks) - highest priority
+2. Visual hierarchy (confuses scanning)
+3. Micro-polish (creates delight)
+
+### 4. Implement and Verify
+
+Apply the change. Re-screenshot. Confirm improvement.
+
+### 5. Report
+
+```
+✨ Polish Pass Complete
+
+Changed: [specific change]
+Before: [what was wrong]
+After: [what's better]
+
+Remaining opportunities:
+- [next highest impact]
+- [and next]
+- [and next]
+
+Run another pass to continue improving.
+```
+
+**Key insight**: These compound! After 10 passes, the cumulative improvement is dramatic.
 
 ---
 

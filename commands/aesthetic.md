@@ -63,6 +63,80 @@ Assess the application's emerging identity and summon 1-2 additional perspective
 
 ---
 
+## Phase 0: Discovery (Greenfield Projects)
+
+**Trigger this phase when:**
+- Project maturity < 4 (greenfield)
+- User says "new design", "redesign", "from scratch"
+- User provides inspiration URLs
+
+**Skip if:** Existing project with established design system (maturity >= 4)
+
+### 0.1 Context Questions
+
+Use AskUserQuestion to gather design context:
+
+```markdown
+Question 1: "What are we building?"
+Options: Landing page, Dashboard, Form/signup, Component library, Other
+
+Question 2: "Project context?"
+Options: SaaS/Developer tool, Consumer app, Creative/Portfolio, E-commerce, Enterprise/B2B
+
+Question 3: "Target audience?"
+Options: Developers/Technical, Business professionals, General public, Creative professionals
+
+Question 4: "Background style?"
+Options: Pure white (#fff), Off-white/warm (#faf8f5), Light tinted, Dark/moody
+```
+
+### 0.2 Inspiration Analysis (if URLs provided)
+
+For each inspiration URL:
+
+```markdown
+1. mcp__claude-in-chrome__tabs_context_mcp
+2. mcp__claude-in-chrome__tabs_create_mcp
+3. mcp__claude-in-chrome__navigate url=$URL
+4. mcp__claude-in-chrome__computer action="screenshot"
+
+Extract from screenshot:
+- **Colors:** bg=#___, text=#___, accent=#___
+- **Typography:** Headlines=[Font], Body=[Font]
+- **Key patterns:** [notable UI elements]
+- **DNA inference:** [layout, color, typography, motion]
+```
+
+### 0.3 Palette Selection (Optional: Coolors browsing)
+
+If user wants to browse palettes:
+
+```markdown
+1. Navigate to coolors.co/palettes/trending
+2. Screenshot, describe 4-5 visible palettes
+3. AskUserQuestion: "Which palette?" with options + "Scroll for more"
+4. On selection: click palette → capture hex codes
+5. Map to Tailwind config based on Q4 background preference
+```
+
+### 0.4 Typography Selection (Optional: Google Fonts browsing)
+
+If user wants to browse fonts:
+
+```markdown
+1. Navigate to fonts.google.com/?sort=trending
+2. Screenshot, describe 4-5 fonts with style notes
+3. AskUserQuestion: "Heading font?" with options + "Search" + "Scroll"
+4. Repeat for body font
+5. Generate: @import link, fontFamily config
+```
+
+**CRITICAL:** Suggest ORIGINAL pairings, not defaults (no Inter, Roboto, Space Grotesk).
+
+See: `aesthetic-system` skill `references/browser-helpers.md` for detailed patterns.
+
+---
+
 ## Phase 1: Understanding the Canvas
 
 Before we paint, we must understand the material.
@@ -114,8 +188,8 @@ find src -name "globals.css" -o -name "theme*" -o -name "tokens*"
 Before analysis, invoke the design philosophy:
 
 ```bash
-# Load the frontend-design skill
-Skill("frontend-design")
+# Load the aesthetic-system skill
+Skill("aesthetic-system")
 ```
 
 This activates awareness of:
@@ -383,7 +457,7 @@ Mobile is not responsive—it's a different product. Assess separately:
 - **react-spring**: Physics-based animations
 - **Capacitor Haptics**: Native haptic feedback
 
-See: `frontend-design` skill `references/mobile-excellence.md`
+See: `aesthetic-system` skill `references/mobile-excellence.md`
 
 ---
 
@@ -414,7 +488,7 @@ You are channeling Don Norman and Steve Jobs. Your question: "How does it feel t
 - Encourage: "Make it feel magic. Make it kind."
 - Report: Friction points. Delight opportunities. Emotional assessment.
 
-Task The-Architect (general-purpose with frontend-design skill)
+Task The-Architect (general-purpose with aesthetic-system skill)
 Prompt:
 You are channeling Massimo Vignelli. Your question: "Is there intellectual elegance through structure?"
 - Check the consistency. Is the grid disciplined?
@@ -560,40 +634,66 @@ Identify unconscious choices and propose intentional moves:
 - Intentional: "[Specific treatment] because [atmosphere/craft reasoning]"
 ```
 
-### 5.3 The Elevation Roadmap
+### 5.3 The Elevation Roadmap (DNA-Coded Proposals)
 
-Propose 3 distinctive paths forward. Give them evocative names.
+Propose 3 distinctive paths forward. **Each MUST declare unique DNA code.**
+
+See: `aesthetic-system` skill `references/dna-codes.md` for DNA axis options.
 
 ```markdown
-## Elevation Roadmap
+## Elevation Proposals
 
-### Option A: The Rams (Anchor Direction)
-*Honest. Unobtrusive. Long-lasting.*
+**DNA Variation Rule:** No two proposals may share >2 axes.
 
-**Vibe**: Pure functionalism. Every element earns its place. Timeless over trendy.
-**Typography**: Grotesk family, restrained scale, weight as hierarchy
-**Color**: Monochrome with single signal color
+### Proposal A: The Rams
+**DNA:** [centered, monochrome, text-forward, subtle, spacious, solid]
+
+**Soul**: Pure functionalism. Every element earns its place. Timeless over trendy.
+**Typography**: [Specific font + hex] — [reasoning tied to brand soul]
+**Palette**: [Specific colors with hex codes] — [emotional reasoning]
 **Motion**: Subtle, purposeful, never decorative
 **Layout**: Generous whitespace, clear hierarchy, no decoration
-**Details**: Clean edges, honest shadows, no texture
 **Differentiation**: "The design that gets out of the way and lets the work speak."
 
-### Option B: [Context-Specific Direction]
-*Generated based on project's emerging identity*
+**Files to modify:**
+- `globals.css` (fonts, base colors)
+- `tailwind.config.ts` (palette, fonts)
+- `[hero component]` (layout restructure)
 
-**Vibe**: [Describe the feeling]
-**Typography**: [Specific recommendations]
-**Color**: [Specific palette with reasoning]
-**Motion**: [Motion philosophy]
+### Proposal B: [Context-Specific Name]
+**DNA:** [asymmetric, gradient, display-heavy, orchestrated, compact, layered]
+
+*Generated based on project's emerging identity. MUST differ from A on 4+ axes.*
+
+**Soul**: [Describe the feeling]
+**Typography**: [Specific font + hex] — [reasoning]
+**Palette**: [Specific colors with hex codes] — [reasoning]
+**Motion**: [Motion philosophy with examples]
 **Layout**: [Composition approach]
-**Details**: [Texture and craft]
 **Differentiation**: [What makes this unforgettable]
 
-### Option C: [Context-Specific Direction]
-*Generated based on project's emerging identity*
+**Files to modify:**
+- [Specific files with brief descriptions]
 
-[Same structure as Option B]
+### Proposal C: [Context-Specific Name]
+**DNA:** [grid-breaking, high-contrast, editorial, scroll-triggered, mixed, textured]
+
+*Generated based on project's emerging identity. MUST differ from A and B on 4+ axes.*
+
+[Same structure as Proposal B]
+
+---
+**DNA Variation Enforced:** Each proposal has unique DNA.
+**Self-Review:** Check for banned patterns (see `aesthetic-system/references/banned-patterns.md`)
+**User selects one → proceed to Design Council critique.**
 ```
+
+### After User Selection
+
+Once user picks a proposal:
+1. Apply the selected DNA as constraint for all subsequent suggestions
+2. Proceed to Phase 5.4 (Implementation Priorities) with that proposal's specifics
+3. Design Council agents should evaluate against the chosen DNA
 
 ### 5.4 Implementation Priorities
 
