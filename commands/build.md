@@ -50,6 +50,28 @@ while not complete and not blocked:
 
 Before commit: `pnpm build && pnpm test && pnpm lint`
 
+## UI Verification (Web Projects)
+
+If Next.js/React project AND dev server is running (localhost:3000):
+
+1. Use Chrome MCP to navigate to affected routes
+2. Take screenshot + read console for errors
+3. Fix any console errors or visual issues
+4. Re-verify until clean
+
+This implements the Boris Cherny pattern: Claude verifies its own UI work.
+
+```
+# Automatic UI verification loop
+for each affected_route:
+    navigate(localhost:3000 + route)
+    screenshot()
+    console_errors = read_console()
+    if console_errors:
+        fix_errors()
+        re-verify()  # loop until clean
+```
+
 ## Stopping Conditions
 
 **Continue until**: All stories implemented, tests pass, build succeeds, issue closed.
