@@ -8,8 +8,7 @@
         "version": "1.0.0",
         "installedAt": "2025-11-24T21:58:45.345Z",
         "lastUpdated": "2025-11-24T21:58:45.345Z",
-        "gitCommitSha": "4e2a828117385649470ab5208452f439f850d8bb",
-        "isLocal": true
+        "gitCommitSha": "4e2a828117385649470ab5208452f439f850d8bb"
       }
     ],
     "code-review@claude-code-plugins": [
@@ -19,8 +18,7 @@
         "version": "1.0.0",
         "installedAt": "2025-11-27T01:08:12.426Z",
         "lastUpdated": "2025-11-27T01:08:12.426Z",
-        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
-        "isLocal": true
+        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f"
       }
     ],
     "commit-commands@claude-code-plugins": [
@@ -30,8 +28,7 @@
         "version": "1.0.0",
         "installedAt": "2025-11-27T01:08:12.426Z",
         "lastUpdated": "2025-11-27T01:08:12.426Z",
-        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
-        "isLocal": true
+        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f"
       }
     ],
     "feature-dev@claude-code-plugins": [
@@ -41,8 +38,7 @@
         "version": "1.0.0",
         "installedAt": "2025-11-27T01:08:12.426Z",
         "lastUpdated": "2025-11-27T01:08:12.426Z",
-        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
-        "isLocal": true
+        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f"
       }
     ],
     "frontend-design@claude-code-plugins": [
@@ -52,8 +48,7 @@
         "version": "1.0.0",
         "installedAt": "2025-11-27T01:08:12.426Z",
         "lastUpdated": "2025-11-27T01:08:12.426Z",
-        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
-        "isLocal": true
+        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f"
       }
     ],
     "pr-review-toolkit@claude-code-plugins": [
@@ -63,8 +58,17 @@
         "version": "1.0.0",
         "installedAt": "2025-11-27T01:08:12.426Z",
         "lastUpdated": "2025-11-27T01:08:12.426Z",
-        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f",
-        "isLocal": true
+        "gitCommitSha": "10b8736b55ebc363ae3ef32ced5c9a3e9314ce3f"
+      }
+    ],
+    "code-simplifier@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/phaedrus/.claude/plugins/cache/claude-plugins-official/code-simplifier/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-01-10T06:45:50.330Z",
+        "lastUpdated": "2026-01-10T06:45:50.330Z",
+        "gitCommitSha": "55c1c61595f42affb58f2b0d457ba0cb70ae77fb"
       }
     ]
   }
