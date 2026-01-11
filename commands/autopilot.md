@@ -37,7 +37,11 @@ Run `/build` on the issue. It handles:
 - Commits reference issue: `feat: description (#N)`
 - Final commit closes issue: `closes #N`
 
-## Phase 5: Pull Request
+## Phase 5: Documentation
+
+Run `/document` to generate state diagrams for stateful components, update READMEs, and add architecture diagrams if needed.
+
+## Phase 6: Pull Request
 
 Run `/git-pr`. Ensure PR description references the issue with `Closes #N` for auto-linking.
 

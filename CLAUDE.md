@@ -60,3 +60,9 @@ Output code that is:
 - Hidden coupling, action-at-a-distance, magic shared state.
 - Large diffs, untested branches, speculative abstractions.
 - Comments defending bad design instead of changing the design.
+
+## Staging
+
+Learnings land here first. When this section grows, `/distill` graduates items to skills/agents/commands.
+
+<!-- Add learnings below this line -->

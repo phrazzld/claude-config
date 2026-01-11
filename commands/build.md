@@ -18,6 +18,13 @@ Execute the product spec and technical design from Issue #$1. Ship working, test
 
 If on `master` or `main`, checkout a work branch named after the issue (e.g., `feature/issue-$1` or `fix/issue-$1` depending on issue type).
 
+## UI Work Detection
+
+If issue involves frontend (tsx/jsx/vue/svelte files, CSS, Tailwind, components):
+- Invoke `Skill("aesthetic-system")` for design guidance
+- Apply `aesthetic-system/references/implementation-constraints.md` during implementation
+- Use `references/banned-patterns.md` to avoid AI slop
+
 ## Startup
 
 ```bash
@@ -91,3 +98,29 @@ for each affected_route:
 
 **Verification**: ✅ tests ✅ build ✅ lint
 ```
+
+## Post-Implementation Documentation
+
+After successful implementation, run `/document` to:
+- Generate state diagrams for any stateful components added
+- Update READMEs for new directories
+- Add architecture diagrams if module boundaries changed
+
+## Post-Implementation Codification
+
+After documentation, autonomously preserve learnings:
+
+1. **Scan the diff** for patterns worth keeping:
+   - Code used 3+ times → extract to shared utility
+   - Bug fix with non-obvious cause → add regression test
+   - Multi-step workflow discovered → consider as skill
+   - Quality issue caught → add to relevant agent
+
+2. **Confidence-based action**:
+   - HIGH confidence (clear pattern, obvious value) → codify directly
+   - MEDIUM confidence (useful but uncertain) → add to CLAUDE.md staging section
+   - LOW confidence (one-off, context-specific) → skip
+
+3. **Codify in same PR** when possible. Keep implementation + codification atomic.
+
+No prompting required. Use judgment about what's worth preserving.

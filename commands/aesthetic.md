@@ -192,6 +192,8 @@ Before analysis, invoke the design philosophy:
 Skill("aesthetic-system")
 ```
 
+**Implementation Constraints**: Apply rules from `aesthetic-system/references/implementation-constraints.md` during all code changes.
+
 This activates awareness of:
 - Bold aesthetic direction over generic defaults
 - Distinctive typography with character

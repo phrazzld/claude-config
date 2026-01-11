@@ -133,6 +133,7 @@ For incremental refinement after initial build:
 
 ## References
 
+- `references/implementation-constraints.md` - **MUST/NEVER rules for implementation** (stack, components, animation, performance)
 - `references/aesthetics-guidelines.md` - Typography, color, motion, spatial composition
 - `references/advanced-techniques.md` - WebGL, animations, CSS art, icons, asset generation
 - `references/anti-patterns.md` - AI slop to avoid, convergence traps, variation mandate

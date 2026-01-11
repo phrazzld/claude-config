@@ -89,3 +89,13 @@ Distill this repo's knowledge into a single, sharp `CLAUDE.md`.
 - Maximum signal per word.
 - Document what is not obvious from code or README.
 - If you can't find 3 decisions, 2 insights, and 1 starting point, read more code before writing.
+
+## Graduation Rules
+
+CLAUDE.md is a staging area for learnings. When sections grow, graduate them:
+
+- **Patterns section > 10 lines** → extract to a skill
+- **Rules section > 5 items** → extract to an agent
+- **Workflow section > 3 steps** → extract to a command
+
+Keep CLAUDE.md lean. Knowledge graduates to executable artifacts.

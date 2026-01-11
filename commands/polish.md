@@ -74,6 +74,8 @@ Hyper-optimize each SEPARATELY to play to the specifics of each modality.
 
 Transform your application's visual design through iterative improvement: screenshot routes with Playwright, critique through master designer perspectives, implement changes programmatically, repeat until design reaches quality bar set by Rams, Hara, Norman, and Vignelli.
 
+**Invoke UI Skills**: Load `Skill("aesthetic-system")` and apply `references/implementation-constraints.md` for all code changes.
+
 **What makes this different:** Adaptive approach based on project maturity. Early-stage projects get bold transformations. Sophisticated design systems get respectful refinements.
 
 ## Intent
