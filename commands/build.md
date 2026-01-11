@@ -106,6 +106,35 @@ After successful implementation, run `/document` to:
 - Update READMEs for new directories
 - Add architecture diagrams if module boundaries changed
 
+## Post-Implementation Simplification
+
+Launch the `code-simplifier:code-simplifier` agent to refine recently modified code:
+- Preserves functionality while improving clarity
+- Applies project standards from CLAUDE.md
+- Reduces unnecessary complexity and nesting
+- Improves naming and consolidates related logic
+
+Commit any simplifications: `refactor: simplify implementation (#$1)`
+
+## Post-Implementation Deep Module Review
+
+After simplification, invoke the `ousterhout` agent to review for architectural quality:
+
+Launch `ousterhout` agent with prompt:
+```
+Review the recently modified code for deep module design:
+- Module depth: Is interface simple relative to functionality?
+- Information hiding: Are implementation details hidden?
+- Change amplification: Would small changes require many edits?
+- Red flags: Shallow modules, generic names, pass-through methods?
+
+Focus on files changed in this implementation. Suggest concrete refactorings.
+```
+
+If agent identifies issues:
+1. Implement suggested refactorings for high-impact items
+2. Commit: `refactor: improve module depth (#$1)`
+
 ## Post-Implementation Codification
 
 After documentation, autonomously preserve learnings:

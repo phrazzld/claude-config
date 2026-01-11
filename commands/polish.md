@@ -114,6 +114,35 @@ Run 3 design agents + Gemini research concurrently (2-3 minutes vs 8-10 sequenti
 
 ## Your Approach
 
+### 0. Direction Check (Pre-Loop)
+
+**Before polishing, ensure there's a clear design direction.**
+
+If no clear direction AND maturity < 6:
+
+```
+AskUserQuestion:
+"Would you like to explore design directions first?
+This helps ensure we're polishing toward a coherent vision, not just fixing individual issues."
+Options:
+- "Yes, explore directions" → Skill("design-exploration")
+- "No, polish current design" → Proceed to Setup & Discovery
+```
+
+**If exploration selected:**
+1. Invoke `Skill("design-exploration")`
+2. User selects direction from visual catalogue
+3. Selected direction's DNA becomes constraint for polish loop
+4. All agent critiques reference the chosen direction
+
+**Direction signals (skip exploration if present):**
+- User specifies "polish toward [aesthetic]" (e.g., "polish toward brutalist")
+- DESIGN.md or direction file exists in project
+- Maturity >= 6 (established design system)
+- User explicitly declines exploration
+
+---
+
 ### 1. Setup & Discovery
 
 **Ensure Playwright MCP available:**

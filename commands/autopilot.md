@@ -47,6 +47,26 @@ Launch the `code-simplifier:code-simplifier` agent to refine recently modified c
 
 Commit any simplifications with: `refactor: simplify implementation (#N)`
 
+## Phase 5.5: Deep Module Review
+
+After simplification, invoke the `ousterhout` agent to review for architectural quality:
+
+Launch `ousterhout` agent with prompt:
+```
+Review the recently modified code for deep module design principles:
+- Are modules deep (simple interface, rich implementation)?
+- Is information properly hidden?
+- Are there complexity red flags (change amplification, cognitive load)?
+- Any shallow modules or pass-through methods?
+- Suggest refactoring opportunities.
+
+Focus on files changed in this implementation.
+```
+
+If agent identifies refactoring opportunities:
+1. Implement suggested refactorings for high-impact items
+2. Commit: `refactor: improve module depth (#N)`
+
 ## Phase 6: Documentation
 
 Run `/document` to generate state diagrams for stateful components, update READMEs, and add architecture diagrams if needed.

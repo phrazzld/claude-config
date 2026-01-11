@@ -63,16 +63,42 @@ Assess the application's emerging identity and summon 1-2 additional perspective
 
 ---
 
-## Phase 0: Discovery (Greenfield Projects)
+## Phase 0: Design Exploration (Recommended)
+
+**Always consider starting with visual exploration.**
+
+Before auditing, offer to generate a visual design catalogue:
+
+```
+AskUserQuestion:
+"Would you like to explore design directions visually first?
+I'll build a catalogue of 5-8 working proposals you can browse and compare."
+Options:
+- "Yes, explore directions" → Skill("design-exploration")
+- "No, proceed with audit" → Skip to Phase 0.1 or Phase 1
+```
+
+**If exploration selected:**
+1. Invoke `Skill("design-exploration")`
+2. User selects direction from visual catalogue
+3. Selected direction guides all subsequent phases
+4. DNA code becomes constraint for proposals
+
+**If exploration declined:** Continue with standard audit flow below.
+
+---
+
+## Phase 0.1: Discovery (Greenfield Projects)
 
 **Trigger this phase when:**
 - Project maturity < 4 (greenfield)
 - User says "new design", "redesign", "from scratch"
 - User provides inspiration URLs
+- Design exploration was declined
 
 **Skip if:** Existing project with established design system (maturity >= 4)
 
-### 0.1 Context Questions
+### 0.1.1 Context Questions
 
 Use AskUserQuestion to gather design context:
 
@@ -90,7 +116,7 @@ Question 4: "Background style?"
 Options: Pure white (#fff), Off-white/warm (#faf8f5), Light tinted, Dark/moody
 ```
 
-### 0.2 Inspiration Analysis (if URLs provided)
+### 0.1.2 Inspiration Analysis (if URLs provided)
 
 For each inspiration URL:
 
@@ -107,7 +133,7 @@ Extract from screenshot:
 - **DNA inference:** [layout, color, typography, motion]
 ```
 
-### 0.3 Palette Selection (Optional: Coolors browsing)
+### 0.1.3 Palette Selection (Optional: Coolors browsing)
 
 If user wants to browse palettes:
 
@@ -119,7 +145,7 @@ If user wants to browse palettes:
 5. Map to Tailwind config based on Q4 background preference
 ```
 
-### 0.4 Typography Selection (Optional: Google Fonts browsing)
+### 0.1.4 Typography Selection (Optional: Google Fonts browsing)
 
 If user wants to browse fonts:
 
