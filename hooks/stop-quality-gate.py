@@ -53,11 +53,13 @@ def run_checks(project_type, cwd):
     checks = []
 
     if project_type == "node":
-        # Check what package manager and scripts are available
+        # Just use pnpm test - let package.json handle the test runner flags
+        # This avoids issues where package.json already includes 'vitest run'
+        # and we'd end up with 'vitest run --run --passWithNoTests'
         checks = [
             ("Type check", ["pnpm", "tsc", "--noEmit"]),
             ("Lint", ["pnpm", "lint"]),
-            ("Test", ["pnpm", "test", "--run", "--passWithNoTests"]),
+            ("Test", ["pnpm", "test"]),
         ]
     elif project_type == "python":
         checks = [

@@ -37,11 +37,21 @@ Run `/build` on the issue. It handles:
 - Commits reference issue: `feat: description (#N)`
 - Final commit closes issue: `closes #N`
 
-## Phase 5: Documentation
+## Phase 5: Simplification
+
+Launch the `code-simplifier:code-simplifier` agent to refine recently modified code. It:
+- Preserves functionality while improving clarity
+- Applies project standards from CLAUDE.md
+- Reduces unnecessary complexity and nesting
+- Improves naming and consolidates related logic
+
+Commit any simplifications with: `refactor: simplify implementation (#N)`
+
+## Phase 6: Documentation
 
 Run `/document` to generate state diagrams for stateful components, update READMEs, and add architecture diagrams if needed.
 
-## Phase 6: Pull Request
+## Phase 7: Pull Request
 
 Run `/git-pr`. Ensure PR description references the issue with `Closes #N` for auto-linking.
 
