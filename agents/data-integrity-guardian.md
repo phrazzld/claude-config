@@ -121,6 +121,49 @@ Ensure data integrity across all database operations: migrations, models, querie
   - Don't include external API calls in transactions
   - Batch operations chunk work to avoid long locks
 
+### Batch Operation Consistency
+
+- [ ] **Consistent Timestamps**: Capture time once before batch writes
+  - All records in a batch should share the same timestamp
+  - Don't call Date.now() inside Promise.all map functions
+  - Applies to: createdAt, updatedAt, completedAt, etc.
+
+```typescript
+// BAD: Each record gets different timestamp (timing varies)
+await Promise.all(
+  items.map((item) =>
+    ctx.db.insert('table', {
+      ...item,
+      createdAt: Date.now(), // Each gets different timestamp!
+    })
+  )
+);
+
+// GOOD: All records share consistent timestamp
+const creationTime = Date.now();
+await Promise.all(
+  items.map((item) =>
+    ctx.db.insert('table', {
+      ...item,
+      createdAt: creationTime, // All get same timestamp
+    })
+  )
+);
+```
+
+- [ ] **Consistent IDs/References**: Generate batch IDs before mapping
+  - Same principle: capture shared values before the batch
+  - Round numbers, correlation IDs, batch IDs
+
+**Why it matters:**
+- Querying "all records created at time X" works correctly
+- Audit trails show consistent batch creation
+- Prevents subtle ordering bugs from timing differences
+- Makes debugging and data analysis reliable
+
+**Priority:** P1 - Data consistency issue
+**Occurrences:** PR #114, #116 (Linejam project)
+
 ### Data Validation
 
 - [ ] **Database-Level Validation**: Don't rely solely on application
@@ -184,6 +227,7 @@ Ensure data integrity across all database operations: migrations, models, querie
 - [ ] ❌ Long transactions including external calls
 - [ ] ❌ Application-only validation (no database constraints)
 - [ ] ❌ Hard deletes of data with dependencies
+- [ ] ❌ Date.now() inside Promise.all map (inconsistent batch timestamps)
 
 ## Common Issues
 
@@ -251,6 +295,33 @@ CREATE TABLE orders (
 );
 ```
 
+### Issue: Inconsistent Batch Timestamps
+```typescript
+// BAD: Records in batch get different timestamps
+async function completeGame(ctx, poems) {
+  const completionTime = Date.now();
+  await Promise.all(
+    poems.map((poem) =>
+      ctx.db.patch(poem._id, {
+        completedAt: Date.now(), // Each poem gets different time!
+      })
+    )
+  );
+}
+
+// GOOD: Capture timestamp once, reuse for all records
+async function completeGame(ctx, poems) {
+  const completionTime = Date.now();
+  await Promise.all(
+    poems.map((poem) =>
+      ctx.db.patch(poem._id, {
+        completedAt: completionTime, // All poems share same completion time
+      })
+    )
+  );
+}
+```
+
 ## Review Questions
 
 When reviewing database changes, ask:
@@ -263,6 +334,7 @@ When reviewing database changes, ask:
 6. **Query Safety**: Are there any SQL injection risks? N+1 query patterns?
 7. **Transaction Boundaries**: Are atomic operations properly wrapped?
 8. **Index Coverage**: Do common queries have supporting indexes?
+9. **Batch Consistency**: Do batch writes capture shared values (timestamps, IDs) before the loop?
 
 ## Success Criteria
 
