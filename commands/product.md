@@ -19,8 +19,9 @@ Transform Issue #$1 into a precise product specification. Post as comment, updat
 1. **Read**: `gh issue view $1 --comments`
 2. **Interview**: Surface hidden assumptions via polls
 3. **Research**: Understand users, pain points, competitive landscape
-4. **Write spec**: Post as comment with structure below
-5. **Update labels**: `gh issue edit $1 --remove-label "status/needs-spec" --add-label "status/needs-design"`
+4. **Consult Council**: Get multi-model perspectives on requirements
+5. **Write spec**: Post as comment with structure below
+6. **Update labels**: `gh issue edit $1 --remove-label "status/needs-spec" --add-label "status/needs-design"`
 
 ## Interview Phase
 
@@ -45,6 +46,26 @@ Use AskUserQuestion with batched polls (2-4 options each, up to 4 questions per 
 - What happens when [discovered edge case]?
 
 Continue interviewing until assumptions exhausted. Use answers to inform spec.
+
+## Council Consultation
+
+After research, consult thinktank for product perspective validation:
+
+**Create instructions file with:**
+- Issue context and user stories
+- Key assumptions gathered from interview
+- Request: "Review these requirements. Identify gaps, edge cases, and potential user confusion."
+
+**Run:**
+```bash
+thinktank /tmp/product-review.md ./relevant-code --synthesis
+```
+
+**Incorporate council feedback into spec:**
+- Missing edge cases
+- User story gaps
+- Scope concerns
+- Potential user confusion points
 
 ## Spec Structure
 
