@@ -92,7 +92,17 @@ Task pr-comment-resolver("Comment 5 details")
 
 ## 5. Learning Codification (Feedback Pattern Detection)
 
-After resolving PR feedback, detect recurring patterns that should be enforced automatically:
+After resolving PR feedback, detect recurring patterns that should be enforced automatically.
+
+### Doc-Check First
+
+Run /doc-check to understand existing documentation structure. Codification targets should align with project docs:
+- CLAUDE.md for conventions (not new files)
+- Existing docs/adr/ folder for decisions
+- Existing agent files for enforcement
+- Module READMEs for local patterns
+
+### Detect Patterns
 
 **Ask yourself**: Is this feedback recurring? Have I seen this pattern before?
 
@@ -109,20 +119,17 @@ After resolving PR feedback, detect recurring patterns that should be enforced a
 - Context-dependent decisions
 - Design discussions
 
-**After resolving all feedback, prompt**:
+**After resolving all feedback, automatically check for patterns**:
 
-```
-✅ PR feedback resolved: {count} comments addressed
+Search recent PR history (`gh pr list --state all --limit 20 --json number,reviews`) for similar feedback.
 
-Recurring feedback pattern detected?
-[y] Yes - Analyze PR feedback history and codify pattern
-[l] Later - Note pattern for batch codification
-[n] No - All feedback is one-off
+**Codify if**:
+- 3+ occurrences of same pattern, OR
+- CRITICAL security issue (even 1st occurrence)
 
-> _
-```
+Otherwise, complete the PR response cycle silently.
 
-**If user selects [y]**:
+**If pattern detected (3+ occurrences)**:
 ```bash
 Task learning-codifier("Analyze recent PR feedback history and detect recurring patterns worth codifying into automated enforcement")
 
@@ -142,16 +149,8 @@ Task learning-codifier("Analyze recent PR feedback history and detect recurring 
 4. **Tests** (if feedback is about missing test coverage)
 5. **Documentation** (if feedback is about missing docs)
 
-**If user selects [l]**:
-```markdown
-Add to work log:
-PR FEEDBACK PATTERN: [summary]
-OCCURRENCES: [this is Nth time]
-POTENTIAL CODIFICATION: [agent/eslint/hook/test/docs]
-```
-
-**If user selects [n]**:
-Complete PR response cycle.
+**If no pattern detected (<3 occurrences)**:
+Complete PR response cycle silently. No prompt needed.
 
 **Examples**:
 
@@ -166,14 +165,7 @@ Complete PR response cycle.
   - Add JSDoc comments (ProductService.ts:234)
   - Extract repeated query to helper (ReportController.ts:167)
 
-Recurring feedback pattern detected?
-[y] Yes - Analyze PR feedback history and codify pattern
-[l] Later - Note pattern for batch codification
-[n] No - All feedback is one-off
-
-> y
-
-Analyzing PR feedback history...
+Checking PR history for recurring patterns...
 
 Searching recent PRs for similar feedback patterns:
   gh pr list --state all --limit 50 --json number,reviews
@@ -231,7 +223,7 @@ Next: This feedback pattern should not recur
 </details>
 
 <details>
-<summary>Example 2: "Add Tests" (2nd Occurrence) → Agent + Hook</summary>
+<summary>Example 2: "Add Tests" (3rd Occurrence) → Agent + Hook</summary>
 
 ```
 ✅ PR feedback resolved: 3 comments addressed
@@ -239,21 +231,15 @@ Next: This feedback pattern should not recur
   - Add integration tests for OrderFlow
   - Increase coverage to 80%+
 
-Recurring feedback pattern detected?
-[y] Yes - Analyze PR feedback history and codify pattern
-[l] Later - Note pattern for batch codification
-[n] No - All feedback is one-off
-
-> y
-
-Analyzing PR feedback history...
+Checking PR history for recurring patterns...
 
 Pattern detected: "Add tests" / "Coverage too low" feedback
   - PR #134: "Add tests for authentication flow"
-  - **This PR (2nd occurrence)**
+  - PR #156: "Missing unit tests for refactored code"
+  - **This PR (3rd occurrence)**
 
-Pattern: Missing Tests (MEDIUM confidence)
-Occurrences: 2 times in last 50 PRs
+Pattern: Missing Tests (HIGH confidence)
+Occurrences: 3 times in last 50 PRs
 Impact: HIGH (production bugs, confidence)
 
 Recommended codifications:
@@ -305,14 +291,7 @@ Next: Test coverage requirements now enforced automatically
 ✅ PR feedback resolved: 1 critical comment addressed
   - Security: Use parameterized queries, not string concatenation (SearchController.ts:89)
 
-Recurring feedback pattern detected?
-[y] Yes - Analyze PR feedback history and codify pattern
-[l] Later - Note pattern for batch codification
-[n] No - All feedback is one-off
-
-> y
-
-Analyzing PR feedback history...
+Checking PR history for recurring patterns...
 
 Pattern detected: SQL injection vulnerability pattern
   - **This PR (1st occurrence - CRITICAL)**

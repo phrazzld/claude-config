@@ -19,21 +19,49 @@ Delegate analysis to thinktank's expert council for multi-model perspectives.
 
 ## Process
 
-### 1. Frame the Question
+### 1. Doc-Check (MANDATORY)
+
+**Do this first. Do not skip.**
+
+Run `/doc-check`.
+
+Doc-check ensures key docs exist (creating them if missing):
+- ARCHITECTURE.md, README.md, CLAUDE.md
+- Module READMEs where needed
+
+Wait for doc-check to complete before proceeding.
+
+### 2. Frame the Question
 
 Convert the query into focused instructions:
 - Clear question/task
 - Specific focus areas
 - Expected output format
 
-### 2. Scope the Context
+### 3. Scope the Context
 
-Determine target files:
+Determine target files AND relevant documentation:
+
+**Code files**:
 - Use paths from args if provided
 - Otherwise use current working context
 - Keep scope focused (fewer files = better synthesis)
 
-### 3. Create Instructions File
+**Documentation** (always include):
+- README.md (project overview)
+- CLAUDE.md or AGENTS.md (conventions)
+- ARCHITECTURE.md if it exists
+
+**Contextual docs**:
+- Module READMEs in directories containing target files
+- ADRs relevant to the query topic
+- Any .md files near the target code
+
+**Touched files**:
+- What do the target files import/depend on?
+- Include first-degree dependencies for context
+
+### 4. Create Instructions File
 
 Write temp instructions (e.g., `/tmp/council-instructions.md`):
 
@@ -57,18 +85,25 @@ For each perspective, provide:
 Conclude with synthesized recommendations highlighting consensus and divergent views.
 ```
 
-### 4. Run Thinktank
+### 5. Run Thinktank
 
 ```bash
-thinktank /tmp/council-instructions.md {{paths}} --synthesis
+thinktank /tmp/council-instructions.md \
+  ./README.md ./CLAUDE.md ./ARCHITECTURE.md \
+  ./docs/relevant-adr.md \
+  {{target-paths}} \
+  {{touched-files}} \
+  --synthesis
 ```
+
+Pass actual file paths - docs AND code together. Thinktank gets full context.
 
 **Model group selection:**
 - Default: `workhorses` for reasoning-heavy tasks
 - `--model cheap` for quick validation
 - Large codebases: consider `a-milli` group
 
-### 5. Synthesize Results
+### 6. Synthesize Results
 
 Read thinktank output and distill:
 

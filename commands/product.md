@@ -49,17 +49,44 @@ Continue interviewing until assumptions exhausted. Use answers to inform spec.
 
 ## Council Consultation
 
-After research, consult thinktank for product perspective validation:
+After research, consult thinktank for product perspective validation.
+
+### Doc-Check (MANDATORY)
+
+**Do this first. Do not skip.**
+
+Run `/doc-check`.
+
+Doc-check ensures key docs exist (creating them if missing). Council needs this context to validate requirements effectively.
+
+Wait for doc-check to complete before proceeding.
+
+### Gather Context
+
+Identify relevant files AND documentation:
+- README.md, CLAUDE.md (project conventions)
+- Existing specs or product docs
+- Related feature implementations
+- ADRs for past product decisions
+
+### Create Instructions
 
 **Create instructions file with:**
 - Issue context and user stories
 - Key assumptions gathered from interview
 - Request: "Review these requirements. Identify gaps, edge cases, and potential user confusion."
 
-**Run:**
+### Run Thinktank
+
 ```bash
-thinktank /tmp/product-review.md ./relevant-code --synthesis
+thinktank /tmp/product-review.md \
+  ./README.md ./CLAUDE.md \
+  ./docs/product-context.md \
+  ./relevant-code \
+  --synthesis
 ```
+
+Pass docs AND code for full context.
 
 **Incorporate council feedback into spec:**
 - Missing edge cases

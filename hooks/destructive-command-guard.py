@@ -24,6 +24,8 @@ DESTRUCTIVE = [
     ("git stash drop", "Permanently deletes stashed changes."),
     ("git stash clear", "Permanently deletes ALL stashed changes."),
     ("git restore ", "Can discard uncommitted changes. Be careful."),
+    ("--no-verify", "Skips git hooks. Hooks enforce quality gates."),
+    ("--no-gpg-sign", "Skips commit signing. May violate repo policy."),
 ]
 
 # Patterns that override DESTRUCTIVE (checked first)
@@ -66,6 +68,35 @@ def has_rm_rf_flags(cmd: str) -> bool:
     return has_recursive and has_force
 
 
+def extract_rm_targets(cmd: str) -> list[str]:
+    """Extract target paths from rm command."""
+    # Split command, skip 'rm' and flags
+    parts = cmd.split()
+    targets = []
+    for part in parts:
+        if part == "rm":
+            continue
+        if part.startswith("-"):
+            continue
+        targets.append(part)
+    return targets
+
+
+def is_within_cwd(path: str) -> bool:
+    """Check if path is relative (within current working directory)."""
+    # Absolute paths start with /
+    if path.startswith("/"):
+        return False
+    # Home directory expansion
+    if path.startswith("~"):
+        return False
+    # Variable expansion that could be absolute
+    if path.startswith("$") and not path.startswith("$PWD"):
+        return False
+    # Relative paths are within CWD
+    return True
+
+
 def is_safe_rm_rf(cmd: str) -> bool:
     """Check if rm -rf targets a safe directory."""
     if not has_rm_rf_flags(cmd):
@@ -81,6 +112,11 @@ def is_safe_rm_rf(cmd: str) -> bool:
         # Match /node_modules, ./node_modules, path/node_modules
         if f"/{build_dir}" in cmd or f" {build_dir}" in cmd or f"./{build_dir}" in cmd:
             return True
+
+    # Allow rm -rf on relative paths (within CWD)
+    targets = extract_rm_targets(cmd)
+    if targets and all(is_within_cwd(t) for t in targets):
+        return True
 
     return False
 
@@ -105,7 +141,7 @@ def check_command(cmd: str) -> tuple[bool, str]:
 
     # Special handling for rm -rf
     if has_rm_rf_flags(cmd) and not is_safe_rm_rf(cmd):
-        return True, "rm -rf on non-temp/non-build path. Run manually if needed."
+        return True, "rm -rf on absolute/home path. Use relative paths (within CWD) or run manually."
 
     return False, ""
 

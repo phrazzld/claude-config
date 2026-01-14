@@ -48,17 +48,46 @@ Use answers to inform design decisions.
 
 ## Council Consultation
 
-Before finalizing design, validate with thinktank expert council:
+Before finalizing design, validate with thinktank expert council.
+
+### Doc-Check (MANDATORY)
+
+**Do this first. Do not skip.**
+
+Run `/doc-check`.
+
+Doc-check ensures key docs exist (creating them if missing). Council needs full architectural context.
+
+Wait for doc-check to complete before proceeding.
+
+### Gather Context
+
+Identify relevant files AND documentation:
+- ARCHITECTURE.md (system overview)
+- README.md, CLAUDE.md (conventions)
+- ADRs for past architectural decisions
+- Module READMEs in affected areas
+- Files that will be modified/created
+
+### Create Instructions
 
 **Create instructions file with:**
 - Proposed architecture approach
 - Key technical decisions from interview
 - Request: "Review this architecture. Identify risks, better patterns, and potential issues."
 
-**Run:**
+### Run Thinktank
+
 ```bash
-thinktank /tmp/architecture-review.md ./relevant-code --synthesis
+thinktank /tmp/architecture-review.md \
+  ./ARCHITECTURE.md \
+  ./README.md ./CLAUDE.md \
+  ./docs/adr/*.md \
+  ./relevant-code \
+  --synthesis
 ```
+
+Pass docs AND code for full context.
 
 **Incorporate council feedback into design:**
 - Alternative patterns worth considering

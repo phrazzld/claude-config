@@ -137,7 +137,13 @@ If agent identifies issues:
 
 ## Post-Implementation Codification
 
-After documentation, autonomously preserve learnings:
+After documentation, autonomously preserve learnings.
+
+### Doc-Check First
+
+Run /doc-check to understand existing documentation structure. Codification should respect and extend what exists, not create parallel docs.
+
+### Scan and Codify
 
 1. **Scan the diff** for patterns worth keeping:
    - Code used 3+ times → extract to shared utility
@@ -145,11 +151,17 @@ After documentation, autonomously preserve learnings:
    - Multi-step workflow discovered → consider as skill
    - Quality issue caught → add to relevant agent
 
-2. **Confidence-based action**:
+2. **Codification targets** (informed by doc-check):
+   - CLAUDE.md for conventions (extend existing, don't duplicate)
+   - Existing docs/adr/ for architectural decisions
+   - Existing agent files for enforcement rules
+   - Module READMEs for module-specific patterns
+
+3. **Confidence-based action**:
    - HIGH confidence (clear pattern, obvious value) → codify directly
    - MEDIUM confidence (useful but uncertain) → add to CLAUDE.md staging section
    - LOW confidence (one-off, context-specific) → skip
 
-3. **Codify in same PR** when possible. Keep implementation + codification atomic.
+4. **Codify in same PR** when possible. Keep implementation + codification atomic.
 
 No prompting required. Use judgment about what's worth preserving.
