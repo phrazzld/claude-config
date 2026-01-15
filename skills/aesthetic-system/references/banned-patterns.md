@@ -57,6 +57,23 @@ Explicit "never use" elements to avoid AI slop and generic aesthetics.
 
 **Instead:** Every visual element should serve a purpose or tell a story.
 
+### Alert/Callout Patterns
+
+**BANNED:**
+- Left border accent with rounded corners (e.g., `border-left: 3px solid color; border-radius: 8px`)
+- The "rounded card with colored left stripe" pattern for alerts, warnings, info boxes
+
+**Why:** This is one of the most overused AI patterns. It's lazy, generic, and signals "no thought was applied." Every AI chatbot and generated codebase uses this exact pattern.
+
+**Instead:** Consider:
+- Full-width colored background with subtle tint
+- Icon-led alerts with the icon providing the semantic color
+- Top border or bottom border instead of left
+- No border at all — use background color alone
+- Outlined/stroke style cards
+- Inset box shadows for depth
+- Completely custom alert paradigms (toast, banner, inline text)
+
 ### Motion
 
 **BANNED:**
@@ -79,6 +96,7 @@ Before delivering any design, scan for violations:
 [ ] No purple/blue gradient on white?
 [ ] No Tailwind defaults without customization?
 [ ] No generic geometric shapes/blobs?
+[ ] No left-border-accent alerts with rounded corners?
 [ ] Layout starts from content, not template?
 [ ] Mobile has real navigation, not buried hamburger?
 [ ] Motion is orchestrated, not scattered?
@@ -106,5 +124,6 @@ Watch for these red flags in your output:
 | Centered cards in 3-column grid | Template thinking |
 | "Introducing" badge | Startup cliche |
 | Hamburger menu everywhere | Laziness |
+| `border-left` + `border-radius` on alerts | Peak AI slop |
 
 When you catch yourself reaching for these, stop and choose something intentional.

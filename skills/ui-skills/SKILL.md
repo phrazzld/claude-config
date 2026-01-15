@@ -68,6 +68,7 @@ Opinionated constraints for building better interfaces with agents.
 - NEVER use gradients unless explicitly requested
 - NEVER use purple or multicolor gradients
 - NEVER use glow effects as primary affordances
+- NEVER use left-border-accent with rounded corners for alerts/callouts (peak AI slop)
 - SHOULD use Tailwind CSS default shadow scale unless explicitly requested
 - MUST give empty states one clear next action
 - SHOULD limit accent color usage to one per view
