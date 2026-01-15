@@ -13,6 +13,19 @@ settings.local.json
 shell-snapshots/
 file-history/
 
+# Caches (regenerated at runtime)
+paste-cache/
+stats-cache.json
+cache/
+
+# Plugin caches and machine-specific install tracking
+plugins/cache/
+plugins/install-counts-cache.json
+plugins/installed_plugins.json
+
+# Chrome native host (machine-specific paths, auto-generated)
+chrome/chrome-native-host
+
 # Memory and lessons archives
 agents/memory/
 lessons/
