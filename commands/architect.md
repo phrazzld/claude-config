@@ -23,7 +23,8 @@ Add technical design to Issue #$1. Post as comment, update labels to `status/rea
 5. **Consult Council**: Validate architecture with expert council
 6. **Design**: Create implementation blueprint
 7. **Post**: `gh issue comment $1 --body "## Technical Design\n..."`
-8. **Update**: `gh issue edit $1 --remove-label "status/needs-design" --add-label "status/ready"`
+8. **Adversarial Review**: Stress-test the design with `/adversarial $1`
+9. **Update**: `gh issue edit $1 --remove-label "status/needs-design" --add-label "status/ready"`
 
 ## Interview Phase
 
@@ -127,6 +128,20 @@ Pass docs AND code for full context.
 - Favor existing patterns over novel ones
 - Minimize touch points (fewer files = less risk)
 - Design for deletion (easy to remove later)
+
+## Adversarial Review
+
+The design is posted. Now let hostile experts find the flaws.
+
+Run `/adversarial $1` to stress-test the technical design. Architecture decisions are expensive to reverse—surface concerns now while they're cheap to address.
+
+Focus areas for design review:
+- Module boundaries that will leak
+- Interfaces that expose too much
+- Scalability assumptions that won't hold
+- Edge cases the design doesn't address
+
+If adversarial review surfaces issues, revise the design comment and re-run until the design is solid.
 
 ## Output
 

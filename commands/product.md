@@ -21,7 +21,8 @@ Transform Issue #$1 into a precise product specification. Post as comment, updat
 3. **Research**: Understand users, pain points, competitive landscape
 4. **Consult Council**: Get multi-model perspectives on requirements
 5. **Write spec**: Post as comment with structure below
-6. **Update labels**: `gh issue edit $1 --remove-label "status/needs-spec" --add-label "status/needs-design"`
+6. **Adversarial Review**: Stress-test the spec with `/adversarial $1`
+7. **Update labels**: `gh issue edit $1 --remove-label "status/needs-spec" --add-label "status/needs-design"`
 
 ## Interview Phase
 
@@ -118,6 +119,16 @@ Pass docs AND code for full context.
 ### Open Questions for Architect
 [Technical unknowns]
 ```
+
+## Adversarial Review
+
+The spec is posted. Now stress-test it.
+
+Run `/adversarial $1` to put the spec through multi-model scrutiny. This loops until models genuinely agree on quality, or surface real disagreements for user resolution.
+
+Don't skip this. The council consultation earlier was about getting input; this is about finding what you missed. Different purpose, different prompts.
+
+If adversarial review surfaces issues, revise the spec comment and re-run until the spec is solid.
 
 ## Output
 
