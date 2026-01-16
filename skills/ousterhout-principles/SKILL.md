@@ -186,5 +186,11 @@ When reviewing a module:
 1. **Deep Modules**: Simple interfaces hiding powerful implementations
 2. **Information Hiding**: Each module hides design decisions from others
 3. **Avoid Complexity**: Fight generic names, temporal decomposition, pass-through methods
+4. **YAGNI**: Question every piece not solving an immediate need
+5. **Readability Over Cleverness**: Code is read more than written
 
 **Remember**: Complexity is anything that makes software hard to understand or modify. Fight it with every decision.
+
+## References
+
+- [simplicity-tenets.md](references/simplicity-tenets.md) - YAGNI, complexity types, warning signs
