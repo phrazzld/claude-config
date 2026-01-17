@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Place this file at .claude/observability.json in your project root",
+
+  "sentry": {
+    "org": "your-org-slug",
+    "project": "your-project-slug"
+  },
+
+  "vercel": {
+    "projectId": "prj_xxxxxxxxxxxx"
+  },
+
+  "convex": {
+    "deployment": "prod:your-app-name"
+  },
+
+  "posthog": {
+    "projectId": "your-project-id"
+  },
+
+  "git": {
+    "mainBranch": "main",
+    "deployBranch": "main"
+  }
+}
