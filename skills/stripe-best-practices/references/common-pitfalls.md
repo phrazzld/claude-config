@@ -230,3 +230,105 @@ Production Stripe Error
          ▼
     Now examine code
 ```
+
+---
+
+## Pitfall #11: Trailing Newlines in Environment Variables
+
+**Symptom:** "Invalid character in header content" or "ERR_INVALID_CHAR" errors.
+
+**Root Cause:** Env var contains literal `\n` or trailing whitespace.
+
+**How it happens:**
+```bash
+# ❌ echo adds newline, some tools don't strip it
+echo "sk_live_xxx" | vercel env add STRIPE_SECRET_KEY production
+
+# ❌ Copy-paste from files/editors can include invisible chars
+export STRIPE_SECRET_KEY="sk_live_xxx
+"
+```
+
+**Why it breaks:** HTTP headers cannot contain newlines. The Authorization header becomes `Bearer sk_live_xxx\n` which is invalid.
+
+**The fix:**
+```bash
+# ✅ Use printf to avoid trailing newline
+printf '%s' 'sk_live_xxx' | vercel env add STRIPE_SECRET_KEY production
+
+# ✅ Or explicitly trim when setting
+npx convex env set --prod STRIPE_SECRET_KEY "$(echo 'sk_live_xxx' | tr -d '\n')"
+```
+
+**Detection:**
+```bash
+# Check for trailing whitespace in current env
+env | grep STRIPE | while read line; do
+  if [[ "$line" =~ [[:space:]]$ ]]; then
+    echo "WARNING: $line has trailing whitespace"
+  fi
+done
+```
+
+---
+
+## Pitfall #12: Vercel-Convex Token Parity
+
+**Symptom:** Webhooks silently fail. No errors in logs, but data never syncs.
+
+**Root Cause:** Shared token (like `CONVEX_WEBHOOK_TOKEN`) set on one platform but not the other.
+
+**Why it happens:**
+- Vercel and Convex have separate env var management
+- Easy to set on one and forget the other
+- No built-in cross-platform verification
+
+**Example scenario:**
+1. Set `CONVEX_WEBHOOK_TOKEN` on Vercel
+2. Forget to set it on Convex production
+3. Webhook handler validates token → fails silently
+4. Subscription data never updates
+
+**Prevention:**
+```bash
+# Always verify parity for shared tokens
+vercel env ls --environment=production | grep CONVEX_WEBHOOK_TOKEN
+npx convex env list --prod | grep CONVEX_WEBHOOK_TOKEN
+
+# Both should exist and match
+```
+
+**Detection:**
+Add parity check to pre-deploy script or CI pipeline.
+
+---
+
+## Pitfall #13: CLI Environment Confusion
+
+**Symptom:** Investigation shows wrong data, leading to wild goose chase.
+
+**Root Cause:** `CONVEX_DEPLOYMENT=prod:xxx npx convex data` may still query dev deployment.
+
+**Why it happens:**
+- The `CONVEX_DEPLOYMENT` env var is unreliable for some commands
+- CLI may ignore it or use cached config
+- No warning when querying wrong environment
+
+**Real impact:** Wasted 45+ minutes investigating a non-existent "clerkId mismatch" that only existed in dev data.
+
+**The fix:**
+```bash
+# ❌ Don't rely on CONVEX_DEPLOYMENT env var
+CONVEX_DEPLOYMENT=prod:xxx npx convex data subscriptions
+
+# ✅ Use the explicit --prod flag
+npx convex run --prod subscriptions:checkAccess
+
+# ✅ Or always verify via Dashboard
+# Convex Dashboard shows deployment name clearly
+```
+
+**Prevention:**
+1. Use `--prod` flag, not env var
+2. Always verify environment in Dashboard before trusting CLI output
+3. Read `npx convex --help` before attempting workarounds

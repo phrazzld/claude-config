@@ -45,6 +45,40 @@ Production webhook 500 errors typically mean:
 
 Not usually code bugs.
 
+### 5. Environment Variable Hygiene
+
+**Trailing whitespace causes cryptic errors.** Env vars with `\n` or spaces break HTTP headers:
+- "Invalid character in header content" → key has trailing newline
+- Webhook signature mismatch → secret has trailing whitespace
+
+**Rules:**
+```bash
+# ✅ Use printf, not echo, to avoid trailing newlines
+printf '%s' 'sk_live_xxx' | vercel env add STRIPE_SECRET_KEY production
+
+# ✅ Trim when setting via Convex CLI
+npx convex env set --prod STRIPE_SECRET_KEY "$(echo 'sk_live_xxx' | tr -d '\n')"
+```
+
+**Cross-platform parity.** Shared tokens must match across Vercel and Convex:
+- `CONVEX_WEBHOOK_TOKEN` must be identical on both platforms
+- Missing on one → webhooks silently fail
+
+### 6. CLI Environment Gotcha
+
+**Warning:** `CONVEX_DEPLOYMENT=prod:xxx npx convex data` may return dev data.
+
+Always use the explicit `--prod` flag:
+```bash
+# ❌ Unreliable
+CONVEX_DEPLOYMENT=prod:xxx npx convex data subscriptions
+
+# ✅ Reliable
+npx convex run --prod subscriptions:checkAccess
+```
+
+When in doubt, verify via Convex Dashboard.
+
 ## Quick Reference
 
 ### Required Environment Variables
@@ -82,12 +116,12 @@ When Stripe integration fails:
 
 1. **Environment Check**
    ```bash
-   # Convex
-   npx convex env list
-   CONVEX_DEPLOYMENT=prod:xxx npx convex env list
+   # Convex (use --prod flag, not env var)
+   npx convex env list           # dev
+   npx convex env list --prod    # prod (reliable)
 
    # Vercel
-   vercel env ls
+   vercel env ls --environment=production
    ```
 
 2. **Stripe Dashboard**
