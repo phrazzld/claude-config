@@ -82,3 +82,66 @@ CONVEX_DEPLOYMENT=prod:... npx convex env list | grep <SERVICE>
 ```
 
 **Don't over-engineer under pressure.** When debugging production issues, resist the urge to build sophisticated solutions before confirming the diagnosis. Simpler is better until proven otherwise.
+
+### 2026-01-17: Environment Variable Hygiene
+
+**Trailing whitespace kills.** Env vars with `\n` or trailing spaces cause cryptic errors:
+- "Invalid character in header content" (HTTP headers)
+- Webhook signature mismatches
+- Silent authentication failures
+
+**Rules:**
+1. Use `printf '%s' 'value'` not `echo` when setting secrets via CLI
+2. Always trim: `value=$(echo "$var" | tr -d '\n')`
+3. Validate format before use: `[[ "$key" =~ ^sk_(live|test)_ ]]`
+
+**Cross-platform parity.** Shared tokens (webhook secrets, auth tokens) must match across:
+- Vercel environment
+- Convex environment
+- Local .env.local
+
+Verify parity: tokens set on one platform but not the other cause silent failures.
+
+**CLI environment gotcha.** `CONVEX_DEPLOYMENT=prod:xxx npx convex data` may return dev data.
+Always use `npx convex run --prod` flag or verify via Convex Dashboard.
+
+### 2026-01-17: DEBUG MODE — Incident Investigation Protocol
+
+**OODA-V Framework.** When debugging production issues, follow this loop:
+
+1. **OBSERVE** — Gather raw data before forming hypotheses
+   - Check logs first: "Is the request hitting our server?"
+   - If no logs, it's network/routing/redirects, NOT application code
+   - Run basic reachability checks: `curl -I <endpoint>`
+
+2. **ORIENT** — Generate hypotheses with specific tests
+   - List 3 hypotheses ranked by likelihood
+   - For each: "What test would disprove this?"
+   - Include the simple checks (curl, logs) before code analysis
+
+3. **DECIDE** — Pick highest-likelihood hypothesis
+
+4. **ACT** — Implement minimal fix
+
+5. **VERIFY** — (MANDATORY) No fix is complete without observables
+   - Show the log entry that proves delivery
+   - Show the metric change (e.g., pending_webhooks decreased)
+   - "Confidence: LOW until verified"
+
+**Anti-patterns to avoid:**
+- Agreeing a fix "should work" without seeing proof
+- Declaring resolved before metrics confirm
+- Endorsing plausible explanations without running tests
+- Stopping at first "looks like the cause" without verification
+- Treating configuration inspection as equivalent to runtime behavior
+
+**Verification gate for incidents:**
+```
+VERIFIED = saw_log_entry AND metric_changed AND (database_state_correct OR not_applicable)
+```
+
+If verification fails → revert if needed → loop back to OBSERVE.
+
+**Skills for incident debugging:**
+- `/stripe-health` — Webhook endpoint diagnostics
+- `/verify-fix` — Mandatory verification checklist
