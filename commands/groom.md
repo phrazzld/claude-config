@@ -35,6 +35,8 @@ Launch agents in parallel to explore from different angles. Pick perspectives re
 - **maintainability-maven** — tech debt, naming, clarity
 - **dependency-health-monitor** — outdated packages, vulnerabilities
 - **infrastructure-guardian** — CI/CD, quality gates, deployment
+- **config-auditor** — external service config, env vars, webhooks, API keys
+- **observability-advocate** — logging coverage, monitoring gaps, alerting rules
 
 Each agent explores autonomously, researches best practices, identifies specific improvements with file:line locations.
 
@@ -48,6 +50,10 @@ Combine agent findings with your own analysis. Think broadly:
 - What's obviously missing?
 - What would make this codebase a joy to work in?
 - What would make this product a joy to use?
+- What external services are we integrating with?
+- What happens when those services fail silently?
+- Can we see what's happening in production?
+- Would we know within minutes if something broke?
 
 Generate ideas across all dimensions: performance, reliability, maintainability, security, UX, features, developer experience, infrastructure.
 

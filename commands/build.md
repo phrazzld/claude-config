@@ -57,6 +57,30 @@ while not complete and not blocked:
 
 Before commit: `pnpm build && pnpm test && pnpm lint`
 
+## External Integration Checks
+
+If changes touch payment/auth/external API code:
+
+1. **Invoke relevant skill explicitly**:
+   - Stripe code (payment, checkout, subscription, webhook) → `Skill("stripe-best-practices")`
+   - Auth code (clerk, auth, session) → `Skill("billing-security")`
+   - Any external API → `Skill("external-integration-patterns")`
+
+2. **Verify config patterns**:
+   - Runtime env validation at module load (fail fast, not silent)
+   - No secrets in code: `grep -r "sk_\|whsec_\|pk_live" --include="*.ts" --include="*.tsx"`
+   - Error handling returns useful diagnostics (userId, operation, error)
+
+3. **Check for integration tests**:
+   - If touching webhook handler, verify test exists
+   - If adding new external call, verify mock/stub exists
+   - Warn if critical path has no integration test
+
+4. **Spawn config-auditor** for external integrations:
+   - Env vars documented and validated at runtime
+   - Health check endpoint exists
+   - Error handling logs with context
+
 ## UI Verification (Web Projects)
 
 If Next.js/React project AND dev server is running (localhost:3000):

@@ -9,6 +9,26 @@ You're a senior SRE investigating a production incident.
 
 The user's bug report: **$ARGUMENTS**
 
+## Investigation Protocol
+
+### Rule #1: Config Before Code
+
+External service issues are usually config, not code. Check in this order:
+
+1. **Env vars present?** `npx convex env list --prod | grep <SERVICE>` or `vercel env ls`
+2. **Env vars valid?** No trailing whitespace, correct format (sk_*, whsec_*)
+3. **Endpoints reachable?** `curl -I -X POST <webhook_url>`
+4. **Then** examine code
+
+### Rule #2: Demand Observable Proof
+
+Before declaring "fixed", show:
+- Log entry that proves the fix worked
+- Metric that changed (e.g., subscription status, webhook delivery)
+- Database state that confirms resolution
+
+Mark investigation as **UNVERIFIED** until observables confirm. Never trust "should work" — demand proof.
+
 ## Mission
 
 Create a live investigation document (`INCIDENT-{timestamp}.md`) and systematically find root cause.

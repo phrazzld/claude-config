@@ -114,7 +114,33 @@ thinktank /tmp/review-instructions.md \
 
 Pass actual file paths - docs AND code together.
 
-### 7. Synthesize Results
+### 7. Specialized Reviews (Parallel)
+
+If changes touch external integrations, spawn focused reviewers:
+
+**For Stripe/Payment code** (file path contains `stripe`, `payment`, `checkout`, `subscription`, `webhook`):
+- Invoke `Skill("stripe-best-practices")`
+- Check: webhook handler patterns, env var usage, error handling
+- Verify: no hardcoded keys, proper signature verification
+
+**For Auth code** (Clerk/Auth0 — file path contains `auth`, `clerk`, `session`):
+- Invoke `Skill("billing-security")`
+- Check: JWT validation, session handling, redirect URLs
+
+**For any external API integration**:
+- Spawn `config-auditor` agent to verify:
+  - Env vars documented and validated at runtime
+  - Error handling for API failures
+  - Retry/fallback patterns present
+  - Health check endpoint for this service
+
+**For Infrastructure changes**:
+- Spawn `infrastructure-guardian` agent with focus on:
+  - Deployment config completeness
+  - Environment parity (dev ≠ prod gotchas documented)
+  - Rollback capability
+
+### 8. Synthesize Results
 
 Read thinktank output and synthesize:
 
