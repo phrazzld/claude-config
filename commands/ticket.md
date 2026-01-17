@@ -1,3 +1,7 @@
+---
+description: Create strategic TODO.md with atomic implementation tasks from plan
+---
+
 Ultrathink. Channel Ousterhout strategic programming principles. Favor taking the time to make deep modules and strategic improvements to system design, architecture, abstractions, quality gates, tests, documentation, etc; as opposed to quick, tactical fixes that incur technical debt.
 
 Channel John Carmack, and synthesize this plan into a TODO.md file composed of discrete, well defined, narrowly scoped, highly detailed, context rich, atomic and actionable task items that start with `- [ ]`

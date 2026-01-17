@@ -1,4 +1,6 @@
-Clean up the changes made in the current branch before merging.
+---
+description: Clean up branch changes before review - simplify, naming, dead code
+---
 
 # TIGHTEN
 

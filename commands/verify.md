@@ -1,3 +1,7 @@
+---
+description: Challenge pre-commit bypass requests - solve problems, don't hide them
+---
+
 # VERIFY
 
 > **THE DISCIPLINE MASTERS**

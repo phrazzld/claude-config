@@ -1,3 +1,7 @@
+---
+description: Analyze CI failure logs, classify failure type, identify root cause
+---
+
 # CI
 
 > **THE CI/CD MASTERS**

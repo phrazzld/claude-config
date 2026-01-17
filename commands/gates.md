@@ -1,4 +1,6 @@
-Audit and improve quality infrastructure.
+---
+description: Audit and improve quality infrastructure for deployment confidence
+---
 
 # GATES
 

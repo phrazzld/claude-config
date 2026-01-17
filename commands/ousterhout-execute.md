@@ -1,3 +1,7 @@
+---
+description: Execute plan with Ousterhout principles - deep modules, strategic design
+---
+
 # OBJECTIVE
 Execute the plan in full. Your goal is not just functional correctness, but system design excellence. Adhere to Ousterhout principles religiously.
 

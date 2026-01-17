@@ -1,4 +1,6 @@
-Analyze project codebase and generate project-specific Skills for component library, API conventions, state management, styling, and database schemas.
+---
+description: Auto-generate project-specific Skills from codebase patterns
+---
 
 # SKILL-BOOTSTRAP
 

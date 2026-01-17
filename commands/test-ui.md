@@ -1,3 +1,8 @@
+---
+description: Verify UI changes using Chrome automation with screenshot feedback
+argument-hint: [optional: route to test, e.g. /dashboard]
+---
+
 # /test-ui - Browser UI Verification
 
 Verify UI changes using Chrome automation. Implements the Boris Cherny pattern:

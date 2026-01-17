@@ -1,4 +1,6 @@
-Transform specifications into actionable, context-rich task lists.
+---
+description: Transform DESIGN.md specs into atomic implementation tasks in TODO.md
+---
 
 # PLAN
 

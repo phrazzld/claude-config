@@ -1,3 +1,7 @@
+---
+description: Transform vague task into executable spec with files, approach, criteria
+---
+
 # FLESH
 
 > **THE SPECIFICATION MASTERS**

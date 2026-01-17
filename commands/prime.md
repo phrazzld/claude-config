@@ -1,3 +1,7 @@
+---
+description: Load and analyze project context comprehensively before taking action
+---
+
 # PRIME
 
 > **THE CONTEXT MASTERS**

@@ -1,4 +1,6 @@
-Execute comprehensive quality gates before pushing code: tidy, organize, test, and sync.
+---
+description: Execute quality gates (tidy, test, lint) then push to remote
+---
 
 # PUSH
 

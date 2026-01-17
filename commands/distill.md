@@ -1,3 +1,7 @@
+---
+description: Rewrite repo CLAUDE.md into the best onboarding guide for this project
+---
+
 # DISTILL
 
 Distill this repo's knowledge into a single, sharp `CLAUDE.md`.

@@ -1,3 +1,7 @@
+---
+description: Analyze PR review comments, categorize by priority, create action plan
+---
+
 Systematically analyze all PR review feedback and comments, categorize them by priority and scope, and create actionable responses for immediate and future work.
 
 ## 1. Review Analysis
@@ -74,9 +78,9 @@ Task pr-comment-resolver("Comment 5 details")
 - Document question/blocker in task details
 
 ### For Follow-up Work
-- Incorporate valid suggestions into BACKLOG.md with proper context
-- Include rationale for deferring and estimated effort/complexity
-- Link back to original PR comments for reference
+- Create GitHub issues for valid suggestions using `gh issue create`
+- Include rationale for deferring and link back to original PR comments
+- Label appropriately (e.g., `enhancement`, `tech-debt`, `low-priority`)
 
 ### For Low Priority/Rejected Feedback
 - Document reasoning for not addressing immediately

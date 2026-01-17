@@ -1,3 +1,7 @@
+---
+description: Systematically diagnose and resolve defects with testable hypotheses
+---
+
 # DEBUG
 
 > **THE DEBUGGING MASTERS**

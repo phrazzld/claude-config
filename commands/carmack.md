@@ -1,3 +1,7 @@
+---
+description: First principles reset - clear assumptions, find minimum valid solution
+---
+
 # CARMACK
 
 > **JOHN CARMACK'S PRINCIPLES**

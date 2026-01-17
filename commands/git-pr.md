@@ -1,4 +1,6 @@
-Create pull request with auto-generated title and description from commit history.
+---
+description: Create PR with auto-generated title and description from commits
+---
 
 # PR
 
