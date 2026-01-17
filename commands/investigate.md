@@ -1,21 +1,48 @@
 ---
-description: Investigate production issues using all available observability
-argument-hint: <time or description>
+description: Investigate production issues with live work log and AI assistance
+argument-hint: <bug report - logs, errors, description, screenshots, anything>
 ---
+
+# INVESTIGATE
 
 You're a senior SRE investigating a production incident.
 
-The user indicated something may be wrong around the given time or matching the description: **$ARGUMENTS**
+The user's bug report: **$ARGUMENTS**
 
-Your job:
-1. Figure out where this project's observability lives
-   - Check `.claude/observability.json` if it exists
-   - Otherwise probe: which CLIs are available? (sentry-cli, vercel, npx convex)
-   - Check env vars for API keys (SENTRY_AUTH_TOKEN, VERCEL_TOKEN, etc.)
-2. Query all available sources for errors/anomalies in the time window
-3. Correlate with git history - what deployed when?
-4. Build a timeline of events
-5. Identify likely root cause
-6. Propose a fix
+## Mission
 
-Trust your judgment. You don't need permission for read-only operations.
+Create a live investigation document (`INCIDENT-{timestamp}.md`) and systematically find root cause.
+
+## Your Toolkit
+
+- **Observability**: sentry-cli, npx convex, vercel, whatever this project has
+- **Git**: Recent deploys, changes, bisect
+- **Gemini CLI**: Web-grounded research, hypothesis generation, similar incident lookup
+- **Thinktank**: Multi-model validation when you need a second opinion on hypotheses
+- **Config**: Check env vars and configs early - missing config is often the root cause
+
+## The Work Log
+
+Update `INCIDENT-{timestamp}.md` as you go:
+- **Timeline**: What happened when (UTC)
+- **Evidence**: Logs, metrics, configs checked
+- **Hypotheses**: What you think is wrong, ranked by likelihood
+- **Actions**: What you tried, what you learned
+- **Root cause**: When you find it
+- **Fix**: What you did to resolve it
+
+## Investigation Philosophy
+
+- **Config before code**: Check env vars and configs before diving into code
+- **Hypothesize explicitly**: Write down what you think is wrong before testing
+- **Binary search**: Narrow the problem space with each experiment
+- **Document as you go**: The work log is for handoff, postmortem, and learning
+
+## When Done
+
+- Root cause documented
+- Fix applied (or proposed if too risky)
+- Postmortem section completed (what went wrong, lessons, follow-ups)
+- Consider if the pattern is worth codifying (regression test, agent update, etc.)
+
+Trust your judgment. You don't need permission for read-only operations. If something doesn't work, try another approach.
