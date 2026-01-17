@@ -1,3 +1,8 @@
+---
+name: algorithmic-art
+description: "Generative art creation with p5.js. Invoke for: algorithmic art, computational aesthetics, seeded randomness, particle systems, flow fields, noise functions, interactive visualizations, emergent behavior, procedural generation."
+---
+
 # Algorithmic Art Creation Guide
 
 > Algorithmic expression. Emergent behavior. Computational beauty. Seeded variation.

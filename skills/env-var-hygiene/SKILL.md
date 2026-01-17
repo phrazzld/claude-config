@@ -1,3 +1,8 @@
+---
+name: env-var-hygiene
+description: "Environment variable management across Vercel, Convex, and other platforms. Invoke for: trailing whitespace issues, cross-platform parity, Invalid character errors, webhook secrets, API key management, production deployment, dev vs prod configuration."
+---
+
 # Environment Variable Hygiene
 
 Best practices for managing environment variables across deployment platforms.

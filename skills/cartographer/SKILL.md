@@ -1,3 +1,8 @@
+---
+name: cartographer
+description: "Codebase mapping and documentation using parallel AI subagents. Invoke for: map this codebase, document architecture, understand codebase, onboarding to new project, create CODEBASE_MAP.md, generate architecture diagrams."
+---
+
 # Cartographer
 
 > Map and document codebases of any size using parallel AI subagents.

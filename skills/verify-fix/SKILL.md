@@ -1,3 +1,8 @@
+---
+name: verify-fix
+description: "Mandatory incident fix verification with observables. Invoke after: applying production fixes, before declaring incidents resolved, when someone says 'I think that fixed it'. Requires log entries, metric changes, and database state confirmation."
+---
+
 # /verify-fix - Verify Incident Fix with Observables
 
 **MANDATORY** verification step after any production incident fix.
