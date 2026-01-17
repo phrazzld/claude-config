@@ -10,6 +10,7 @@ Exit 0 + no output = allow the command
 """
 import json
 import re
+import subprocess
 import sys
 
 # Patterns that indicate destructive commands
@@ -121,6 +122,44 @@ def is_safe_rm_rf(cmd: str) -> bool:
     return False
 
 
+def get_current_branch() -> str | None:
+    """Get current git branch name, or None if not in a repo."""
+    try:
+        result = subprocess.run(
+            ["git", "branch", "--show-current"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        pass
+    return None
+
+
+def is_protected_branch(branch: str | None) -> bool:
+    """Check if branch is a protected main branch."""
+    if not branch:
+        return False
+    return branch in ("main", "master")
+
+
+def check_merge_protection(cmd: str) -> tuple[bool, str]:
+    """
+    Block all git merge commands.
+    Merges should be done manually to avoid accidental conflicts.
+    """
+    if re.match(r"^git\s+merge\b", cmd):
+        return True, (
+            "git merge is blocked. "
+            "Merges can create unexpected conflicts. "
+            "Run this manually if needed."
+        )
+
+    return False, ""
+
+
 def check_command(cmd: str) -> tuple[bool, str]:
     """
     Check if command should be blocked.
@@ -133,6 +172,11 @@ def check_command(cmd: str) -> tuple[bool, str]:
     for safe in SAFE:
         if safe in cmd:
             return False, ""
+
+    # Check merge protection (branch-aware)
+    blocked, reason = check_merge_protection(cmd)
+    if blocked:
+        return True, reason
 
     # Check destructive git patterns
     for pattern, reason in DESTRUCTIVE:

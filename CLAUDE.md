@@ -66,3 +66,19 @@ Output code that is:
 Learnings land here first. When this section grows, `/distill` graduates items to skills/agents/commands.
 
 <!-- Add learnings below this line -->
+
+### 2026-01-16: External Integration Debugging
+
+**Check config before code.** When external services (Stripe, Clerk, etc.) fail in production:
+1. First verify env vars are set on production deployment: `./scripts/verify-env.sh --prod-only`
+2. Then check service logs and dashboards
+3. Only then consider code changes
+
+Root cause is often missing config, not code bugs. Code analysis can burn hours when `env list` would reveal the problem in seconds.
+
+**Dev ≠ Prod is a footgun.** Separate deployments mean env vars must be set twice. The `--prod` flag is easy to forget. Always verify:
+```bash
+CONVEX_DEPLOYMENT=prod:... npx convex env list | grep <SERVICE>
+```
+
+**Don't over-engineer under pressure.** When debugging production issues, resist the urge to build sophisticated solutions before confirming the diagnosis. Simpler is better until proven otherwise.
