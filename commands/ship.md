@@ -1,6 +1,5 @@
 ---
 description: Ship current branch - create PR and verify CI
-allowed-tools: Bash(gh:*), Bash(git:*)
 ---
 
 # SHIP

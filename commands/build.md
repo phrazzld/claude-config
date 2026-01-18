@@ -1,7 +1,6 @@
 ---
 description: Implement GitHub issue with semantic commits
 argument-hint: <issue-id>
-allowed-tools: Bash(gh:*), Bash(git:*), Bash(codex:*)
 ---
 
 # BUILD

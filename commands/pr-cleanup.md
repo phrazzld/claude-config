@@ -1,6 +1,5 @@
 ---
 description: Process open PRs, fix/close low-hanging fruit, especially dependabot with failing CI
-allowed-tools: Bash(gh:*), Bash(git:*)
 ---
 
 # PR CLEANUP

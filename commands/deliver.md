@@ -1,7 +1,6 @@
 ---
 description: Deliver GitHub issue end-to-end with CI verification
 argument-hint: <issue-id>
-allowed-tools: Bash(gh:*), Bash(git:*)
 ---
 
 # DELIVER

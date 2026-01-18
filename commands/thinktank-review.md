@@ -1,6 +1,5 @@
 ---
 description: Code review with thinktank using full context (docs + code + dependencies)
-allowed-tools: Bash(git:*), Bash(thinktank:*)
 ---
 
 # THINKTANK-REVIEW

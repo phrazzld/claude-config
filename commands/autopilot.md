@@ -1,6 +1,5 @@
 ---
 description: Discover highest-priority issue, spec it, design it, implement it, open PR
-allowed-tools: Bash(gh:*), Bash(git:*), Bash(codex:*)
 ---
 
 # AUTOPILOT

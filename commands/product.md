@@ -1,7 +1,6 @@
 ---
 description: Flesh out GitHub issue with product spec
 argument-hint: <issue-id>
-allowed-tools: Bash(gh:*)
 ---
 
 # PRODUCT

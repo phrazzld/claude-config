@@ -1,6 +1,5 @@
 ---
 description: Audit a project's launch readiness and create GitHub Issues to close gaps
-allowed-tools: Read, Write, Edit, Grep, Glob, Bash, WebFetch, Task, AskUserQuestion
 ---
 
 # LAUNCH AUDIT
