@@ -21,9 +21,26 @@ If on `master` or `main`, checkout a work branch named after the issue (e.g., `f
 ## UI Work Detection
 
 If issue involves frontend (tsx/jsx/vue/svelte files, CSS, Tailwind, components):
-- Invoke `Skill("aesthetic-system")` for design guidance
-- Apply `aesthetic-system/references/implementation-constraints.md` during implementation
-- Use `references/banned-patterns.md` to avoid AI slop
+
+### Design Lab Phase (Mandatory)
+
+1. Run `/design` command for visual exploration
+2. Iterate with user until design selected
+3. Lock design DNA and constraints
+
+### Implementation Phase
+
+With design locked:
+- `Skill("ui-skills")` active throughout — real-time constraint checking
+- Apply `aesthetic-system/references/implementation-constraints.md`
+- Apply `references/banned-patterns.md` to avoid AI slop
+
+### Quality Gate Phase
+
+Before commit:
+- Run `/rams` → require score ≥80/100
+- Run `/web-interface-guidelines` → no critical issues
+- Fix any violations before proceeding
 
 ## Startup
 
@@ -36,13 +53,30 @@ Extract from comments:
 - **Product Spec**: WHAT and WHY
 - **Technical Design**: HOW
 
+## Codex Delegation
+
+Your tokens are expensive and limited. Codex tokens are cheap. Delegate aggressively.
+
+**Good candidates for Codex:**
+- Implementing functions from clear patterns: "Codex, implement createUser following the pattern in src/services/auth.ts"
+- Writing tests: "Have Codex write tests for this module while I design the next piece"
+- Code review before commit: "Codex, review this diff for bugs and edge cases"
+- Drafting boilerplate: "Codex, scaffold the CRUD endpoints for this entity"
+
+**Keep for yourself:**
+- Architecture decisions already made in the technical design
+- Integration across unfamiliar systems
+- Anything requiring deep context you already have loaded
+
+Work in parallel: delegate implementation to Codex while you think about the next chunk.
+
 ## Execution Loop
 
 ```
 while not complete and not blocked:
     1. Identify next logical chunk
-    2. Implement (parallelize if independent modules)
-    3. Test
+    2. Implement (delegate to Codex for routine code, keep complex integration)
+    3. Test (delegate test writing to Codex)
     4. Verify (build, lint)
     5. Commit: `feat: description (#$1)`
 ```
@@ -129,35 +163,6 @@ After successful implementation, run `/document` to:
 - Generate state diagrams for any stateful components added
 - Update READMEs for new directories
 - Add architecture diagrams if module boundaries changed
-
-## Post-Implementation Simplification
-
-Launch the `code-simplifier:code-simplifier` agent to refine recently modified code:
-- Preserves functionality while improving clarity
-- Applies project standards from CLAUDE.md
-- Reduces unnecessary complexity and nesting
-- Improves naming and consolidates related logic
-
-Commit any simplifications: `refactor: simplify implementation (#$1)`
-
-## Post-Implementation Deep Module Review
-
-After simplification, invoke the `ousterhout` agent to review for architectural quality:
-
-Launch `ousterhout` agent with prompt:
-```
-Review the recently modified code for deep module design:
-- Module depth: Is interface simple relative to functionality?
-- Information hiding: Are implementation details hidden?
-- Change amplification: Would small changes require many edits?
-- Red flags: Shallow modules, generic names, pass-through methods?
-
-Focus on files changed in this implementation. Suggest concrete refactorings.
-```
-
-If agent identifies issues:
-1. Implement suggested refactorings for high-impact items
-2. Commit: `refactor: improve module depth (#$1)`
 
 ## Post-Implementation Codification
 

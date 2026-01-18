@@ -9,6 +9,8 @@ allowed-tools: Bash(gh:*), Bash(git:*)
 
 Full autonomous workflow: discover → spec → design → branch → implement → PR.
 
+**Token Strategy**: Your tokens are expensive. Throughout this workflow, delegate aggressively to Codex for implementation, test writing, documentation drafts, and reviews. You orchestrate; Codex executes.
+
 ## Phase 1: Issue Discovery
 
 Fetch open issues and analyze them to identify the single highest-priority issue.
@@ -37,35 +39,12 @@ Run `/build` on the issue. It handles:
 - Commits reference issue: `feat: description (#N)`
 - Final commit closes issue: `closes #N`
 
-## Phase 5: Simplification
+## Phase 5: Refactor
 
-Launch the `code-simplifier:code-simplifier` agent to refine recently modified code. It:
-- Preserves functionality while improving clarity
-- Applies project standards from CLAUDE.md
-- Reduces unnecessary complexity and nesting
-- Improves naming and consolidates related logic
-
-Commit any simplifications with: `refactor: simplify implementation (#N)`
-
-## Phase 5.5: Deep Module Review
-
-After simplification, invoke the `ousterhout` agent to review for architectural quality:
-
-Launch `ousterhout` agent with prompt:
-```
-Review the recently modified code for deep module design principles:
-- Are modules deep (simple interface, rich implementation)?
-- Is information properly hidden?
-- Are there complexity red flags (change amplification, cognitive load)?
-- Any shallow modules or pass-through methods?
-- Suggest refactoring opportunities.
-
-Focus on files changed in this implementation.
-```
-
-If agent identifies refactoring opportunities:
-1. Implement suggested refactorings for high-impact items
-2. Commit: `refactor: improve module depth (#N)`
+Run `/refactor` to:
+- Simplify code (clarity, naming, nesting, project standards)
+- Review for deep module design (Ousterhout principles)
+- Fix high-impact architectural issues
 
 ## Phase 6: Documentation
 
@@ -73,7 +52,7 @@ Run `/document` to generate state diagrams for stateful components, update READM
 
 ## Phase 7: Pull Request
 
-Run `/git-pr`. Ensure PR description references the issue with `Closes #N` for auto-linking.
+Run `/open-pr`. Ensure PR description references the issue with `Closes #N` for auto-linking.
 
 ## Completion
 

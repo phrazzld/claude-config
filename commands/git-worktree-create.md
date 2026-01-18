@@ -43,7 +43,7 @@ claude
 
 # Work in isolated environment
 /execute             # Implement tasks
-/git-pr              # Create PR
+/open-pr              # Create PR
 
 # Each worktree = separate Claude session
 # Main project continues unaffected
@@ -77,7 +77,7 @@ Build dependent PRs while base is under review
 ## Key Insights
 
 **No Command Awareness Needed:**
-Each worktree runs in separate Claude session with own filesystem. All commands (`/execute`, `/git-pr`, `/debug`) work without modification.
+Each worktree runs in separate Claude session with own filesystem. All commands (`/execute`, `/open-pr`, `/debug`) work without modification.
 
 **True Parallelism:**
 - Main branch: Continue feature work
@@ -126,5 +126,5 @@ When done with worktree:
 
 - `/git-worktree-review` - Review PR in isolated worktree
 - `/git-worktree-cleanup` - Remove stale worktrees
-- `/git-pr` - Create PR (works in worktree)
+- `/open-pr` - Create PR (works in worktree)
 - `/execute` - Implement tasks (works in worktree)

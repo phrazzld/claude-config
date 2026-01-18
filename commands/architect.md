@@ -20,11 +20,21 @@ Add technical design to Issue #$1. Post as comment, update labels to `status/rea
 2. **Investigate**: Explore codebase patterns, identify touch points
 3. **Interview**: Surface technical assumptions via polls
 4. **Research**: Check current best practices if needed (2025 patterns)
-5. **Consult Council**: Validate architecture with expert council
-6. **Design**: Create implementation blueprint
-7. **Post**: `gh issue comment $1 --body "## Technical Design\n..."`
-8. **Adversarial Review**: Stress-test the design with `/adversarial $1`
-9. **Update**: `gh issue edit $1 --remove-label "status/needs-design" --add-label "status/ready"`
+5. **Draft Alternatives**: Have Codex draft 2-3 design approaches while you evaluate tradeoffs
+6. **Consult Council**: Validate architecture with expert council
+7. **Design**: Create implementation blueprint
+8. **Post**: `gh issue comment $1 --body "## Technical Design\n..."`
+9. **Adversarial Review**: Stress-test the design with `/adversarial $1`
+10. **Update**: `gh issue edit $1 --remove-label "status/needs-design" --add-label "status/ready"`
+
+## Codex for Design Exploration
+
+Use Codex as a brainstorming partner during design:
+- "Codex, draft 3 different approaches for implementing this feature"
+- "Codex, what are the tradeoffs between approach A and approach B?"
+- "Codex, review this design for scalability concerns"
+
+You evaluate and decide. Codex generates options cheaply.
 
 ## Interview Phase
 

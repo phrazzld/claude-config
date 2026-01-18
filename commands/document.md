@@ -1,6 +1,6 @@
 ---
 description: Comprehensive documentation audit and generation
-invoked-by: /autopilot, /build, /git-pr, /ship, /deliver, /tighten
+invoked-by: /autopilot, /build, /open-pr, /ship, /deliver, /tighten
 ---
 
 # DOCUMENT
@@ -20,6 +20,15 @@ invoked-by: /autopilot, /build, /git-pr, /ship, /deliver, /tighten
 ## Mission
 
 Audit the codebase for documentation gaps. Create what's missing. Update what's stale. Delete what misleads. Prioritize state diagrams for stateful components.
+
+## Codex for Draft Generation
+
+Documentation is high-volume writing. Delegate drafting to Codex:
+- "Codex, draft a README for this module based on its exports and structure"
+- "Codex, generate a Mermaid state diagram for this component's lifecycle"
+- "Codex, draft an ADR explaining why we chose X over Y"
+
+You review, refine, and approve. Codex handles the initial draft cheaply.
 
 ## Execution
 

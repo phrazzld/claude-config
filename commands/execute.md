@@ -89,9 +89,23 @@ Ask: **"Do tests exist for this?"**
 
 **4. Mark in-progress**: Update `[ ]` → `[~]`
 
-**5. Implement**
+**5. Implement (with Codex as Coworker)**
 
 Read DESIGN.md for architectural guidance—the "how" is decided. Follow the module design, implement the pseudocode, match the interfaces. Your job: clean implementation of the planned architecture.
+
+**Codex Delegation**: Your tokens are expensive. Codex tokens are cheap. Delegate aggressively.
+
+Delegate to Codex:
+- Implementation from clear spec or pattern: `codex exec --full-auto "Implement X following pattern in Y"`
+- Writing tests: Have Codex write tests while you design the next piece
+- Code review: Get Codex's take before committing
+
+Keep for yourself:
+- Novel architecture decisions
+- Deep integration requiring context you already have
+- Quick one-liners where overhead isn't worth it
+
+Work in parallel: delegate routine implementation to Codex while you think about integration.
 
 **Architecture blueprint** (from DESIGN.md):
 - Module interfaces (match these exactly)

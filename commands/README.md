@@ -17,11 +17,11 @@ Streamlined command library for Claude Code CLI, providing an integrated develop
 **Granular commands** (when you need control):
 
 ```
-/prime → /product → /architect → /plan → /execute → /git-pr
+/prime → /product → /architect → /plan → /execute → /open-pr
 ```
 
 1. **autopilot.md** - Full autonomous: discover highest-priority issue → deliver → PR
-2. **deliver.md** - End-to-end issue delivery with CI verification (chains: product → architect → build → git-pr → ci)
+2. **deliver.md** - End-to-end issue delivery with CI verification (chains: product → architect → build → open-pr → ci)
 3. **ship.md** - Post-build shipping: create PR and wait for CI
 4. **prime.md** - Gather context from repository files (README, CLAUDE.md, package.json)
 5. **product.md** - Product specification with user interviews and success metrics
@@ -29,7 +29,7 @@ Streamlined command library for Claude Code CLI, providing an integrated develop
 7. **plan.md** - Convert architecture into actionable TODO items with Grug complexity review
 8. **flesh.md** - Transform skeletal TODOs into executable specifications with parallel research
 9. **execute.md** - Adaptive task execution with Carmack + Ousterhout quality review
-10. **git-pr.md** - Create pull requests with auto-generated descriptions
+10. **open-pr.md** - Create pull requests with auto-generated descriptions
 
 ### 📊 Analysis & Debugging
 
@@ -225,7 +225,7 @@ Separate Claude sessions for parallel development:
 /architect                # Design modules and interfaces
 /plan                     # Break down with Grug complexity review
 /execute                  # Work through with Carmack + Ousterhout review
-/git-pr                   # Create pull request
+/open-pr                   # Create pull request
 /ci                       # Verify CI passes
 ```
 

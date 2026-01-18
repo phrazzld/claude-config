@@ -55,7 +55,7 @@ If project has external integrations (Stripe, Clerk, Sendgrid, etc.):
 
 ## Phase 4: Ship
 
-Run `/git-pr`.
+Run `/open-pr`.
 
 This handles:
 - Size and coverage checks

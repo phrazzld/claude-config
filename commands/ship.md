@@ -34,7 +34,7 @@ If project has external integrations (Stripe, Clerk, Sendgrid, etc.):
 
 ## Phase 1: Create PR
 
-Run `/git-pr`.
+Run `/open-pr`.
 
 This handles:
 - Size check (warn if >400 lines)
