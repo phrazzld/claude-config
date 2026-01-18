@@ -1,7 +1,7 @@
 ---
 description: Implement GitHub issue with semantic commits
 argument-hint: <issue-id>
-allowed-tools: Bash(gh:*), Bash(git:*)
+allowed-tools: Bash(gh:*), Bash(git:*), Bash(codex:*)
 ---
 
 # BUILD
@@ -53,31 +53,37 @@ Extract from comments:
 - **Product Spec**: WHAT and WHY
 - **Technical Design**: HOW
 
-## Codex Delegation
+## Codex Delegation (MANDATORY)
 
-Your tokens are expensive and limited. Codex tokens are cheap. Delegate aggressively.
+Your tokens are expensive. Codex tokens are cheap. **Actually invoke Codex** for implementation work.
 
-**Good candidates for Codex:**
-- Implementing functions from clear patterns: "Codex, implement createUser following the pattern in src/services/auth.ts"
-- Writing tests: "Have Codex write tests for this module while I design the next piece"
-- Code review before commit: "Codex, review this diff for bugs and edge cases"
-- Drafting boilerplate: "Codex, scaffold the CRUD endpoints for this entity"
+For each implementation chunk, run:
+```bash
+codex exec --full-auto "Implement [description]. Follow the pattern in [reference file]." \
+  --output-last-message /tmp/codex-out.md 2>/dev/null
+```
+
+Then validate: `git diff --stat && pnpm test`
+
+**Delegate to Codex:**
+- Function/module implementation from clear patterns
+- Writing tests for code you just wrote
+- CRUD operations, boilerplate, repetitive code
+- Code review before commit: `codex exec --full-auto "Review this diff for bugs"`
 
 **Keep for yourself:**
-- Architecture decisions already made in the technical design
-- Integration across unfamiliar systems
-- Anything requiring deep context you already have loaded
-
-Work in parallel: delegate implementation to Codex while you think about the next chunk.
+- Architecture decisions (already made in technical design)
+- Complex integration requiring context you have loaded
+- Quick one-liners where overhead isn't worth it
 
 ## Execution Loop
 
 ```
 while not complete and not blocked:
     1. Identify next logical chunk
-    2. Implement (delegate to Codex for routine code, keep complex integration)
-    3. Test (delegate test writing to Codex)
-    4. Verify (build, lint)
+    2. Run: codex exec --full-auto "Implement [chunk]" --output-last-message /tmp/out.md
+    3. Validate: git diff, run tests
+    4. If tests fail, fix or re-delegate to Codex
     5. Commit: `feat: description (#$1)`
 ```
 

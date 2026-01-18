@@ -1,7 +1,7 @@
 ---
 description: Add technical design to GitHub issue
 argument-hint: <issue-id>
-allowed-tools: Bash(gh:*)
+allowed-tools: Bash(gh:*), Bash(codex:*)
 ---
 
 # ARCHITECT

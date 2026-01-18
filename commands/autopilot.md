@@ -1,6 +1,6 @@
 ---
 description: Discover highest-priority issue, spec it, design it, implement it, open PR
-allowed-tools: Bash(gh:*), Bash(git:*)
+allowed-tools: Bash(gh:*), Bash(git:*), Bash(codex:*)
 ---
 
 # AUTOPILOT
@@ -9,7 +9,23 @@ allowed-tools: Bash(gh:*), Bash(git:*)
 
 Full autonomous workflow: discover → spec → design → branch → implement → PR.
 
-**Token Strategy**: Your tokens are expensive. Throughout this workflow, delegate aggressively to Codex for implementation, test writing, documentation drafts, and reviews. You orchestrate; Codex executes.
+## Token Strategy (MANDATORY)
+
+Your tokens are expensive. Codex tokens are cheap. **Actually invoke Codex** throughout this workflow:
+
+```bash
+# For each implementation chunk in /build:
+codex exec --full-auto "Implement [chunk]. Follow pattern in [file]." \
+  --output-last-message /tmp/codex-out.md 2>/dev/null
+
+# For test writing:
+codex exec --full-auto "Write tests for [module]." --output-last-message /tmp/tests.md
+
+# For documentation drafts:
+codex exec --full-auto "Draft README for [module]." --output-last-message /tmp/docs.md
+```
+
+You orchestrate and validate. Codex implements. This is not optional.
 
 ## Phase 1: Issue Discovery
 
