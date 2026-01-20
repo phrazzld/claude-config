@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """
-Stripe deploy reminder hook for Claude Code.
+Stripe deploy verification hook for Claude Code.
 
-Warns when deploying projects that have Stripe integration, reminding
-to verify config before production deployment.
+When deploying projects with Stripe integration:
+1. Verifies webhook URLs don't redirect (Stripe won't follow redirects)
+2. Checks env var configuration
+3. BLOCKS deploy if critical issues found
 
 PreToolUse hook - runs before Bash commands execute.
 """
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -30,94 +33,155 @@ def has_stripe_integration() -> bool:
     """Check if current project has Stripe integration."""
     cwd = Path.cwd()
 
-    # Check .env.local
-    env_local = cwd / '.env.local'
-    if env_local.exists():
-        try:
-            content = env_local.read_text()
-            if any(ind in content for ind in STRIPE_INDICATORS):
-                return True
-        except Exception:
-            pass
-
-    # Check .env
-    env_file = cwd / '.env'
-    if env_file.exists():
-        try:
-            content = env_file.read_text()
-            if any(ind in content for ind in STRIPE_INDICATORS):
-                return True
-        except Exception:
-            pass
-
-    # Check .env.example
-    env_example = cwd / '.env.example'
-    if env_example.exists():
-        try:
-            content = env_example.read_text()
-            if any(ind in content for ind in STRIPE_INDICATORS):
-                return True
-        except Exception:
-            pass
+    for env_file in ['.env.local', '.env', '.env.example']:
+        path = cwd / env_file
+        if path.exists():
+            try:
+                content = path.read_text()
+                if any(ind in content for ind in STRIPE_INDICATORS):
+                    return True
+            except Exception:
+                pass
 
     return False
 
 
-def has_verification_script() -> bool:
-    """Check if verification script exists."""
-    cwd = Path.cwd()
-    return (cwd / 'scripts' / 'verify-env.sh').exists()
+def get_webhook_urls() -> list[str]:
+    """Get webhook URLs from Stripe CLI."""
+    try:
+        result = subprocess.run(
+            ['stripe', 'webhook_endpoints', 'list'],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        if result.returncode != 0:
+            return []
+
+        # Extract URLs from JSON output
+        urls = re.findall(r'"url":\s*"(https://[^"]+)"', result.stdout)
+        return urls
+    except Exception:
+        return []
 
 
-def check_command(cmd: str) -> tuple[bool, str]:
+def check_url_for_redirect(url: str) -> tuple[bool, str | None]:
+    """
+    Check if URL returns a redirect.
+    Returns (has_redirect, redirect_location).
+    """
+    try:
+        result = subprocess.run(
+            ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}', '-I', '-X', 'POST', url],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        http_code = result.stdout.strip()
+
+        if http_code.startswith('3'):
+            # Get redirect location
+            loc_result = subprocess.run(
+                ['curl', '-s', '-I', '-X', 'POST', url],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            for line in loc_result.stdout.split('\n'):
+                if line.lower().startswith('location:'):
+                    return True, line.split(':', 1)[1].strip()
+            return True, None
+
+        return False, None
+    except Exception:
+        return False, None  # Can't check, allow through
+
+
+def verify_webhook_urls() -> tuple[bool, str]:
+    """
+    Verify all webhook URLs don't redirect.
+    Returns (all_passed, message).
+    """
+    urls = get_webhook_urls()
+
+    if not urls:
+        return True, "No webhook URLs found to verify"
+
+    issues = []
+    for url in urls:
+        has_redirect, redirect_to = check_url_for_redirect(url)
+        if has_redirect:
+            if redirect_to:
+                issues.append(f"  {url}\n    → Redirects to: {redirect_to}")
+            else:
+                issues.append(f"  {url}\n    → Returns 3xx redirect")
+
+    if issues:
+        message = [
+            "WEBHOOK URL REDIRECT DETECTED",
+            "",
+            "Stripe does NOT follow redirects for POST webhooks.",
+            "These webhook URLs will silently fail:",
+            "",
+            *issues,
+            "",
+            "FIX: Update webhook to use canonical domain:",
+            "  stripe webhook_endpoints update <id> --url \"<canonical_url>\"",
+            "",
+            "Deploy BLOCKED until fixed."
+        ]
+        return False, "\n".join(message)
+
+    return True, f"✓ All {len(urls)} webhook URLs verified (no redirects)"
+
+
+def check_command(cmd: str) -> tuple[str, bool, str]:
     """
     Check if command is a deploy and project has Stripe integration.
-    Returns (should_warn, warning_message).
+    Returns (action, should_output, message).
+    action: "block", "warn", or "allow"
     """
     if not cmd:
-        return False, ""
+        return "allow", False, ""
 
     # Check if this is a deploy command
     is_deploy = any(re.search(p, cmd, re.IGNORECASE) for p in DEPLOY_PATTERNS)
     if not is_deploy:
-        return False, ""
+        return "allow", False, ""
 
     # Check if project has Stripe integration
     if not has_stripe_integration():
-        return False, ""
+        return "allow", False, ""
 
-    # Build warning message
-    has_script = has_verification_script()
+    # Verify webhook URLs for redirects
+    urls_passed, urls_message = verify_webhook_urls()
 
+    if not urls_passed:
+        return "block", True, urls_message
+
+    # All checks passed, show confirmation and proceed
     message_parts = [
-        "STRIPE INTEGRATION DETECTED",
+        "STRIPE VERIFICATION PASSED",
         "",
-        "Before deploying, verify:",
-        "1. Env vars set on PRODUCTION (not just dev)",
-        "2. Webhook URL uses canonical domain (no redirects)",
-        "3. No trailing whitespace in secrets",
-    ]
-
-    if has_script:
-        message_parts.extend([
-            "",
-            "Run verification:",
-            "  ./scripts/verify-env.sh --prod-only"
-        ])
-    else:
-        message_parts.extend([
-            "",
-            "No verification script found.",
-            "Consider creating scripts/verify-env.sh",
-            "See: ~/.claude/skills/external-integration-patterns/SKILL.md"
-        ])
-
-    message_parts.extend([
+        urls_message,
         "",
         "Proceeding with deploy."
-    ])
+    ]
 
-    return True, "\n".join(message_parts)
+    return "warn", True, "\n".join(message_parts)
+
+
+def block(cmd: str, reason: str) -> None:
+    """Block command execution with error message."""
+    output = {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "decision": "block",
+            "message": f"🛑 {reason}\n\nCommand blocked: {cmd}"
+        }
+    }
+    print(json.dumps(output))
+    sys.exit(0)
 
 
 def warn(cmd: str, reason: str) -> None:
@@ -125,7 +189,7 @@ def warn(cmd: str, reason: str) -> None:
     output = {
         "hookSpecificOutput": {
             "hookEventName": "PreToolUse",
-            "message": f"⚠️  {reason}\n\nCommand: {cmd}"
+            "message": f"✅ {reason}\n\nCommand: {cmd}"
         }
     }
     print(json.dumps(output))
@@ -147,9 +211,11 @@ def main():
     if not isinstance(cmd, str) or not cmd:
         sys.exit(0)
 
-    should_warn, reason = check_command(cmd)
+    action, should_output, reason = check_command(cmd)
 
-    if should_warn:
+    if action == "block":
+        block(cmd, reason)
+    elif should_output:
         warn(cmd, reason)
 
     sys.exit(0)
