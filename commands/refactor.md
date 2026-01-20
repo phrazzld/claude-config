@@ -6,9 +6,17 @@ description: Two-pass code refinement - clarity then architecture
 
 > "Simplicity is the ultimate sophistication." — da Vinci
 
-Post-implementation code refinement. Run after `/build` completes.
+## Role
 
-## Codex Pre-Analysis
+You are the senior engineer reviewing code quality. Codex and specialized agents do the analysis; you decide what to act on.
+
+## Objective
+
+Post-implementation refinement: simplify code, improve module depth.
+
+## Process
+
+### Codex Pre-Analysis
 
 Before diving in, get Codex's take on the code:
 - "Codex, review this code for simplification opportunities"

@@ -1,79 +1,82 @@
 ---
-description: Discover highest-priority issue, spec it, design it, implement it, open PR
+description: Full autonomous delivery from issue to PR
+argument-hint: "[issue-id]"
 ---
 
 # AUTOPILOT
 
-> From backlog to PR in one command.
+> From issue to PR in one command.
 
-Full autonomous workflow: discover → spec → design → branch → implement → PR.
+Assumes backlog is groomed. Run `/groom` first if needed.
 
-## Token Strategy (MANDATORY)
+## Argument
 
-Your tokens are expensive. Codex tokens are cheap. **Actually invoke Codex** throughout this workflow:
+- `issue-id` — Optional. If provided, work on that issue. If omitted, find highest-priority open issue labeled `ready`.
 
+## Role
+
+You are the engineering lead running a sprint. You find work, ensure it's ready, delegate implementation, and ship.
+
+Codex implements. You orchestrate.
+
+## Workflow
+
+### 1. Find Issue
+
+If `$1` provided:
 ```bash
-# For each implementation chunk in /build:
-codex exec --full-auto "Implement [chunk]. Follow pattern in [file]." \
-  --output-last-message /tmp/codex-out.md 2>/dev/null
-
-# For test writing:
-codex exec --full-auto "Write tests for [module]." --output-last-message /tmp/tests.md
-
-# For documentation drafts:
-codex exec --full-auto "Draft README for [module]." --output-last-message /tmp/docs.md
+gh issue view $1 --comments
 ```
 
-You orchestrate and validate. Codex implements. This is not optional.
+If no argument:
+```bash
+gh issue list --label "status/ready" --limit 10
+```
+Select ONE based on: `horizon/now` > `horizon/next` > blocking others > clear scope.
 
-## Phase 1: Issue Discovery
+### 2. Spec
 
-Fetch open issues and analyze them to identify the single highest-priority issue.
+Read issue comments. If no `## Product Spec` section:
+```
+/spec $ISSUE
+```
 
-Consider:
-- **Labels**: `horizon/now` > `horizon/next` > `horizon/soon` > unlabeled
-- **Status**: Issues with `status/ready` are preferred; `status/needs-spec` or `status/needs-design` need work first
-- **Blocking**: Issues that block other work
-- **Age + Activity**: Older issues with recent discussion
-- **Scope**: Prefer actionable issues over vague epics
+### 3. Design
 
-Select one issue. Report why it's highest priority.
+Read issue comments. If no `## Technical Design` section:
+```
+/architect $ISSUE
+```
 
-## Phase 2: Spec Check
+### 4. Build
 
-Read the issue comments. If no `## Product Spec` exists, run `/product` on it.
+```
+/build $ISSUE
+```
+Handles: branching, implementation (Codex), commits.
 
-## Phase 3: Design Check
+### 5. Refine
 
-Read the issue comments again. If no `## Technical Design` exists, run `/architect` on it.
+```
+/refactor
+/update-docs
+```
 
-## Phase 4: Branch + Build
+### 6. Ship
 
-Run `/build` on the issue. It handles:
-- Branch naming: `feature/issue-{N}` or `fix/issue-{N}`
-- Commits reference issue: `feat: description (#N)`
-- Final commit closes issue: `closes #N`
+```
+/pr
+```
+Ensures PR references issue with `Closes #N`.
 
-## Phase 5: Refactor
+## Stopping Conditions
 
-Run `/refactor` to:
-- Simplify code (clarity, naming, nesting, project standards)
-- Review for deep module design (Ousterhout principles)
-- Fix high-impact architectural issues
+Stop and report if:
+- No `status/ready` issues found (run `/groom` first)
+- Issue is blocked by another issue
+- Build fails repeatedly
+- Scope unclear (needs user clarification)
 
-## Phase 6: Documentation
+## Output
 
-Run `/document` to generate state diagrams for stateful components, update READMEs, and add architecture diagrams if needed.
-
-## Phase 7: Pull Request
-
-Run `/open-pr`. Ensure PR description references the issue with `Closes #N` for auto-linking.
-
-## Completion
-
-Report:
-- Issue selected and rationale
-- Spec: created or already existed
-- Design: created or already existed
-- Implementation summary
-- PR URL
+Report: issue worked, spec status, design status, commits made, PR URL.

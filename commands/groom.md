@@ -1,80 +1,73 @@
 ---
-description: Analyze codebase and create GitHub Issues for improvements
+description: Run all 12 grooming primitives → synthesize → create issues
 ---
 
 # GROOM
 
-> Complexity is the enemy. Find it. Flag it. File issues.
+Comprehensive backlog grooming across 12 perspectives.
 
-Go wide. Go deep. Create a comprehensive backlog of the most compelling work.
+No flags. No selective running. Always runs ALL primitives in parallel. Always comprehensive.
 
-## Mission
+## What This Does
 
-Explore this codebase from multiple perspectives. Generate issues for everything worth doing. Let quality be the filter, not arbitrary limits.
+1. **Check existing backlog** — Don't duplicate
+2. **Launch 12 agents** — Each examines codebase from specific lens
+3. **Collect findings** — Each produces prioritized issue list
+4. **Synthesize** — Cross-validate, identify patterns
+5. **Create issues** — GitHub issues with labels and priorities
 
-## Process
-
-### 1. Understand Current State
-
-Check existing backlog first. Don't duplicate.
+## Step 1: Check Existing Backlog
 
 ```bash
 gh issue list --state open --limit 50
 gh issue list --state closed --limit 20
 ```
 
-### 2. Multi-Perspective Investigation
+## Step 2: Launch 12 Grooming Agents
 
-Launch agents in parallel to explore from different angles. Pick perspectives relevant to this project:
+Launch ALL in parallel via Task tool:
 
-- **architecture-guardian** — module boundaries, coupling, complexity
-- **security-sentinel** — vulnerabilities, auth, data protection
-- **performance-pathfinder** — bottlenecks, queries, scalability
-- **user-experience-advocate** — friction, accessibility, delight
-- **test-strategy-architect** — coverage gaps, flaky tests, quality
-- **maintainability-maven** — tech debt, naming, clarity
-- **dependency-health-monitor** — outdated packages, vulnerabilities
-- **infrastructure-guardian** — CI/CD, quality gates, deployment
-- **config-auditor** — external service config, env vars, webhooks, API keys
-- **observability-advocate** — logging coverage, monitoring gaps, alerting rules
+### Infrastructure & Code (5 agents)
 
-Each agent explores autonomously, researches best practices, identifies specific improvements with file:line locations.
+| Agent | Prompt |
+|-------|--------|
+| groom-security | "Audit for security vulnerabilities: OWASP top 10, auth gaps, data exposure, injection points, secrets management. Include file:line. Output: prioritized security issues." |
+| groom-performance | "Audit for performance issues: N+1 queries, bundle size, missing indexes, caching opportunities, memory leaks. Include file:line. Output: prioritized performance issues." |
+| groom-code-quality | "Audit code health: complexity hotspots, duplication, test coverage gaps, type safety, code smells. Include file:line. Output: prioritized quality issues." |
+| groom-architecture | "Audit system design: coupling, cohesion, module depth, abstraction quality, dependency direction. Include file:line. Output: prioritized architecture issues." |
+| groom-infrastructure | "Audit DevOps: CI/CD gaps, monitoring blind spots, logging quality, deployment safety, scaling limits. Output: prioritized infra issues." |
 
-### 3. Synthesize and Ideate
+### User Experience (2 agents)
 
-Combine agent findings with your own analysis. Think broadly:
+| Agent | Prompt |
+|-------|--------|
+| groom-ux | "Audit user experience: friction points, confusing flows, accessibility issues, error messages, loading states. Output: prioritized UX issues." |
+| groom-aesthetics | "Audit visual design: consistency, polish, spacing issues, typography problems, color usage. Output: prioritized design issues." |
 
-- What's causing friction for users?
-- What's causing friction for developers?
-- What patterns are fighting the codebase?
-- What's obviously missing?
-- What would make this codebase a joy to work in?
-- What would make this product a joy to use?
-- What external services are we integrating with?
-- What happens when those services fail silently?
-- Can we see what's happening in production?
-- Would we know within minutes if something broke?
+### Business & Growth (5 agents)
 
-Generate ideas across all dimensions: performance, reliability, maintainability, security, UX, features, developer experience, infrastructure.
+| Agent | Prompt |
+|-------|--------|
+| groom-business | "Audit business value: revenue blockers, churn risks, competitive gaps, user retention issues. Output: prioritized business issues." |
+| groom-product | "Audit product strategy: feature gaps, user pain points, roadmap alignment, market fit. Output: prioritized product issues." |
+| groom-marketing | "Audit growth: SEO issues, conversion blockers, viral loop gaps, positioning problems. Output: prioritized marketing issues." |
+| groom-sales | "Audit sales enablement: demo gaps, objection handling needs, case study opportunities. Output: prioritized sales issues." |
+| groom-finance | "Audit financial health: cost optimization, margin issues, pricing problems. Output: prioritized finance issues." |
 
-### 4. Evaluate Each Idea
+## Step 3: Synthesize Findings
 
-For each potential issue, reason through:
+Cross-validate agent findings:
 
-- **Impact**: How much does this improve things? Who benefits?
-- **Feasibility**: How confident are we? What's the risk?
-- **Urgency**: Is this blocking other work? Time-sensitive?
+| Signal | Priority |
+|--------|----------|
+| 3+ agents flag same area | **Critical** |
+| Security + Business agree | Revenue-protecting |
+| UX + Product + Marketing agree | User-facing |
+| Code + Architecture + Infrastructure agree | Technical debt |
 
-Trust your judgment. If something feels compelling, it probably is.
+## Step 4: Create GitHub Issues
 
-### 5. Create Issues
-
-File everything worth doing. Each issue should be:
-
-- **Specific**: Clear what success looks like
-- **Located**: File paths, line numbers when known
-- **Sized**: Rough scope (tiny/small/medium/large)
-- **Contextualized**: Why it matters, what's at risk
+For each finding:
 
 ```bash
 gh issue create \
@@ -92,36 +85,28 @@ gh issue create \
 ## Location
 `path/file.ts:123` — [context]
 
+## Perspectives
+[Which grooming agents flagged this]
+
 ---
 🤖 Created by `/groom`
 EOF
 )" \
-  --label "priority/medium,type/refactor"
+  --label "priority/medium,area/[perspective]"
 ```
 
-### 6. Organize the Backlog
+## Step 5: Organize
 
 After creating issues:
 - Note dependencies (X blocks Y)
 - Identify quick wins (high impact + low effort)
-- Flag critical items that need immediate attention
+- Flag critical items needing immediate attention
 - Group related issues
 
-## Labels
+## Output
 
-Use existing repo labels. Create if missing:
-
-```bash
-# Priority: critical, high, medium, low
-# Type: bug, feature, refactor, docs, chore
-# Size: xs, s, m, l, xl
-# Area: security, performance, ux, architecture, testing
-```
-
-## Quality
-
-Before finishing:
-- Issues form coherent backlog (no contradictions)
-- No duplicates of existing open issues
-- Each issue is actionable with clear success criteria
-- Quick wins are identified
+Summary report:
+- Issues created/updated (count by perspective)
+- Critical findings (multi-agent consensus)
+- Quick wins identified
+- Recommended focus order
