@@ -1,8 +1,10 @@
-# Incident Patterns: 3 Stripe Failures in 24 Hours
+# Incident Patterns: Stripe Configuration Failures
 
 ## Overview
 
-Three projects (chrondle, bibliomnomnom, volume) shipped Stripe integrations in 24 hours. **All 3 had prod failures.** All passed code review. Root causes were configuration, not code.
+Multiple projects have shipped Stripe integrations with production failures. All passed code review. Root causes were configuration, not code.
+
+**Latest incident: Caesar (2026-01-19)** - Same redirect bug as Chrondle, 2 days later. Led to systemic fix (blocking hook, mandatory verification).
 
 ---
 
@@ -28,6 +30,37 @@ Updated Stripe webhook endpoint to canonical URL: `https://www.chrondle.app/api/
 
 ### Lesson
 **Always use canonical domain.** Check for redirects with `curl -I` before configuring webhook.
+
+---
+
+## Incident 1b: Caesar (2026-01-19)
+
+### Symptom
+Same as Chrondle - webhook configured without www, server redirected.
+
+### Root Cause
+Webhook URL `https://caesarinayear.com/api/webhooks/stripe` returned **307 redirect** to `https://www.caesarinayear.com/...`
+
+### Evidence
+```bash
+$ curl -I -X POST https://caesarinayear.com/api/webhooks/stripe
+HTTP/2 307
+location: https://www.caesarinayear.com/api/webhooks/stripe
+```
+
+### Fix
+Updated Stripe webhook endpoint: `https://www.caesarinayear.com/api/webhooks/stripe`
+
+### Lesson
+**Knowledge exists but wasn't enforced.** This exact bug was documented 2 days earlier from Chrondle, but:
+- `/stripe-check` command didn't include redirect verification
+- Warning hook didn't actually verify, just reminded
+- No blocking gate prevented shipping with bad config
+
+**Systemic fix implemented:**
+- `/stripe-check` now includes mandatory redirect verification
+- `stripe-deploy-reminder.py` hook now BLOCKS if redirects detected
+- `/deliver` and `/ship` require `/billing-preflight` for Stripe projects
 
 ---
 

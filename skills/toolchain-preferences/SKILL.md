@@ -116,6 +116,81 @@ Ensures consistent environments across projects and machines.
 - Works with any UI framework
 - Fully customizable, accessible
 
+## Observability Stack
+
+### Error Tracking: Sentry (Required)
+
+**Why Sentry:**
+- Source maps: Translates minified errors to readable stack traces
+- Deduplication: 10,000 identical errors → 1 alert
+- Breadcrumbs: Auto-records user actions before crash
+- Vercel integration: Automatic source map uploads
+
+**Setup:**
+```bash
+pnpm add @sentry/nextjs
+npx @sentry/wizard@latest -i nextjs
+```
+
+**Free tier:** 5K errors/month — enough until you have traction.
+
+### Product Analytics: PostHog (Required for user-facing apps)
+
+**Why PostHog:**
+- Terraform-native: Only major analytics with [official Terraform provider](https://github.com/PostHog/terraform-provider-posthog)
+- All-in-one: Analytics + feature flags + session replay + A/B testing
+- Developer-first: Open source, self-hostable, transparent pricing
+- CLI-manageable: Fits agentic development workflow
+
+**Setup:**
+```bash
+pnpm add posthog-js
+```
+
+**Free tier:** 1M events/month — generous for most apps.
+
+**Track conversion events only:** signup, subscription, import, key actions. Let autocapture handle generic clicks.
+
+### Web Vitals: Vercel Analytics (Auto-configured)
+
+**Why Vercel Analytics:**
+- Zero config on Vercel deployments
+- Core Web Vitals tracking
+- Free unlimited pageviews
+
+Already included in `@vercel/analytics` — no action needed.
+
+### Structured Logging: Pino
+
+**Why Pino:**
+- Fastest Node.js logger
+- JSON output in production
+- Pretty output in development
+
+**Edge runtime fallback:** Use structured console.log when Pino not available.
+
+### Avoid
+
+❌ **Mixpanel/Amplitude** — Poor CLI automation, expensive at scale
+
+❌ **Custom analytics** — 800+ hours to reach feature parity; free tiers cover you
+
+❌ **Google Analytics** — Privacy concerns, poor product analytics
+
+### Decision Tree
+
+**User-facing app?**
+- YES → Sentry + PostHog + Vercel Analytics
+- NO (internal tool) → Sentry + structured logging only
+
+**Need feature flags?**
+- YES → PostHog feature flags (skip LaunchDarkly)
+- NO → Skip for now, easy to add later
+
+**Need session replay?**
+- YES → PostHog session replay
+- NO → Skip (costs extra)
+
 ## Build Tools
 
 ### Default Build Tool by Project Type

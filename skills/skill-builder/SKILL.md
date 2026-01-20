@@ -26,7 +26,33 @@ Build new Claude Code skills that capture procedural knowledge.
 4. **User workflow** - User demonstrates a process they want automated
 5. **Research findings** - Discovered best practices worth preserving
 
+## Quality Gates (Pre-Extraction)
+
+Before creating a skill, verify ALL gates pass:
+
+| Gate | Question | Fail Criteria |
+|------|----------|---------------|
+| **REUSABLE** | Applies beyond this instance? | One-off solution |
+| **NON-TRIVIAL** | Required discovery, not docs lookup? | Just followed documentation |
+| **SPECIFIC** | Clear trigger conditions defined? | Vague "sometimes useful" |
+| **VERIFIED** | Solution confirmed working? | Theoretical, untested |
+
+If ANY gate fails → Stop. Not skill-worthy.
+
 ## Skill Creation Workflow
+
+### 0. Research Best Practices
+
+**Before extracting, search for current patterns:**
+
+```bash
+# Use Gemini CLI for web-grounded research
+gemini "[technology] [feature] best practices 2026"
+gemini "[technology] [problem type] official recommendations"
+```
+
+Why: Don't just codify what you did. Incorporate current best practices.
+Skip if: Pattern is project-specific internal convention.
 
 ### 1. Identify the Knowledge
 - What problem does this solve?
