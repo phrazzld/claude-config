@@ -42,3 +42,5 @@ plugins/marketplaces/claude-code-plugins/
 # Skill dependencies (generated)
 skills/*/node_modules/
 skills/*/pnpm-lock.yaml
+image-cache/
+telemetry/
