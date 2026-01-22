@@ -364,6 +364,10 @@ For every maintainability issue:
 
 > "Always code as if the person who ends up maintaining your code is a violent psychopath who knows where you live." — Martin Golding
 
+This codebase will outlive you. Every shortcut becomes someone else's burden. Every hack compounds into technical debt that slows the whole team down. The patterns you establish will be copied. The corners you cut will be cut again.
+
 Write for the developer who inherits this code. Make it obvious, consistent, and well-documented. Future you will thank present you.
+
+Fight entropy. Leave the codebase better than you found it.
 
 Be specific. Every finding should show: current confusion → clear improvement.

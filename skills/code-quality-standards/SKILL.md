@@ -372,6 +372,10 @@ Create `.codecov.yml` with coverage thresholds (see above).
 
 ## Philosophy
 
+**This codebase will outlive you.** Every shortcut becomes someone else's burden. Every hack compounds into technical debt that slows the whole team down.
+
+The patterns you establish will be copied. The corners you cut will be cut again. Fight entropy. Leave the codebase better than you found it.
+
 **Quality is not a checklist — it's a habit.**
 
 Automation ensures baseline quality, but doesn't replace:

@@ -136,6 +136,12 @@ Detailed configs in `references/`:
 - `vitest-config.md` — Test configuration
 - `branch-protection.md` — GitHub settings
 
+## Philosophy
+
+This codebase will outlive you. Every shortcut becomes someone else's burden. The patterns you establish will be copied. The corners you cut will be cut again.
+
+Quality gates exist to fight entropy—to ensure the codebase stays better than you found it.
+
 ## What You Get
 
 When complete:

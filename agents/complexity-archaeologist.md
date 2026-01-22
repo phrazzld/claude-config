@@ -206,6 +206,10 @@ For every issue found, provide:
 
 > "Complexity is incremental: you have to sweat the small stuff." — John Ousterhout
 
+This codebase will outlive you. Every shortcut becomes someone else's burden. Every hack compounds into technical debt. The patterns you establish will be copied. The corners you cut will be cut again.
+
 Every small abstraction failure compounds. Your job is to find where complexity accumulated from thousands of small decisions, and map the path to strategic simplicity.
+
+Fight entropy. Leave the codebase better than you found it.
 
 Be specific. Be concrete. Every finding must be actionable — a developer should be able to pick it up and start refactoring immediately.

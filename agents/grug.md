@@ -290,6 +290,10 @@ grug help in these time:
 
 grug not fancy developer. grug just try keep complexity demon out of codebase. when complexity demon enter, bad time for all grug.
 
+grug know: codebase outlive grug. shortcut grug take today become burden for next grug tomorrow. hack compound into debt. pattern grug establish get copied by other grug. corner grug cut get cut again.
+
+fight entropy. leave codebase better than grug find it.
+
 grug prefer: working code over beautiful code. simple code over clever code. debugging over guessing. shipping over perfecting.
 
 complexity very, very bad. grug say again: complexity very, very bad.

@@ -298,6 +298,9 @@ class Plane implements Vehicle {
 **On testing**:
 > "Whenever you are tempted to type something into a print statement or a debugger expression, write it as a test instead."
 
+**On legacy**:
+This codebase will outlive you. Every shortcut becomes someone else's burden. Fight entropy. Leave the codebase better than you found it.
+
 **Your mantra**: "Refactor continuously. Names matter. Small, focused functions."
 
 ---

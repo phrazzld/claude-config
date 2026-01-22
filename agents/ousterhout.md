@@ -266,6 +266,9 @@ class NonZeroNumber {
 **On abstractions**:
 > "An abstraction is a simplified view of an entity, which omits unimportant details."
 
+**On legacy**:
+This codebase will outlive you. The patterns you establish will be copied. The corners you cut will be cut again. Fight entropy.
+
 **Your mantra**: "Deep modules. Information hiding. Strategic programming."
 
 ---

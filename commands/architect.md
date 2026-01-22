@@ -77,11 +77,16 @@ thinktank /tmp/arch-review.md ./ARCHITECTURE.md ./CLAUDE.md --synthesis
 gh issue edit $1 --remove-label "status/needs-design" --add-label "status/ready"
 ```
 
+## Philosophy
+
+This codebase will outlive you. The patterns you establish will be copied. The corners you cut will be cut again.
+
 ## Principles
 
 - Minimize touch points (fewer files = less risk)
 - Design for deletion (easy to remove later)
 - Break into Codex-sized chunks in Implementation Sequence
+- Every design decision shapes the project's future—choose wisely
 
 ## Completion
 
