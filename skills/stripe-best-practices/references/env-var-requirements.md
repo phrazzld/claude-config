@@ -1,171 +1,203 @@
 # Stripe Environment Variable Requirements
 
-Where each Stripe environment variable should be configured.
+Where each environment variable should be configured for different architectures.
 
-## Variable Reference
+## Architecture: Next.js + Convex (Recommended)
 
-| Variable | Frontend | Backend | Purpose |
-|----------|----------|---------|---------|
-| `STRIPE_SECRET_KEY` | ❌ Never | ✅ Required | API authentication |
-| `STRIPE_WEBHOOK_SECRET` | ❌ Never | ✅ Required | Webhook signature verification |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ✅ Required | Optional | Stripe.js client initialization |
-| `NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID` | ✅ Required | Optional | Price selection in UI |
-| `NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID` | ✅ Required | Optional | Price selection in UI |
+In this architecture:
+- **Stripe SDK runs in Next.js API routes** (Vercel)
+- **Convex stores subscription state** (database)
+- **Webhooks hit Next.js**, which calls Convex mutations
 
-## Platform-Specific Configuration
+### Variable Map
 
-### Next.js + Vercel
+| Variable | Local | Vercel | Convex |
+|----------|:-----:|:------:|:------:|
+| `STRIPE_SECRET_KEY` | ✅ | ✅ | ❌ |
+| `STRIPE_WEBHOOK_SECRET` | ✅ | ✅ | ❌ |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ✅ | ✅ | ❌ |
+| `STRIPE_PRICE_ID` | ✅ | ✅ | ❌ |
+| `CONVEX_WEBHOOK_SECRET` | ✅ | ✅ | ✅ |
+| `CLERK_JWT_ISSUER_DOMAIN` | ❌ | ❌ | ✅ |
+
+**Key insight:** Convex does NOT need Stripe keys because the Stripe SDK runs in Next.js.
+
+### Critical Parity Requirement
+
+```
+CONVEX_WEBHOOK_SECRET must be IDENTICAL on:
+├── Vercel Production
+└── Convex Production
+```
+
+If these don't match, webhook calls from Next.js to Convex will fail authentication.
+
+### Setup Commands
 
 ```bash
-# .env.local (development)
+# === Local Development ===
+# .env.local
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID=price_...
-NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID=price_...
+STRIPE_PRICE_ID=price_...
+CONVEX_WEBHOOK_SECRET=$(openssl rand -hex 32)
 
-# Vercel (production)
+# === Vercel (all environments) ===
 vercel env add STRIPE_SECRET_KEY production
 vercel env add STRIPE_WEBHOOK_SECRET production
 vercel env add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY production
-vercel env add NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID production
-vercel env add NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID production
+vercel env add STRIPE_PRICE_ID production
+vercel env add CONVEX_WEBHOOK_SECRET production  # Must match Convex!
+
+# === Convex ===
+# Dev
+npx convex env set CONVEX_WEBHOOK_SECRET "..."
+npx convex env set CLERK_JWT_ISSUER_DOMAIN "https://your-instance.clerk.accounts.dev"
+
+# Prod (use --prod flag, NOT env var)
+npx convex env set --prod CONVEX_WEBHOOK_SECRET "..."  # Must match Vercel!
+npx convex env set --prod CLERK_JWT_ISSUER_DOMAIN "https://clerk.yourdomain.com"
 ```
 
-### Convex Backend
+### Data Flow
 
-Convex has **separate dev and prod deployments**. Env vars must be set on BOTH.
-
-```bash
-# Development
-npx convex env set STRIPE_SECRET_KEY "sk_test_..."
-npx convex env set STRIPE_WEBHOOK_SECRET "whsec_..."
-
-# Production (CRITICAL - often forgotten!)
-CONVEX_DEPLOYMENT=prod:xxx npx convex env set STRIPE_SECRET_KEY "sk_live_..."
-CONVEX_DEPLOYMENT=prod:xxx npx convex env set STRIPE_WEBHOOK_SECRET "whsec_..."
+```
+User clicks Subscribe
+    ↓
+Next.js checkout API route (uses STRIPE_SECRET_KEY)
+    ↓
+Stripe Checkout Session
+    ↓
+User completes payment
+    ↓
+Stripe webhook → Next.js webhook route
+    ↓ (uses STRIPE_WEBHOOK_SECRET to verify)
+    ↓ (uses CONVEX_WEBHOOK_SECRET to authenticate)
+    ↓
+Convex mutation (validates CONVEX_WEBHOOK_SECRET)
+    ↓
+Database updated
 ```
 
-**Common mistake:** Setting env vars in dev and assuming they propagate to prod.
+## Architecture: Convex-Only (HTTP Actions)
 
-### Next.js + Convex Hybrid
+If using Convex HTTP actions for Stripe webhooks:
 
-When using Next.js API routes AND Convex:
-
-| Variable | Next.js (.env) | Convex (env set) |
-|----------|----------------|------------------|
-| `STRIPE_SECRET_KEY` | If API routes | If HTTP actions |
-| `STRIPE_WEBHOOK_SECRET` | If Next.js webhook | If Convex webhook |
-| `NEXT_PUBLIC_*` | ✅ Yes | Not needed |
+| Variable | Local | Vercel | Convex |
+|----------|:-----:|:------:|:------:|
+| `STRIPE_SECRET_KEY` | ✅ | ❌ | ✅ |
+| `STRIPE_WEBHOOK_SECRET` | ✅ | ❌ | ✅ |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ✅ | ✅ | ❌ |
 
 ## Verification Commands
 
-### Convex
+### Check Convex (use --prod flag!)
 
 ```bash
-# List dev env vars
+# Dev environment
 npx convex env list
 
-# List prod env vars
-CONVEX_DEPLOYMENT=prod:xxx npx convex env list
+# Prod environment (CORRECT)
+npx convex env list --prod
 
-# Check specific var exists
-npx convex env list | grep STRIPE_SECRET_KEY
+# WRONG - env var doesn't reliably switch environments
+# CONVEX_DEPLOYMENT=prod:xxx npx convex env list
 ```
 
-### Vercel
+### Check Vercel
 
 ```bash
-# List all env vars
-vercel env ls
+# All environments
+pnpm dlx vercel env ls
 
-# List production only
-vercel env ls --environment=production
+# Production only
+pnpm dlx vercel env ls --environment=production
 ```
 
-### Local (.env files)
+### Verify Parity
 
 ```bash
-# Check .env.local exists and has Stripe vars
-grep STRIPE .env.local
-
-# Ensure no secrets in .env (committed file)
-grep -r "sk_test_\|sk_live_" .env
+# Pull Vercel prod to compare
+pnpm dlx vercel env pull .env.vercel-check --environment=production --yes
+grep CONVEX_WEBHOOK_SECRET .env.vercel-check
+npx convex env get --prod CONVEX_WEBHOOK_SECRET
+rm .env.vercel-check
 ```
 
 ## Test vs Live Keys
 
-### Key Prefixes
+| Prefix | Environment |
+|--------|-------------|
+| `sk_test_`, `pk_test_` | Development, staging |
+| `sk_live_`, `pk_live_` | Production |
+| `whsec_` | Both (unique per endpoint) |
 
-| Prefix | Environment | Use Case |
-|--------|-------------|----------|
-| `pk_test_` | Test | Development, staging |
-| `sk_test_` | Test | Development, staging |
-| `pk_live_` | Live | Production |
-| `sk_live_` | Live | Production |
-| `whsec_` | Both | Webhook secrets (test or live) |
+**Rule:** Never mix test and live keys in the same environment.
 
-### Environment Alignment
+## Common Mistakes
 
-Ensure consistent test/live across all vars:
+### 1. Setting Stripe keys in Convex
 
 ```bash
-# ✅ CORRECT - All test keys
-STRIPE_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+# WRONG for Next.js + Convex architecture
+npx convex env set STRIPE_SECRET_KEY "..."
 
-# ❌ WRONG - Mixed test/live
-STRIPE_SECRET_KEY=sk_live_...          # Live
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...  # Test!
+# Stripe SDK runs in Next.js, not Convex!
+```
+
+### 2. Using env var for Convex prod
+
+```bash
+# UNRELIABLE - may return dev data
+CONVEX_DEPLOYMENT=prod:xxx npx convex env list
+
+# CORRECT - use --prod flag
+npx convex env list --prod
+```
+
+### 3. Forgetting Vercel ↔ Convex parity
+
+```bash
+# Set in Vercel...
+vercel env add CONVEX_WEBHOOK_SECRET production
+
+# ...but forgot Convex prod!
+# npx convex env set --prod CONVEX_WEBHOOK_SECRET "..."
+```
+
+### 4. Trailing whitespace in secrets
+
+```bash
+# WRONG - echo adds newline
+echo 'sk_live_xxx' | vercel env add STRIPE_SECRET_KEY production
+
+# CORRECT - printf preserves exact value
+printf '%s' 'sk_live_xxx' | vercel env add STRIPE_SECRET_KEY production
 ```
 
 ## Pre-Deployment Checklist
 
-Before deploying to production:
+```bash
+# 1. Verify Vercel production vars
+pnpm dlx vercel env ls --environment=production | grep -E "STRIPE|CONVEX"
 
-1. **Verify prod env vars exist:**
-   ```bash
-   CONVEX_DEPLOYMENT=prod:xxx npx convex env list | grep STRIPE
-   vercel env ls --environment=production | grep STRIPE
-   ```
+# 2. Verify Convex production vars
+npx convex env list --prod
 
-2. **Verify using live keys:**
-   ```bash
-   # Should see sk_live_ and pk_live_ prefixes
-   ```
+# 3. Verify parity (critical!)
+# CONVEX_WEBHOOK_SECRET must match between Vercel and Convex prod
 
-3. **Verify webhook endpoint registered:**
-   - Stripe Dashboard > Developers > Webhooks
-   - Production URL matches deployment
+# 4. Verify using live keys in production
+# Should see sk_live_, pk_live_ prefixes
 
-4. **Test with real API:**
-   - Use Stripe test mode for staging
-   - Verify events appear in Dashboard
+# 5. Run audit script
+~/.claude/skills/stripe-best-practices/scripts/stripe_audit.sh
+```
 
 ## Security Rules
 
-### Never Commit Secrets
-
-```gitignore
-# .gitignore
-.env.local
-.env*.local
-```
-
-### Never Expose in Frontend
-
-```typescript
-// ❌ WRONG - Secret key in client code
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // In React component
-
-// ✅ CORRECT - Only publishable key in frontend
-import { loadStripe } from '@stripe/stripe-js';
-const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-```
-
-### Scan for Hardcoded Keys
-
-```bash
-# Find any hardcoded Stripe keys
-grep -r "sk_test_\|sk_live_\|pk_test_\|pk_live_" src/
-```
+1. **Never commit secrets** - Add `.env.local` to `.gitignore`
+2. **Never expose in frontend** - Only `NEXT_PUBLIC_*` vars are safe for client
+3. **Never log secrets** - Mask in error messages
+4. **Rotate on exposure** - Generate new keys immediately if leaked

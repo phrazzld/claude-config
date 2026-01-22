@@ -1,11 +1,17 @@
 #!/bin/bash
 # Stripe Integration Audit Script
-# Portable audit for Stripe integrations across project types
+# Architecture-aware audit for Stripe integrations
+#
+# Understands that in Next.js + Convex projects:
+# - Stripe SDK runs in Next.js (Vercel), NOT Convex
+# - Convex only needs CONVEX_WEBHOOK_SECRET for authenticating webhook calls
+# - Webhooks hit Next.js API routes, which call Convex mutations
 #
 # Usage:
 #   stripe_audit.sh                  # Full audit with Stripe CLI
 #   stripe_audit.sh --local-only     # Skip Stripe CLI checks
 #   stripe_audit.sh --quiet          # Minimal output (pass/fail only)
+#   stripe_audit.sh --strict         # Treat warnings as failures
 
 set -euo pipefail
 
@@ -19,6 +25,7 @@ NC='\033[0m' # No Color
 # Flags
 LOCAL_ONLY=false
 QUIET=false
+STRICT=false
 
 # Parse arguments
 for arg in "$@"; do
@@ -28,6 +35,9 @@ for arg in "$@"; do
       ;;
     --quiet)
       QUIET=true
+      ;;
+    --strict)
+      STRICT=true
       ;;
   esac
 done
@@ -70,10 +80,31 @@ log_section() {
   fi
 }
 
-# Detect project type
+# Detect project structure and return search paths
+detect_source_dirs() {
+  local dirs=""
+  # Next.js App Router
+  [ -d "app" ] && dirs="$dirs app/"
+  # Next.js Pages Router or general
+  [ -d "src" ] && dirs="$dirs src/"
+  # Lib directory
+  [ -d "lib" ] && dirs="$dirs lib/"
+  # Convex directory
+  [ -d "convex" ] && dirs="$dirs convex/"
+  # Components
+  [ -d "components" ] && dirs="$dirs components/"
+
+  if [ -z "$dirs" ]; then
+    echo "."
+  else
+    echo "$dirs"
+  fi
+}
+
+# Detect project type and architecture
 detect_project_type() {
-  if [ -f "convex/_generated/api.d.ts" ] || [ -d "convex" ]; then
-    echo "convex"
+  if [ -d "convex" ]; then
+    echo "nextjs-convex"
   elif [ -f "vercel.json" ] || [ -f ".vercel/project.json" ]; then
     echo "vercel"
   elif [ -f "package.json" ]; then
@@ -102,12 +133,27 @@ check_stripe_sdk() {
 check_hardcoded_keys() {
   log_section "Hardcoded Key Scan"
 
+  local search_dirs
+  search_dirs=$(detect_source_dirs)
+
   local patterns=("sk_test_" "sk_live_" "pk_test_" "pk_live_" "whsec_")
   local found=false
 
   for pattern in "${patterns[@]}"; do
     local matches
-    matches=$(grep -r "$pattern" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" src/ 2>/dev/null | grep -v node_modules | grep -v ".env" || true)
+    # shellcheck disable=SC2086
+    # Exclude: node_modules, .env files, regex patterns (validation), test assertions
+    matches=$(grep -r "$pattern" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" $search_dirs 2>/dev/null \
+      | grep -v node_modules \
+      | grep -v ".env" \
+      | grep -v "pattern:" \
+      | grep -v "/\^" \
+      | grep -v "RegExp" \
+      | grep -v "\.test\." \
+      | grep -v "\.spec\." \
+      | grep -v "__tests__" \
+      | grep -v "expect(" \
+      || true)
     if [ -n "$matches" ]; then
       log_fail "Hardcoded key pattern '$pattern' found in source code"
       if [ "$QUIET" = false ]; then
@@ -122,7 +168,7 @@ check_hardcoded_keys() {
   fi
 }
 
-# Check local env vars
+# Check local env vars for Next.js/Vercel
 check_local_env() {
   log_section "Local Environment (.env.local)"
 
@@ -130,6 +176,11 @@ check_local_env() {
     "STRIPE_SECRET_KEY"
     "STRIPE_WEBHOOK_SECRET"
     "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
+  )
+
+  local recommended_vars=(
+    "STRIPE_PRICE_ID"
+    "CONVEX_WEBHOOK_SECRET"
   )
 
   if [ ! -f ".env.local" ]; then
@@ -141,14 +192,22 @@ check_local_env() {
     if grep -q "^${var}=" .env.local 2>/dev/null; then
       log_pass "$var is set in .env.local"
     else
-      log_warn "$var not found in .env.local"
+      log_fail "$var not found in .env.local"
+    fi
+  done
+
+  for var in "${recommended_vars[@]}"; do
+    if grep -q "^${var}=" .env.local 2>/dev/null; then
+      log_pass "$var is set in .env.local"
+    else
+      log_warn "$var not found in .env.local (recommended)"
     fi
   done
 }
 
-# Check Convex env vars
+# Check Convex env vars - ONLY checks what Convex actually needs
 check_convex_env() {
-  local deployment=$1
+  local use_prod=$1
   local label=$2
 
   log_section "Convex Environment ($label)"
@@ -159,38 +218,106 @@ check_convex_env() {
   fi
 
   local cmd="npx convex env list"
-  if [ -n "$deployment" ]; then
-    cmd="CONVEX_DEPLOYMENT=$deployment npx convex env list"
+  if [ "$use_prod" = "true" ]; then
+    cmd="npx convex env list --prod"
   fi
 
   local env_output
   env_output=$(eval "$cmd" 2>/dev/null || echo "FAILED")
 
   if [ "$env_output" = "FAILED" ]; then
-    log_fail "Could not list Convex env vars for $label"
+    log_warn "Could not list Convex env vars for $label"
     return
   fi
 
-  local required_vars=(
-    "STRIPE_SECRET_KEY"
-    "STRIPE_WEBHOOK_SECRET"
-  )
+  # For Next.js + Convex: Convex only needs CONVEX_WEBHOOK_SECRET
+  # Stripe SDK runs in Next.js (Vercel), not Convex
+  if echo "$env_output" | grep -q "CONVEX_WEBHOOK_SECRET"; then
+    log_pass "CONVEX_WEBHOOK_SECRET is set in Convex $label"
+  else
+    log_fail "CONVEX_WEBHOOK_SECRET not set in Convex $label (required for webhook auth)"
+  fi
 
-  for var in "${required_vars[@]}"; do
-    if echo "$env_output" | grep -q "^$var"; then
-      log_pass "$var is set in Convex $label"
-    else
-      log_fail "$var not set in Convex $label"
+  # CLERK_JWT_ISSUER_DOMAIN is needed for Clerk auth
+  if echo "$env_output" | grep -q "CLERK_JWT_ISSUER_DOMAIN"; then
+    log_pass "CLERK_JWT_ISSUER_DOMAIN is set in Convex $label"
+  else
+    log_warn "CLERK_JWT_ISSUER_DOMAIN not set in Convex $label (needed for Clerk auth)"
+  fi
+
+  # Note: STRIPE_SECRET_KEY is NOT needed in Convex for this architecture
+  if echo "$env_output" | grep -q "STRIPE_SECRET_KEY"; then
+    log_info "Note: STRIPE_SECRET_KEY found in Convex (usually not needed - Stripe SDK runs in Next.js)"
+  fi
+}
+
+# Check CONVEX_WEBHOOK_SECRET parity between Vercel and Convex
+# This is CRITICAL for production - Vercel webhook handler must match Convex validator
+check_webhook_secret_parity() {
+  log_section "Webhook Secret Parity"
+
+  # Check if we can pull Vercel env (requires vercel CLI linked)
+  local can_check_vercel=false
+  if command -v pnpm &> /dev/null; then
+    # Try to pull production env
+    if pnpm dlx vercel env pull .env.vercel-parity-check --environment=production --yes 2>/dev/null; then
+      can_check_vercel=true
     fi
-  done
+  fi
+
+  if [ "$can_check_vercel" = true ]; then
+    local vercel_prod_secret
+    vercel_prod_secret=$(grep "^CONVEX_WEBHOOK_SECRET=" .env.vercel-parity-check 2>/dev/null | cut -d= -f2 | tr -d '"' || true)
+    /usr/bin/trash .env.vercel-parity-check 2>/dev/null || rm -f .env.vercel-parity-check 2>/dev/null || true
+
+    local convex_prod_secret
+    convex_prod_secret=$(npx convex env get --prod CONVEX_WEBHOOK_SECRET 2>/dev/null || true)
+
+    if [ -n "$vercel_prod_secret" ] && [ -n "$convex_prod_secret" ]; then
+      if [ "$vercel_prod_secret" = "$convex_prod_secret" ]; then
+        log_pass "CONVEX_WEBHOOK_SECRET matches between Vercel prod and Convex prod (critical!)"
+      else
+        log_fail "CONVEX_WEBHOOK_SECRET MISMATCH between Vercel prod and Convex prod"
+        log_info "  Webhooks will fail authentication in production!"
+        log_info "  Fix: Ensure both platforms have identical secrets"
+      fi
+    else
+      log_warn "Could not verify Vercel ↔ Convex production parity"
+    fi
+  else
+    log_info "Skipping Vercel parity check (vercel CLI not linked)"
+  fi
+
+  # Local vs Convex dev check (informational only)
+  if [ -f ".env.local" ]; then
+    local local_secret
+    local_secret=$(grep "^CONVEX_WEBHOOK_SECRET=" .env.local 2>/dev/null | cut -d= -f2 || true)
+
+    local convex_dev_secret
+    convex_dev_secret=$(npx convex env get CONVEX_WEBHOOK_SECRET 2>/dev/null || true)
+
+    if [ -n "$local_secret" ] && [ -n "$convex_dev_secret" ]; then
+      if [ "$local_secret" = "$convex_dev_secret" ]; then
+        log_pass "CONVEX_WEBHOOK_SECRET matches between local and Convex dev"
+      else
+        log_info "CONVEX_WEBHOOK_SECRET differs between local and Convex dev (normal for separate envs)"
+      fi
+    fi
+  fi
 }
 
 # Check webhook signature verification in code
 check_webhook_verification() {
   log_section "Webhook Security"
 
+  local search_dirs
+  search_dirs=$(detect_source_dirs)
+
+  # Look for constructEvent with various access patterns
+  # Supports: stripe.webhooks.constructEvent, getStripe().webhooks.constructEvent, etc.
   local webhook_files
-  webhook_files=$(grep -rl "stripe.webhooks.constructEvent\|constructEvent" --include="*.ts" --include="*.tsx" src/ convex/ 2>/dev/null || true)
+  # shellcheck disable=SC2086
+  webhook_files=$(grep -rl "webhooks\.constructEvent\|constructEvent.*signature" --include="*.ts" --include="*.tsx" $search_dirs 2>/dev/null || true)
 
   if [ -n "$webhook_files" ]; then
     log_pass "Webhook signature verification found"
@@ -200,14 +327,29 @@ check_webhook_verification() {
       done
     fi
   else
-    log_fail "No webhook signature verification found (stripe.webhooks.constructEvent)"
+    log_fail "No webhook signature verification found (webhooks.constructEvent)"
   fi
 
-  # Check for raw body handling
-  if grep -r "request.text()\|req.rawBody\|getRawBody" --include="*.ts" --include="*.tsx" src/ convex/ 2>/dev/null | grep -q .; then
+  # Check for raw body handling (required for signature verification)
+  # Supports: req.text(), request.text(), rawBody, getRawBody
+  # shellcheck disable=SC2086
+  if grep -r "\.text()\|rawBody\|getRawBody" --include="*.ts" --include="*.tsx" $search_dirs 2>/dev/null | grep -v node_modules | grep -q .; then
     log_pass "Raw body handling found (required for webhook verification)"
   else
     log_warn "Raw body handling not detected (may cause signature verification issues)"
+  fi
+
+  # Check for fail-fast env validation in webhook handler
+  local webhook_route=""
+  [ -f "app/api/webhooks/stripe/route.ts" ] && webhook_route="app/api/webhooks/stripe/route.ts"
+  [ -f "src/app/api/webhooks/stripe/route.ts" ] && webhook_route="src/app/api/webhooks/stripe/route.ts"
+
+  if [ -n "$webhook_route" ]; then
+    if grep -q "WEBHOOK_SECRET.*not\|!.*WEBHOOK_SECRET" "$webhook_route" 2>/dev/null; then
+      log_pass "Fail-fast env validation found in webhook handler"
+    else
+      log_warn "Consider adding fail-fast validation for STRIPE_WEBHOOK_SECRET"
+    fi
   fi
 }
 
@@ -215,11 +357,16 @@ check_webhook_verification() {
 check_mode_params() {
   log_section "Mode-Dependent Parameters"
 
-  # Check for customer_creation in subscription mode (exclude test files and undefined assertions)
+  local search_dirs
+  search_dirs=$(detect_source_dirs)
+
+  # Check for customer_creation in subscription mode (exclude test files)
   local bad_pattern
-  bad_pattern=$(grep -r "mode.*subscription" --include="*.ts" --include="*.tsx" -A5 src/ convex/ 2>/dev/null \
+  # shellcheck disable=SC2086
+  bad_pattern=$(grep -r "mode.*subscription" --include="*.ts" --include="*.tsx" -A5 $search_dirs 2>/dev/null \
     | grep -v "\.test\." \
     | grep -v "\.spec\." \
+    | grep -v "__tests__" \
     | grep -v "toBeUndefined" \
     | grep "customer_creation:" || true)
 
@@ -237,17 +384,19 @@ check_mode_params() {
 check_health_endpoint() {
   log_section "Health Endpoint"
 
-  local health_file
-  health_file=$(find src/app/api -name "route.ts" -path "*health*" 2>/dev/null | head -1)
+  local health_file=""
+  [ -f "app/api/health/route.ts" ] && health_file="app/api/health/route.ts"
+  [ -f "src/app/api/health/route.ts" ] && health_file="src/app/api/health/route.ts"
+  [ -f "pages/api/health.ts" ] && health_file="pages/api/health.ts"
 
   if [ -n "$health_file" ]; then
-    if grep -q "stripe\|STRIPE" "$health_file" 2>/dev/null; then
+    if grep -qi "stripe\|STRIPE" "$health_file" 2>/dev/null; then
       log_pass "Health endpoint includes Stripe status check"
     else
       log_warn "Health endpoint exists but doesn't check Stripe configuration"
     fi
   else
-    log_warn "No health endpoint found at /api/health"
+    log_warn "No health endpoint found at /api/health (recommended for production)"
   fi
 }
 
@@ -311,29 +460,26 @@ check_price_ids() {
     return
   fi
 
-  # Get price IDs from env
-  local monthly_id=""
-  local annual_id=""
+  if ! stripe config --list &>/dev/null; then
+    return
+  fi
+
+  # Get price IDs from env - check multiple possible var names
+  local price_id=""
 
   if [ -f ".env.local" ]; then
-    monthly_id=$(grep "NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID" .env.local 2>/dev/null | cut -d= -f2 || true)
-    annual_id=$(grep "NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID" .env.local 2>/dev/null | cut -d= -f2 || true)
+    # Try various common naming conventions
+    price_id=$(grep -E "^(STRIPE_PRICE_ID|NEXT_PUBLIC_STRIPE_PRICE_ID|NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID)" .env.local 2>/dev/null | head -1 | cut -d= -f2 || true)
   fi
 
-  if [ -n "$monthly_id" ]; then
-    if stripe prices retrieve "$monthly_id" &>/dev/null; then
-      log_pass "Monthly price ID is valid: $monthly_id"
+  if [ -n "$price_id" ]; then
+    if stripe prices retrieve "$price_id" &>/dev/null; then
+      log_pass "Price ID is valid: $price_id"
     else
-      log_fail "Monthly price ID not found in Stripe: $monthly_id"
+      log_fail "Price ID not found in Stripe: $price_id"
     fi
-  fi
-
-  if [ -n "$annual_id" ]; then
-    if stripe prices retrieve "$annual_id" &>/dev/null; then
-      log_pass "Annual price ID is valid: $annual_id"
-    else
-      log_fail "Annual price ID not found in Stripe: $annual_id"
-    fi
+  else
+    log_info "No STRIPE_PRICE_ID found in .env.local"
   fi
 }
 
@@ -346,26 +492,17 @@ main() {
 
   PROJECT_TYPE=$(detect_project_type)
   log_info "Project type: $PROJECT_TYPE"
+  log_info "Search paths: $(detect_source_dirs)"
 
   # Run checks
   check_stripe_sdk || true
   check_hardcoded_keys
   check_local_env
 
-  if [ "$PROJECT_TYPE" = "convex" ]; then
-    check_convex_env "" "dev"
-
-    # Try to find prod deployment
-    if [ -f ".env.local" ]; then
-      local prod_deployment
-      prod_deployment=$(grep "CONVEX_DEPLOYMENT.*prod:" .env.local 2>/dev/null | cut -d= -f2 || true)
-      if [ -z "$prod_deployment" ]; then
-        # Try to infer from convex.json or prompt
-        log_info "Tip: Set CONVEX_DEPLOYMENT=prod:xxx to check prod env vars"
-      else
-        check_convex_env "$prod_deployment" "prod"
-      fi
-    fi
+  if [ "$PROJECT_TYPE" = "nextjs-convex" ]; then
+    check_convex_env "false" "dev"
+    check_convex_env "true" "prod"
+    check_webhook_secret_parity
   fi
 
   check_webhook_verification
@@ -384,16 +521,32 @@ main() {
   echo -e "  ${RED}Failed:${NC}  $FAIL"
   echo ""
 
+  local exit_code=0
+
   if [ "$FAIL" -gt 0 ]; then
     echo -e "${RED}Audit failed with $FAIL issue(s)${NC}"
-    exit 1
+    exit_code=1
   elif [ "$WARN" -gt 0 ]; then
-    echo -e "${YELLOW}Audit passed with $WARN warning(s)${NC}"
-    exit 0
+    if [ "$STRICT" = true ]; then
+      echo -e "${RED}Audit failed (strict mode) with $WARN warning(s)${NC}"
+      exit_code=1
+    else
+      echo -e "${YELLOW}Audit passed with $WARN warning(s)${NC}"
+    fi
   else
     echo -e "${GREEN}Audit passed!${NC}"
-    exit 0
   fi
+
+  # Architecture note for Next.js + Convex
+  if [ "$PROJECT_TYPE" = "nextjs-convex" ] && [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${BLUE}Architecture Note:${NC}"
+    echo "  Next.js (Vercel) needs: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CONVEX_WEBHOOK_SECRET"
+    echo "  Convex needs: CONVEX_WEBHOOK_SECRET, CLERK_JWT_ISSUER_DOMAIN"
+    echo "  Stripe SDK runs in Next.js API routes, not Convex."
+  fi
+
+  exit $exit_code
 }
 
 main
