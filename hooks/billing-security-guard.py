@@ -17,7 +17,7 @@ import json
 import re
 import sys
 
-# API key patterns that should NEVER appear in code
+# API key patterns that should NEVER appear in code (but OK in .env files)
 HARDCODED_KEY_PATTERNS = [
     (r'sk_live_[a-zA-Z0-9]{20,}', "Stripe live secret key"),
     (r'sk_test_[a-zA-Z0-9]{20,}', "Stripe test secret key"),
@@ -25,6 +25,26 @@ HARDCODED_KEY_PATTERNS = [
     (r'whsec_[a-zA-Z0-9]{20,}', "Stripe webhook secret"),
     (r'rk_live_[a-zA-Z0-9]{20,}', "Stripe restricted key"),
 ]
+
+# File patterns where API keys ARE allowed (environment files)
+ENV_FILE_PATTERNS = [
+    r'\.env$',
+    r'\.env\.local$',
+    r'\.env\.[a-zA-Z]+$',  # .env.development, .env.production, etc.
+    r'\.env\.example$',    # Allow examples too (they use placeholders usually)
+]
+
+
+def is_env_file(file_path: str) -> bool:
+    """Check if the file path is an environment file where keys are allowed."""
+    if not file_path:
+        return False
+    import os
+    basename = os.path.basename(file_path)
+    for pattern in ENV_FILE_PATTERNS:
+        if re.match(pattern, basename):
+            return True
+    return False
 
 # Billing-related env var names that use live/test distinction
 BILLING_ENV_VARS_WITH_MODE = [
@@ -214,12 +234,15 @@ def main():
     tool_name = data.get("tool_name", "")
     tool_input = data.get("tool_input") or {}
 
-    # Check Edit/Write for hardcoded keys
+    # Check Edit/Write for hardcoded keys (but allow in .env files)
     if tool_name in ("Edit", "Write", "MultiEdit"):
-        content = tool_input.get("content", "") or tool_input.get("new_string", "")
-        should_block, reason = check_hardcoded_keys(content)
-        if should_block:
-            block(reason)
+        file_path = tool_input.get("file_path", "")
+        # Skip check for environment files - that's where keys belong
+        if not is_env_file(file_path):
+            content = tool_input.get("content", "") or tool_input.get("new_string", "")
+            should_block, reason = check_hardcoded_keys(content)
+            if should_block:
+                block(reason)
 
     # Check Bash for billing env var commands
     if tool_name == "Bash":
