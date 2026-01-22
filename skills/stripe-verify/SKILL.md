@@ -131,6 +131,36 @@ Verify against `business-model-preferences`:
 - Trial honored on upgrade? (check Stripe subscription has trial_end)
 - No freemium logic? (expired trial = no access)
 
+**8. Subscription Management UX**
+
+Verify against `stripe-subscription-ux` requirements:
+
+**Settings Page Exists:**
+- [ ] Settings page has subscription section
+- [ ] Current plan name displayed
+- [ ] Subscription status with visual indicator
+- [ ] Next billing date shown
+- [ ] Payment method displayed (brand + last4)
+
+**Stripe Portal Integration:**
+- [ ] "Manage Subscription" button exists
+- [ ] Button creates portal session and redirects
+- [ ] Return URL configured correctly
+
+**Billing History:**
+- [ ] Past invoices displayed
+- [ ] Invoice PDFs downloadable
+- [ ] Payment statuses shown
+
+**State-Specific UX:**
+- [ ] Trial banner shows for trialing users
+- [ ] Canceled state shows period end date
+- [ ] Past due state shows payment update CTA
+- [ ] Active state shows "all good" indicator
+
+**This is a hard requirement.** If subscription management UX is missing,
+verification fails. Users must be able to manage their billing.
+
 ## Output
 
 Verification report:
@@ -171,6 +201,17 @@ BUSINESS MODEL
 ✓ Single tier
 ✓ Trial completion on upgrade
 ✓ No freemium
+
+SUBSCRIPTION MANAGEMENT UX
+✓ Settings page has subscription section
+✓ Plan name and status displayed
+✓ Next billing date shown
+✓ Payment method displayed
+✓ Manage Subscription button works
+✓ Billing history accessible
+✓ Trial banner for trialing users
+✓ Canceled state messaging
+⚠ Past due state: not tested
 
 ---
 STATUS: VERIFIED (with minor gaps)

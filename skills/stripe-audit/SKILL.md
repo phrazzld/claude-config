@@ -64,6 +64,15 @@ The auditor should examine:
 - Trial completion honored on upgrade?
 - No freemium/feature-gating logic?
 
+**Subscription Management UX** (per `stripe-subscription-ux`)
+- Settings page with subscription section?
+- Current plan and status displayed?
+- Next billing date shown?
+- Payment method on file displayed?
+- "Manage Subscription" button (Stripe Portal)?
+- Billing history accessible?
+- Appropriate messaging for all states?
+
 **4. Validate with Thinktank**
 
 For complex findings, run them through Thinktank for multi-expert validation. Billing bugs are expensive.
@@ -97,8 +106,15 @@ BUSINESS MODEL
 ✓ Single tier
 ✗ Trial not passed on mid-trial upgrade
 
+SUBSCRIPTION MANAGEMENT UX
+✓ Settings page exists
+✓ Plan name displayed
+✗ No payment method shown
+✗ No billing history
+⚠ Portal button exists but return_url missing
+
 ---
-SUMMARY: 7 pass, 2 warn, 3 fail
+SUMMARY: 8 pass, 3 warn, 5 fail
 
 CRITICAL:
 - Set STRIPE_WEBHOOK_SECRET on prod

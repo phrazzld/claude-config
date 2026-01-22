@@ -50,13 +50,28 @@ Then: `git diff --stat && pnpm typecheck && pnpm test`
 
 Typical Next.js + Convex stack:
 
+**Backend:**
 - `src/lib/stripe.ts` — Stripe client initialization
 - `src/app/api/stripe/checkout/route.ts` — Checkout session creation
 - `src/app/api/stripe/webhook/route.ts` — Webhook receiver (signature verification)
 - `convex/stripe.ts` — Webhook event processing
 - `convex/subscriptions.ts` — Subscription state management
+- `convex/billing.ts` — Billing queries and portal session creation
 - `convex/schema.ts` updates — Subscription fields on users
 - `.env.example` updates — Document required variables
+
+**Subscription Management UX (Required):**
+Reference `stripe-subscription-ux` for full requirements.
+
+- `components/billing/SubscriptionCard.tsx` — Current plan overview
+- `components/billing/BillingCycleInfo.tsx` — Next billing date, amount
+- `components/billing/PaymentMethodDisplay.tsx` — Card on file
+- `components/billing/BillingHistory.tsx` — Past invoices
+- `components/billing/ManageSubscriptionButton.tsx` — Opens Stripe Portal
+- `components/billing/TrialBanner.tsx` — Trial status/countdown
+- Settings page section for subscription management
+
+**This UX is non-negotiable.** No Stripe integration is complete without it.
 
 **5. Don't Forget**
 

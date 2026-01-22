@@ -100,11 +100,30 @@ When complete:
 - Webhook handling with signature verification
 - Subscription state management with proper trial handling
 - Access control based on subscription status
+- **Subscription management UX** (see below)
 - All configuration in place (dev and prod)
 - Deep verification passing
+
+### Subscription Management UX (Required)
+
+Every Stripe integration MUST include user-facing subscription management.
+See `stripe-subscription-ux` for full requirements. At minimum:
+
+- Settings page showing current plan and status
+- Next billing date and amount
+- Payment method on file (brand + last 4)
+- "Manage Subscription" button (opens Stripe Portal)
+- Billing history with downloadable invoices
+- Clear status messaging for all states (active, trialing, canceled, past_due)
+
+**This is non-negotiable.** A checkout flow without subscription management
+leaves users in the dark about their billing. That's unacceptable.
 
 User can:
 - Run test checkout with 4242 4242 4242 4242
 - See subscription state update
 - Access gated features
 - See trial honored on mid-trial upgrade
+- **View and manage their subscription in settings**
+- **See their payment method and billing history**
+- **Cancel, resume, or update payment method**
