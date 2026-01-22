@@ -56,6 +56,8 @@ Output code that is:
 - Capture non-obvious decisions and invariants in docs or comments; never restate what code already makes obvious.
 - When tradeoffs appear, prefer options that simplify future change, even if slightly slower now.
 - For web-grounded research or huge-context reading, prefer delegating to Gemini CLI and then apply only the distilled conclusions here.
+- **Prefer full file reads over code searches.** Context windows can handle it. Code searches lose context. Load the entire file when practical.
+- **For code review, frame adversarially.** Instead of "double-check this," say "find the bugs left behind." Adversarial framing triggers more thorough review.
 
 ## Delegation Patterns
 
