@@ -1,0 +1,116 @@
+---
+name: stripe-audit
+description: |
+  Comprehensive audit of existing Stripe integration.
+  Checks configuration, code patterns, security, and business model alignment.
+---
+
+# Stripe Audit
+
+Deep analysis of an existing Stripe integration.
+
+## Objective
+
+Find everything that's wrong, suboptimal, or drifted. Produce actionable findings.
+
+## Process
+
+**1. Spawn the Auditor**
+
+This is a deep analysis. Spawn the `stripe-auditor` subagent to do the heavy lifting in parallel. It has read-only access and preloaded Stripe knowledge.
+
+**2. Run Automated Checks**
+
+Execute the audit script for quick wins:
+```bash
+~/.claude/skills/stripe-best-practices/scripts/stripe_audit.sh
+```
+
+This catches:
+- Hardcoded keys
+- Missing env vars
+- Webhook signature verification
+- Mode-dependent parameter errors
+
+**3. Deep Analysis Areas**
+
+The auditor should examine:
+
+**Configuration**
+- Env vars set on all deployments?
+- Cross-platform parity (Vercel ↔ Convex)?
+- No trailing whitespace in secrets?
+- Test keys in dev, live keys in prod?
+
+**Webhook Health**
+- Endpoints registered correctly?
+- URL returns non-3xx on POST?
+- Recent events delivered (pending_webhooks = 0)?
+- Signature verification present and FIRST?
+
+**Subscription Logic**
+- Trial handling uses Stripe's `trial_end`?
+- Access control checks subscription status correctly?
+- Edge cases handled (cancel during trial, resubscribe, out-of-order webhooks)?
+- Idempotency on webhook processing?
+
+**Security**
+- No hardcoded keys in source?
+- Secrets not logged?
+- Error responses don't leak internal details?
+
+**Business Model**
+- Single pricing tier?
+- Trial completion honored on upgrade?
+- No freemium/feature-gating logic?
+
+**4. Validate with Thinktank**
+
+For complex findings, run them through Thinktank for multi-expert validation. Billing bugs are expensive.
+
+## Output
+
+Structured findings report:
+
+```
+STRIPE AUDIT REPORT
+==================
+
+CONFIGURATION
+✓ Env vars set on dev
+✗ STRIPE_WEBHOOK_SECRET missing on prod
+⚠ Webhook URL returns 307 redirect
+
+WEBHOOK HEALTH
+✓ Endpoints registered
+✗ 3 events with pending_webhooks > 0
+
+SUBSCRIPTION LOGIC
+✓ Uses trial_end
+⚠ Missing idempotency check
+
+SECURITY
+✓ No hardcoded keys
+✓ Signature verification present
+
+BUSINESS MODEL
+✓ Single tier
+✗ Trial not passed on mid-trial upgrade
+
+---
+SUMMARY: 7 pass, 2 warn, 3 fail
+
+CRITICAL:
+- Set STRIPE_WEBHOOK_SECRET on prod
+- Fix webhook URL redirect
+
+HIGH:
+- Implement trial_end pass-through
+
+MEDIUM:
+- Add webhook idempotency
+```
+
+## Research First
+
+Before auditing, check current Stripe best practices. What was correct last year might be deprecated now. Use Gemini to verify against current documentation.
