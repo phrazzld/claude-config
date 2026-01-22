@@ -13,19 +13,39 @@ import re
 import subprocess
 import sys
 
-# Patterns that indicate destructive commands
-DESTRUCTIVE = [
-    # (substring_to_match, reason)
-    ("rm ", "Use /usr/bin/trash instead. Moves to Trash (recoverable). Example: /usr/bin/trash file.txt"),
+# Regex patterns for commands that need smarter matching
+# These match the command only when it appears as an actual command invocation,
+# not as a substring inside strings, commit messages, or other content.
+#
+# Matches: rm file, ls && rm file, $(rm file), `rm file`, ; rm file, | xargs rm
+# Does NOT match: git commit -m "form optimization", echo "inform user"
+RM_COMMAND_PATTERN = re.compile(
+    r'(^|[;&|`]|\$\()\s*rm\s',
+    re.MULTILINE
+)
+
+# Simple substring patterns - these are specific enough to not need regex
+# (they won't accidentally match normal text)
+DESTRUCTIVE_SUBSTRINGS = [
     ("git checkout -- ", "Discards uncommitted changes permanently. Use 'git stash' first."),
     ("git reset --hard", "Destroys all uncommitted work. Use 'git stash' first."),
     ("git clean -f", "Deletes untracked files permanently. Use 'git clean -n' to preview first."),
     ("git push --force", "Overwrites remote history. Use '--force-with-lease' instead."),
-    ("git push -f", "Overwrites remote history. Use '--force-with-lease' instead."),
-    ("git branch -D", "Force-deletes branch without merge check. Use '-d' for safety."),
+    ("git push -f ", "Overwrites remote history. Use '--force-with-lease' instead."),
+    ("git branch -D ", "Force-deletes branch without merge check. Use '-d' for safety."),
     ("git stash drop", "Permanently deletes stashed changes."),
     ("git stash clear", "Permanently deletes ALL stashed changes."),
-    ("git restore ", "Can discard uncommitted changes. Be careful."),
+]
+
+# Patterns that need word boundary checking (could appear in strings)
+DESTRUCTIVE_PATTERNS = [
+    # (regex_pattern, reason)
+    (re.compile(r'(^|[;&|`]|\$\()\s*git\s+restore\s+(?!--staged|-S)'),
+     "git restore can discard uncommitted changes. Use 'git restore --staged' for safe unstaging."),
+]
+
+# Flags that are dangerous anywhere in the command
+DANGEROUS_FLAGS = [
     ("--no-verify", "Skips git hooks. Hooks enforce quality gates."),
     ("--no-gpg-sign", "Skips commit signing. May violate repo policy."),
 ]
@@ -80,6 +100,45 @@ def check_merge_protection(cmd: str) -> tuple[bool, str]:
     return False, ""
 
 
+def strip_quoted_content(cmd: str) -> str:
+    """
+    Remove content inside quotes to avoid false positives from string literals.
+    Handles both single and double quotes, and escaped quotes.
+
+    Example: git commit -m "rm all files" -> git commit -m ""
+    """
+    result = []
+    i = 0
+    in_single = False
+    in_double = False
+
+    while i < len(cmd):
+        char = cmd[i]
+
+        # Handle escape sequences
+        if char == '\\' and i + 1 < len(cmd):
+            if not in_single and not in_double:
+                result.append(char)
+                result.append(cmd[i + 1])
+            i += 2
+            continue
+
+        # Handle quote transitions
+        if char == '"' and not in_single:
+            in_double = not in_double
+            result.append(char)  # Keep the quote itself
+        elif char == "'" and not in_double:
+            in_single = not in_single
+            result.append(char)  # Keep the quote itself
+        elif not in_single and not in_double:
+            result.append(char)
+        # If inside quotes, don't append (strip the content)
+
+        i += 1
+
+    return ''.join(result)
+
+
 def check_command(cmd: str) -> tuple[bool, str]:
     """
     Check if command should be blocked.
@@ -88,7 +147,7 @@ def check_command(cmd: str) -> tuple[bool, str]:
     if not cmd:
         return False, ""
 
-    # Check safe patterns first (allowlist)
+    # Check safe patterns first (allowlist) - check original command
     for safe in SAFE:
         if safe in cmd:
             return False, ""
@@ -98,9 +157,28 @@ def check_command(cmd: str) -> tuple[bool, str]:
     if blocked:
         return True, reason
 
-    # Check destructive patterns
-    for pattern, reason in DESTRUCTIVE:
-        if pattern in cmd:
+    # Strip quoted content to avoid false positives from commit messages,
+    # echo statements, string literals, etc.
+    cmd_stripped = strip_quoted_content(cmd)
+
+    # Check rm command with smart pattern (avoids false positives in strings)
+    if RM_COMMAND_PATTERN.search(cmd_stripped):
+        return True, "Use /usr/bin/trash instead. Moves to Trash (recoverable). Example: /usr/bin/trash file.txt"
+
+    # Check simple substring patterns (specific enough to not need regex)
+    for pattern, reason in DESTRUCTIVE_SUBSTRINGS:
+        if pattern in cmd_stripped:
+            return True, reason
+
+    # Check regex patterns (for commands that could appear in strings)
+    for pattern, reason in DESTRUCTIVE_PATTERNS:
+        if pattern.search(cmd_stripped):
+            return True, reason
+
+    # Check dangerous flags (these are dangerous anywhere, even in strings,
+    # because they might be used in eval or variable expansion)
+    for flag, reason in DANGEROUS_FLAGS:
+        if flag in cmd:  # Check original, not stripped
             return True, reason
 
     return False, ""
