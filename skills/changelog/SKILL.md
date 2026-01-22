@@ -1,111 +1,164 @@
 ---
 name: changelog
 description: |
-  Complete changelog and release notes infrastructure. Assesses current state and routes
-  to appropriate workflow: setup (greenfield), fix (issues), or review (health check).
-argument-hint: "[setup | fix | review]"
+  Complete changelog and release notes infrastructure. Audits current state,
+  implements missing components, and verifies the release pipeline works end-to-end.
+argument-hint: "[focus area, e.g. 'LLM synthesis' or 'public page']"
 ---
 
 # /changelog
 
-Automated changelogs, semantic versioning, and user-friendly release notes.
+Automated changelogs, semantic versioning, and user-friendly release notes. Audit, fix, verify—every time.
 
 ## What This Does
 
-Assesses your project's release infrastructure and runs the appropriate workflow:
-
-| State | Workflow | What Happens |
-|-------|----------|--------------|
-| No infrastructure | `changelog-setup` | Install semantic-release, CI, LLM synthesis, public page |
-| Has issues | `changelog-fix` | Audit → reconcile → verify |
-| Healthy | `changelog-review` | Audit → verify |
-
-## Usage
-
-```
-/changelog              # Auto-detect and run appropriate workflow
-/changelog setup        # Force greenfield workflow
-/changelog fix          # Force fix workflow
-/changelog review       # Health check
-```
-
-Arguments are passed as `$ARGUMENTS`. Interpret naturally - "setup", "from scratch", "new" all mean greenfield. "fix", "repair", "broken" all mean fix workflow.
+Examines your release infrastructure, identifies every gap, implements fixes, and verifies the full pipeline works. No partial modes. Every run does the full cycle.
 
 ## Process
 
-### 1. Assess
+### 1. Audit
 
-First, understand what exists:
-- Is semantic-release installed?
-- Is conventional commits enforced (commitlint)?
-- Does GitHub Actions workflow exist?
-- Is LLM synthesis configured?
-- Does public changelog page exist?
+Check what exists and what's broken:
 
-### 2. Route
+```bash
+# Configuration
+[ -f ".releaserc.js" ] || [ -f ".releaserc.json" ] && echo "✓ semantic-release" || echo "✗ semantic-release"
+[ -f "commitlint.config.js" ] || [ -f "commitlint.config.cjs" ] && echo "✓ commitlint" || echo "✗ commitlint"
+grep -q "commit-msg" lefthook.yml 2>/dev/null && echo "✓ commit-msg hook" || echo "✗ commit-msg hook"
 
-Based on assessment:
+# GitHub Actions
+[ -f ".github/workflows/release.yml" ] && echo "✓ release workflow" || echo "✗ release workflow"
+grep -q "semantic-release" .github/workflows/release.yml 2>/dev/null && echo "✓ runs semantic-release" || echo "✗ doesn't run semantic-release"
+grep -q "GEMINI_API_KEY" .github/workflows/release.yml 2>/dev/null && echo "✓ LLM synthesis configured" || echo "✗ LLM synthesis missing"
 
-**GREENFIELD** (no infrastructure)
-→ Run `changelog-setup` workflow
-→ Install semantic-release with full config
-→ Set up GitHub Actions for releases
-→ Configure Gemini 3 Flash synthesis
-→ Scaffold public changelog page
-→ Deep verification
+# Public page
+ls app/changelog/page.tsx src/app/changelog/page.tsx 2>/dev/null && echo "✓ changelog page" || echo "✗ changelog page"
 
-**PARTIAL or HAS ISSUES** (broken/incomplete)
-→ Run `changelog-audit` first
-→ Then `changelog-reconcile` to fix
-→ Then `changelog-verify`
+# Health
+gh release list --limit 3 2>/dev/null || echo "✗ no releases"
+```
 
-**COMPLETE and HEALTHY**
-→ Run `changelog-audit` for drift
-→ Run `changelog-verify` to confirm
+**Commit history check:**
+```bash
+git log --oneline -10 | while read line; do
+  echo "$line" | grep -qE "^[a-f0-9]+ (feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: " || echo "NON-CONVENTIONAL: $line"
+done
+```
+
+### 2. Plan
+
+From audit findings, build remediation plan. Every project needs:
+
+**Must have:**
+- semantic-release configured with changelog, git, github plugins
+- commitlint enforcing conventional commits
+- Lefthook commit-msg hook running commitlint
+- GitHub Actions workflow running semantic-release on push to main
+
+**Should have:**
+- LLM synthesis transforming technical changelog to user-friendly notes
+- Public `/changelog` page fetching from GitHub Releases API
+- RSS feed at `/changelog.xml` or `/changelog/rss`
 
 ### 3. Execute
 
-Run the selected workflow. Each workflow composes primitives:
-- `changelog-assess` — understand state
-- `changelog-setup` — greenfield installation
-- `changelog-audit` — find issues
-- `changelog-reconcile` — fix issues
-- `changelog-verify` — prove it works
-- `changelog-page` — public page scaffold
+**Fix everything.** Don't stop at a report.
 
-### 4. Quality Gate
+**Installing semantic-release:**
+```bash
+pnpm add -D semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
+```
 
-Every workflow ends with `changelog-verify`. Nothing is complete until verification passes.
+Create `.releaserc.js`:
+```javascript
+module.exports = {
+  branches: ['main'],
+  plugins: [
+    '@semantic-release/commit-analyzer',
+    '@semantic-release/release-notes-generator',
+    ['@semantic-release/changelog', { changelogFile: 'CHANGELOG.md' }],
+    ['@semantic-release/git', { assets: ['CHANGELOG.md', 'package.json'] }],
+    '@semantic-release/github',
+  ],
+};
+```
 
-## Components Installed
+**Installing commitlint:**
+```bash
+pnpm add -D @commitlint/cli @commitlint/config-conventional
+```
 
-### semantic-release
-- Automatic version bumping from conventional commits
-- CHANGELOG.md generation
-- GitHub Release creation
-- Git tags
+Create `commitlint.config.js`:
+```javascript
+module.exports = { extends: ['@commitlint/config-conventional'] };
+```
 
-### Conventional Commits (commitlint + Lefthook)
-- Enforces commit message format
-- Required for semantic-release to work
-- Hooks into pre-commit via Lefthook
+Add to `lefthook.yml`:
+```yaml
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm commitlint --edit {1}
+```
 
-### GitHub Actions
-- Triggers on push to main
-- Runs semantic-release
-- Triggers LLM synthesis post-release
+**Creating release workflow:**
+Create `.github/workflows/release.yml` per `changelog-setup` reference.
 
-### Gemini 3 Flash Synthesis
-- Transforms technical changelog to user-friendly notes
-- Runs after each release
-- Stores in GitHub Release body
-- Configurable personality per app
+**Adding LLM synthesis:**
+Create `scripts/synthesize-release-notes.mjs` that:
+1. Fetches latest release from GitHub API
+2. Sends changelog to Gemini 3 Flash
+3. Gets user-friendly summary back
+4. Updates release body via GitHub API
 
-### Public Changelog Page
-- Route: `/changelog` (no auth required)
-- Fetches from GitHub Releases API
+Configure `GEMINI_API_KEY` secret in GitHub.
+
+**Creating public changelog page:**
+Per `changelog-page`, create:
+- `app/changelog/page.tsx` - Fetches from GitHub Releases API
 - Groups releases by minor version
+- No auth required (public page)
 - RSS feed support
+
+Delegate implementation to Codex where appropriate.
+
+### 4. Verify
+
+**Prove it works.** Not "config exists"—actually works.
+
+**Commitlint test:**
+```bash
+echo "bad message" | pnpm commitlint
+# Should fail
+
+echo "feat: valid message" | pnpm commitlint
+# Should pass
+```
+
+**Commit hook test:**
+```bash
+# Try to commit with bad message (should be rejected)
+git commit --allow-empty -m "bad message"
+# Should fail due to commitlint hook
+```
+
+**Release workflow test:**
+If you can trigger a release:
+1. Merge a PR with `feat:` or `fix:` commit
+2. Watch GitHub Actions run
+3. Verify:
+   - Version bumped in package.json
+   - CHANGELOG.md updated
+   - GitHub Release created
+   - Release notes populated (LLM synthesis ran)
+
+**Public page test:**
+- Navigate to `/changelog`
+- Verify releases displayed
+- Verify grouped by minor version
+- Check RSS feed works
+
+If any verification fails, go back and fix it.
 
 ## The Release Flow
 
@@ -131,9 +184,9 @@ Public /changelog page displays latest
 
 **Every merge is a release.** Web apps deploy on merge. Embrace frequent releases.
 
-**Every change gets notes.** Even `chore:` commits become "Behind-the-scenes improvements." Users see active maintenance.
+**Every change gets notes.** Even `chore:` commits become "Behind-the-scenes improvements."
 
-**Group for readability.** Public page groups patches under their minor version. Scannable, not overwhelming.
+**Group for readability.** Public page groups patches under their minor version.
 
 **Auto-publish.** No human gate on LLM synthesis. Trust the pipeline.
 
@@ -145,11 +198,11 @@ Assumes Next.js + TypeScript + GitHub. Adapts gracefully to other stacks.
 
 When complete:
 - semantic-release configured and working
-- Conventional commits enforced
+- Conventional commits enforced (can't commit without format)
 - GitHub Actions workflow for releases
 - Gemini 3 Flash synthesis for user-friendly notes
 - Public `/changelog` page
-- RSS feed at `/changelog.xml`
+- RSS feed
 - Verified end-to-end
 
 User can:

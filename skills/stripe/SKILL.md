@@ -1,129 +1,155 @@
 ---
 name: stripe
 description: |
-  Complete Stripe lifecycle management. Assesses current state and routes
-  to appropriate workflow: setup (greenfield), fix (issues), or review (health check).
-argument-hint: "[setup | fix | review]"
+  Complete Stripe lifecycle management. Audits current state, fixes all issues,
+  and verifies checkout flows work end-to-end. Every run does all of this.
+argument-hint: "[focus area, e.g. 'webhooks' or 'subscription UX']"
 ---
 
 # /stripe
 
-World-class Stripe integration, from zero to production.
+World-class Stripe integration. Audit, fix, verify—every time.
 
 ## What This Does
 
-Assesses your project's Stripe integration state and runs the appropriate workflow:
-
-| State | Workflow | What Happens |
-|-------|----------|--------------|
-| No Stripe | `stripe-setup` | Design → scaffold → configure → verify |
-| Has issues | `stripe-fix` | Audit → reconcile → verify |
-| Healthy | `stripe-review` | Audit → verify |
-
-## Usage
-
-```
-/stripe              # Auto-detect and run appropriate workflow
-/stripe setup        # Force greenfield workflow
-/stripe fix          # Force fix workflow
-/stripe review       # Health check
-```
-
-Arguments are passed as `$ARGUMENTS`. Interpret naturally - "setup", "from scratch", "new integration" all mean greenfield. "fix", "repair", "there are issues" all mean fix workflow.
+Examines your Stripe integration, identifies every gap, implements fixes, and verifies checkout flows work end-to-end. No partial modes. Every run does the full cycle.
 
 ## Process
 
-### 1. Assess
+### 1. Audit
 
-First, understand what exists:
-- Is Stripe SDK installed?
-- Are env vars configured?
-- Does webhook handling exist?
-- What's the integration level?
+**Spawn the auditor.** Use the `stripe-auditor` subagent for deep parallel analysis. It examines:
+- Configuration (env vars on all deployments, cross-platform parity)
+- Webhook health (endpoints registered, URL returns non-3xx, pending_webhooks = 0)
+- Subscription logic (trial handling, access control, idempotency)
+- Security (no hardcoded keys, secrets not logged)
+- Business model compliance (single tier, trial honored on upgrade)
+- Subscription management UX (settings page, billing history, portal integration)
 
-### 2. Route
+**Run automated checks:**
+```bash
+~/.claude/skills/stripe-best-practices/scripts/stripe_audit.sh
+```
 
-Based on assessment:
+**Research first.** Before assuming current patterns are correct, check Stripe docs for current best practices. Use Gemini. What was right last year may be deprecated.
 
-**GREENFIELD** (no integration)
-→ Run `stripe-setup` workflow
-→ Design the integration with business model preferences
-→ Scaffold all code (delegate to Codex)
-→ Configure Stripe Dashboard and all deployments
-→ Deep verification
+### 2. Plan
 
-**PARTIAL or HAS ISSUES** (broken/incomplete)
-→ Run `stripe-fix` workflow
-→ Deep audit (spawn auditor subagent)
-→ Reconcile all findings
-→ Deep verification
+From audit findings, build a complete remediation plan. Don't just list issues—plan the fixes.
 
-**COMPLETE and HEALTHY**
-→ Run `stripe-review` workflow
-→ Audit for drift
-→ Verify still working
-→ Report health status
+For each finding:
+- **Configuration issues** → Fix directly (env vars, dashboard settings)
+- **Code issues** → Delegate to Codex with clear specs
+- **Design issues** → May require rethinking approach, consult `stripe-design`
+
+Prioritize:
+1. **Critical** — Blocks checkout or causes payment failures
+2. **High** — Security issues, data integrity problems
+3. **Medium** — Missing UX, suboptimal patterns
 
 ### 3. Execute
 
-Run the selected workflow. Each workflow composes primitives:
-- `stripe-assess` — understand state
-- `stripe-design` — plan integration
-- `stripe-scaffold` — generate code
-- `stripe-configure` — set up services
-- `stripe-audit` — find issues
-- `stripe-reconcile` — fix issues
-- `stripe-verify` — prove it works
+**Fix everything.** Don't stop at a report.
 
-### 4. Quality Gate
+**Configuration fixes (do directly):**
+```bash
+# Missing env var
+npx convex env set --prod STRIPE_WEBHOOK_SECRET "$(printf '%s' 'whsec_...')"
 
-Every workflow ends with `stripe-verify`. Nothing is complete until verification passes.
+# Verify
+npx convex env list --prod | grep STRIPE
+```
 
-## Key Principles
+**Code fixes (delegate to Codex):**
+```bash
+codex exec --full-auto "Fix [specific issue]. \
+File: [path]. Problem: [what's wrong]. \
+Solution: [what it should do]. \
+Reference: [pattern file]. \
+Verify: pnpm typecheck && pnpm test" \
+--output-last-message /tmp/codex-fix.md 2>/dev/null
+```
 
-**Research first.** Before implementing anything, check current Stripe best practices. Use Gemini for documentation. Patterns change.
+Then validate: `git diff --stat && pnpm typecheck`
 
-**Delegate aggressively.** Code generation goes to Codex. Deep analysis goes to the auditor subagent. Expert validation goes to Thinktank.
+**Webhook URL fixes:**
+Update in Stripe Dashboard to canonical domain. If redirects exist, use the final URL.
 
-**Verify deeply.** Billing bugs are expensive. Test real flows, not just check code existence.
+**Missing subscription management UX:**
+Per `stripe-subscription-ux`, every integration needs:
+- Settings page showing plan, status, next billing date
+- Payment method display (brand + last4)
+- "Manage Subscription" button (Stripe Portal)
+- Billing history with downloadable invoices
+- State-specific messaging (trialing, canceled, past_due)
 
-**Business model compliance.** Reference `business-model-preferences` throughout. Single tier, trial completion on upgrade, no freemium.
+If missing, create it. This is non-negotiable.
+
+### 4. Verify
+
+**Prove it works.** Not "looks right"—actually works.
+
+**Configuration verification:**
+```bash
+npx convex env list | grep STRIPE
+npx convex env list --prod | grep STRIPE
+curl -s -o /dev/null -w "%{http_code}" -I -X POST "$WEBHOOK_URL"
+```
+
+**Checkout flow test:**
+1. Create test checkout session
+2. Complete with card `4242 4242 4242 4242`
+3. Verify webhook received (check logs)
+4. Verify subscription created in Stripe Dashboard
+5. Verify user state updated in database
+6. Verify access granted
+
+**Webhook delivery test:**
+```bash
+stripe events list --limit 5 | jq '.data[] | {id, type, pending_webhooks}'
+# All should have pending_webhooks: 0
+```
+
+**Subscription management UX test:**
+- Navigate to settings page
+- Verify plan and status displayed
+- Click "Manage Subscription" → Portal opens
+- Verify billing history accessible
+
+**Business model compliance:**
+- Single pricing tier? ✓
+- Trial honored on upgrade? (Check Stripe subscription has trial_end) ✓
+- No freemium logic? (Expired trial = no access) ✓
+
+If any verification fails, go back and fix it. Don't declare done until everything passes.
+
+## Business Model Compliance
+
+Reference `business-model-preferences` throughout. Key constraints:
+- Single pricing tier (no complex tier logic)
+- Trial completion honored on upgrade (pass trial_end to Stripe)
+- No freemium (expired trial = no access, not limited access)
 
 ## Default Stack
 
-Assumes Next.js + TypeScript + Convex + Vercel + Clerk. If different stack detected, adapt gracefully — the Stripe concepts are the same, only framework specifics change.
+Assumes Next.js + TypeScript + Convex + Vercel + Clerk. Adapts gracefully to other stacks—concepts are the same, only framework specifics change.
 
 ## What You Get
 
 When complete:
-- Working checkout flow
-- Webhook handling with signature verification
+- Working checkout flow (test card succeeds, subscription created)
+- Webhook handling with signature verification (pending_webhooks = 0)
 - Subscription state management with proper trial handling
 - Access control based on subscription status
-- **Subscription management UX** (see below)
+- Subscription management UX (settings page, portal, billing history)
 - All configuration in place (dev and prod)
 - Deep verification passing
 
-### Subscription Management UX (Required)
-
-Every Stripe integration MUST include user-facing subscription management.
-See `stripe-subscription-ux` for full requirements. At minimum:
-
-- Settings page showing current plan and status
-- Next billing date and amount
-- Payment method on file (brand + last 4)
-- "Manage Subscription" button (opens Stripe Portal)
-- Billing history with downloadable invoices
-- Clear status messaging for all states (active, trialing, canceled, past_due)
-
-**This is non-negotiable.** A checkout flow without subscription management
-leaves users in the dark about their billing. That's unacceptable.
-
 User can:
-- Run test checkout with 4242 4242 4242 4242
+- Run test checkout with `4242 4242 4242 4242`
 - See subscription state update
 - Access gated features
 - See trial honored on mid-trial upgrade
-- **View and manage their subscription in settings**
-- **See their payment method and billing history**
-- **Cancel, resume, or update payment method**
+- View and manage subscription in settings
+- See payment method and billing history
+- Cancel, resume, or update payment method via Portal
