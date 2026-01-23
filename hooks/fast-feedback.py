@@ -21,8 +21,9 @@ def get_cwd():
 
 def detect_project(cwd):
     """Detect project type based on config files."""
-    if os.path.exists(os.path.join(cwd, "package.json")):
-        return "node"
+    # TypeScript: require tsconfig.json, not just package.json
+    if os.path.exists(os.path.join(cwd, "tsconfig.json")):
+        return "typescript"
     if os.path.exists(os.path.join(cwd, "pyproject.toml")) or \
        os.path.exists(os.path.join(cwd, "setup.py")):
         return "python"
@@ -30,22 +31,26 @@ def detect_project(cwd):
         return "rust"
     if os.path.exists(os.path.join(cwd, "go.mod")):
         return "go"
+    if os.path.exists(os.path.join(cwd, "Package.swift")):
+        return "swift"
     return None
 
 def run_check(project_type, cwd):
     """Run fast type check for detected project type."""
     commands = {
-        "node": ["pnpm", "tsc", "--noEmit", "--pretty"],
+        "typescript": ["npx", "tsc", "--noEmit", "--pretty"],
         "python": ["ruff", "check", "."],
         "rust": ["cargo", "check", "--message-format=short"],
         "go": ["go", "vet", "./..."],
+        "swift": ["swift", "build", "--build-tests"],
     }
 
     timeouts = {
-        "node": 30,
+        "typescript": 30,
         "python": 15,
         "rust": 60,
         "go": 30,
+        "swift": 60,
     }
 
     cmd = commands.get(project_type)
