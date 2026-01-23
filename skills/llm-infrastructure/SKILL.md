@@ -3,6 +3,11 @@ name: llm-infrastructure
 description: |
   Comprehensive LLM audit. Model currency, prompt quality, evals, observability, CI/CD.
   Ensures all LLM-powered features follow best practices and are properly instrumented.
+
+  Auto-invoke when: model names/versions mentioned, AI provider config, prompt changes,
+  .env with AI keys, aiProviders.ts or prompts.ts modified, AI-related PRs.
+
+  CRITICAL: Training data lags months. ALWAYS web search before LLM decisions.
 argument-hint: "[focus area, e.g. 'models' or 'evals' or 'prompts']"
 ---
 

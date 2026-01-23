@@ -1,31 +1,10 @@
----
-name: stripe-best-practices
-description: "Stripe integration patterns, parameter constraints, and debugging. Auto-invoke when: file contains stripe/payment/checkout/webhook, imports stripe package, references STRIPE_* env vars. Use for checkout mode selection, webhook signature verification, env var hygiene, subscription debugging."
----
+# Stripe Integration Patterns
 
-# Stripe Best Practices
+Quick reference for Stripe integration gotchas and patterns.
 
-Stripe integration patterns, parameter constraints, and debugging strategies.
+## Key Verification Points
 
-## Automatic Invocation
-
-This skill should be **automatically invoked** when:
-
-**File patterns:**
-- File path contains `stripe`, `payment`, `checkout`, `subscription`, `webhook`
-- File path matches `**/api/webhook*`, `**/stripe/**`
-
-**Code patterns:**
-- Imports from `stripe` package
-- References `STRIPE_*` env vars
-- Contains `stripe.checkout`, `stripe.webhooks`, `stripe.subscriptions`
-
-**Review triggers (during /thinktank-review, /groom, /build):**
-- Any changed file touching payment flows
-- New webhook handler added
-- Env var changes involving STRIPE_*
-
-When auto-invoked, verify:
+When touching Stripe code, always verify:
 1. Runtime env validation present (fail-fast pattern)
 2. Webhook signature verification present and FIRST
 3. Error handling logs with context (userId, operation, error)

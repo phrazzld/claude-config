@@ -1,11 +1,8 @@
----
-name: observability-stack
-description: "Sentry + PostHog + Vercel Analytics integration patterns for MistyStep apps. Use when adding error tracking, product analytics, user identification, or feature flags to Next.js/Convex apps."
----
+# PostHog Integration Patterns
 
-# Observability Stack
+Reference patterns for adding PostHog product analytics to Next.js/Convex apps.
 
-Standard observability patterns for MistyStep applications.
+**When to use PostHog:** Only if you need product analytics (funnels, cohorts, feature flags). For error tracking, use Sentry via `/observability`.
 
 ## Stack Overview
 

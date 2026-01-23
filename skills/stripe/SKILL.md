@@ -3,6 +3,9 @@ name: stripe
 description: |
   Complete Stripe lifecycle management. Audits current state, fixes all issues,
   and verifies checkout flows work end-to-end. Every run does all of this.
+
+  Auto-invoke when: files contain stripe/payment/checkout/webhook, imports stripe
+  package, references STRIPE_* env vars, webhook handlers modified.
 argument-hint: "[focus area, e.g. 'webhooks' or 'subscription UX']"
 ---
 
