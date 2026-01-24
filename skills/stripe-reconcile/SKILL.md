@@ -9,6 +9,16 @@ description: |
 
 Fix issues identified by the audit.
 
+## Branching
+
+Assumes you start on `master`/`main`. Before making code changes:
+
+```bash
+git checkout -b fix/stripe-reconcile-$(date +%Y%m%d)
+```
+
+Configuration-only changes (env vars, dashboard settings) don't require a branch. Code changes do.
+
 ## Objective
 
 Take audit findings and fix them. Configuration issues get fixed directly. Code issues get delegated to Codex.

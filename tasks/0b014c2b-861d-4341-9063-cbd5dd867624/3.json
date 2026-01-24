@@ -1,0 +1,14 @@
+{
+  "id": "3",
+  "subject": "Implement web desktop auth endpoint",
+  "description": "Create apps/web/app/auth/desktop/page.tsx with Clerk SignIn, session token generation, and deep link redirect",
+  "activeForm": "Implementing web auth endpoint",
+  "status": "in_progress",
+  "blocks": [
+    "8"
+  ],
+  "blockedBy": [
+    "1",
+    "2"
+  ]
+}

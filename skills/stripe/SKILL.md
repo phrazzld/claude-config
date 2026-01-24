@@ -17,6 +17,16 @@ World-class Stripe integration. Audit, fix, verify—every time.
 
 Examines your Stripe integration, identifies every gap, implements fixes, and verifies checkout flows work end-to-end. No partial modes. Every run does the full cycle.
 
+## Branching
+
+Assumes you start on `master`/`main`. Before making code changes:
+
+```bash
+git checkout -b fix/stripe-$(date +%Y%m%d)
+```
+
+Configuration-only changes (env vars, dashboard settings) don't require a branch. Code changes do.
+
 ## Process
 
 ### 1. Audit

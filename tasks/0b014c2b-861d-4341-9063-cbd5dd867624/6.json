@@ -1,0 +1,13 @@
+{
+  "id": "6",
+  "subject": "Add URL scheme + deep link handler",
+  "description": "Register vox:// URL scheme in Info.plist and add deep link handling to AppDelegate",
+  "activeForm": "Adding URL scheme handler",
+  "status": "pending",
+  "blocks": [
+    "7"
+  ],
+  "blockedBy": [
+    "4"
+  ]
+}

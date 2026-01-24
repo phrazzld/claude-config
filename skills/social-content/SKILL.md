@@ -805,3 +805,15 @@ If you need more context:
 - **launch-strategy**: For coordinating social with launches
 - **email-sequence**: For nurturing social audience via email
 - **marketing-psychology**: For understanding what drives engagement
+
+## Marketing Ideas Reference
+
+See `references/marketing-ideas.md` for a library of 140 proven marketing approaches including:
+- Content & SEO
+- Competitor comparison
+- Free tools & engineering as marketing
+- Paid advertising
+- Partnerships & programs
+- Events & speaking
+- Product-led growth
+- Unconventional tactics

@@ -22,6 +22,14 @@ Production observability with one service. Audit, fix, verify—every time.
 
 Examines project observability, identifies gaps, implements fixes, and verifies alerting works. Every run does the full cycle.
 
+## Branching
+
+Assumes you start on `master`/`main`. Before making code changes:
+
+```bash
+git checkout -b infra/observability-$(date +%Y%m%d)
+```
+
 ## Architecture
 
 ```

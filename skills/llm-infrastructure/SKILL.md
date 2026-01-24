@@ -27,6 +27,14 @@ Rigorous audit of all LLM-powered features. Model currency, prompt quality, eval
 
 **Observe everything.** Every LLM call should be traceable. You can't improve what you don't measure.
 
+## Branching
+
+Assumes you start on `master`/`main`. Before making code changes:
+
+```bash
+git checkout -b infra/llm-$(date +%Y%m%d)
+```
+
 ## Process
 
 ### 1. Audit

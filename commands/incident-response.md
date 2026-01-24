@@ -13,6 +13,15 @@ Full incident lifecycle from bug report to prevention.
 
 - `bug-report` — Error message, logs, user report, or description of the problem
 
+## Branching
+
+Assumes you start on `master`/`main`. Before fixing, create a branch:
+
+```bash
+BRANCH="fix/incident-$(date +%Y%m%d-%H%M)"
+git checkout -b $BRANCH
+```
+
 ## Workflow
 
 ### 1. Investigate
@@ -27,7 +36,14 @@ Creates `INCIDENT-{timestamp}.md` with:
 - Hypotheses
 - Root cause
 
-### 2. Fix
+### 2. Branch
+
+If on `master`/`main`, create fix branch:
+```bash
+git checkout -b fix/incident-$(date +%Y%m%d-%H%M)
+```
+
+### 3. Fix
 
 ```
 /fix "Root cause from investigation"
@@ -35,7 +51,7 @@ Creates `INCIDENT-{timestamp}.md` with:
 
 Diagnose → delegate to Codex → verify → commit.
 
-### 3. Verify
+### 4. Verify
 
 Demand observable proof:
 - Log entry showing fix worked
@@ -44,7 +60,7 @@ Demand observable proof:
 
 Mark **UNVERIFIED** until observables confirm. Never trust "should work."
 
-### 4. Postmortem
+### 5. Postmortem
 
 ```
 /postmortem
@@ -58,7 +74,7 @@ Creates blameless postmortem:
 - What went well/wrong
 - Follow-up actions
 
-### 5. Prevent
+### 6. Prevent
 
 If postmortem reveals systemic issue:
 
@@ -72,7 +88,7 @@ Then optionally:
 /autopilot $PREVENTION_ISSUE
 ```
 
-### 6. Codify Learning
+### 7. Codify Learning
 
 ```
 /codify-learning

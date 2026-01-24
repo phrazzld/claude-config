@@ -1,0 +1,16 @@
+{
+  "id": "4",
+  "subject": "Implement Swift Keychain helper",
+  "description": "Create Sources/VoxApp/Auth/KeychainHelper.swift for secure token storage with read/write/delete operations",
+  "activeForm": "Implementing Keychain helper",
+  "status": "pending",
+  "blocks": [
+    "5",
+    "6",
+    "8"
+  ],
+  "blockedBy": [
+    "1",
+    "2"
+  ]
+}

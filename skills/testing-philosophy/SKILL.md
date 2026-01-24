@@ -1,5 +1,6 @@
 ---
 name: testing-philosophy
+user-invocable: false
 description: "Apply testing philosophy: test behavior not implementation, minimize mocks, AAA structure, coverage for confidence not percentage. Use when writing tests, reviewing test quality, discussing TDD, or evaluating test strategies."
 allowed-tools:
   - Read

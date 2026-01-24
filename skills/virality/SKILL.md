@@ -24,6 +24,14 @@ Make your product spread. Social sharing, referral loops, distribution channelsâ
 
 Audits your product for shareability, identifies viral loop opportunities, implements sharing infrastructure, and verifies the mechanics work. Every run does the full cycle.
 
+## Branching
+
+Assumes you start on `master`/`main`. Before making code changes:
+
+```bash
+git checkout -b feat/virality-$(date +%Y%m%d)
+```
+
 ## Process
 
 ### 1. Audit

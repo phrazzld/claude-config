@@ -13,6 +13,10 @@ Full UI/UX design cycle from audit to implementation.
 
 - `route-or-url` — Optional. What to design. If omitted, asks user.
 
+## Branching
+
+Assumes you start on `master`/`main`. The `/build` step will create a feature branch when implementing the selected design.
+
 ## Workflow
 
 ### 1. Audit Current State

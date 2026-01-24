@@ -9,6 +9,14 @@ description: |
 
 Generate the code for a Stripe integration.
 
+## Branching
+
+Assumes you start on `master`/`main`. Before generating code:
+
+```bash
+git checkout -b feat/stripe-integration-$(date +%Y%m%d)
+```
+
 ## Objective
 
 Turn a design document into working code. Delegate implementation to Codex aggressively — that's what it's for.

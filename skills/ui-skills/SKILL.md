@@ -1,5 +1,6 @@
 ---
 name: ui-skills
+user-invocable: false
 description: Opinionated constraints for building better interfaces with agents.
 ---
 

@@ -12,19 +12,19 @@ Run a comprehensive code review using thinktank with complete context: the chang
 
 ## Process
 
-### 1. Doc-Check (MANDATORY)
+### 1. Documentation Check (MANDATORY)
 
 **Do this first. Do not skip.**
 
-Run `/doc-check`.
+Run `/documentation`.
 
-Doc-check ensures these exist (creating them if missing):
+This ensures core docs exist (creating them if missing):
 - ARCHITECTURE.md - system overview
 - README.md - project identity
 - CLAUDE.md - conventions
 - Module READMEs where needed
 
-Wait for doc-check to complete before proceeding.
+Wait for documentation to complete before proceeding.
 
 ### 2. Identify Changed Files
 
@@ -51,7 +51,7 @@ Build a list of touched files (keep it focused - first-degree dependencies, not 
 
 Find documentation that explains the changed code:
 
-**Required docs** (doc-check ensures these exist):
+**Required docs** (`/documentation` ensures these exist):
 - ARCHITECTURE.md - system overview
 - README.md - project identity
 - CLAUDE.md - conventions

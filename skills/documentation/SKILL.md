@@ -14,6 +14,14 @@ Ensure this project has complete, current documentation. Audit, fix, verify—ev
 
 Examines project documentation, identifies gaps and staleness, generates/updates what's needed, and verifies links and examples work. No partial modes.
 
+## Branching
+
+Assumes you start on `master`/`main`. Before making documentation changes:
+
+```bash
+git checkout -b docs/update-$(date +%Y%m%d)
+```
+
 ## Process
 
 ### 1. Audit

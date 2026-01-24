@@ -1,0 +1,14 @@
+{
+  "id": "7",
+  "subject": "Integrate auth into ProviderFactory",
+  "description": "Update ProviderFactory to get token from AuthManager instead of env var, add login flow trigger",
+  "activeForm": "Integrating auth into providers",
+  "status": "pending",
+  "blocks": [
+    "9"
+  ],
+  "blockedBy": [
+    "5",
+    "6"
+  ]
+}

@@ -9,6 +9,14 @@ description: |
 
 Scaffold a public changelog page that displays releases.
 
+## Branching
+
+Assumes you start on `master`/`main`. Before scaffolding:
+
+```bash
+git checkout -b feat/changelog-page-$(date +%Y%m%d)
+```
+
 ## Objective
 
 Create a public `/changelog` route that:

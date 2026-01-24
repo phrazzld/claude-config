@@ -13,6 +13,10 @@ Assumes backlog is groomed. Run `/groom` first if needed.
 
 - `issue-id` — Optional. If provided, work on that issue. If omitted, find highest-priority open issue labeled `ready`.
 
+## Branching
+
+Assumes you start on `master`/`main`. The `/build` step will create a feature branch (`feature/issue-{id}` or `fix/issue-{id}`).
+
 ## Role
 
 You are the engineering lead running a sprint. You find work, ensure it's ready, delegate implementation, and ship.
@@ -30,9 +34,11 @@ gh issue view $1 --comments
 
 If no argument:
 ```bash
-gh issue list --label "status/ready" --limit 10
+gh issue list --state open --limit 20
 ```
-Select ONE based on: `horizon/now` > `horizon/next` > blocking others > clear scope.
+Select ONE based on: `horizon/now` > `horizon/next` > blocking others > smallest scope.
+
+Note: All issues are considered ready. `/spec` and `/architect` will flesh out any missing details.
 
 ### 2. Spec
 

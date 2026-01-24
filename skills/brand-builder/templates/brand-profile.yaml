@@ -1,0 +1,46 @@
+# Brand Profile Template
+# Copy this to your project root as brand-profile.yaml
+# Then run /brand-builder to fill in interactively
+
+product:
+  name: ""                    # Product name
+  domain: ""                  # Primary domain
+  tagline: ""                 # One-line description
+  category: ""                # From products.yaml categories
+
+audience:
+  primary: ""                 # One sentence describing target user
+  demographics: []            # Age, role, interests
+  pain_points: []             # Problems product solves
+
+voice:
+  tone: ""                    # casual_friendly | professional | playful | technical
+  personality: []             # 3-5 personality traits
+  avoid: []                   # Things to never do
+
+content:
+  mix:
+    product_updates: 30       # % of content about product
+    valuable_content: 70      # % of content providing value
+
+  topics:
+    # List 5-10 content topics
+    # First ~3 should be product-related
+    # Rest should be domain-related valuable content
+    - ""
+
+  hashtags:
+    primary: []               # 3-5 main hashtags for the domain
+    product: []               # 1-2 product-specific hashtags
+
+  posting_frequency: ""       # How often to post
+
+inspirations: []              # Brands/products that inspire the voice
+
+twitter_account: ""           # Which account to post from
+
+# Auto-populated by /brand-builder
+context:
+  tech_stack: ""
+  recent_features: []
+  github_repo: ""

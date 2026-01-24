@@ -1,5 +1,6 @@
 ---
 name: git-mastery
+user-invocable: false
 description: |
   Git workflow enforcement and best practices. Use when:
   - Writing commit messages or reviewing commits
@@ -100,3 +101,11 @@ Large files (>10MB): Use Git LFS.
 - [conflict-resolution.md](references/conflict-resolution.md) - Distributed async conflict patterns
 - [feature-flags.md](references/feature-flags.md) - Flag-driven development for long features
 - [release-automation.md](references/release-automation.md) - Semantic versioning automation
+
+## Commit Conventions
+
+See `references/commit-conventions.md` for detailed commit message standards including:
+- Conventional commit format (type(scope): subject)
+- Imperative mood rules
+- Body and footer conventions
+- Breaking change format

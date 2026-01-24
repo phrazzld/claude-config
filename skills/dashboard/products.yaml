@@ -1,0 +1,178 @@
+# MistyStep Product Portfolio
+# Auto-populated from Vercel, Stripe, and GitHub CLIs
+# Last updated: 2026-01-23
+
+products:
+  # ═══════════════════════════════════════════════════════════════
+  # CORE PRODUCTS (Active, monetizable)
+  # ═══════════════════════════════════════════════════════════════
+
+  - name: Vox
+    domain: vox-misty-step.vercel.app
+    description: "Invisible editor for macOS: hotkey dictation to clean text"
+    category: productivity
+    vercel_project_id: prj_BY1kJzvD6k8TND63WINTupotyA7r
+    stripe_product_id: prod_Tq7SJRsTTdXb4c
+    github_repo: misty-step/vox
+
+  - name: Volume
+    domain: www.volume.fitness
+    description: "Track sets and reps"
+    category: health
+    vercel_project_id: prj_wSyfeK0yRKN1SGRUTVwzxuDdCRRn
+    github_repo: misty-step/volume
+
+  - name: Bibliomnomnom
+    domain: www.bibliomnomnom.com
+    description: "A digital garden for voracious readers"
+    category: reading
+    vercel_project_id: prj_Kdk5e91ABnC2o4Jg5MrSmnqMjhox
+    github_repo: misty-step/bibliomnomnom
+
+  - name: Heartbeat
+    domain: www.heartbeat.engineering
+    description: "Beautiful, set-and-forget uptime monitoring"
+    category: dev_tools
+    vercel_project_id: prj_4yAw6siTJ2zBHdrEXja0kJnjg0RM
+    github_repo: misty-step/heartbeat
+
+  - name: Scry
+    domain: www.scry.study
+    description: "Smart smooth SRS"
+    category: productivity
+    vercel_project_id: prj_Ix0Z40dkWidhfm5AVkhZbjZ3a8ic
+    github_repo: misty-step/scry
+
+  - name: Sploot
+    domain: www.sploot.app
+    description: "Your memes deserve semantic search"
+    category: productivity
+    vercel_project_id: prj_VVvzGagEJiWZB2U2omi1oazF6h4S
+    github_repo: misty-step/sploot
+
+  - name: GitPulse
+    domain: www.gitpulse.app
+    description: "GitHub activity, distilled"
+    category: dev_tools
+    vercel_project_id: prj_pBkaTg63tXpdARMc2aYBFgHkRPSl
+    github_repo: misty-step/gitpulse
+
+  # ═══════════════════════════════════════════════════════════════
+  # GAMES & CONTENT
+  # ═══════════════════════════════════════════════════════════════
+
+  - name: Chrondle
+    domain: www.chrondle.app
+    description: "Daily history game - guess the year in six tries"
+    category: games
+    vercel_project_id: prj_GK5zcA8owq18u8410rKpl4FPAs9z
+    github_repo: misty-step/chrondle
+
+  - name: Caesar in a Year
+    domain: www.caesarinayear.com
+    description: "Read Caesar's Gallic Wars in Latin, one chapter per day"
+    category: reading
+    vercel_project_id: prj_4zePMHgbdI5upPLC6YyLQ6asqAVZ
+    stripe_product_id: prod_ToDssIjMy4cD6p
+    github_repo: misty-step/caesar-in-a-year
+
+  - name: Line Jam
+    domain: www.linejam.app
+    description: "Pass-the-poem party game for friends"
+    category: games
+    vercel_project_id: prj_04yixLSoB0qjVz7RZQiUP7F6e162
+    github_repo: misty-step/linejam
+
+  - name: Brainrot Publishing
+    domain: www.brainrotpublishing.com
+    description: "Gen Z translations of classic literature"
+    category: reading
+    vercel_project_id: prj_0HtbgBZ9uUsHRl2v1DQWIHOpGJhs
+    github_repo: misty-step/brainrot
+
+  - name: Anyzine
+    domain: www.anyzine.xyz
+    description: "On-demand zines on whatever you're into rn"
+    category: reading
+    vercel_project_id: prj_8hLQwATm0I9VbozDC8DDKgxfcjnD
+
+  # ═══════════════════════════════════════════════════════════════
+  # CONSULTING & BRAND
+  # ═══════════════════════════════════════════════════════════════
+
+  - name: MistyStep
+    domain: www.mistystep.io
+    description: "AI-augmented consulting for teams that refuse to move slowly"
+    category: consulting
+    vercel_project_id: prj_30lntG97iGdOMCDeWLusJVutgj4g
+    github_repo: misty-step/misty-step
+
+  - name: Vibe Machine
+    domain: vibe-machine-eight.vercel.app
+    description: "A cinematic audio visualizer forge"
+    category: creative
+    vercel_project_id: prj_jKWdWBeItosHZUGXNCKo6TakhPGa
+    github_repo: misty-step/vibe-machine
+
+  # ═══════════════════════════════════════════════════════════════
+  # PERSONAL / SIDE
+  # ═══════════════════════════════════════════════════════════════
+
+  - name: Phaedrus.io
+    domain: www.phaedrus.io
+    description: "Personal site"
+    category: personal
+    vercel_project_id: prj_UvxgmWKpgzeZDy9WnLBt6WRR3YKz
+
+  - name: Time Is Money
+    domain: www.timeismoney.works
+    description: "Chrome extension that converts prices into hours of work"
+    category: extensions
+    vercel_project_id: prj_cK0kA3rSfh0LqB0YcmnOgYXit6GJ
+
+  - name: Trump Goggles
+    domain: www.trumpgoggles.com
+    description: "Chrome extension that transforms text to Trumpisms"
+    category: extensions
+    vercel_project_id: prj_ZCW6Tf2FsmxcGokylR1SyoCtMVnm
+
+# ═══════════════════════════════════════════════════════════════
+# CATEGORY CONFIGURATION
+# ═══════════════════════════════════════════════════════════════
+
+categories:
+  consulting:
+    twitter: "@MistyStepLLC"
+    description: "AI consulting and dev services"
+
+  dev_tools:
+    twitter: "@MistyStepLLC"
+    description: "Developer tools and monitoring"
+
+  health:
+    twitter: "@MistyStepLLC"
+    description: "Fitness and health tracking"
+
+  productivity:
+    twitter: "@MistyStepLLC"
+    description: "Productivity and learning tools"
+
+  reading:
+    twitter: "@MistyStepLLC"
+    description: "Books, reading, and publishing"
+
+  games:
+    twitter: "@MistyStepLLC"
+    description: "Games and puzzles"
+
+  creative:
+    twitter: "@MistyStepLLC"
+    description: "Creative and visual tools"
+
+  extensions:
+    twitter: "@moomooskycow"
+    description: "Browser extensions"
+
+  personal:
+    twitter: "@moomooskycow"
+    description: "Personal projects"

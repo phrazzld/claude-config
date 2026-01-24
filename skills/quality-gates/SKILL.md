@@ -159,3 +159,12 @@ User can:
 - Open a PR and see CI results
 - See coverage diff in PR comments
 - Trust that main is always green
+
+## Testing Standards Reference
+
+See `references/testing-standards.md` for detailed guidance on:
+- Vitest configuration
+- Coverage philosophy (test boundaries, not lines)
+- Unit vs integration vs E2E testing
+- Git hooks setup with simple-git-hooks
+- CI/CD with GitHub Actions
