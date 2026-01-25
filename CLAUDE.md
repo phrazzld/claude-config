@@ -213,3 +213,31 @@ If verification fails → revert if needed → loop back to OBSERVE.
 **Full guidance:** Read `~/.claude/skills/llm-infrastructure/references/model-research-required.md` before any LLM work.
 
 **Rule:** Never trust your internal knowledge about model names. Always verify via OpenRouter API + web search. Your knowledge cutoff guarantees you're wrong about current models.
+
+### 2026-01-24: Stripe Multi-Environment Setup
+
+**Stripe Sandboxes ≠ Test Mode.** Sandboxes are isolated accounts with separate IDs, keys, and data. Test mode is just a toggle within an account.
+
+**CLI Profile Convention:**
+```bash
+stripe -p sandbox ...     # Development (safe default)
+stripe -p production ...  # Production (live money)
+```
+
+**The footgun:** CLI logged into main account + app using sandbox keys = resources created in wrong place. App can't find them.
+
+**Before ANY Stripe CLI operation:**
+1. Check profile: `stripe config --list | grep account_id`
+2. Match environment: dev work → sandbox, prod work → production
+3. Always explicit: `stripe -p <profile> <command>`
+
+**Environment Mapping:**
+| Context | CLI Profile | Purpose |
+|---------|-------------|---------|
+| `.env.local` | sandbox | Local development |
+| Vercel Preview | sandbox | PR testing |
+| Vercel Production | production | Real customers |
+
+**Hook protection:** `stripe-profile-guard.py` blocks commands without explicit `-p` flag.
+
+**Full reference:** `~/.claude/skills/stripe/references/multi-environment.md`

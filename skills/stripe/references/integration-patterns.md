@@ -155,5 +155,5 @@ See `references/` directory:
 
 Run `./scripts/stripe_audit.sh` for automated checks:
 ```bash
-~/.claude/skills/stripe-best-practices/scripts/stripe_audit.sh
+~/.claude/skills/stripe/scripts/stripe_audit.sh
 ```

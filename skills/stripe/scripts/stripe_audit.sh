@@ -430,7 +430,8 @@ check_stripe_cli() {
     log_warn "Could not fetch webhook endpoints"
   else
     local count
-    count=$(echo "$webhooks" | grep -c "url:" || echo "0")
+    count=$(echo "$webhooks" | grep -c "url:" 2>/dev/null || echo 0)
+    count=${count//[^0-9]/}
     if [ "$count" -gt 0 ]; then
       log_pass "$count webhook endpoint(s) registered"
     else
@@ -493,6 +494,24 @@ main() {
   PROJECT_TYPE=$(detect_project_type)
   log_info "Project type: $PROJECT_TYPE"
   log_info "Search paths: $(detect_source_dirs)"
+
+  # Environment detection (fail fast on mismatch)
+  log_section "Environment Detection"
+  if [ -x "$(dirname "$0")/detect-environment.sh" ]; then
+    if ! "$(dirname "$0")/detect-environment.sh" --check 2>/dev/null; then
+      log_fail "CLI/App environment mismatch detected"
+      log_info "Run: $(dirname "$0")/detect-environment.sh for details"
+      log_info "Fix environment before continuing audit"
+      if [ "$STRICT" = true ]; then
+        exit 1
+      fi
+    else
+      log_pass "CLI profile matches app configuration"
+    fi
+  else
+    log_warn "detect-environment.sh not found, skipping environment check"
+  fi
+
 
   # Run checks
   check_stripe_sdk || true

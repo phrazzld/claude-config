@@ -29,6 +29,19 @@ Configuration-only changes (env vars, dashboard settings) don't require a branch
 
 ## Process
 
+### 0. Environment Check
+
+**Detect environment mismatch first.** Before any Stripe operations:
+```bash
+~/.claude/skills/stripe/scripts/detect-environment.sh
+```
+
+This compares your app's STRIPE_SECRET_KEY account with CLI profiles. If mismatched, resources created via CLI won't be visible to your app.
+
+**Fix mismatches:**
+- Use correct CLI profile: `stripe -p sandbox` or `stripe -p production`
+- Or update `.env.local` to match your CLI account
+
 ### 1. Audit
 
 **Spawn the auditor.** Use the `stripe-auditor` subagent for deep parallel analysis. It examines:
@@ -41,7 +54,7 @@ Configuration-only changes (env vars, dashboard settings) don't require a branch
 
 **Run automated checks:**
 ```bash
-~/.claude/skills/stripe-best-practices/scripts/stripe_audit.sh
+~/.claude/skills/stripe/scripts/stripe_audit.sh
 ```
 
 **Research first.** Before assuming current patterns are correct, check Stripe docs for current best practices. Use Gemini. What was right last year may be deprecated.

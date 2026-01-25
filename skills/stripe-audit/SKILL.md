@@ -19,11 +19,20 @@ Find everything that's wrong, suboptimal, or drifted. Produce actionable finding
 
 This is a deep analysis. Spawn the `stripe-auditor` subagent to do the heavy lifting in parallel. It has read-only access and preloaded Stripe knowledge.
 
+**1.5. Check Environment**
+
+Before any CLI operations, verify environment parity:
+```bash
+~/.claude/skills/stripe/scripts/detect-environment.sh
+```
+
+If mismatch detected, fix before proceeding. Resources created in wrong account won't be visible to app.
+
 **2. Run Automated Checks**
 
 Execute the audit script for quick wins:
 ```bash
-~/.claude/skills/stripe-best-practices/scripts/stripe_audit.sh
+~/.claude/skills/stripe/scripts/stripe_audit.sh
 ```
 
 This catches:

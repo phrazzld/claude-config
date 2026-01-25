@@ -192,7 +192,7 @@ npx convex env list --prod
 # Should see sk_live_, pk_live_ prefixes
 
 # 5. Run audit script
-~/.claude/skills/stripe-best-practices/scripts/stripe_audit.sh
+~/.claude/skills/stripe/scripts/stripe_audit.sh
 ```
 
 ## Security Rules
