@@ -94,16 +94,42 @@ def is_protected_branch(branch: str | None) -> bool:
 
 def check_merge_protection(cmd: str) -> tuple[bool, str]:
     """
-    Block all git merge commands.
-    Merges should be done manually to avoid accidental conflicts.
+    Smart merge protection:
+    - Allow merging main/master INTO feature branches
+    - Block all other merges
     """
-    if re.match(r"^git\s+merge\b", cmd):
+    merge_match = re.match(r"^git\s+merge\s+(\S+)", cmd)
+    if not merge_match:
+        return False, ""
+
+    target_branch = merge_match.group(1)
+    current_branch = get_current_branch()
+
+    # If on a protected branch, block all merges
+    if is_protected_branch(current_branch):
         return True, (
-            "git merge is blocked. "
-            "Merges can create unexpected conflicts. "
-            "Run this manually if needed."
+            f"Merging into {current_branch} is blocked. "
+            "Create a PR instead."
         )
 
+    # If on feature branch, only allow merging main/master
+    if target_branch in ("main", "master"):
+        return False, ""  # ALLOW: updating feature with main
+
+    # Block other merges (feature-to-feature, etc.)
+    return True, (
+        f"Merging {target_branch} is blocked. "
+        "Only 'git merge main' or 'git merge master' allowed on feature branches."
+    )
+
+
+def check_rebase_protection(cmd: str) -> tuple[bool, str]:
+    """Block all rebase commands - they rewrite history."""
+    if re.match(r"^git\s+rebase\b", cmd):
+        return True, (
+            "git rebase is blocked (rewrites history). "
+            "Use 'git merge main' to update your branch instead."
+        )
     return False, ""
 
 
@@ -161,6 +187,11 @@ def check_command(cmd: str) -> tuple[bool, str]:
 
     # Check merge protection (branch-aware)
     blocked, reason = check_merge_protection(cmd)
+    if blocked:
+        return True, reason
+
+    # Check rebase protection (always blocked)
+    blocked, reason = check_rebase_protection(cmd)
     if blocked:
         return True, reason
 
