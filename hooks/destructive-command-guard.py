@@ -27,6 +27,7 @@ RM_COMMAND_PATTERN = re.compile(
 # Simple substring patterns - these are specific enough to not need regex
 # (they won't accidentally match normal text)
 DESTRUCTIVE_SUBSTRINGS = [
+    # Git commands
     ("git checkout -- ", "Discards uncommitted changes permanently. Use 'git stash' first."),
     ("git reset --hard", "Destroys all uncommitted work. Use 'git stash' first."),
     ("git clean -f", "Deletes untracked files permanently. Use 'git clean -n' to preview first."),
@@ -35,6 +36,12 @@ DESTRUCTIVE_SUBSTRINGS = [
     ("git branch -D ", "Force-deletes branch without merge check. Use '-d' for safety."),
     ("git stash drop", "Permanently deletes stashed changes."),
     ("git stash clear", "Permanently deletes ALL stashed changes."),
+    # GitHub CLI commands - equally destructive as their git equivalents
+    ("gh pr merge", "Merges PR and may delete branch. Run manually to review."),
+    ("gh repo delete", "Permanently deletes repository. Extremely destructive."),
+    ("gh release delete", "Permanently deletes a release."),
+    ("gh issue delete", "Permanently deletes an issue."),
+    ("gh repo archive", "Archives repository, making it read-only."),
 ]
 
 # Patterns that need word boundary checking (could appear in strings)
