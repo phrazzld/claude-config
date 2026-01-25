@@ -9,23 +9,25 @@ argument-hint: "[action: status | investigate ISSUE-ID | fix | postmortem ISSUE-
 
 # /triage
 
-Check all observability sources. Investigate, fix, postmortem.
+Fix production issues. Run audit, investigate, fix, postmortem.
+
+**This is a fixer.** It uses `/check-production` as its primitive. Use `/log-production-issues` to create issues instead of fixing.
 
 ## Usage
 
 ```bash
-/triage                        # Status overview (default)
+/triage                        # Audit and fix highest priority (default)
 /triage investigate VOL-456    # Deep dive on specific issue
 /triage fix                    # Create PR for current fix
 /triage postmortem VOL-456     # Generate postmortem after merge
 ```
 
-## Stage 1: Status Overview
+## Stage 1: Production Audit
 
 **Command:** `/triage` or `/triage status`
 
-Parallel checks (<10s):
-1. **Sentry** - Unresolved issues via `triage_score.sh`
+Invoke `/check-production` primitive for parallel checks:
+1. **Sentry** - Unresolved issues via triage scripts
 2. **Vercel logs** - Recent errors in stream
 3. **Health endpoints** - `/api/health` response
 
@@ -35,7 +37,7 @@ TRIAGE STATUS - 2026-01-23 15:30
 ================================
 
 SENTRY (volume-fitness)
-  [CRITICAL] 3 unresolved issues
+  [P0] 3 unresolved issues
   Top: VOL-456 "PaymentIntent failed" (Score: 147, 23 users)
 
 VERCEL LOGS
@@ -164,6 +166,8 @@ VERCEL_TOKEN        # For `vercel logs` access
 
 ## Related
 
-- `observability` - Full observability setup
-- `sentry-observability` - Sentry-specific operations
-- `verify-fix` - Verification checklist
+- `/check-production` - The primitive (audit only)
+- `/log-production-issues` - Create GitHub issues from findings
+- `/observability` - Full observability setup
+- `/sentry-observability` - Sentry-specific operations
+- `/verify-fix` - Verification checklist
