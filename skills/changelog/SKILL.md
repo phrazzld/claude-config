@@ -105,13 +105,33 @@ commit-msg:
 Create `.github/workflows/release.yml` per `changelog-setup` reference.
 
 **Adding LLM synthesis:**
-Create `scripts/synthesize-release-notes.mjs` that:
-1. Fetches latest release from GitHub API
-2. Sends changelog to Gemini 3 Flash
-3. Gets user-friendly summary back
-4. Updates release body via GitHub API
 
-Configure `GEMINI_API_KEY` secret in GitHub.
+> **REQUIRED:** Before implementing, read `llm-infrastructure/references/model-research-required.md`
+>
+> Do NOT use model names from this document or your training data.
+> Run the OpenRouter fetch script and web search to determine current best model for this task.
+
+Steps:
+1. **Research current models** (MANDATORY):
+   ```bash
+   # Query OpenRouter for current fast/cheap models
+   python3 ~/.claude/skills/llm-infrastructure/scripts/fetch-openrouter-models.py \
+     --task fast --filter "google|anthropic|openai" --top 10
+
+   # Web search: "best LLM for text summarization 2026"
+   # Web search: "Gemini API current models 2026"
+   ```
+
+2. Create `scripts/synthesize-release-notes.mjs` that:
+   - Fetches latest release from GitHub API
+   - Uses OpenRouter API (not direct provider APIs) for flexibility
+   - Model name comes from environment variable, NOT hardcoded
+   - Gets user-friendly summary back
+   - Updates release body via GitHub API
+
+3. Configure secrets in GitHub:
+   - `OPENROUTER_API_KEY` (preferred) or provider-specific key
+   - Model name as environment variable (e.g., `LLM_MODEL_SYNTHESIS`)
 
 **Creating public changelog page:**
 Per `changelog-page`, create:
@@ -119,6 +139,29 @@ Per `changelog-page`, create:
 - Groups releases by minor version
 - No auth required (public page)
 - RSS feed support
+
+**Making changelog discoverable (CRITICAL):**
+A changelog page that users can't find is useless. Ensure:
+- **Footer link**: Add "changelog" link to global footer (visible on landing page)
+- **Settings link**: Add "View changelog" link in app settings/about section
+- **Version display**: Show current app version in settings (use `NEXT_PUBLIC_APP_VERSION` env var)
+- **RSS link**: Mention RSS feed on the changelog page itself
+
+Example footer links:
+```tsx
+<Link href="/changelog">changelog</Link>
+<Link href="/support">support</Link>
+<Link href="/privacy">privacy</Link>
+```
+
+Example settings "About" section:
+```tsx
+<div className="flex items-center justify-between">
+  <span>Version</span>
+  <span className="font-mono">{process.env.NEXT_PUBLIC_APP_VERSION || '0.1.0'}</span>
+</div>
+<Link href="/changelog">View changelog →</Link>
+```
 
 Delegate implementation to Codex where appropriate.
 
@@ -173,7 +216,7 @@ Version bumped, CHANGELOG.md updated, GitHub Release created
        ↓
 Post-release action triggers LLM synthesis
        ↓
-Gemini 3 Flash transforms changelog → user notes
+LLM (via OpenRouter) transforms changelog → user notes
        ↓
 Enhanced notes stored in GitHub Release
        ↓
@@ -200,9 +243,10 @@ When complete:
 - semantic-release configured and working
 - Conventional commits enforced (can't commit without format)
 - GitHub Actions workflow for releases
-- Gemini 3 Flash synthesis for user-friendly notes
-- Public `/changelog` page
-- RSS feed
+- LLM synthesis for user-friendly notes (model via env var)
+- Public `/changelog` page with RSS feed
+- **Discoverable links** from footer and settings
+- **Version displayed** in app settings
 - Verified end-to-end
 
 User can:
@@ -210,4 +254,6 @@ User can:
 - See automatic version bump
 - See GitHub Release created
 - See user-friendly notes synthesized
-- View public changelog page
+- **Find changelog from footer or settings** (not hidden)
+- **See what version they're running**
+- Subscribe to RSS feed for updates

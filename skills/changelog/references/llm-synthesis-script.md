@@ -1,6 +1,13 @@
 # LLM Release Notes Synthesis Script
 
-Script that transforms technical changelog into user-friendly release notes using Gemini 3 Flash.
+Script that transforms technical changelog into user-friendly release notes using OpenRouter.
+
+> **IMPORTANT:** Before using this template, read `llm-infrastructure/references/model-research-required.md`
+>
+> The model name in this template is a PLACEHOLDER. You MUST:
+> 1. Run `~/.claude/skills/llm-infrastructure/scripts/fetch-openrouter-models.py --task fast`
+> 2. Web search for current best models for text summarization
+> 3. Update the `LLM_MODEL` environment variable with your researched choice
 
 ## scripts/synthesize-release-notes.mjs
 
@@ -10,13 +17,17 @@ Script that transforms technical changelog into user-friendly release notes usin
  * Release Notes Synthesizer
  *
  * Transforms technical changelog into user-friendly release notes
- * using Gemini 3 Flash.
+ * using OpenRouter (supports 400+ models).
  *
  * Environment variables:
  * - GITHUB_TOKEN: GitHub API token (required)
- * - GEMINI_API_KEY: Gemini API key (required)
+ * - OPENROUTER_API_KEY: OpenRouter API key (required)
+ * - LLM_MODEL: Model to use (required - research current models before setting!)
  * - RELEASE_VERSION: Version being released (optional, fetches latest if not set)
  * - RELEASE_NOTES: Raw release notes (optional, fetches from GitHub if not set)
+ *
+ * IMPORTANT: The LLM_MODEL value should be researched, not assumed.
+ * Run: python3 ~/.claude/skills/llm-infrastructure/scripts/fetch-openrouter-models.py --task fast
  *
  * Configuration:
  * - .release-notes-config.yml in repo root
@@ -26,11 +37,18 @@ import { readFileSync, existsSync } from 'fs';
 import { load as loadYaml } from 'js-yaml';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const LLM_MODEL = process.env.LLM_MODEL;
 const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
 
-if (!GITHUB_TOKEN || !GEMINI_API_KEY) {
-  console.error('Missing required environment variables: GITHUB_TOKEN, GEMINI_API_KEY');
+if (!GITHUB_TOKEN || !OPENROUTER_API_KEY) {
+  console.error('Missing required environment variables: GITHUB_TOKEN, OPENROUTER_API_KEY');
+  process.exit(1);
+}
+
+if (!LLM_MODEL) {
+  console.error('LLM_MODEL not set. Research current models first:');
+  console.error('  python3 ~/.claude/skills/llm-infrastructure/scripts/fetch-openrouter-models.py --task fast');
   process.exit(1);
 }
 
@@ -87,34 +105,38 @@ async function getLatestRelease() {
   return res.json();
 }
 
-// Call Gemini API
-async function synthesizeWithGemini(technicalNotes, config) {
+// Call OpenRouter API (supports 400+ models)
+async function synthesizeWithLLM(technicalNotes, config) {
   const prompt = buildPrompt(technicalNotes, config);
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
+    'https://openrouter.ai/api/v1/chat/completions',
     {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': `https://github.com/${GITHUB_REPOSITORY}`,
+        'X-Title': 'Release Notes Synthesizer',
       },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 2048,
-        },
+        model: LLM_MODEL,  // From environment variable - research before setting!
+        messages: [
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 2048,
       }),
     }
   );
 
   if (!res.ok) {
     const error = await res.text();
-    throw new Error(`Gemini API error: ${error}`);
+    throw new Error(`OpenRouter API error: ${error}`);
   }
 
   const data = await res.json();
-  return data.candidates[0].content.parts[0].text;
+  return data.choices[0].message.content;
 }
 
 // Build the synthesis prompt
@@ -215,7 +237,7 @@ async function main() {
   console.log(`📦 Processing release: ${release.tag_name}`);
 
   // Synthesize notes
-  const synthesized = await synthesizeWithGemini(release.body, config);
+  const synthesized = await synthesizeWithLLM(release.body, config);
   console.log('✨ Notes synthesized');
 
   // Update release if we have the ID
@@ -290,9 +312,13 @@ pnpm add -D js-yaml
 ## Testing Locally
 
 ```bash
+# FIRST: Research current models (MANDATORY)
+python3 ~/.claude/skills/llm-infrastructure/scripts/fetch-openrouter-models.py --task fast --top 10
+
 # Set environment variables
 export GITHUB_TOKEN=ghp_xxx
-export GEMINI_API_KEY=xxx
+export OPENROUTER_API_KEY=sk-or-v1-xxx  # Get from https://openrouter.ai/keys
+export LLM_MODEL=google/gemini-2.5-flash  # USE YOUR RESEARCHED MODEL, NOT THIS EXAMPLE
 export GITHUB_REPOSITORY=owner/repo
 
 # Run synthesis
