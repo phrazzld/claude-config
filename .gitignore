@@ -17,6 +17,11 @@ file-history/
 paste-cache/
 stats-cache.json
 cache/
+__pycache__/
+*.pyc
+
+# Session-specific task state
+tasks/
 
 # Plugin caches and machine-specific install tracking
 plugins/cache/
