@@ -20,11 +20,12 @@ Orchestrate comprehensive backlog grooming. Create prioritized issues across all
 
 ## What This Does
 
-1. **Gather vision** — Single open-ended question about product direction
-2. **Run issue-creator skills** — Each domain gets audited, issues created
-3. **Adaptive agent analysis** — Based on backlog size, run specialized agents
-4. **Dedupe & consolidate** — Remove duplicates, update existing issues
-5. **Summarize** — Report P0/P1/P2/P3 counts and recommended focus
+1. **Load or gather vision** — Check vision.md or ask about product direction
+2. **Audit existing backlog** — Validate, reprioritize, close stale issues
+3. **Run issue-creator skills** — Each domain gets audited, issues created
+4. **Adaptive agent analysis** — Based on backlog size, run specialized agents
+5. **Dedupe & consolidate** — Merge duplicates, finalize issue set
+6. **Summarize** — Report P0/P1/P2/P3 counts and recommended focus
 
 ## Priority System
 
@@ -107,11 +108,58 @@ Store content as `{vision}` for agent context throughout session.
 - Creates documentation artifact
 - Enables other skills to reference it
 
-### Step 2: Check Existing Backlog
+### Step 2: Audit Existing Backlog
+
+**Critical:** Existing issues are not sacred. They may be stale, irrelevant, misprioritized, or duplicative. Every issue must be validated.
 
 ```bash
-gh issue list --state open --limit 100 --json number,title,labels
+gh issue list --state open --limit 100 --json number,title,labels,body,createdAt,updatedAt
 ```
+
+**For each existing issue, evaluate:**
+
+1. **Still relevant?** Does this issue still matter given current vision and codebase state?
+   - If NO → Close with explanation
+   - If UNCERTAIN → Flag for user confirmation
+
+2. **Priority correct?** Given current vision.md focus, is the priority right?
+   - Re-prioritize if focus has shifted
+   - P0 from 6 months ago may be P3 now
+
+3. **Description accurate?** Does the issue still describe the actual problem?
+   - Update if codebase has changed
+   - Flesh out if too vague to act on
+
+4. **Duplicate?** Is this covered by another issue or will be covered by new findings?
+   - Consolidate into single issue
+   - Close duplicate with link to canonical
+
+5. **Actionable?** Can someone pick this up and know what to do?
+   - Add concrete next steps if missing
+   - Break down if too large
+
+**Actions to take:**
+
+```bash
+# Close irrelevant issue
+gh issue close 123 --comment "Closing: no longer relevant. [reason]"
+
+# Update priority
+gh issue edit 123 --remove-label "priority/p1" --add-label "priority/p3"
+
+# Update description
+gh issue edit 123 --body "Updated description..."
+
+# Close as duplicate
+gh issue close 123 --comment "Duplicate of #456"
+```
+
+**Output from this step:**
+- List of issues kept (with any priority/description changes)
+- List of issues closed (with reasons)
+- List of issues to consolidate with new findings
+
+This prevents backlog bloat and ensures the backlog reflects current reality.
 
 ### Step 3: Run Issue-Creator Skills
 
@@ -164,16 +212,34 @@ Each agent receives `{vision}` context and creates additional issues.
 
 ### Step 5: Dedupe & Consolidate
 
-Review created issues for duplicates:
+**Two sources of duplicates:**
+1. New issues created in Steps 3-4 that overlap with each other
+2. New issues that overlap with existing issues kept from Step 2
+
+**Find duplicates:**
 
 ```bash
 # Find potential duplicates (similar titles)
 gh issue list --state open --json number,title,labels | jq '.[] | .title' | sort | uniq -d
+
+# Review issues flagged for consolidation in Step 2
+# These were marked as "consolidate with new findings"
 ```
 
-For each duplicate:
-- Close older issue with link to newer
-- Or update existing issue with new findings
+**For each duplicate set:**
+- Keep the most comprehensive issue
+- Close others with link to canonical: `gh issue close 123 --comment "Consolidated into #456"`
+- Merge unique details from closed issues into the kept issue
+
+**For issues to consolidate from Step 2:**
+- If new findings cover the same ground → close old, reference new
+- If new findings add to old → update old issue with new details
+- If old issue is more comprehensive → close new, reference old
+
+**Final pass:**
+- Verify all open issues have correct priority labels
+- Verify all open issues have domain labels
+- Verify no orphaned issues (no priority, no domain)
 
 ### Step 6: Summarize
 
