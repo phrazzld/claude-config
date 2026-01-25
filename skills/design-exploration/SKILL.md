@@ -11,7 +11,7 @@ description: |
 
 # Design Exploration
 
-Investigate existing designs, generate a visual catalogue of 5-8 diverse proposals, facilitate iterative refinement, and output a selected direction for implementation.
+Investigate existing designs, generate a visual catalogue of 6-12 diverse proposals, facilitate iterative refinement, and output a selected direction for implementation.
 
 ## When to Use
 
@@ -22,9 +22,29 @@ Investigate existing designs, generate a visual catalogue of 5-8 diverse proposa
 
 ## Core Principle: Visual Over Verbal
 
-**The catalogue is a working webpage, not markdown descriptions.**
+**The catalogue is a working visual, not markdown descriptions.**
 
 Users see actual styled components, real typography, live color palettes - not just words describing what things *would* look like.
+
+## Phase 0: Backend Detection
+
+Check available rendering backends:
+
+```javascript
+// Check if Pencil MCP is available
+try {
+  mcp__pencil__get_editor_state({ include_schema: false })
+  // Pencil available → use pencil-renderer
+  BACKEND = "pencil"
+} catch {
+  // Fallback to HTML renderer
+  BACKEND = "html"
+}
+```
+
+**Backend selection:**
+- **Pencil** (preferred): Native .pen file rendering, design system integration
+- **HTML** (fallback): Static HTML/CSS proposals served locally
 
 ## Workflow
 
@@ -64,17 +84,36 @@ DNA Axes:
 
 **Research via Gemini:**
 ```bash
-gemini "Analyze this [product type] design. Current DNA: [inferred].
-- What's working well?
-- What patterns feel dated or generic?
-- What distinctive directions could elevate this?
-- 2025 trends for this product category
-- Anti-convergence opportunities (avoid AI-default aesthetics)"
+gemini -p "I'm building [describe component/page]. Research:
+1. Distinctive design approaches (avoid AI-slop aesthetics)
+2. Real-world examples of excellent [component type]
+3. Current typography/color/layout trends for this context
+4. Unexpected alternatives to obvious solutions"
 ```
 
 ### 2. Build Visual Catalogue
 
-**Create catalogue directory:**
+**Generate 6-12 proposals** using DNA variation system.
+
+#### If BACKEND = "pencil":
+
+Use `pencil-renderer` primitive:
+
+```javascript
+// For each proposal
+// 1. Get style guide matching DNA mood
+mcp__pencil__get_style_guide_tags()
+mcp__pencil__get_style_guide({ tags: [mapped_tags] })
+
+// 2. Render via pencil-renderer workflow
+// See: pencil-renderer/SKILL.md
+```
+
+All proposals render to a single .pen document as separate frames.
+
+#### If BACKEND = "html":
+
+Create catalogue directory:
 ```
 .design-catalogue/
 ├── index.html              # Main viewer
@@ -85,18 +124,17 @@ gemini "Analyze this [product type] design. Current DNA: [inferred].
 │   │   └── styles.css
 │   ├── 02-[name]/
 │   │   └── ...
-│   └── ... (5-8 total)
+│   └── ... (6-12 total)
 └── assets/
 ```
-
-**Generate 5-8 proposals** using DNA variation system.
 
 **DNA Variation Rule:** No two proposals share >2 axes.
 
 **Required diversity:**
-- At least 1 bold/dramatic direction
-- At least 1 refined/subtle direction
+- At least 2 bold/dramatic directions
+- At least 2 refined/subtle directions
 - At least 1 unexpected/wild card
+- At least 1 that preserves current strengths
 
 **Each proposal preview includes:**
 - Hero section in that style
@@ -118,7 +156,19 @@ gemini "Analyze this [product type] design. Current DNA: [inferred].
 
 ### 3. Present & Serve
 
-**Start local server:**
+#### If BACKEND = "pencil":
+
+```javascript
+// Screenshot each proposal frame
+for (const frame of proposalFrames) {
+  mcp__pencil__get_screenshot({ nodeId: frame.id })
+}
+```
+
+Present in chat with screenshots.
+
+#### If BACKEND = "html":
+
 ```bash
 cd .design-catalogue && python -m http.server 8888 &
 echo "Catalogue available at http://localhost:8888"
@@ -134,8 +184,7 @@ mcp__claude-in-chrome__computer action="screenshot"
 ```
 Design Catalogue Ready
 
-I've built 6 visual proposals exploring different directions for [project].
-View the live catalogue: http://localhost:8888
+I've built [N] visual proposals exploring different directions for [project].
 
 Quick overview:
 1. Midnight Editorial - [soul statement]
@@ -143,7 +192,10 @@ Quick overview:
 3. Warm Workshop - [soul statement]
 ...
 
-Browse the catalogue in your browser, then tell me which 2-3 resonate.
+[If Pencil] View the .pen file directly in your editor
+[If HTML] Browse the catalogue: http://localhost:8888
+
+Tell me which 2-3 resonate.
 ```
 
 ### 4. Collaborative Refinement
@@ -181,9 +233,9 @@ Options: [Finalist names]
 + "Make more changes first"
 ```
 
-### 6. Output
+### 6. Output & Handoff
 
-**Return to parent command with:**
+**Return selected direction:**
 ```markdown
 ## Selected Direction: [Name]
 
@@ -217,11 +269,26 @@ Options: [Finalist names]
 - [Specific things NOT to do]
 ```
 
-**Cleanup:**
+**Handoff routing:**
+
+| Backend | Handoff Target |
+|---------|---------------|
+| Pencil | `pencil-to-code` — exports .pen → React/Tailwind |
+| HTML | `design-theme` — implements tokens in codebase |
+
+```
+AskUserQuestion:
+"Ready to generate implementation code?"
+Options:
+- "Yes, generate React components" → invoke handoff
+- "No, I'll implement manually" → return spec only
+```
+
+**Cleanup (HTML backend only):**
 ```bash
 # Stop local server
 pkill -f "python -m http.server 8888"
-# Optionally remove catalogue (or keep for reference)
+# Optionally remove catalogue
 # rm -rf .design-catalogue
 ```
 
@@ -229,12 +296,13 @@ pkill -f "python -m http.server 8888"
 
 | Phase | Action |
 |-------|--------|
+| Backend Detection | Check Pencil MCP availability |
 | Investigation | Screenshot, analyze, infer DNA, research via Gemini |
-| Catalogue | Build 5-8 visual proposals with DNA variety |
-| Present | Serve locally, open in Chrome, describe options |
+| Catalogue | Build 6-12 visual proposals with DNA variety |
+| Present | Serve/screenshot, describe options |
 | Refine | User picks favorites, generate hybrids if needed |
 | Select | Final choice with full spec |
-| Output | Structured direction for implementation |
+| Handoff | Route to pencil-to-code or design-theme |
 
 ## Integration
 
@@ -244,9 +312,18 @@ pkill -f "python -m http.server 8888"
 - `/polish` when maturity < 6 (suggested)
 
 **Outputs to:**
-- `/aesthetic` - guides all subsequent phases
-- `/polish` - constrains DNA for refinement loop
-- Direct implementation - provides full spec
+- `pencil-to-code` — when Pencil backend, user wants code
+- `design-theme` — when HTML backend, user wants implementation
+- `/aesthetic` — guides all subsequent phases
+- `/polish` — constrains DNA for refinement loop
+
+## Related Skills
+
+- `pencil-renderer` — Pencil MCP rendering primitive
+- `pencil-to-code` — .pen → React/Tailwind export
+- `aesthetic-system` — DNA codes, anti-convergence rules
+- `design-tokens` — Token system patterns
+- `design-theme` — Theme implementation
 
 ## References
 
