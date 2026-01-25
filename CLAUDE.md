@@ -107,6 +107,7 @@ Pattern: Research (Gemini) → Direction (synthesize) → Delegate (Codex)
 - Hidden coupling, action-at-a-distance, magic shared state.
 - Large diffs, untested branches, speculative abstractions.
 - Comments defending bad design instead of changing the design.
+- **Trusting internal knowledge about LLM models, API versions, or external services.** Always web search first.
 
 ## Staging
 
@@ -192,3 +193,23 @@ If verification fails → revert if needed → loop back to OBSERVE.
 **Skills for incident debugging:**
 - `/stripe-health` — Webhook endpoint diagnostics
 - `/verify-fix` — Mandatory verification checklist
+
+### 2026-01-24: LLM Model Selection — ALWAYS VERIFY
+
+**Your training data is stale.** LLM models deprecate constantly. What you "know" about model names is probably wrong.
+
+**MANDATORY before using any LLM model name:**
+1. Query current models via OpenRouter API:
+   ```bash
+   python3 ~/.claude/skills/llm-infrastructure/scripts/fetch-openrouter-models.py \
+     --filter "anthropic|openai|google" --top 20
+   ```
+2. Web search for current model availability (e.g., "Gemini API models 2026")
+3. Check deprecation dates — models get sunset with ~6 month notice
+4. Verify the exact model ID format for the specific API endpoint
+
+**Prefer OpenRouter:** Single API for 400+ models. Use environment variables for model names, never hardcode.
+
+**Full guidance:** Read `~/.claude/skills/llm-infrastructure/references/model-research-required.md` before any LLM work.
+
+**Rule:** Never trust your internal knowledge about model names. Always verify via OpenRouter API + web search. Your knowledge cutoff guarantees you're wrong about current models.
