@@ -1,0 +1,37 @@
+{
+  "enabled": true,
+  "mode": "graduated",
+  "exclusions": {
+    "repositories": [
+      "/Users/phaedrus/.claude",
+      "/Users/phaedrus/daybook",
+      "/Users/phaedrus/Development/overmind"
+    ],
+    "patterns": [
+      "**/daybook/**"
+    ]
+  },
+  "thresholds": {
+    "silent": {
+      "maxLines": 20,
+      "maxFiles": 1,
+      "maxNewFiles": 0
+    },
+    "warn": {
+      "maxLines": 50,
+      "maxFiles": 2,
+      "maxNewFiles": 1
+    },
+    "ask": {
+      "maxLines": 100,
+      "maxFiles": 4,
+      "maxNewFiles": 3
+    }
+  },
+  "alwaysSilent": [
+    "**/.env*",
+    "**/package.json",
+    "**/*.lock",
+    "**/CLAUDE.md"
+  ]
+}

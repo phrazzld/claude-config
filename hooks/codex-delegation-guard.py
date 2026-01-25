@@ -1,43 +1,53 @@
 #!/usr/bin/env python3
 """
-Codex delegation guard - encourages delegation of agentic work.
+Codex delegation guard - graduated enforcement for delegation.
 
-PreToolUse hook that WARNS on multi-file/substantial edits, strongly
-encouraging delegation to Codex. Does not block - just provides guidance.
+PreToolUse hook with tiered responses:
+- Silent: excluded repos, trivial edits
+- Warn: approaching thresholds (shows message, allows)
+- Ask: exceeds soft limits (prompts user confirmation)
+- Block: exceeds hard limits (denies with MCP suggestion)
 
+Config: ~/.claude/config/delegation-enforcement.json
 Session state: /tmp/claude-delegation-{PPID}.json
 """
+import fnmatch
 import json
 import os
 import sys
 from pathlib import Path
 
-# Thresholds for warnings
-MAX_NEW_FILES = 2  # Warn on 3rd new file
-MAX_DIRECTORIES = 3  # Warn on 4th directory
-MAX_LINES_SOFT = 50  # Soft warning threshold
-MAX_LINES_HARD = 100  # Strong warning if also multi-file
-SIMPLE_EDIT_LINES = 20  # Always allow silently below this
+CONFIG_PATH = Path.home() / ".claude/config/delegation-enforcement.json"
 
-# Paths that are always allowed (meta-config)
-ALWAYS_ALLOW_PATTERNS = [
-    "/.claude/",
-    ".env",
-    "package.json",  # lockfiles, deps
-    "pnpm-lock",
-    "yarn.lock",
-    "package-lock",
-]
+DEFAULT_CONFIG = {
+    "enabled": True,
+    "mode": "graduated",
+    "exclusions": {
+        "repositories": [],
+        "patterns": []
+    },
+    "thresholds": {
+        "silent": {"maxLines": 20, "maxFiles": 1, "maxNewFiles": 0},
+        "warn": {"maxLines": 50, "maxFiles": 2, "maxNewFiles": 1},
+        "ask": {"maxLines": 100, "maxFiles": 4, "maxNewFiles": 3}
+    },
+    "alwaysSilent": ["**/.env*", "**/package.json", "**/*.lock", "**/CLAUDE.md"]
+}
 
-# Test file patterns (feature pattern detection)
-TEST_FILE_PATTERNS = [
-    ".test.",
-    ".spec.",
-    "_test.",
-    "_spec.",
-    "/tests/",
-    "/__tests__/",
-]
+
+def load_config() -> dict:
+    """Load config with fallback to defaults."""
+    if CONFIG_PATH.exists():
+        try:
+            config = json.loads(CONFIG_PATH.read_text())
+            # Merge with defaults for missing keys
+            for key, value in DEFAULT_CONFIG.items():
+                if key not in config:
+                    config[key] = value
+            return config
+        except (json.JSONDecodeError, OSError):
+            pass
+    return DEFAULT_CONFIG
 
 
 def get_state_file() -> Path:
@@ -67,18 +77,27 @@ def save_state(state: dict) -> None:
     get_state_file().write_text(json.dumps(state, indent=2))
 
 
-def is_always_allowed(file_path: str) -> bool:
-    """Check if path should bypass delegation checks."""
-    for pattern in ALWAYS_ALLOW_PATTERNS:
-        if pattern in file_path:
+def is_excluded_repo(cwd: str, config: dict) -> bool:
+    """Check if current working directory is in excluded repos."""
+    exclusions = config.get("exclusions", {})
+
+    # Check exact repo paths
+    for repo_path in exclusions.get("repositories", []):
+        if cwd.startswith(repo_path):
             return True
+
+    # Check glob patterns
+    for pattern in exclusions.get("patterns", []):
+        if fnmatch.fnmatch(cwd, pattern):
+            return True
+
     return False
 
 
-def is_test_file(file_path: str) -> bool:
-    """Check if this is a test file."""
-    for pattern in TEST_FILE_PATTERNS:
-        if pattern in file_path:
+def is_always_silent(file_path: str, config: dict) -> bool:
+    """Check if file matches always-silent patterns."""
+    for pattern in config.get("alwaysSilent", []):
+        if fnmatch.fnmatch(file_path, pattern):
             return True
     return False
 
@@ -98,18 +117,94 @@ def count_lines(tool_input: dict) -> int:
     return len(text.strip().split("\n"))
 
 
-def format_codex_command(description: str = "[describe task]") -> str:
-    """Format the suggested codex command."""
-    return f'''codex exec --full-auto "{description}. Follow pattern in [ref]." \\
-    --output-last-message /tmp/codex-out.md 2>/dev/null'''
+def calculate_tier(state: dict, config: dict) -> str:
+    """
+    Determine enforcement tier based on session metrics.
+
+    Returns: "silent", "warn", "ask", or "block"
+    """
+    thresholds = config.get("thresholds", DEFAULT_CONFIG["thresholds"])
+
+    num_files = len(state["files_touched"])
+    total_lines = state["total_lines_added"]
+    new_files = state["new_files_created"]
+
+    # Check thresholds from lowest to highest
+    silent = thresholds.get("silent", {})
+    warn_t = thresholds.get("warn", {})
+    ask_t = thresholds.get("ask", {})
+
+    # Silent tier: within all silent thresholds
+    if (total_lines <= silent.get("maxLines", 20) and
+        num_files <= silent.get("maxFiles", 1) and
+        new_files <= silent.get("maxNewFiles", 0)):
+        return "silent"
+
+    # Warn tier: within warn thresholds
+    if (total_lines <= warn_t.get("maxLines", 50) and
+        num_files <= warn_t.get("maxFiles", 2) and
+        new_files <= warn_t.get("maxNewFiles", 1)):
+        return "warn"
+
+    # Ask tier: within ask thresholds
+    if (total_lines <= ask_t.get("maxLines", 100) and
+        num_files <= ask_t.get("maxFiles", 4) and
+        new_files <= ask_t.get("maxNewFiles", 3)):
+        return "ask"
+
+    # Block tier: exceeds ask thresholds
+    return "block"
 
 
-def warn(message: str) -> None:
+def format_session_summary(state: dict) -> str:
+    """Format session metrics for display."""
+    num_files = len(state["files_touched"])
+    total_lines = state["total_lines_added"]
+    new_files = state["new_files_created"]
+
+    summary = f"Session: {num_files} files, {total_lines} lines"
+    if new_files > 0:
+        summary += f", {new_files} new"
+    return summary
+
+
+def output_silent() -> None:
+    """Silent exit - no output."""
+    sys.exit(0)
+
+
+def output_warn(message: str) -> None:
     """Warn but allow the edit."""
     output = {
         "hookSpecificOutput": {
             "hookEventName": "PreToolUse",
             "message": message
+        }
+    }
+    print(json.dumps(output))
+    sys.exit(0)
+
+
+def output_ask(reason: str) -> None:
+    """Prompt user for confirmation."""
+    output = {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "ask",
+            "permissionDecisionReason": reason
+        }
+    }
+    print(json.dumps(output))
+    sys.exit(0)
+
+
+def output_block(reason: str) -> None:
+    """Block the action."""
+    output = {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "deny",
+            "permissionDecisionReason": reason
         }
     }
     print(json.dumps(output))
@@ -122,27 +217,37 @@ def main():
     except json.JSONDecodeError:
         sys.exit(0)
 
+    config = load_config()
+
+    # Check if enforcement is disabled
+    if not config.get("enabled", True):
+        sys.exit(0)
+
     tool_name = data.get("tool_name", "")
     tool_input = data.get("tool_input") or {}
+    cwd = data.get("cwd", os.getcwd())
 
     if tool_name not in ("Edit", "Write", "MultiEdit"):
         sys.exit(0)
+
+    # Check repo exclusion first
+    if is_excluded_repo(cwd, config):
+        output_silent()
 
     file_path = tool_input.get("file_path", "")
     if not file_path:
         sys.exit(0)
 
-    # Always allow meta-config paths
-    if is_always_allowed(file_path):
-        sys.exit(0)
+    # Check always-silent patterns
+    if is_always_silent(file_path, config):
+        output_silent()
 
+    # Load and update state
     state = load_state()
     lines = count_lines(tool_input)
     directory = get_directory(file_path)
     is_new_file = tool_name == "Write"
-    is_test = is_test_file(file_path)
 
-    # Update state for this edit
     if file_path not in state["files_touched"]:
         state["files_touched"].append(file_path)
     if directory not in state["directories_touched"]:
@@ -151,72 +256,41 @@ def main():
         state["new_files_created"] += 1
     state["total_lines_added"] += lines
 
-    # Save updated state before checking thresholds
     save_state(state)
 
-    # Calculate current metrics
-    num_files = len(state["files_touched"])
-    num_dirs = len(state["directories_touched"])
-    total_lines = state["total_lines_added"]
-    new_files = state["new_files_created"]
+    # Calculate enforcement tier
+    tier = calculate_tier(state, config)
+    summary = format_session_summary(state)
 
-    # Simple edit check - always allow
-    if num_files == 1 and lines <= SIMPLE_EDIT_LINES and not is_new_file:
-        sys.exit(0)
+    if tier == "silent":
+        output_silent()
 
-    # Build session summary
-    session_summary = f"Session: {num_files} files, {total_lines} lines, {num_dirs} directories"
-    if new_files > 0:
-        session_summary += f", {new_files} new files"
-
-    # Strong warning checks
-    warn_reasons = []
-
-    # Check: Creating too many new files
-    if new_files >= 3:
-        warn_reasons.append(f"Creating {new_files} new files (threshold: 2)")
-
-    # Check: Too many directories
-    if num_dirs >= 4:
-        warn_reasons.append(f"Editing {num_dirs} directories (threshold: 3)")
-
-    # Check: Feature pattern (implementation + test)
-    non_test_files = [f for f in state["files_touched"] if not is_test_file(f)]
-    test_files = [f for f in state["files_touched"] if is_test_file(f)]
-    if non_test_files and test_files:
-        warn_reasons.append("Feature pattern: implementation + test files")
-
-    # Check: Substantial multi-file work
-    if total_lines >= MAX_LINES_HARD and num_files >= 3:
-        warn_reasons.append(f"{total_lines} lines across {num_files} files")
-
-    if warn_reasons:
-        reasons_str = "\n- ".join(warn_reasons)
-        warn(
-            f"⚠️  DELEGATION STRONGLY RECOMMENDED\n\n"
-            f"{session_summary}\n\n"
-            f"Reasons:\n- {reasons_str}\n\n"
-            f"Delegate:\n  {format_codex_command()}\n\n"
-            f"Then: git diff --stat && pnpm test"
+    elif tier == "warn":
+        output_warn(
+            f"⚠️  DELEGATION ENCOURAGED\n\n"
+            f"{summary}\n\n"
+            f"Consider: spawn_agent() MCP tool or:\n"
+            f"  codex exec --full-auto \"[task]\" --output-last-message /tmp/codex-out.md"
         )
 
-    # Soft warning for approaching thresholds
-    warnings = []
-    if total_lines >= MAX_LINES_SOFT:
-        warnings.append(f"{total_lines} lines (hard limit: {MAX_LINES_HARD})")
-    if num_files >= 2:
-        warnings.append(f"{num_files} files touched")
-    if new_files >= 2:
-        warnings.append(f"{new_files} new files (limit: 2)")
-
-    if warnings:
-        warn(
-            f"⚠️  Approaching delegation threshold\n\n"
-            f"{session_summary}\n\n"
-            f"Consider delegating:\n  {format_codex_command()}"
+    elif tier == "ask":
+        output_ask(
+            f"📋 DELEGATION RECOMMENDED\n\n"
+            f"{summary}\n\n"
+            f"Use spawn_agent() MCP tool or:\n"
+            f"  codex exec --full-auto \"[task]\"\n\n"
+            f"Continue with direct edit?"
         )
 
-    sys.exit(0)
+    else:  # block
+        output_block(
+            f"🛑 DELEGATION REQUIRED\n\n"
+            f"{summary}\n\n"
+            f"Delegate via MCP:\n"
+            f"  spawn_agent(\"[task description]\")\n\n"
+            f"Or add repo to exclusions in:\n"
+            f"  ~/.claude/config/delegation-enforcement.json"
+        )
 
 
 if __name__ == "__main__":
