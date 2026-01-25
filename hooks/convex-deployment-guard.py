@@ -34,14 +34,15 @@ def check_command(cmd: str) -> tuple[str, str]:
             "  npx convex env ls --prod"
         )
 
-    # BLOCK: deploy without explicit target
+    # BLOCK: deploy without explicit confirmation
+    # Note: `convex deploy` defaults to production, use -y to confirm
     if re.search(r"\bconvex\s+deploy\b", cmd):
-        if not re.search(r"--(prod|preview)\b", cmd):
+        if not re.search(r"(-y|--yes|--preview)\b", cmd):
             return 'block', (
-                "Convex deploy needs explicit target.\n\n"
+                "Convex deploy needs explicit confirmation.\n\n"
                 "Use:\n"
-                "  npx convex deploy --prod      # production\n"
-                "  npx convex deploy --preview   # preview"
+                "  npx convex deploy -y          # production (default)\n"
+                "  npx convex deploy --preview   # preview deployment"
             )
 
     # Allow everything else (env set defaults to dev, which is recoverable)

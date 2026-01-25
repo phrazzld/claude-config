@@ -68,7 +68,7 @@ def main():
     elif is_excluded_repo(cwd, config):
         print("[codex] Excluded repo - delegation not enforced.")
     else:
-        print("[codex] Delegation encouraged. Multi-file/substantial edits → consider Codex.")
+        print("[codex] PATTERN: Codex first draft → You review → Ship. Don't investigate yourself.")
 
     sys.exit(0)
 
