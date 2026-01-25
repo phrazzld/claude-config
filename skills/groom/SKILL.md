@@ -55,15 +55,57 @@ Orchestrate comprehensive backlog grooming. Create prioritized issues across all
 
 ## Process
 
-### Step 1: Gather Vision
+### Step 1: Load or Gather Vision
 
-Use AskUserQuestion with single open-ended prompt:
+Vision should persist across sessions. Check for `vision.md` in project root:
 
+```bash
+[ -f "vision.md" ] && echo "Vision found" || echo "No vision.md"
 ```
-What's your vision for this product? Where should it go?
+
+**If vision.md exists:**
+1. Read and display current vision
+2. Ask: "Is this still accurate? Any updates?"
+3. If updates provided, rewrite vision.md
+
+**If vision.md doesn't exist:**
+1. Ask open-ended question:
+   ```
+   What's your vision for this product? Where should it go?
+   ```
+2. Write response to `vision.md`
+
+**vision.md format:**
+```markdown
+# Vision
+
+## One-Liner
+[Single sentence: what this product is and who it's for]
+
+## North Star
+[The dream state - what does success look like in 2 years?]
+
+## Key Differentiators
+[What makes this different from alternatives?]
+
+## Target User
+[Who specifically is this for? Be concrete.]
+
+## Current Focus
+[What's the immediate priority this quarter?]
+
+---
+*Last updated: YYYY-MM-DD*
+*Updated during: /groom session*
 ```
 
-Store response as `{vision}` for agent context.
+Store content as `{vision}` for agent context throughout session.
+
+**Why persist vision?**
+- Vision shouldn't change dramatically between sessions
+- Agents get consistent context
+- Creates documentation artifact
+- Enables other skills to reference it
 
 ### Step 2: Check Existing Backlog
 
@@ -208,8 +250,7 @@ Output: prioritized R&D opportunities as GitHub issues.
 ### Visionary (Medium+ Backlog)
 
 ```
-The user shared this vision:
-{vision}
+Read vision.md for the user's product vision.
 
 Accelerate this vision. Find gaps, blockers, accelerators.
 100% aligned with stated goals.

@@ -20,11 +20,13 @@ You're not here to add your own ideas. You're here to make their ideas happen fa
 
 ## Input: The Vision
 
-The user has shared their vision. This is your north star:
+Read `vision.md` in the project root. This is your north star.
 
+```bash
+cat vision.md
 ```
-{vision}
-```
+
+If vision.md doesn't exist, ask the user for their vision before proceeding.
 
 Everything you do serves this vision.
 
