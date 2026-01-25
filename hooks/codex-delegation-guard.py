@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
 """
-Codex delegation guard - enforces delegation of agentic work.
+Codex delegation guard - encourages delegation of agentic work.
 
-PreToolUse hook that BLOCKS multi-file/substantial edits, forcing
-delegation to Codex. Simple edits (<20 lines, single file) pass through.
+PreToolUse hook that WARNS on multi-file/substantial edits, strongly
+encouraging delegation to Codex. Does not block - just provides guidance.
 
 Session state: /tmp/claude-delegation-{PPID}.json
-Bypass: Claude says "I'm self-implementing because [reason]" - allows ONE edit.
 """
 import json
 import os
 import sys
-import time
 from pathlib import Path
 
-# Thresholds for blocking
-MAX_NEW_FILES = 2  # Block on 3rd new file
-MAX_DIRECTORIES = 3  # Block on 4th directory
-MAX_LINES_SOFT = 50  # Warning threshold
-MAX_LINES_HARD = 100  # Block if also multi-file
-SIMPLE_EDIT_LINES = 20  # Always allow below this
+# Thresholds for warnings
+MAX_NEW_FILES = 2  # Warn on 3rd new file
+MAX_DIRECTORIES = 3  # Warn on 4th directory
+MAX_LINES_SOFT = 50  # Soft warning threshold
+MAX_LINES_HARD = 100  # Strong warning if also multi-file
+SIMPLE_EDIT_LINES = 20  # Always allow silently below this
 
 # Paths that are always allowed (meta-config)
 ALWAYS_ALLOW_PATTERNS = [
@@ -61,9 +59,6 @@ def load_state() -> dict:
         "new_files_created": 0,
         "total_lines_added": 0,
         "directories_touched": [],
-        "delegation_acknowledged": False,
-        "last_acknowledged_file": None,
-        "last_acknowledged_at": None,
     }
 
 
@@ -103,53 +98,10 @@ def count_lines(tool_input: dict) -> int:
     return len(text.strip().split("\n"))
 
 
-def check_acknowledgment_valid(state: dict, file_path: str) -> bool:
-    """Check if there's a valid per-edit acknowledgment."""
-    ack_file = state.get("last_acknowledged_file")
-    ack_time = state.get("last_acknowledged_at")
-
-    if not ack_file or not ack_time:
-        return False
-
-    # Must match the file being edited
-    if ack_file != file_path:
-        return False
-
-    # Must be within 60 seconds
-    try:
-        elapsed = time.time() - float(ack_time)
-        if elapsed > 60:
-            return False
-    except (ValueError, TypeError):
-        return False
-
-    return True
-
-
-def consume_acknowledgment(state: dict) -> None:
-    """Clear acknowledgment after use (one-time bypass)."""
-    state["last_acknowledged_file"] = None
-    state["last_acknowledged_at"] = None
-    save_state(state)
-
-
 def format_codex_command(description: str = "[describe task]") -> str:
     """Format the suggested codex command."""
     return f'''codex exec --full-auto "{description}. Follow pattern in [ref]." \\
     --output-last-message /tmp/codex-out.md 2>/dev/null'''
-
-
-def block(reason: str) -> None:
-    """Block the edit with structured output."""
-    output = {
-        "hookSpecificOutput": {
-            "hookEventName": "PreToolUse",
-            "permissionDecision": "deny",
-            "permissionDecisionReason": reason
-        }
-    }
-    print(json.dumps(output))
-    sys.exit(0)
 
 
 def warn(message: str) -> None:
@@ -190,11 +142,6 @@ def main():
     is_new_file = tool_name == "Write"
     is_test = is_test_file(file_path)
 
-    # Check for valid per-edit acknowledgment
-    if check_acknowledgment_valid(state, file_path):
-        consume_acknowledgment(state)
-        sys.exit(0)  # Allow this one edit
-
     # Update state for this edit
     if file_path not in state["files_touched"]:
         state["files_touched"].append(file_path)
@@ -222,36 +169,35 @@ def main():
     if new_files > 0:
         session_summary += f", {new_files} new files"
 
-    # Blocking checks
-    block_reasons = []
+    # Strong warning checks
+    warn_reasons = []
 
     # Check: Creating too many new files
     if new_files >= 3:
-        block_reasons.append(f"Creating {new_files} new files (threshold: 2)")
+        warn_reasons.append(f"Creating {new_files} new files (threshold: 2)")
 
     # Check: Too many directories
     if num_dirs >= 4:
-        block_reasons.append(f"Editing {num_dirs} directories (threshold: 3)")
+        warn_reasons.append(f"Editing {num_dirs} directories (threshold: 3)")
 
     # Check: Feature pattern (implementation + test)
     non_test_files = [f for f in state["files_touched"] if not is_test_file(f)]
     test_files = [f for f in state["files_touched"] if is_test_file(f)]
     if non_test_files and test_files:
-        block_reasons.append("Feature pattern: implementation + test files")
+        warn_reasons.append("Feature pattern: implementation + test files")
 
     # Check: Substantial multi-file work
     if total_lines >= MAX_LINES_HARD and num_files >= 3:
-        block_reasons.append(f"{total_lines} lines across {num_files} files")
+        warn_reasons.append(f"{total_lines} lines across {num_files} files")
 
-    if block_reasons:
-        reasons_str = "\n- ".join(block_reasons)
-        block(
-            f"BLOCKED: Agentic work detected - delegate to Codex\n\n"
+    if warn_reasons:
+        reasons_str = "\n- ".join(warn_reasons)
+        warn(
+            f"⚠️  DELEGATION STRONGLY RECOMMENDED\n\n"
             f"{session_summary}\n\n"
             f"Reasons:\n- {reasons_str}\n\n"
             f"Delegate:\n  {format_codex_command()}\n\n"
-            f"Then: git diff --stat && pnpm test\n\n"
-            f"To self-implement: Say \"I'm self-implementing [file] because [reason]\""
+            f"Then: git diff --stat && pnpm test"
         )
 
     # Soft warning for approaching thresholds
