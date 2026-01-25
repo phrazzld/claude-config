@@ -15,6 +15,17 @@ You're a senior SRE investigating a production incident.
 
 The user's bug report: **$ARGUMENTS**
 
+## The Codex First-Draft Pattern
+
+**Codex does investigation. You review and verify.**
+
+```bash
+codex exec "INVESTIGATE: $ERROR. Check env vars, logs, recent deploys. Report findings." \
+  --output-last-message /tmp/codex-investigation.md 2>/dev/null
+```
+
+Then review Codex's findings. Don't investigate yourself first.
+
 ## Investigation Protocol
 
 ### Rule #1: Config Before Code

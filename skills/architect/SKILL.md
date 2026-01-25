@@ -34,7 +34,11 @@ Add technical design to Issue #$1. Post as comment, update labels to `status/rea
 
 1. **Read**: `gh issue view $1 --comments` (get product spec)
 
-2. **Investigate**: Explore codebase patterns, identify touch points
+2. **Investigate** (Codex first draft): Delegate codebase exploration to Codex
+```bash
+codex exec "INVESTIGATE architecture for [feature]. Find existing patterns, identify touch points, list files to modify." \
+  --output-last-message /tmp/codex-arch-investigation.md 2>/dev/null
+```
 
 3. **Interview**: Use AskUserQuestion for constraints, preferred patterns, optimization priorities
 

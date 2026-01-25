@@ -51,16 +51,27 @@ Distill this repo's knowledge into a single, sharp `CLAUDE.md`.
 - External systems / dashboards / runbooks.
 ```
 
+## The Codex First-Draft Pattern
+
+**Codex drafts the new CLAUDE.md. You review and refine.**
+
+```bash
+codex exec "DISTILL: Rewrite CLAUDE.md for this repo. Read README, ARCHITECTURE.md, docs/, and key code. Follow target shape below. Output to /tmp/claude-draft.md" \
+  --output-last-message /tmp/codex-distill.md 2>/dev/null
+```
+
+Review Codex's draft. Refine for accuracy and compression.
+
 ## Algorithm
 
-1. **Gather**
+1. **Gather** (Codex does this)
    - Read inputs; understand what the repo does, how it runs, and how it fits into the wider system.
 2. **Classify existing CLAUDE content**
    - Tag each line as:
      - Repo-specific + useful → keep or rewrite.
      - General / global → belongs in `~/.claude/CLAUDE.md`, do not restate here.
      - Noise / obsolete → drop.
-3. **Draft new `CLAUDE.md`**
+3. **Draft new `CLAUDE.md`** (Codex produces first draft)
    - Fill the target shape above with tight, repo-specific bullets.
    - Prefer bullets over paragraphs; every line must earn its place.
    - Link to existing docs instead of duplicating them.

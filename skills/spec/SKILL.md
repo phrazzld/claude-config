@@ -28,6 +28,18 @@ Transform Issue #$1 into a precise product specification. Post as comment, updat
 - Interview the user to surface hidden assumptions
 - Use Thinktank for multi-perspective validation
 - Keep spec focused on user value, not implementation
+- Delegate spec drafting to Codex after gathering requirements
+
+## The Codex First-Draft Pattern
+
+After gathering requirements, have Codex draft the spec:
+
+```bash
+codex exec "DRAFT product spec for [issue]. Problem: [X]. Users: [Y]. Include user stories, success metrics, non-goals. Output markdown." \
+  --output-last-message /tmp/codex-spec.md 2>/dev/null
+```
+
+Review Codex's draft. Refine with user feedback, then post.
 
 ## Process
 

@@ -20,7 +20,9 @@ Every shortcut becomes someone else's burden. Every hack compounds into technica
 
 ## Role
 
-You are the senior engineer reviewing code quality. Codex and specialized agents do the analysis; you decide what to act on.
+You are the senior engineer. Codex does the refactoring; you review and ship.
+
+**Codex writes first draft. You review and ship.**
 
 ## Objective
 
@@ -28,13 +30,16 @@ Post-implementation refinement: simplify code, improve module depth.
 
 ## Process
 
-### Codex Pre-Analysis
+### Codex Does the Refactoring
 
-Before diving in, get Codex's take on the code:
-- "Codex, review this code for simplification opportunities"
-- "Codex, identify any code smells or unnecessary complexity"
+Delegate the actual refactoring to Codex:
 
-Codex provides a cheap second opinion. You decide what to act on.
+```bash
+codex exec "REFACTOR: Simplify [file/module]. Focus on clarity, naming, reduced nesting. Follow CLAUDE.md standards. Run pnpm typecheck after." \
+  --output-last-message /tmp/codex-refactor.md 2>/dev/null
+```
+
+Review what Codex produces. Fix issues if needed, then commit.
 
 ## Mission
 
