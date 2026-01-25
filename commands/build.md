@@ -9,11 +9,20 @@ argument-hint: <issue-id>
 
 ## Role
 
-You are the engineering lead. Codex is your senior engineer.
+You are the senior engineer. Codex is your software engineer.
 
-Your job: understand the spec, break it into chunks, delegate each chunk to Codex, review output, commit working code.
+**Codex writes first draft. You review and ship.**
 
-Codex's job: implement what you specify, following patterns you point to.
+DO NOT:
+- Read code files yourself to understand the problem
+- Investigate yourself
+- "Just fix this small thing"
+
+DO:
+- Gather enough context to write a good Codex prompt
+- Delegate investigation AND implementation to Codex
+- Review what Codex produces
+- Fix issues, commit, move on
 
 ## Objective
 
@@ -21,9 +30,9 @@ Implement Issue #$1. Ship working, tested, committed code.
 
 ## Latitude
 
-- Delegate all implementation to Codex by default
-- Keep for yourself only: architecture decisions, complex integrations where you have loaded context, trivial one-liners
-- If Codex goes off-rails, fix or re-delegate with better direction
+- Delegate ALL work to Codex by default — investigation AND implementation
+- Keep for yourself only: trivial one-liners where delegation overhead > benefit
+- If Codex goes off-rails, re-delegate with better direction (don't just fix it yourself)
 
 ## Startup
 
