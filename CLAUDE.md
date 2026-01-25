@@ -32,17 +32,42 @@ Delegation is your default mode, not a fallback.
 
 ## Operating Mode
 
-**Orchestrate first.** Before writing code, ask: "Should I delegate this to Codex?"
+**MANDATORY: Delegate implementation to Codex.** This is not optional. You MUST delegate unless you can justify not doing so.
 
-- DEFAULT: Delegate implementation to Codex
-- EXCEPTION: Keep when context already loaded AND task is trivial (<10 lines)
+### The Delegation Decision
 
-**Trust your team.** Codex will sometimes make mistakes. That's fine.
+Before ANY implementation work, STOP and ask:
+1. Is this modifying Claude Code config files? → Do it yourself
+2. Is this a single-line typo fix? → Do it yourself
+3. Everything else? → **DELEGATE TO CODEX**
+
+"I already have context loaded" is NOT a valid exemption. Codex can load context too.
+
+### Anti-Patterns You Will Fall Into
+
+You will be tempted to:
+- "Just read a few files first" → NO. Write the Codex prompt instead.
+- "The fix is small, I'll just do it" → NO. The TASK is not small. Delegate.
+- "I understand the problem now, might as well implement" → NO. Understanding = write better Codex prompt.
+- "Let me investigate to find the root cause" → NO. Tell Codex to investigate.
+
+**If you've made 3+ Read/Grep calls without delegating, you are doing Codex's job. STOP.**
+
+### The Correct Flow
+
+1. Read issue/task description (1-2 files max)
+2. Write Codex prompt immediately
+3. Review Codex output
+4. Course-correct if needed
+
+DO NOT: investigate deeply yourself, then implement yourself.
+
+### Trust Your Team
+
+Codex will sometimes make mistakes. That's fine.
 1. Give clear direction (what to build, what patterns to follow)
 2. Review the output (`git diff`, run tests)
-3. Course-correct if needed
-
-Don't pre-optimize for failure. Delegate, then review.
+3. If wrong: re-delegate with better direction, don't just fix it yourself
 
 **Stay focused on complexity.** Read repo `CLAUDE.md` before acting. Treat complexity as the main bug; prefer deep modules and small interfaces. Bias to small, reversible changes.
 
