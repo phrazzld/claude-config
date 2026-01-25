@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Vercel production deployment guard for Claude Code.
+Vercel environment guard for Claude Code.
 
-Blocks direct `vercel --prod` commands to prevent deploying unmerged branches
-to production. Production deploys should only happen via git push to master.
+Requires explicit --environment flag for env mutations (add/rm).
+Allows all other commands including explicit prod deploys.
 
 PreToolUse hook - runs before Bash commands execute.
 """
@@ -11,35 +11,54 @@ import json
 import re
 import sys
 
-# Patterns that indicate production deployment
-PROD_PATTERNS = [
-    r'\bvercel\b.*\s--prod\b',           # vercel --prod, vercel deploy --prod
-    r'\bvercel\b.*\s-p\b',               # vercel -p (short flag)
-    r'\bvercel\b.*--production\b',       # vercel --production
-    r'\bnpx\s+vercel\b.*\s--prod\b',     # npx vercel --prod
-    r'\bnpx\s+vercel\b.*\s-p\b',         # npx vercel -p
-    r'\bvercel\s+deploy\s+--prod\b',     # vercel deploy --prod
-    r'\bvercel\s+--prod\s+deploy\b',     # vercel --prod deploy
+# Safe patterns - always allowed without checks
+SAFE_PATTERNS = [
+    r"^(npx\s+)?vercel\s+(--)?help",
+    r"^(npx\s+)?vercel\s+(-v|--version)",
+    r"^(npx\s+)?vercel\s+(ls|list|inspect|logs|whoami)\b",
+    r"^(npx\s+)?vercel\s+domains\s+ls\b",
+    r"^(npx\s+)?vercel\s+env\s+(ls|list|pull)\b",
+    r"^(npx\s+)?vercel\s+(login|logout|link|dev)\b",
+    r"^(npx\s+)?vercel\s+deploy\b",  # deploys are fine (preview default or explicit prod)
+    r"^(npx\s+)?vercel\s*$",          # just 'vercel' shows project info
 ]
+
+# Env mutation patterns - require explicit environment
+ENV_MUTATION_PATTERNS = [
+    r"^(npx\s+)?vercel\s+env\s+(add|rm|remove)\b",
+]
+
+HAS_ENVIRONMENT = re.compile(r"--environment[=\s]+\w+")
 
 
 def check_command(cmd: str) -> tuple[bool, str]:
     """
-    Check if command deploys to Vercel production.
+    Check Vercel command for environment clarity.
     Returns (should_block, reason).
     """
     if not cmd:
         return False, ""
 
-    for pattern in PROD_PATTERNS:
+    # Only check vercel commands
+    if not re.search(r"\bvercel\b", cmd):
+        return False, ""
+
+    # Safe patterns pass through
+    for pattern in SAFE_PATTERNS:
         if re.search(pattern, cmd, re.IGNORECASE):
-            return True, (
-                "Direct production deploys are blocked.\n\n"
-                "Production should only be deployed via git push to master:\n"
-                "  git checkout master && git merge <branch> && git push\n\n"
-                "Or merge via GitHub PR, which triggers auto-deploy.\n\n"
-                "This prevents deploying unmerged feature branches to production."
-            )
+            return False, ""
+
+    # Env mutations need explicit target
+    for pattern in ENV_MUTATION_PATTERNS:
+        if re.search(pattern, cmd, re.IGNORECASE):
+            if not HAS_ENVIRONMENT.search(cmd):
+                return True, (
+                    "Vercel env command needs explicit environment.\n\n"
+                    "Use:\n"
+                    "  vercel env add VAR --environment=production\n"
+                    "  vercel env add VAR --environment=preview\n"
+                    "  vercel env add VAR --environment=development"
+                )
 
     return False, ""
 

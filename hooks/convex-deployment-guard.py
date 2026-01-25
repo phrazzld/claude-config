@@ -1,86 +1,63 @@
 #!/usr/bin/env python3
 """
-Convex deployment clarity guard for Claude Code.
+Convex deployment guard for Claude Code.
 
-Warns when Convex CLI commands might be ambiguous about which deployment
-they're targeting. The CONVEX_DEPLOY_KEY env var takes precedence over
---prod flag and CONVEX_DEPLOYMENT prefix, which can cause confusion.
+Blocks unreliable patterns (CONVEX_DEPLOYMENT prefix) and requires
+explicit --prod or --preview flag for deploy commands.
 
 PreToolUse hook - runs before Bash commands execute.
 """
 import json
-import os
 import re
 import sys
 
-# Patterns that indicate Convex CLI usage
-CONVEX_PATTERNS = [
-    r'\bnpx\s+convex\b',      # npx convex ...
-    r'\bconvex\s+run\b',       # convex run ...
-    r'\bconvex\s+env\b',       # convex env ...
-    r'\bconvex\s+data\b',      # convex data ...
-    r'\bconvex\s+deploy\b',    # convex deploy ...
-]
 
-# Patterns that suggest user is trying to target prod
-PROD_INTENT_PATTERNS = [
-    r'--prod\b',
-    r'CONVEX_DEPLOYMENT=prod',
-]
-
-
-def check_command(cmd: str) -> tuple[bool, str]:
+def check_command(cmd: str) -> tuple[str, str]:
     """
-    Check if command uses Convex CLI with potential deployment ambiguity.
-    Returns (should_warn, warning_message).
+    Check Convex command for deployment clarity.
+    Returns (action, reason) where action is 'block', 'warn', or 'allow'.
     """
     if not cmd:
-        return False, ""
+        return 'allow', ""
 
-    # Check if this is a Convex command
-    is_convex_cmd = any(re.search(p, cmd, re.IGNORECASE) for p in CONVEX_PATTERNS)
-    if not is_convex_cmd:
-        return False, ""
+    # Only check commands with convex
+    if not re.search(r"\bconvex\b", cmd, re.IGNORECASE):
+        return 'allow', ""
 
-    # Check if user seems to be targeting prod
-    intends_prod = any(re.search(p, cmd, re.IGNORECASE) for p in PROD_INTENT_PATTERNS)
-
-    # Check if CONVEX_DEPLOY_KEY is set in environment
-    has_deploy_key = bool(os.environ.get("CONVEX_DEPLOY_KEY"))
-
-    if intends_prod and has_deploy_key:
-        # User intends prod but CONVEX_DEPLOY_KEY will override
-        return True, (
-            "CONVEX_DEPLOY_KEY is set in your environment.\n\n"
-            "This takes precedence over --prod flag and CONVEX_DEPLOYMENT prefix.\n"
-            "The command will use the deployment specified in CONVEX_DEPLOY_KEY,\n"
-            "which may or may not be prod.\n\n"
-            "To verify which deployment you're targeting:\n"
-            "  1. Check CONVEX_DEPLOY_KEY value (starts with 'prod:' or 'dev:')\n"
-            "  2. Or unset CONVEX_DEPLOY_KEY and use --prod flag\n\n"
-            "Proceeding with command - just be aware of this."
+    # BLOCK: CONVEX_DEPLOYMENT=prod:xxx pattern (unreliable)
+    if re.search(r"CONVEX_DEPLOYMENT=prod:", cmd):
+        return 'block', (
+            "CONVEX_DEPLOYMENT=prod:xxx prefix is unreliable.\n\n"
+            "Use --prod flag instead:\n"
+            "  npx convex env set --prod VAR value\n"
+            "  npx convex deploy --prod\n"
+            "  npx convex env ls --prod"
         )
 
-    if not intends_prod:
-        # Check if they're running a query/mutation without specifying env
-        if re.search(r'\bconvex\s+run\b', cmd) and not has_deploy_key:
-            if not re.search(r'--prod|--dev|--preview', cmd, re.IGNORECASE):
-                return True, (
-                    "Running Convex command without explicit deployment target.\n\n"
-                    "This will use your default deployment (likely dev).\n"
-                    "If you intended to target production, add --prod flag.\n\n"
-                    "Proceeding with command."
-                )
+    # BLOCK: deploy without explicit target
+    if re.search(r"\bconvex\s+deploy\b", cmd):
+        if not re.search(r"--(prod|preview)\b", cmd):
+            return 'block', (
+                "Convex deploy needs explicit target.\n\n"
+                "Use:\n"
+                "  npx convex deploy --prod      # production\n"
+                "  npx convex deploy --preview   # preview"
+            )
 
-    return False, ""
+    # Allow everything else (env set defaults to dev, which is recoverable)
+    return 'allow', ""
 
 
-def warn(cmd: str, reason: str) -> None:
-    """Output warning and allow command to proceed."""
+def deny(cmd: str, reason: str) -> None:
+    """Output deny decision and exit."""
     output = {
         "hookSpecificOutput": {
             "hookEventName": "PreToolUse",
-            "message": f"⚠️  CONVEX DEPLOYMENT WARNING:\n\n{reason}\n\nCommand: {cmd}"
+            "permissionDecision": "deny",
+            "permissionDecisionReason": (
+                f"BLOCKED: {reason}\n\n"
+                f"Command: {cmd}"
+            )
         }
     }
     print(json.dumps(output))
@@ -102,10 +79,10 @@ def main():
     if not isinstance(cmd, str) or not cmd:
         sys.exit(0)
 
-    should_warn, reason = check_command(cmd)
+    action, reason = check_command(cmd)
 
-    if should_warn:
-        warn(cmd, reason)
+    if action == 'block':
+        deny(cmd, reason)
 
     sys.exit(0)
 
