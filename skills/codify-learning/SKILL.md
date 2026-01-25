@@ -1,68 +1,66 @@
 ---
 name: codify-learning
 description: |
-  CODIFY-LEARNING
+  Transform session learnings into permanent, executable improvements.
+  Invoke at end of any session that involved debugging, fixing, or learning something.
+  Default: Codify everything. Exception: Justify not codifying.
 ---
 
----
-description: Extract patterns from session into executable artifacts
----
+# /codify-learning
 
-# CODIFY-LEARNING
+Transform ephemeral learnings into durable system improvements.
 
-Transform learnings from this session into permanent, executable knowledge.
+## Philosophy
 
-Run at the end of workflows to capture insights.
+**Default codify, justify exceptions.** Every correction, feedback, or "I should have known" moment represents a gap in the system. Codification closes that gap.
 
-## Artifact Hierarchy (Most to Least Executable)
+The "3+ occurrences" threshold is a myth - we have no cross-session memory. If you learned something, codify it.
 
-1. **Code** — Reusable function, hook, utility
-2. **Test** — Regression test capturing the bug pattern
-3. **Skill** — Knowledge Claude applies automatically
-4. **Command** — Workflow automation
-5. **Agent** — Specialized reviewer with enforcement rules
-6. **Documentation** — ADR, runbook, or inline comment
+## Process
 
-## What This Does
+### 1. Identify Learnings
 
-1. **Reflect** — What did we learn? What pattern emerged?
-2. **Classify** — Which artifact type best captures this?
-3. **Create** — Write the artifact
-4. **Verify** — Ensure it works and is discoverable
+Scan the session for:
+- Errors encountered and how they were fixed
+- PR feedback received
+- Debugging insights ("the real problem was...")
+- Workflow improvements discovered
+- Patterns that should be enforced
 
-## Decision Tree
+### 2. Brainstorm Codification Targets
+
+For each learning, consider:
+- **Hook** - Should this be guaranteed/blocked? (most deterministic)
+- **Agent** - Should a reviewer catch this pattern?
+- **Skill** - Is this a reusable workflow?
+- **CLAUDE.md** - Is this philosophy/convention?
+
+Choose the target that provides the most leverage. Hooks > Agents > Skills > CLAUDE.md for enforcement. Skills > CLAUDE.md for workflows.
+
+### 3. Implement
+
+For each codification:
+1. Read the target file
+2. Add the learning in appropriate format
+3. Wire up if needed (hooks need settings.json entry)
+4. Verify no duplication
+
+### 4. Report
 
 ```
-Did we fix a bug?
-  → Could it happen again? → Write regression TEST
-  → Is it a pattern? → Extract to CODE utility
+CODIFIED:
+- [learning] → [file]: [summary of change]
 
-Did we learn a new pattern?
-  → Is it domain knowledge? → Create SKILL
-  → Is it a workflow? → Create COMMAND
-  → Is it enforcement? → Update AGENT
-
-Did we make a design decision?
-  → Write ADR in docs/
+NOT CODIFIED:
+- [learning]: [justification - must be specific]
 ```
 
-## The Codex First-Draft Pattern
+## Anti-Patterns
 
-**Codex creates the artifact. You review and commit.**
+❌ "No patterns detected" - One occurrence is enough
+❌ "First time seeing this" - No cross-session memory exists
+❌ "Seems too minor" - Minor issues compound into major friction
+❌ "Not sure where to put it" - Brainstorm, ask, don't skip
+❌ "Already obvious" - If it wasn't codified, the system didn't know it
 
-```bash
-codex exec "CODIFY: Create [artifact type] for [learning]. Follow patterns in ~/.claude/skills/. Output to [path]." \
-  --output-last-message /tmp/codex-codify.md 2>/dev/null
-```
-
-## Execution
-
-1. Review session: What problems did we solve?
-2. Identify repeatable pattern or insight
-3. Delegate artifact creation to Codex
-4. Review and refine Codex's output
-5. Commit with message: "chore(knowledge): codify {learning}"
-
-## Output
-
-Artifact created and committed. Describe what was codified and where.
+See CLAUDE.md "Continuous Learning Philosophy" for valid exceptions and the full codification philosophy.

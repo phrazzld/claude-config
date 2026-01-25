@@ -575,7 +575,7 @@ Technical implementation (from open source examples):
 ```markdown
 # BACKLOG.md
 
-## 🔴 Critical Priority (3+ agents flagged)
+## 🔴 Critical Priority (multiple agents flagged)
 
 ### Refactor OrderProcessor God Object
 **Flagged by**: complexity-archaeologist, architecture-guardian, maintainability-maven, ousterhout
@@ -670,18 +670,18 @@ router.delete('/api/orders/:id',
 **Behind the scenes**: `/git-respond` detects pattern
 
 ```
-🔄 RECURRING FEEDBACK PATTERN DETECTED
+🔄 FEEDBACK REVEALS AGENT GAP
 
 Pattern: "Auth check missing on endpoints"
-Occurrences: 3 times (HIGH confidence)
-Reviewer: Same person (repetitive feedback)
+Impact: CRITICAL (security)
+Gap: security-sentinel should catch this
 
-This should be automated. Codify as:
+Codify as:
 [✓] Agent checklist: Update security-sentinel
 [✓] Sync: Propagate to Codex & Gemini CLIs
 [ ] ESLint rule: Custom rule for endpoint auth (optional)
 
-Recommend: Agent update (prevents future occurrences)
+Recommend: Agent update (prevents this class of issue)
 ```
 
 **You accept**:
@@ -760,7 +760,7 @@ router.delete('/api/products/:id',
 ### Result: PR Feedback → Automated Enforcement
 
 **Compounding Effect**:
-- **Before**: Reviewer repeats same feedback 3+ times
+- **Before**: Reviewer gives feedback, system doesn't learn
 - **After**: Agent catches issue automatically, reviewer never repeats themselves
 - **Time saved**: 5 minutes per PR × 10 PRs/month = 50 minutes/month
 - **Quality improved**: Zero instances of this bug class reach production
@@ -959,10 +959,10 @@ User: /execute
 
   ↓
 
-✨ Codification Prompt (if pattern detected)
-- High confidence (3+ occurrences)
+✨ Codification Prompt (default: codify)
+- Can be enforced (hook/agent/skill/docs)
 - Broad implications (affects multiple areas)
-- Actionable (can be codified)
+- Actionable (clear codification target)
 
   ↓
 
@@ -1004,8 +1004,7 @@ infrastructure   │
 📊 Cross-Validation Analysis
 
 1 agent flags    = Specialized concern
-2 agents flag    = High priority
-3+ agents flag   = 🔴 CRITICAL PRIORITY
+2+ agents flag   = 🔴 HIGH PRIORITY (cross-cutting issue)
 
 Example:
 ┌─────────────────────────────────┐
@@ -1163,18 +1162,18 @@ Occurrence 2: orders.createOrder()
   - Return type (same pattern)
 
 Occurrence 3: products.createProduct()
+  - Same pattern, clear reuse value
   - learning-codifier triggers
-  - Confidence: HIGH (3 occurrences)
 
   ↓
 
-📊 Confidence Scoring
+📊 Codification Decision
 
-Formula: (Frequency × Impact × Clarity) / 3
-- Frequency: 3/3 (HIGH - multiple occurrences)
-- Impact: 3/3 (HIGH - saves 30 min each time)
-- Clarity: 3/3 (HIGH - clear pattern)
-= 9/9 = 100% confidence
+Questions:
+- Does this reveal a gap? YES (repeated manual setup)
+- Can it be automated? YES (multi-step workflow)
+- What's the best target? SKILL (reusable workflow)
+→ Codify as skill
 
   ↓
 
@@ -1441,9 +1440,9 @@ Quality
 ```
 
 **Don't overthink**:
-- If confidence is HIGH → Accept
-- If pattern recurs 2-3 times → Accept
-- If bug has broad implications → Accept
+- Default: Accept and codify
+- If it reveals a gap → Codify
+- If bug has broad implications → Codify
 
 **Example**: useAsyncEffect hook
 - Could have said "not needed yet"
@@ -1542,11 +1541,11 @@ ls ~/.gemini/system-instructions/
 7. **Philosophy**: Principles, values
 
 **Decision guide**:
-- Pattern recurs 5+ times → Code abstraction
+- Repeated logic with clear reuse value → Code abstraction
 - Bug with broad implications → Code + tests + agent
-- Workflow 3+ steps → Skill
+- Multi-step workflow → Skill
 - Process manual + repetitive → Command
-- PR feedback 3+ occurrences → Agent checklist
+- PR feedback reveals agent gap → Agent checklist
 - Non-obvious decision → Docs (ADR)
 
 ---
@@ -1555,19 +1554,18 @@ ls ~/.gemini/system-instructions/
 
 ### Q: When should I codify?
 
-**A**: When you see a pattern 2-3 times, or a bug with broad implications.
+**A**: Default codify. Justify not codifying.
 
-**Signs to codify**:
-- "Didn't we do this before?"
+**Signs to codify** (any one is enough):
+- "I learned something that could prevent future issues"
 - "This could happen elsewhere"
-- "I'm repeating myself"
-- "This feedback is recurring"
+- "Feedback revealed a gap in the system"
+- "This workflow should be automated"
 
-**Confidence levels**:
-- 1 occurrence: Don't codify (premature)
-- 2 occurrences: Consider codifying
-- 3 occurrences: High confidence (codify)
-- 5+ occurrences: Very high (should have codified earlier)
+**When NOT to codify** (requires explicit justification):
+- Already codified elsewhere (cite the exact path)
+- Truly unique edge case (explain why)
+- External constraint beyond system control
 
 ### Q: How do I choose between code abstraction vs test vs skill?
 
@@ -1580,16 +1578,16 @@ Is it a bug?
   YES → Code (fix) + Test (regression) + Agent (prevent)
   NO  ↓
 
-Is it a pattern in code?
-  YES → Code abstraction (if 3+ uses)
+Is it repeated logic with clear reuse value?
+  YES → Code abstraction
   NO  ↓
 
 Is it a multi-step workflow?
-  YES → Skill (if 3+ steps)
+  YES → Skill
   NO  ↓
 
-Is it PR feedback?
-  YES → Agent checklist (if 3+ occurrences)
+Does it reveal an agent gap?
+  YES → Agent checklist update
   NO  ↓
 
 Is it a decision rationale?
@@ -1678,11 +1676,11 @@ Is it a decision rationale?
 - One-off scenario ("This is edge case")
 
 **When to accept**:
-- Pattern obvious ("We'll definitely do this again")
-- Confidence high (3+ occurrences)
+- Pattern has clear prevention value
 - Broad implications ("This affects multiple areas")
+- Can be enforced (hook/agent/skill/docs)
 
-**Worst case**: Skip now, codify later when pattern clearer
+**Default**: Accept and codify. Justify skipping, not codifying.
 
 ### Q: How do I sync agent changes to active projects?
 

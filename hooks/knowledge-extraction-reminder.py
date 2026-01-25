@@ -51,17 +51,18 @@ def main():
     hints = []
     if changed_files:
         # Check for patterns that might indicate extractable knowledge
+        # Note: No threshold - default codify philosophy means any pattern is worth considering
         error_count = count_pattern(r"try\s*{|catch\s*\(|\.catch\(", changed_files)
-        if error_count >= 3:
-            hints.append("Multiple error handling patterns added")
+        if error_count > 0:
+            hints.append(f"Error handling patterns detected ({error_count})")
 
         type_count = count_pattern(r"type\s+\w+\s*=|interface\s+\w+", changed_files)
-        if type_count >= 3:
-            hints.append("Multiple type definitions added")
+        if type_count > 0:
+            hints.append(f"Type definitions added ({type_count})")
 
         test_count = count_pattern(r"it\(|test\(|describe\(", changed_files)
-        if test_count >= 3:
-            hints.append("Multiple tests added")
+        if test_count > 0:
+            hints.append(f"Tests added ({test_count})")
 
     # Build the evaluation prompt (Claudeception-style)
     hint_text = ""
@@ -69,24 +70,27 @@ def main():
         hint_text = f"\n\nDetected patterns that may be worth codifying:\n- " + "\n- ".join(hints)
 
     prompt = f"""<knowledge-extraction-check>
-BEFORE ending this session, evaluate:
+BEFORE ending this session, evaluate what should be codified:
 
-Did this session involve:
-- Debugging with non-obvious solution (required investigation)?
-- Discovering undocumented workaround or pattern?
-- Learning project-specific convention that should persist?
-- Solving a problem that would help future sessions?
+Review the session for:
+- Problems solved (how to prevent them?)
+- Feedback received (how to catch earlier?)
+- Patterns discovered (how to enforce?)
+- Workflows improved (how to encode?)
 
-If YES to any, consider: Should this become a skill?
+**Default: Codify.** The question is not "is this worth codifying?" but "what's the best codification target?"
 
-Quality gates (ALL must be true to proceed):
-1. REUSABLE - applies beyond this single instance
-2. NON-TRIVIAL - required discovery, not just reading docs
-3. SPECIFIC - clear trigger conditions can be defined
-4. VERIFIED - solution confirmed working
+Targets (in order of determinism):
+1. Hook - guaranteed enforcement
+2. Agent - specialized review
+3. Skill - reusable workflow
+4. CLAUDE.md - philosophy/convention
 
-If passes all gates → Invoke skill-builder skill to extract.
-If fails any gate → No action needed.{hint_text}
+For each learning, either:
+- Codify it (invoke /codify-learning)
+- Justify not codifying (cite existing codification or explain why not generalizable)
+
+"First occurrence" is NOT a valid reason to skip - cross-session memory doesn't exist.{hint_text}
 </knowledge-extraction-check>"""
 
     # Output the prompt for Claude to evaluate

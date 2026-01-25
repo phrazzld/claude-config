@@ -92,6 +92,27 @@ Output code that is:
 - **Prefer full file reads over code searches.** Context windows can handle it. Code searches lose context. Load the entire file when practical.
 - **For code review, frame adversarially.** Instead of "double-check this," say "find the bugs left behind." Adversarial framing triggers more thorough review.
 
+## Continuous Learning Philosophy
+
+**Default codify, justify not codifying.** Every deviation, correction, or feedback represents a class of errors the system failed to prevent.
+
+**The occurrence counting myth:** Cross-session memory doesn't exist. You cannot track "3+ occurrences" across sessions. If you're seeing something now, assume it's happened before. Codify it.
+
+**Codification is how the system learns.** It's not optional cleanup after the "real work" - it IS the compounding mechanism that makes future work better.
+
+**When brainstorming codification targets:**
+- Hooks for guaranteed enforcement (must always/never happen)
+- Skills for reusable workflows and domain knowledge
+- Agents for specialized review criteria
+- CLAUDE.md for philosophy and conventions
+
+**When NOT to codify (requires explicit justification):**
+- Already codified elsewhere (cite the exact file path)
+- Truly unique edge case (explain why not generalizable)
+- External constraint beyond system control (explain)
+
+"First occurrence" and "seems minor" are NOT valid justifications.
+
 ## Delegation Patterns
 
 **Codex** — Your implementation coworker:

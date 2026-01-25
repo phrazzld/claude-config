@@ -62,10 +62,10 @@ gh pr list --state all --limit 10 --json number,title,reviews
 
 ### Step 2: Pattern Detection
 
-**Frequency Analysis:**
-- HIGH confidence: Pattern occurs 3+ times
-- MEDIUM confidence: Pattern occurs 2 times
-- LOW confidence: Pattern occurs 1 time (new discovery)
+**Codification Philosophy:**
+Cross-session memory doesn't exist. Occurrence counting is fictional.
+
+**Default codify.** If a pattern is worth noting, it's worth codifying. The question is not "how often?" but "what's the best target?"
 
 **Impact Assessment:**
 - CRITICAL: Production bugs, security issues
@@ -76,7 +76,7 @@ gh pr list --state all --limit 10 --json number,title,reviews
 **Pattern Categories:**
 
 **1. Code Patterns** (Extract to abstraction)
-- Repeated logic (>10 lines, used 3+ times)
+- Repeated logic (>10 lines, appears in multiple places)
 - Complex algorithms
 - Domain-specific operations
 - Validation logic
@@ -112,14 +112,14 @@ Examples:
 - "Creating new component" → skill
 
 **4. Review Patterns** (Extract to agent)
-- Repeated PR feedback (3+ times)
+- PR feedback that reveals a gap in agent coverage
 - Common mistakes
 - Style violations
 - Architecture concerns
 - Security issues
 
 Examples:
-- "Extract to helper" (3rd time) → complexity-archaeologist update
+- "Extract to helper" → complexity-archaeologist update
 - "Missing error handling" → error-handling-specialist update
 - "No tests" → test-strategy-architect update
 
@@ -135,21 +135,21 @@ Examples:
 - "Component structure" → PROJECT.md
 - "Error handling strategy" → ERROR_HANDLING.md
 
-### Step 3: Confidence Scoring
+### Step 3: Codification Decision
 
-For each detected pattern, score confidence:
+**Default: Codify.** For each pattern, determine the best target:
 
-**Confidence = (Frequency × Impact × Clarity) / 3**
+| Pattern Type | Best Target | Why |
+|--------------|-------------|-----|
+| Must always/never happen | Hook | Guaranteed enforcement |
+| Should be caught in review | Agent | Specialized checking |
+| Multi-step workflow | Skill | Reusable automation |
+| Philosophy/convention | CLAUDE.md | Session context |
 
-Where:
-- Frequency: 1 (once), 2 (twice), 3 (3+ times)
-- Impact: 1 (low), 2 (medium), 3 (high), 4 (critical)
-- Clarity: 1 (vague), 2 (clear), 3 (obvious)
-
-**Thresholds:**
-- ≥7: HIGH confidence → Definitely codify
-- 4-6: MEDIUM confidence → Recommend codifying
-- <4: LOW confidence → Document only or skip
+**When NOT to codify (requires justification):**
+- Already codified elsewhere (cite the exact path)
+- Truly unique edge case (explain why not generalizable)
+- External constraint beyond system control
 
 ### Step 4: Recommendation
 
@@ -158,9 +158,9 @@ For each pattern above threshold:
 **Recommend Codification Target(s):**
 ```
 Pattern: [Name]
-Confidence: [HIGH/MEDIUM/LOW]
-Occurrences: [count]
 Impact: [CRITICAL/HIGH/MEDIUM/LOW]
+Gap: [What the system failed to catch]
+Evidence: [Cite specific files/diffs in current context]
 
 Context:
 - [Where pattern appeared]
@@ -192,11 +192,11 @@ Rationale:
 
 ---
 
-### Pattern 1: Convex Function Purity (HIGH CONFIDENCE)
+### Pattern 1: Convex Function Purity
 
-**Confidence Score:** 9/9 (Frequency=3, Impact=4, Clarity=3)
-**Occurrences:** 3 times in last 10 tasks
 **Impact:** CRITICAL (Production bugs)
+**Gap:** No automated check for Convex purity
+**Prevention Value:** HIGH (affects all Convex functions)
 
 **Context:**
 - Task #042: "Fix Date.now() in Convex function"
@@ -223,11 +223,11 @@ Convex functions must be pure - no Date.now(), Math.random(), fetch(), or other 
 
 ---
 
-### Pattern 2: Error Boundary Setup (MEDIUM CONFIDENCE)
+### Pattern 2: Error Boundary Setup
 
-**Confidence Score:** 6/9 (Frequency=2, Impact=3, Clarity=3)
-**Occurrences:** 2 times in last 10 tasks
 **Impact:** HIGH (Better UX, easier debugging)
+**Gap:** No standard workflow for error boundary setup
+**Prevention Value:** MEDIUM (affects async components)
 
 **Context:**
 - Task #051: "Add error boundary to async component"
@@ -239,24 +239,23 @@ React error boundaries around async components catch errors and show fallback UI
 **Recommended Codifications:**
 - [ ] **Code**: Too React-specific, framework handles it
 - [✓] **Tests**: Add example showing error boundary catches errors
-- [✓] **Skill**: Create "react-error-boundary-setup" workflow
-- [ ] **Command**: Not frequent enough
+- [✓] **Skill**: Create "react-error-boundary-setup" workflow (multi-step)
 - [ ] **Agent**: Already covered by error-handling-specialist
 - [✓] **Docs**: Update REACT.md "Error Handling" section
 
 **Rationale:**
-- MEDIUM frequency (2x) but HIGH impact (UX improvement)
+- HIGH impact (UX improvement)
 - Skill helps onboarding (multi-step setup)
 - Tests show correct usage
 - Docs provide context
 
 ---
 
-### Pattern 3: Tailwind Responsive Breakpoints (LOW CONFIDENCE)
+### Pattern 3: Tailwind Responsive Breakpoints
 
-**Confidence Score:** 3/9 (Frequency=1, Impact=2, Clarity=3)
-**Occurrences:** 1 time (new pattern)
 **Impact:** MEDIUM (Consistency)
+**Gap:** None - already documented
+**Prevention Value:** LOW
 
 **Context:**
 - Task #070: "Make dashboard responsive"
@@ -273,38 +272,37 @@ Use Tailwind's `sm:`, `md:`, `lg:` breakpoints for responsive design.
 - [✓] **Docs**: Add example to DESIGN_SYSTEM.md
 
 **Rationale:**
-- LOW frequency (1x) + MEDIUM impact = document only
-- Wait for pattern to recur before heavier codification
+- Already documented in design-systems-architect
+- Not codified: Already in `agents/design-systems-architect.md`
 
 ---
 
 ## Summary
 
-**Recommend Codifying:**
-1. ✅ **Pattern 1 (Convex Purity)** - HIGH confidence, critical impact
-2. ✅ **Pattern 2 (Error Boundaries)** - MEDIUM confidence, high value
+**Codify:**
+1. ✅ **Pattern 1 (Convex Purity)** - CRITICAL impact, reveals agent gap
+2. ✅ **Pattern 2 (Error Boundaries)** - HIGH impact, multi-step workflow
 
-**Skip:**
-3. ⏭️  **Pattern 3 (Tailwind Responsive)** - LOW confidence, document only
+**Not Codified (with justification):**
+3. ⏭️  **Pattern 3 (Tailwind Responsive)** - Already in design-systems-architect
 
 **Next Steps:**
-1. User confirms patterns to codify
-2. Launch appropriate agents:
+1. Launch appropriate agents:
    - pattern-extractor (for code + tests)
    - skill-builder (for skills)
    - agent-updater (for agent updates)
-3. Update documentation in same commit
-4. Sync configs to codex/gemini via /sync-configs
+2. Update documentation in same commit
+3. Sync configs to codex/gemini via /sync-configs
 ```
 
 ## Key Guidelines
 
 **DO:**
-- Analyze objectively based on frequency and impact
+- Analyze objectively based on impact and prevention value
 - Recommend multiple codification targets when appropriate
 - Explain rationale clearly
-- Be conservative (better to under-codify than over)
-- Focus on patterns that compound (used repeatedly)
+- Be thorough (every learning deserves consideration)
+- Justify skipping, don't justify codifying
 
 **DON'T:**
 - Recommend codifying one-off solutions

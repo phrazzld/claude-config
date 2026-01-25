@@ -18,19 +18,20 @@ Your goal: Make review feedback obsolete by catching issues before human review.
 
 ## Core Principle
 
-**"If you say it 3 times, automate it."**
+**"If feedback was needed, the agent was incomplete."**
 
-Recurring feedback means a pattern exists. Patterns should be enforced by agents, not repeated by humans.
+PR feedback reveals gaps in agent coverage. When a reviewer catches something, that check should be added to the relevant agent so future reviews catch it automatically.
+
+No occurrence counting - cross-session memory doesn't exist. If you're updating an agent, it's because the current instructions were insufficient.
 
 ## Feedback Analysis Process
 
 ### Step 1: Identify Feedback Pattern
 
 **What Makes Codifiable Feedback?**
-- **Recurring** (same feedback 3+ times)
 - **Automatable** (clear rule, not subjective)
 - **Prevents bugs** (catches real issues)
-- **Saves time** (reviewer doesn't repeat)
+- **Gap revealed** (agent didn't catch it)
 
 **Examples of Codifiable Feedback:**
 - "Extract this to a helper" → complexity-archaeologist (DRY violations)
@@ -40,10 +41,9 @@ Recurring feedback means a pattern exists. Patterns should be enforced by agents
 - "Avoid Date.now() in Convex" → architecture-guardian (Convex purity)
 
 **Examples of Non-Codifiable Feedback:**
-- "Consider refactoring" (too vague)
-- "This feels wrong" (subjective)
+- "Consider refactoring" (too vague to automate)
+- "This feels wrong" (subjective, no clear rule)
 - "Maybe use X pattern" (not definitive)
-- One-off suggestions (not recurring)
 
 ### Step 2: Analyze Feedback Context
 
@@ -191,7 +191,7 @@ const query = (timestamp: number) => {
 ```
 
 **Priority:** P0 - Production breaking
-**Occurrences:** 3 (tasks #042, #057, #068)
+**Evidence:** Current diff shows impure patterns in Convex functions
 ```
 
 ### Step 5: Show Diff & Get Approval
@@ -201,7 +201,7 @@ const query = (timestamp: number) => {
 📝 Agent Update: architecture-guardian
 
 **Feedback Pattern:** "Check Convex functions for purity"
-**Occurrences:** 3 times (PR #123, #145, #178)
+**Gap:** Agent didn't catch impure Convex functions
 **Impact:** CRITICAL (production bugs)
 
 **Proposed Update:**
@@ -222,8 +222,8 @@ const query = (timestamp: number) => {
 +[...rest of addition...]
 
 **Rationale:**
-This pattern caused 3 production bugs. By adding to architecture-guardian,
-we catch it during /groom before code review, preventing recurrence.
+This feedback revealed a gap - architecture-guardian should catch impure
+Convex functions. By adding this check, we prevent this class of bug.
 
 Approve update? [y/N]
 ```
@@ -238,8 +238,7 @@ Approve update? [y/N]
 git add agents/architecture-guardian.md
 git commit -m "codify: Add Convex purity check to architecture-guardian
 
-Codifies feedback pattern 'check Convex functions for purity'
-that occurred 3 times (PR #123, #145, #178).
+Feedback revealed gap: agent didn't catch impure Convex functions.
 
 Now enforced automatically during /groom and /execute.
 
@@ -319,7 +318,7 @@ Pattern causing more issues, increase priority:
 
 // After
 **Priority:** P0 - Production breaking
-**Occurrences:** Now 5 (was 2)
+**Impact:** Caused production outage
 ```
 
 ## Output Format
@@ -351,7 +350,7 @@ codify: Add Convex purity check to architecture-guardian
 ## Key Guidelines
 
 **DO:**
-- Update agents for recurring feedback (3+ times)
+- Update agents when feedback reveals a gap
 - Be specific and actionable
 - Include code examples (good/bad)
 - Document rationale (why it matters)

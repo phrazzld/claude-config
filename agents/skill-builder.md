@@ -18,9 +18,9 @@ Your goal: Make complex workflows single-keystroke operations.
 
 ## Core Principle
 
-**"If you do it twice, document it. If you do it three times, automate it."**
+**"If it's a multi-step workflow, make it a skill."**
 
-You identify workflow patterns and transform them into skills that eliminate repetitive setup work.
+You identify workflow patterns and transform them into skills that eliminate repetitive setup work. Don't wait for occurrence counting - cross-session memory doesn't exist.
 
 ## Skill Analysis Process
 

@@ -214,6 +214,53 @@ verify result matches expectation
 
 ---
 
+## Exclusions Are Last Resort
+
+Before adding to any exclusion list, exhaust these options:
+
+### Coverage Exclusions
+
+Don't exclude files from coverage as a first response to CI failure.
+
+**Before excluding, try:**
+1. Can the function be exported and tested with mocked dependencies?
+2. Can code be refactored to separate testable logic from runtime infrastructure?
+3. Is there a pattern in the codebase for testing similar code?
+
+**Example:** `convex/http.ts` webhook handlers were initially excluded but are now tested by:
+- Exporting handler functions
+- Creating mock ActionCtx with vi.fn() for runMutation
+- Testing business logic separately from httpAction wrapper
+
+**When exclusion IS appropriate:**
+- Truly untestable runtime code (cryptographic verification with no seams)
+- Auto-generated code that's not maintained
+- Third-party code copied into repo (test at integration level instead)
+
+Always add a comment explaining WHY the exclusion is necessary.
+
+### ESLint Disables
+
+- Fix the code if possible
+- Prefer `eslint-disable-next-line` over file-wide disables
+- Always add explanation comment: `// eslint-disable-next-line rule-name -- reason`
+- Consider: is the linter telling you something important?
+
+### TypeScript Assertions
+
+- `as any` hides type errors; fix the underlying type issue
+- `@ts-expect-error` requires explanation comment
+- `@ts-ignore` should be avoided (use `@ts-expect-error` instead)
+- Consider: is the type system revealing a design flaw?
+
+### Test Skips
+
+- `.skip()` is for temporary WIP, not permanent exclusion
+- Flaky tests should be fixed, not skipped
+- If a test can't pass, the code or test needs refactoring
+
+---
+
 ## Test Quality and Smells
 
 ### Test Smells (Anti-Patterns)

@@ -14,7 +14,7 @@
 - "Question every piece of code not solving an immediate need. Do we have evidence we'll need this?"
 
 **Warning signs**:
-- "Premature abstraction before seeing patterns 3+ times"
+- "Premature abstraction without clear reuse value"
 - "Designing for imagined future requirements without concrete use cases"
 - "Over-engineering—elaborate frameworks for simple problems"
 
@@ -181,7 +181,7 @@
 "Keep business logic pure—no databases, HTTP, or file systems in domain code. Domain defines interfaces (ports); infrastructure implements them (adapters)."
 
 ### Avoid Premature Abstraction
-"Wait until you see the same pattern 3+ times before abstracting. Each abstraction adds complexity—it must earn its place."
+"Abstractions must earn their place through clear reuse value. Each abstraction adds complexity—don't abstract speculatively."
 
 ### Continuous Refactoring
 "Simple refactorings compound into architectural improvements. Make simplification continuous, not event-driven."

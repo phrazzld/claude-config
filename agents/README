@@ -410,7 +410,7 @@ Each agent brings unique expertise. When agents agree (especially personas), tha
 
 ### Cross-Validation Signals
 
-**Critical Priority** (3+ agents flag):
+**Critical Priority** (multiple agents flag):
 - Fundamental design problem affecting multiple quality dimensions
 - Example: God object flagged by complexity-archaeologist (shallow) + architecture-guardian (responsibility) + maintainability-maven (comprehension) + ousterhout (shallow modules) + fowler (Feature Envy)
 
@@ -508,7 +508,7 @@ All 15 agents sync to Codex CLI and Gemini CLI via `/sync-configs`:
 ## Best Practices
 
 1. **Trust persona convergence** - When Grug + Carmack + Jobs agree, listen
-2. **Cross-validate concerns** - 3+ agents flagging = critical priority
+2. **Cross-validate concerns** - Multiple agents flagging = critical priority
 3. **Compose intelligently** - Match agents to problem domain
 4. **Invoke proactively** - Use built-in command composition
 5. **Manual invocation** - Use Task tool for ad-hoc agent needs

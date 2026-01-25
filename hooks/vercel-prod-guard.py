@@ -28,7 +28,9 @@ ENV_MUTATION_PATTERNS = [
     r"^(npx\s+)?vercel\s+env\s+(add|rm|remove)\b",
 ]
 
-HAS_ENVIRONMENT = re.compile(r"--environment[=\s]+\w+")
+# Match either --environment=xxx flag OR positional environment arg
+# Positional: vercel env add VAR production OR vercel env add VAR preview
+HAS_ENVIRONMENT = re.compile(r"(--environment[=\s]+\w+|\b(production|preview|development)\b)")
 
 
 def check_command(cmd: str) -> tuple[bool, str]:

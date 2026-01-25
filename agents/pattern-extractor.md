@@ -398,7 +398,7 @@ codify: Add Convex purity validation tests
 - Commit with detailed messages
 
 **DON'T:**
-- Extract premature abstractions (wait for 3+ uses)
+- Extract premature abstractions (ensure clear reuse value before abstracting)
 - Create kitchen-sink utilities
 - Add unnecessary dependencies
 - Write brittle tests (testing implementation, not behavior)
