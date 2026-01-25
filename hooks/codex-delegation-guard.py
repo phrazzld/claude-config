@@ -230,13 +230,18 @@ def main():
     if tool_name not in ("Edit", "Write", "MultiEdit"):
         sys.exit(0)
 
-    # Check repo exclusion first
-    if is_excluded_repo(cwd, config):
-        output_silent()
-
     file_path = tool_input.get("file_path", "")
     if not file_path:
         sys.exit(0)
+
+    # Check repo exclusion - both CWD and file path
+    # This allows editing ~/.claude files even when CWD is another project
+    if is_excluded_repo(cwd, config):
+        output_silent()
+
+    for repo_path in config.get("exclusions", {}).get("repositories", []):
+        if file_path.startswith(repo_path):
+            output_silent()
 
     # Check always-silent patterns
     if is_always_silent(file_path, config):

@@ -335,16 +335,81 @@ Ensure applications handle errors gracefully with clear messages, proper logging
 
 ## Red Flags
 
-- [ ] ❌ Missing try-catch around async operations
-- [ ] ❌ Empty catch blocks
-- [ ] ❌ Generic error messages ("An error occurred")
-- [ ] ❌ No error logging
-- [ ] ❌ Stack traces exposed to users
-- [ ] ❌ setState called during render
-- [ ] ❌ Async operations not cleaned up on unmount
-- [ ] ❌ No error boundaries in React app
-- [ ] ❌ No validation at API entry points
-- [ ] ❌ Inconsistent error response format
+- [ ] Missing try-catch around async operations
+- [ ] Empty catch blocks
+- [ ] Generic error messages ("An error occurred")
+- [ ] No error logging
+- [ ] Stack traces exposed to users
+- [ ] setState called during render
+- [ ] Async operations not cleaned up on unmount
+- [ ] No error boundaries in React app
+- [ ] No validation at API entry points
+- [ ] Inconsistent error response format
+- [ ] **Swift: Silent `try?` without logging** (see Swift section below)
+
+## Swift Error Handling
+
+### Silent `try?` Anti-Pattern
+
+**Problem:** Swift's `try?` silently converts errors to nil, making production debugging difficult. This pattern was flagged in 3+ PRs:
+- PR #61: "try? silently swallows errors - add logging"
+- PR #50: "deleteEntitlement() silently swallows errors"
+- PR #47: "save() and delete() only log errors, gate state on success"
+
+### The Rule
+
+**Never use `try?` for operations where failure should be observable.**
+
+```swift
+// BAD: Silent failure - impossible to debug in production
+guard let result = try? riskyOperation() else { return }
+
+// BAD: guard-let with try? hides error details
+guard let data = try? JSONEncoder().encode(cache) else { return }
+
+// GOOD: Log error before early return
+do {
+    let result = try riskyOperation()
+    // use result...
+} catch {
+    Diagnostics.error("Operation failed: \(String(describing: error))")
+    return
+}
+
+// GOOD: Gate state changes on success, log on failure
+do {
+    try store.save(item)
+    state = .saved
+} catch {
+    Diagnostics.error("Save failed: \(String(describing: error))")
+    state = .error
+}
+```
+
+### When `try?` Is Acceptable
+
+- **Truly optional operations**: Cache reads where fallback is equivalent
+- **Cleanup in defer blocks**: Best-effort cleanup that shouldn't throw
+- **Immediate nil handling**: When nil case has explicit fallback logic
+
+```swift
+// OK: Cache miss is expected, not an error
+let cached = try? cache.read(key)  // nil means cache miss
+
+// OK: Cleanup in defer - best effort
+defer { try? tempFile.delete() }
+
+// OK: Immediate fallback with clear intent
+let config = (try? Config.load()) ?? Config.default
+```
+
+### Swift Error Handling Checklist
+
+- [ ] **No silent `try?`**: All `try?` usage either logged or has explicit fallback
+- [ ] **Typed errors**: Use domain errors (`VoxError`, `STTError`) not generic `Error`
+- [ ] **Error context**: Log with `String(describing: error)` for full error chain
+- [ ] **State gating**: Gate state transitions on operation success, not just attempt
+- [ ] **Diagnostics logging**: Use `Diagnostics.error()` for all observable failures
 
 ## Common Patterns
 
