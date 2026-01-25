@@ -13,7 +13,7 @@
       "repo": "anthropics/claude-code"
     },
     "installLocation": "/Users/phaedrus/.claude/plugins/marketplaces/claude-code-plugins",
-    "lastUpdated": "2026-01-25T14:30:40.544Z"
+    "lastUpdated": "2026-01-25T17:33:36.526Z"
   },
   "claude-plugins-official": {
     "source": {
@@ -21,7 +21,7 @@
       "repo": "anthropics/claude-plugins-official"
     },
     "installLocation": "/Users/phaedrus/.claude/plugins/marketplaces/claude-plugins-official",
-    "lastUpdated": "2026-01-25T03:17:23.075Z"
+    "lastUpdated": "2026-01-25T17:16:09.883Z"
   },
   "design-plugins": {
     "source": {
