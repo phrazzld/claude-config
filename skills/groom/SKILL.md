@@ -21,11 +21,12 @@ Orchestrate comprehensive backlog grooming. Create prioritized issues across all
 ## What This Does
 
 1. **Load or gather vision** — Check vision.md or ask about product direction
-2. **Audit existing backlog** — Validate, reprioritize, close stale issues
-3. **Run issue-creator skills** — Each domain gets audited, issues created
-4. **Adaptive agent analysis** — Based on backlog size, run specialized agents
-5. **Dedupe & consolidate** — Merge duplicates, finalize issue set
-6. **Summarize** — Report P0/P1/P2/P3 counts and recommended focus
+2. **Capture what's on your mind** — Bugs, UX friction, nitpicks from using the app
+3. **Audit existing backlog** — Validate, reprioritize, close stale issues
+4. **Run issue-creator skills** — Each domain gets audited, issues created
+5. **Adaptive agent analysis** — Based on backlog size, run specialized agents
+6. **Dedupe & consolidate** — Merge duplicates, finalize issue set
+7. **Summarize** — Report P0/P1/P2/P3 counts and recommended focus
 
 ## Priority System
 
@@ -108,7 +109,60 @@ Store content as `{vision}` for agent context throughout session.
 - Creates documentation artifact
 - Enables other skills to reference it
 
-### Step 2: Audit Existing Backlog
+### Step 2: Capture What's On Your Mind
+
+Before structured analysis, ask:
+
+```
+Anything on your mind? Bugs you've noticed, UX friction, missing features,
+nitpicks while using the app? These become issues alongside the automated findings.
+
+(Skip if nothing comes to mind)
+```
+
+**What this captures:**
+- Bugs encountered during manual testing
+- UX friction points noticed while using the app
+- Missing features that became obvious
+- "Why doesn't this..." observations
+- Quality-of-life improvements
+- Things that annoyed you today
+
+**For each item provided:**
+1. Clarify if needed (one follow-up max)
+2. Assign tentative priority based on description
+3. Create as GitHub issue with `source: user-observation` tag
+4. Include in final summary
+
+**Why this step matters:**
+- User has context automation doesn't (how it *feels* to use the app)
+- Catches issues that slip through automated checks
+- Captures the "I keep meaning to file this" backlog
+- Makes groom feel collaborative, not just audit
+
+**Format for user-submitted issues:**
+
+```markdown
+## Title
+[P{0-3}] {user's description, cleaned up}
+
+## Labels
+- priority/p{n}
+- domain/{best-fit}
+- source/user-observation
+
+## Body
+### Problem
+{user's observation}
+
+### Context
+Reported during /groom session
+
+---
+Created by `/groom` (user observation)
+```
+
+### Step 3: Audit Existing Backlog
 
 **Critical:** Existing issues are not sacred. They may be stale, irrelevant, misprioritized, or duplicative. Every issue must be validated.
 
@@ -161,7 +215,7 @@ gh issue close 123 --comment "Duplicate of #456"
 
 This prevents backlog bloat and ensures the backlog reflects current reality.
 
-### Step 3: Run Issue-Creator Skills
+### Step 4: Run Issue-Creator Skills
 
 Invoke in sequence (each creates GitHub issues):
 
@@ -182,7 +236,7 @@ Invoke in sequence (each creates GitHub issues):
 - Can be run independently
 - Easy to update without changing groom
 
-### Step 4: Adaptive Agent Analysis
+### Step 5: Adaptive Agent Analysis
 
 After issue creation, count by priority:
 
@@ -210,11 +264,12 @@ Full suite:
 
 Each agent receives `{vision}` context and creates additional issues.
 
-### Step 5: Dedupe & Consolidate
+### Step 6: Dedupe & Consolidate
 
-**Two sources of duplicates:**
-1. New issues created in Steps 3-4 that overlap with each other
-2. New issues that overlap with existing issues kept from Step 2
+**Three sources of duplicates:**
+1. User observations (Step 2) may overlap with automated findings
+2. New issues from Steps 4-5 that overlap with each other
+3. New issues that overlap with existing issues kept from Step 3
 
 **Find duplicates:**
 
@@ -222,7 +277,7 @@ Each agent receives `{vision}` context and creates additional issues.
 # Find potential duplicates (similar titles)
 gh issue list --state open --json number,title,labels | jq '.[] | .title' | sort | uniq -d
 
-# Review issues flagged for consolidation in Step 2
+# Review issues flagged for consolidation in Step 3
 # These were marked as "consolidate with new findings"
 ```
 
@@ -231,7 +286,7 @@ gh issue list --state open --json number,title,labels | jq '.[] | .title' | sort
 - Close others with link to canonical: `gh issue close 123 --comment "Consolidated into #456"`
 - Merge unique details from closed issues into the kept issue
 
-**For issues to consolidate from Step 2:**
+**For issues to consolidate from Step 3:**
 - If new findings cover the same ground → close old, reference new
 - If new findings add to old → update old issue with new details
 - If old issue is more comprehensive → close new, reference old
@@ -241,7 +296,7 @@ gh issue list --state open --json number,title,labels | jq '.[] | .title' | sort
 - Verify all open issues have domain labels
 - Verify no orphaned issues (no priority, no domain)
 
-### Step 6: Summarize
+### Step 7: Summarize
 
 Output final report:
 
