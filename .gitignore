@@ -35,8 +35,8 @@ chrome/chrome-native-host
 agents/memory/
 lessons/
 
-# Debug logs
-debug/
+# Debug logs (not skills/debug/)
+/debug/
 
 # Session plans (temporary artifacts)
 plans/
