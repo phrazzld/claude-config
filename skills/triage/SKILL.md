@@ -106,6 +106,15 @@ Actions:
 
 ## Scripts
 
+### Via Sentry MCP (Preferred)
+
+When Sentry MCP is configured, use direct queries:
+- "Show me unresolved errors in production"
+- "What's the triage score for issue VOL-456?"
+- "Get full context for the top error"
+
+### Via CLI Scripts
+
 ```bash
 # Multi-source orchestrator
 ~/.claude/skills/triage/scripts/check_all_sources.sh
@@ -114,6 +123,10 @@ Actions:
 ~/.claude/skills/triage/scripts/check_sentry.sh
 ~/.claude/skills/triage/scripts/check_vercel_logs.sh
 ~/.claude/skills/triage/scripts/check_health_endpoints.sh
+
+# Sentry CLI directly
+sentry-cli issues list --project=$SENTRY_PROJECT --status=unresolved
+sentry-cli issues describe ISSUE-ID
 
 # Postmortem generator
 ~/.claude/skills/triage/scripts/generate_postmortem.sh ISSUE-ID
@@ -156,6 +169,37 @@ SENTRY_PROJECT      # From .sentryclirc or .env.local
 
 # Optional for Vercel
 VERCEL_TOKEN        # For `vercel logs` access
+```
+
+## MCP Configuration (Recommended)
+
+For AI-assisted triage, configure Sentry MCP:
+
+```json
+{
+  "mcpServers": {
+    "sentry": {
+      "url": "https://mcp.sentry.dev/mcp",
+      "transport": "http"
+    }
+  }
+}
+```
+
+Or local with token:
+```json
+{
+  "mcpServers": {
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "@sentry/mcp-server"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "your-token",
+        "SENTRY_ORG": "your-org"
+      }
+    }
+  }
+}
 ```
 
 ## Reuses

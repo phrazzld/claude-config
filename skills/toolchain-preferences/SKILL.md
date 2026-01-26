@@ -151,12 +151,14 @@ pnpm add posthog-js
 
 **Track conversion events only:** signup, subscription, import, key actions. Let autocapture handle generic clicks.
 
-### Web Vitals: Vercel Analytics (Auto-configured)
+### Web Vitals: Vercel Analytics (Web Vitals only)
 
 **Why Vercel Analytics:**
 - Zero config on Vercel deployments
 - Core Web Vitals tracking
 - Free unlimited pageviews
+
+**Note:** Vercel Analytics lacks CLI/API access. Use PostHog for product analytics.
 
 Already included in `@vercel/analytics` — no action needed.
 
@@ -176,6 +178,8 @@ Already included in `@vercel/analytics` — no action needed.
 ❌ **Custom analytics** — 800+ hours to reach feature parity; free tiers cover you
 
 ❌ **Google Analytics** — Privacy concerns, poor product analytics
+
+❌ **Dashboard-only tools** — No CLI/API = not automatable
 
 ### Decision Tree
 
@@ -315,3 +319,31 @@ Choose tools that:
 4. Match project requirements (not all projects need real-time)
 
 **Prefer boring technology that works over shiny technology that might.**
+
+## Tool Selection Criteria
+
+Evaluate tools against these requirements (priority order):
+
+### 1. CLI-First (Required)
+Tool must be fully operable from command line. Dashboard-only = rejected.
+
+### 2. API-Native (Required)
+Programmatic access for automation and scripting.
+
+### 3. MCP-Ready (Strongly Preferred)
+Model Context Protocol server for AI agent integration. Check:
+- Official MCP server: `@stripe/mcp`, `@posthog/mcp-server`, Sentry MCP
+- Community MCP server: acceptable if maintained
+- No MCP: acceptable only if CLI/API are excellent
+
+### Current Stack MCP Status
+
+| Service | MCP | Notes |
+|---------|-----|-------|
+| PostHog | ✅ Official | `@posthog/mcp-server` |
+| Sentry | ✅ Official | `@sentry/mcp-server` |
+| Stripe | ✅ Official | `@stripe/mcp` |
+| Vercel | ✅ Official | `@vercel/mcp` |
+| GitHub | ✅ Official | `@modelcontextprotocol/server-github` |
+| Clerk | ❌ | Monitor for MCP support |
+| Convex | ❌ | CLI is good, no MCP yet |

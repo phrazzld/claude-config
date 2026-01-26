@@ -87,7 +87,25 @@ command -v stripe >/dev/null && echo "✓ Stripe CLI installed" || echo "✗ Str
 stripe config --list 2>/dev/null | head -5 || echo "Stripe CLI not configured"
 ```
 
-### 6. Deep Audit
+### 6. Local Dev Webhook Sync Check
+
+```bash
+# Does pnpm dev auto-start stripe listener?
+if grep -q "stripe.*listen" package.json 2>/dev/null; then
+  echo "✓ Auto-starts stripe listen"
+
+  # Is there a sync script?
+  if [ -f scripts/dev-stripe.sh ] && grep -q "print-secret" scripts/dev-stripe.sh 2>/dev/null; then
+    echo "✓ Webhook secret auto-sync configured"
+  else
+    echo "⚠ No webhook secret auto-sync - will get 400 errors after CLI restart"
+  fi
+else
+  echo "○ Manual stripe listen (no auto-sync needed)"
+fi
+```
+
+### 7. Deep Audit
 
 Spawn `stripe-auditor` agent for comprehensive review:
 - Checkout session parameters
@@ -116,6 +134,7 @@ Spawn `stripe-auditor` agent for comprehensive review:
 - Subscription cancellation not handled gracefully
 - No retry logic on transient Stripe errors
 - Stripe CLI not using profiles (sandbox vs production)
+- No auto-sync of local webhook secret - `pnpm dev` auto-starts `stripe listen` but doesn't sync the ephemeral secret to `.env.local`. After CLI restart, webhooks will return 400.
 
 ### P3: Nice to Have
 - Consider adding Stripe Tax
@@ -146,6 +165,7 @@ Spawn `stripe-auditor` agent for comprehensive review:
 | No idempotency keys | P2 |
 | Poor error handling | P2 |
 | Missing CLI profiles | P2 |
+| No webhook secret auto-sync | P2 |
 | Advanced features | P3 |
 
 ## Related

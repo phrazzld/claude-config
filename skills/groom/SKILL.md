@@ -46,7 +46,14 @@ Orchestrate comprehensive backlog grooming. Create prioritized issues across all
    ├─ Compelling landing page
    ├─ Boutique onboarding
    ├─ Stripe monetization
-   └─ Viral growth infrastructure
+   ├─ Viral growth infrastructure
+   └─ Marketing readiness (demo video, brand profile, analytics, distribution prep)
+
+**Marketing Readiness checks:**
+- Demo video exists (30-60s screen recording)
+- brand-profile.yaml configured
+- PostHog events defined (signup, activation, [core_action])
+- Distribution drafts prepared (Twitter, Reddit, HN)
 
 🟢 P3+: EVERYTHING ELSE
    └─ Innovation, polish, strategic improvements

@@ -88,6 +88,16 @@ grep -rE "catch\s*\(\s*\)" --include="*.ts" --include="*.tsx" src/ app/ 2>/dev/n
 | Silent failures, missing checks | P2 |
 | Missing monitoring, improvements | P3 |
 
+## Analytics Note
+
+This skill checks production health (errors, logs, endpoints), not product analytics.
+
+For analytics auditing, see `/check-observability`. Note:
+- **PostHog** is preferred for product analytics (has MCP server)
+- **Vercel Analytics** is limited to web vitals only (no CLI/API)
+
+If you need to investigate user behavior or funnels during incident response, query PostHog via MCP.
+
 ## Related
 
 - `/log-production-issues` - Create GitHub issues from findings

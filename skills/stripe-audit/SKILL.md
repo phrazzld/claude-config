@@ -51,6 +51,12 @@ The auditor should examine:
 - No trailing whitespace in secrets?
 - Test keys in dev, live keys in prod?
 
+**Local Development**
+- Does `pnpm dev` auto-start `stripe listen`?
+- If yes, is there a sync script that captures the ephemeral secret?
+- Script uses `--print-secret` flag?
+- Secret synced to correct target (Convex env or .env.local)?
+
 **Webhook Health**
 - Endpoints registered correctly?
 - URL returns non-3xx on POST?
@@ -110,6 +116,10 @@ SUBSCRIPTION LOGIC
 SECURITY
 ✓ No hardcoded keys
 ✓ Signature verification present
+
+LOCAL DEVELOPMENT
+✓ Auto-starts stripe listen
+✗ No webhook secret auto-sync
 
 BUSINESS MODEL
 ✓ Single tier

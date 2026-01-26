@@ -15,7 +15,7 @@ See everything. Find traction signals.
 ## What This Does
 
 Aggregates metrics from all MistyStep products into a single view:
-- **Traffic**: Vercel Analytics per domain
+- **Traffic**: PostHog analytics per project (with MCP)
 - **Revenue**: Stripe (subscriptions, one-time payments)
 - **Errors**: Sentry error counts
 - **Changes**: Week-over-week deltas with anomaly flags
@@ -46,7 +46,7 @@ Aggregates metrics from all MistyStep products into a single view:
 ### 1. Load Product Registry
 
 Read `products.yaml` for the list of products and their API identifiers:
-- Vercel project IDs
+- PostHog project IDs
 - Stripe account/product IDs
 - Sentry project slugs
 - Domain names
@@ -55,11 +55,18 @@ Read `products.yaml` for the list of products and their API identifiers:
 
 For each product, fetch:
 
-**Traffic (Vercel Analytics API)**
+**Traffic (PostHog API / MCP)**
 ```bash
-# Requires VERCEL_TOKEN env var
-curl -s "https://vercel.com/api/web-analytics/stats?projectId=${PROJECT_ID}&from=${LAST_WEEK}&to=${NOW}" \
-  -H "Authorization: Bearer $VERCEL_TOKEN"
+# Via PostHog MCP (preferred - Claude can query directly)
+# Or via CLI:
+curl -s "https://app.posthog.com/api/projects/${PROJECT_ID}/insights/trend/" \
+  -H "Authorization: Bearer $POSTHOG_API_KEY" \
+  -d '{"events": [{"id": "$pageview"}], "date_from": "-7d"}'
+
+# For specific breakdown by referrer:
+curl -s "https://app.posthog.com/api/projects/${PROJECT_ID}/insights/trend/" \
+  -H "Authorization: Bearer $POSTHOG_API_KEY" \
+  -d '{"events": [{"id": "$pageview"}], "breakdown": "$referrer", "date_from": "-7d"}'
 ```
 
 **Revenue (Stripe API)**
@@ -99,13 +106,13 @@ Edit `~/.claude/skills/dashboard/products.yaml` to configure products:
 products:
   - name: Volume
     domain: volume.app
-    vercel_project_id: prj_xxx
+    posthog_project_id: 12345  # Changed from vercel_project_id
     stripe_product_id: prod_xxx
     sentry_project: volume
 
   - name: Heartbeat
     domain: heartbeat.app
-    vercel_project_id: prj_yyy
+    posthog_project_id: 12345
     stripe_product_id: prod_yyy
     sentry_project: heartbeat
 
@@ -115,8 +122,9 @@ products:
 ## Required Environment Variables
 
 ```bash
-# Vercel - for traffic analytics
-VERCEL_TOKEN=xxx
+# PostHog - for traffic analytics (preferred)
+POSTHOG_API_KEY=phx_xxx
+POSTHOG_PROJECT_ID=12345
 
 # Stripe - for revenue
 STRIPE_SECRET_KEY=sk_live_xxx
@@ -125,6 +133,8 @@ STRIPE_SECRET_KEY=sk_live_xxx
 SENTRY_AUTH_TOKEN=xxx
 SENTRY_ORG=mistystep
 ```
+
+**Note:** Vercel Analytics is NOT used because it lacks CLI/API access. PostHog provides equivalent traffic data with MCP integration.
 
 ## Usage
 
@@ -157,7 +167,7 @@ When you see ⚠️ SIGNAL:
 ## Fallback: Browser Automation
 
 If APIs aren't configured, fall back to browser automation:
-1. Open Vercel dashboard in Chrome
+1. Open PostHog dashboard in Chrome
 2. Navigate to each project's analytics
 3. Screenshot or extract numbers
 4. Repeat for Stripe and Sentry dashboards
@@ -167,5 +177,6 @@ This is slower but works without API setup.
 ## Related Skills
 
 - `/observability` - Full monitoring setup (Sentry, PostHog, etc.)
+- `/marketing-status` - Marketing-focused metrics with PostHog MCP
 - `/stripe` - Stripe integration audit
 - `/double-down` - What to do when traction appears (future skill)
