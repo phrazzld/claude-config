@@ -89,6 +89,45 @@ Create alert via Sentry CLI or scripts:
 ~/.claude/skills/sentry-observability/scripts/create_alert.sh --name "New Errors" --type issue
 ```
 
+**No PostHog analytics (P1):**
+1. Install dependency:
+```bash
+pnpm add posthog-js
+```
+
+2. Create analytics module from template:
+   - Source: `~/.claude/skills/observability/references/posthog-patterns.md`
+   - Target: `lib/analytics/posthog.ts`
+
+3. Create PostHogProvider:
+   - Target: `components/providers/PostHogProvider.tsx`
+   - If Clerk detected, include user identification integration
+
+4. Update `app/layout.tsx`:
+   - Wrap children with `<PostHogProvider>`
+   - Place inside existing providers (ClerkProvider, ConvexClientProvider)
+
+5. Add env vars to `.env.example`:
+```bash
+# PostHog [REQUIRED] - Product analytics
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
+
+6. Verify setup:
+```bash
+pnpm dev
+# Open browser, check PostHog debug mode shows events
+# Check PostHog dashboard for incoming events
+```
+
+**PostHog installed but not configured (P2):**
+Add to `.env.local`:
+```
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx  # From PostHog project settings
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
+
 ### 4. Verify
 
 After fix:

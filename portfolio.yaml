@@ -1,0 +1,36 @@
+# Portfolio Configuration
+# Central registry of all projects for cross-product analytics and monitoring
+
+# Single PostHog project for all apps (filter by $host property)
+posthog_project_id: "${POSTHOG_PROJECT_ID}"
+
+# All products send to one PostHog project
+# Query pattern: Events where $host = "domain.com"
+# Benefits: Single API key, cross-product analytics, simpler quota management
+
+projects:
+  # - name: volume
+  #   domain: volume.fitness
+  #   description: Fitness tracking app
+  #   sentry_project: volume
+  #   stripe_account: acct_xxx
+  #   active: true
+
+  # - name: heartbeat
+  #   domain: heartbeat.app
+  #   description: Health monitoring
+  #   sentry_project: heartbeat
+  #   stripe_account: acct_xxx
+  #   active: true
+
+# Monitoring queries (via PostHog MCP):
+# - "Show traffic for volume.fitness this week" → filters by $host
+# - "Compare signup rates across all products" → groups by $host
+# - "Which product has highest activation rate?" → aggregates by $host
+
+# Standard events tracked across all projects:
+# - user_signed_up
+# - user_activated
+# - subscription_started
+# - subscription_cancelled
+# - feature_used

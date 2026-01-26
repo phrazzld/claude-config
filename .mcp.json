@@ -12,6 +12,13 @@
         "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
         "SENTRY_ORG": "${SENTRY_ORG}"
       }
+    },
+    "posthog": {
+      "command": "npx",
+      "args": ["-y", "@andrew_eragon/mcp-server-posthog"],
+      "env": {
+        "POSTHOG_API_KEY": "${POSTHOG_PERSONAL_API_KEY}"
+      }
     }
   }
 }

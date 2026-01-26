@@ -65,14 +65,19 @@ grep -rE "database|redis|stripe|convex" app/api/health/ 2>/dev/null && echo "✓
 ### 4. Analytics Check
 
 ```bash
-# Vercel Analytics?
-grep -q "@vercel/analytics" package.json 2>/dev/null && echo "✓ Vercel Analytics" || echo "- Vercel Analytics not installed"
+# PostHog (required for user-facing apps)?
+if grep -q "posthog" package.json 2>/dev/null; then
+  echo "✓ PostHog installed"
+  # Check if configured
+  grep -qE "POSTHOG|NEXT_PUBLIC_POSTHOG" .env.local 2>/dev/null && echo "✓ PostHog configured" || echo "⚠ PostHog env vars missing (P2)"
+else
+  echo "✗ PostHog not installed (P1: required for user-facing apps)"
+fi
 
-# PostHog?
-grep -q "posthog" package.json 2>/dev/null && echo "✓ PostHog" || echo "- PostHog not installed"
+# Vercel Analytics (web vitals only)?
+grep -q "@vercel/analytics" package.json 2>/dev/null && echo "✓ Vercel Analytics (web vitals)" || echo "- Vercel Analytics not installed (optional)"
 
-# Any analytics?
-grep -rE "analytics|gtag|plausible|fathom" --include="*.ts" --include="*.tsx" . 2>/dev/null | grep -v node_modules | head -3
+# Note: Vercel Analytics has no CLI/API - prefer PostHog for product analytics
 ```
 
 ### 5. Alerting Check
@@ -107,6 +112,7 @@ Spawn `observability-advocate` agent to detect:
 - No structured logging (127 console statements)
 - Health endpoint too shallow (no database check)
 - No alerting configured
+- No PostHog analytics (user-facing app needs product analytics)
 
 ### P2: Important (Should Have)
 - No analytics configured
@@ -115,7 +121,7 @@ Spawn `observability-advocate` agent to detect:
 
 ### P3: Nice to Have
 - Consider adding Sentry performance monitoring
-- Consider PostHog for product analytics
+- Consider Vercel Analytics for web vitals
 - Consider structured logging with Pino
 
 ## Current Status
@@ -140,10 +146,15 @@ Spawn `observability-advocate` agent to detect:
 | No structured logging | P1 |
 | Shallow health checks | P1 |
 | No alerting | P1 |
-| No analytics | P2 |
+| No PostHog (user-facing app) | P1 |
 | Console.log overuse | P2 |
 | No uptime monitoring | P2 |
 | Performance monitoring | P3 |
+| No Vercel Analytics | P3 |
+
+## MCP Availability Note
+
+PostHog has an official MCP server (`@posthog/mcp-server`), making it the preferred choice for AI-assisted analytics workflows. Vercel Analytics lacks API/MCP access.
 
 ## Related
 

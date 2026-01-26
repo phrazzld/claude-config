@@ -28,12 +28,24 @@ pnpm add posthog-js
 // lib/analytics/posthog.ts
 import posthog from "posthog-js";
 
-// Type-safe event definitions
-export type AnalyticsEvent =
-  | { name: "signup_completed"; properties: Record<string, never> }
-  | { name: "book_added"; properties: { source: "manual" | "import" | "search" } }
+// STANDARD EVENTS (enforced across all projects)
+// These event names are consistent across the portfolio for cross-product analytics
+export type StandardEvent =
+  | { name: "user_signed_up"; properties: Record<string, never> }
+  | { name: "user_activated"; properties: { action: string } }
   | { name: "subscription_started"; properties: { plan: string; trial: boolean } }
+  | { name: "subscription_cancelled"; properties: { reason?: string } }
   | { name: "feature_used"; properties: { feature: string } };
+
+// PROJECT-SPECIFIC EVENTS (extend StandardEvent for your app)
+// Example: Book tracking app
+export type ProjectEvent =
+  | StandardEvent
+  | { name: "book_added"; properties: { source: "manual" | "import" | "search" } }
+  | { name: "book_completed"; properties: { pages: number } };
+
+// Combined type for your app (use this)
+export type AnalyticsEvent = ProjectEvent;
 
 export function initPostHog() {
   const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;

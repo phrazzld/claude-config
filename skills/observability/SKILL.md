@@ -12,7 +12,7 @@ Production observability with one service. Audit, fix, verify—every time.
 
 ## Philosophy
 
-**One service, not twenty.** Sentry handles errors. Vercel handles logs. That's it.
+**Two services, not twenty.** Sentry handles errors. PostHog handles product analytics. Vercel captures logs automatically.
 
 **CLI-first.** Everything manageable from command line. No dashboard clicking.
 
@@ -34,18 +34,20 @@ git checkout -b infra/observability-$(date +%Y%m%d)
 
 ```
 App → Sentry (errors, performance)
+    → PostHog (product analytics, feature flags)
     → stdout (Vercel captures automatically)
     → /api/health (uptime monitoring)
 
 AI Integration:
     Sentry MCP → Claude (query errors, analyze, fix)
+    PostHog MCP → Claude (query funnels, cohorts, events)
     Sentry webhook → GitHub Action → agent (auto-triage)
     CLI scripts → manual triage and resolution
 ```
 
-**Services:** 1 (Sentry)
-**Built-in free:** Vercel logs, Vercel Analytics
-**CLI-manageable:** 100%
+**Services:** 2 (Sentry + PostHog)
+**Built-in free:** Vercel logs
+**CLI-manageable:** 100% (both have MCP servers)
 
 ## Process
 
@@ -84,8 +86,11 @@ Every project needs:
 - Webhook for AI agent integration
 - Triage scripts for CLI management
 
+**Recommended (user-facing apps):**
+- PostHog product analytics (funnels, cohorts, session replay)
+- PostHog feature flags (replaces LaunchDarkly)
+
 **Only if needed:**
-- PostHog (if you need product analytics)
 - Custom uptime monitoring
 
 ### 3. Execute
@@ -277,7 +282,9 @@ jobs:
 
 **Vercel logs over log services.** stdout is captured automatically. No additional service needed. Query with `vercel logs`.
 
-**Vercel Analytics over PostHog/Plausible.** Free with Vercel, zero config. Add PostHog only if you need product analytics (funnels, cohorts, feature flags).
+**PostHog for product analytics.** Official MCP server, Terraform provider, all-in-one platform. 1M events/month free.
+
+**Vercel Analytics for web vitals only.** Auto-configured, free, but no API/MCP. Don't rely on it for product analytics.
 
 ## Environment Variables
 
