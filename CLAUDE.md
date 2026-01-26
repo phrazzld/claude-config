@@ -287,3 +287,16 @@ stripe -p production ...  # Production (live money)
 **Hook protection:** `stripe-profile-guard.py` blocks commands without explicit `-p` flag.
 
 **Full reference:** `~/.claude/skills/stripe/references/multi-environment.md`
+
+### 2026-01-26: Stripe Local Dev Webhook Secret Sync
+
+**Auto-start requires auto-sync.** If `pnpm dev` auto-runs `stripe listen`, it MUST also auto-sync the ephemeral webhook secret. Otherwise devs get 400 errors after CLI restarts.
+
+**Pattern**: `dev-stripe.sh` script that:
+1. Extracts secret via `stripe listen --print-secret`
+2. Syncs to Convex env (`npx convex env set`) or updates `.env.local`
+3. Then starts forwarding
+
+**Best practice**: Route webhooks to Convex HTTP (`convex/http.ts`) not Next.js - secret sync is instant, no restart needed.
+
+**Skill**: `/stripe-local-dev` codifies this pattern with ready-to-use scripts.
