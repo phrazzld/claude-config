@@ -12,7 +12,7 @@ Production observability with one service. Audit, fix, verify—every time.
 
 ## Philosophy
 
-**Two services, not twenty.** Sentry handles errors. PostHog handles product analytics. Vercel captures logs automatically.
+**Two services, not twenty.** Sentry handles errors. PostHog handles product analytics. That's it. Vercel captures stdout automatically (no setup needed).
 
 **CLI-first.** Everything manageable from command line. No dashboard clicking.
 
@@ -64,8 +64,8 @@ AI Integration:
 # Structured logging?
 grep -r "console.log\|console.error" --include="*.ts" --include="*.tsx" src/ app/ 2>/dev/null | head -5
 
-# Vercel Analytics?
-grep -q "@vercel/analytics" package.json && echo "✓ Vercel Analytics" || echo "✗ Vercel Analytics"
+# PostHog analytics?
+grep -q "posthog" package.json && echo "✓ PostHog" || echo "✗ PostHog not installed (P1)"
 ```
 
 **Spawn agent for deep review:**
@@ -81,14 +81,13 @@ Every project needs:
 - Structured logging (JSON to stdout)
 - At least one alert rule (new errors)
 
-**Recommended:**
-- Vercel Analytics (free, zero config)
-- Webhook for AI agent integration
-- Triage scripts for CLI management
-
-**Recommended (user-facing apps):**
+**Required (user-facing apps):**
 - PostHog product analytics (funnels, cohorts, session replay)
 - PostHog feature flags (replaces LaunchDarkly)
+
+**Recommended:**
+- Webhook for AI agent integration
+- Triage scripts for CLI management
 
 **Only if needed:**
 - Custom uptime monitoring
@@ -134,27 +133,6 @@ export async function GET() {
   // checks.stripe = await checkStripe();
 
   return Response.json(checks);
-}
-```
-
-**Add Vercel Analytics (optional but free):**
-```bash
-pnpm add @vercel/analytics
-```
-
-```typescript
-// app/layout.tsx
-import { Analytics } from '@vercel/analytics/react';
-
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        {children}
-        <Analytics />
-      </body>
-    </html>
-  );
 }
 ```
 
@@ -282,9 +260,9 @@ jobs:
 
 **Vercel logs over log services.** stdout is captured automatically. No additional service needed. Query with `vercel logs`.
 
-**PostHog for product analytics.** Official MCP server, Terraform provider, all-in-one platform. 1M events/month free.
+**PostHog for ALL analytics.** Official MCP server, Terraform provider, all-in-one platform. 1M events/month free.
 
-**Vercel Analytics for web vitals only.** Auto-configured, free, but no API/MCP. Don't rely on it for product analytics.
+**NOT Vercel Analytics.** It has no API, no CLI, no MCP server. Completely unusable for AI-assisted workflows. Do not install it.
 
 ## Environment Variables
 
@@ -305,7 +283,7 @@ When complete:
 - Health check endpoint at `/api/health`
 - Structured JSON logging (captured by Vercel)
 - At least one alert rule configured
-- Vercel Analytics for web vitals (optional)
+- PostHog for product analytics (user-facing apps)
 - AI agent integration ready (MCP or webhooks)
 
 User can:

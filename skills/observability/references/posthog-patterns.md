@@ -7,11 +7,14 @@ Reference patterns for adding PostHog product analytics to Next.js/Convex apps.
 ## Stack Overview
 
 ```
-MistyStep Observability:
+Observability Stack:
 ├── Error Tracking: Sentry (@sentry/nextjs)
-├── Product Analytics: PostHog (posthog-js)
-├── Web Vitals: Vercel Analytics (@vercel/analytics)
+├── Product Analytics: PostHog (posthog-js) ← REQUIRED for user-facing apps
 └── Structured Logging: Pino (pino)
+
+NOT in our stack:
+├── Vercel Analytics - NO API, NO CLI, NO MCP (unusable)
+└── Any other analytics without programmatic access
 ```
 
 ## PostHog Integration

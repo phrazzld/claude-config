@@ -91,10 +91,11 @@ Alternative: GrowSurf, Rewardful
 ### Layer 5: Advanced Analytics
 
 **Stack:**
-- PostHog - Product analytics, funnels
-- Vercel Analytics - Traffic
+- PostHog - Product analytics, funnels, traffic (via pageviews)
 - Stripe - Revenue
 - Sentry - Errors
+
+**NOT in our stack:** Vercel Analytics (no API/CLI/MCP - unusable)
 
 ## Skills to Build (When Needed)
 

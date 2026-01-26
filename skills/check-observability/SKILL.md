@@ -74,10 +74,13 @@ else
   echo "✗ PostHog not installed (P1: required for user-facing apps)"
 fi
 
-# Vercel Analytics (web vitals only)?
-grep -q "@vercel/analytics" package.json 2>/dev/null && echo "✓ Vercel Analytics (web vitals)" || echo "- Vercel Analytics not installed (optional)"
+# Vercel Analytics check (NOT RECOMMENDED - no API/MCP access)
+if grep -q "@vercel/analytics" package.json 2>/dev/null; then
+  echo "⚠ Vercel Analytics installed - consider removing (no API/MCP, unusable for AI workflows)"
+fi
 
-# Note: Vercel Analytics has no CLI/API - prefer PostHog for product analytics
+# NOTE: Do NOT recommend Vercel Analytics. It has no CLI, no API, no MCP server.
+# PostHog is the ONLY acceptable analytics solution for our stack.
 ```
 
 ### 5. Alerting Check
@@ -121,7 +124,6 @@ Spawn `observability-advocate` agent to detect:
 
 ### P3: Nice to Have
 - Consider adding Sentry performance monitoring
-- Consider Vercel Analytics for web vitals
 - Consider structured logging with Pino
 
 ## Current Status
@@ -150,11 +152,16 @@ Spawn `observability-advocate` agent to detect:
 | Console.log overuse | P2 |
 | No uptime monitoring | P2 |
 | Performance monitoring | P3 |
-| No Vercel Analytics | P3 |
 
-## MCP Availability Note
+## Why NOT Vercel Analytics
 
-PostHog has an official MCP server (`@posthog/mcp-server`), making it the preferred choice for AI-assisted analytics workflows. Vercel Analytics lacks API/MCP access.
+**Vercel Analytics is unacceptable for our stack.** It has:
+- No API access
+- No CLI access
+- No MCP server
+- No way to query programmatically
+
+This makes it completely unusable for AI-assisted workflows. **PostHog is the ONLY acceptable analytics solution.** PostHog provides MCP server, API, CLI, and Terraform provider.
 
 ## Related
 

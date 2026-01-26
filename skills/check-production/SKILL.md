@@ -93,8 +93,8 @@ grep -rE "catch\s*\(\s*\)" --include="*.ts" --include="*.tsx" src/ app/ 2>/dev/n
 This skill checks production health (errors, logs, endpoints), not product analytics.
 
 For analytics auditing, see `/check-observability`. Note:
-- **PostHog** is preferred for product analytics (has MCP server)
-- **Vercel Analytics** is limited to web vitals only (no CLI/API)
+- **PostHog** is REQUIRED for product analytics (has MCP server)
+- **Vercel Analytics** is NOT acceptable (no CLI/API/MCP - unusable for our workflow)
 
 If you need to investigate user behavior or funnels during incident response, query PostHog via MCP.
 

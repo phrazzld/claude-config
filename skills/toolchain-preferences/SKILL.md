@@ -151,16 +151,15 @@ pnpm add posthog-js
 
 **Track conversion events only:** signup, subscription, import, key actions. Let autocapture handle generic clicks.
 
-### Web Vitals: Vercel Analytics (Web Vitals only)
+### NOT Vercel Analytics
 
-**Why Vercel Analytics:**
-- Zero config on Vercel deployments
-- Core Web Vitals tracking
-- Free unlimited pageviews
+**Do NOT use Vercel Analytics.** It has:
+- No API access
+- No CLI access
+- No MCP server
+- No way to query programmatically
 
-**Note:** Vercel Analytics lacks CLI/API access. Use PostHog for product analytics.
-
-Already included in `@vercel/analytics` — no action needed.
+This makes it completely unusable for AI-assisted workflows. PostHog handles web vitals AND product analytics with full API/MCP access.
 
 ### Structured Logging: Pino
 
@@ -181,10 +180,12 @@ Already included in `@vercel/analytics` — no action needed.
 
 ❌ **Dashboard-only tools** — No CLI/API = not automatable
 
+❌ **Vercel Analytics** — No API, no CLI, no MCP (completely unusable for our workflow)
+
 ### Decision Tree
 
 **User-facing app?**
-- YES → Sentry + PostHog + Vercel Analytics
+- YES → Sentry + PostHog
 - NO (internal tool) → Sentry + structured logging only
 
 **Need feature flags?**

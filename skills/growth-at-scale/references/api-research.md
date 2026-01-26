@@ -227,17 +227,17 @@ curl -X POST "https://api.buttondown.email/v1/emails" \
 
 ## Analytics APIs
 
-### Vercel Analytics API
+### Vercel Analytics API (NOT RECOMMENDED)
 
-```bash
-curl "https://vercel.com/api/web-analytics/stats" \
-  -H "Authorization: Bearer ${VERCEL_TOKEN}" \
-  -d "projectId=${PROJECT_ID}" \
-  -d "from=${START_DATE}" \
-  -d "to=${END_DATE}"
-```
+**DO NOT USE.** While Vercel has a limited API, there is:
+- No MCP server
+- No CLI access
+- No official SDK
+- Extremely limited query capabilities
 
-### PostHog API
+Use PostHog for ALL analytics needs.
+
+### PostHog API (RECOMMENDED)
 
 ```bash
 curl -X POST "https://app.posthog.com/capture/" \
