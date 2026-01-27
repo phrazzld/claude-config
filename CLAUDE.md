@@ -155,148 +155,41 @@ Pattern: Research (Gemini) → Direction (synthesize) → Delegate (Codex)
 - Comments defending bad design instead of changing the design.
 - **Trusting internal knowledge about LLM models, API versions, or external services.** Always web search first.
 
+## CLI-First Operations (MANDATORY)
+
+**Never say "you'll need to manually configure..."** Every tool in the stack has CLI automation.
+
+| Service | CLI Tool | Common Commands |
+|---------|----------|-----------------|
+| Vercel | `vercel` | `vercel env add KEY production`, `vercel env ls` |
+| Convex | `npx convex` | `npx convex env set --prod KEY "value"` |
+| Stripe | `stripe` | `stripe products list`, `stripe prices create` |
+| Sentry | `sentry-cli` | `sentry-cli issues list` |
+| PostHog | `curl` API | See `/cli-reference` skill |
+| GitHub | `gh` | `gh issue create`, `gh pr create` |
+
+**Anti-pattern:** "Go to Vercel dashboard > Settings > Environment Variables"
+**Pattern:** `printf '%s' 'value' | vercel env add KEY production`
+
+When infrastructure configuration is needed, check `/cli-reference` skill first.
+
 ## Staging
 
 Learnings land here first. When this section grows, `/distill` graduates items to skills/agents/commands.
 
 <!-- Add learnings below this line -->
 
-### 2026-01-16: External Integration Debugging
-
-**Check config before code.** When external services (Stripe, Clerk, etc.) fail in production:
-1. First verify env vars are set on production deployment: `./scripts/verify-env.sh --prod-only`
-2. Then check service logs and dashboards
-3. Only then consider code changes
-
-Root cause is often missing config, not code bugs. Code analysis can burn hours when `env list` would reveal the problem in seconds.
-
-**Dev ≠ Prod is a footgun.** Separate deployments mean env vars must be set twice. The `--prod` flag is easy to forget. Always verify:
-```bash
-CONVEX_DEPLOYMENT=prod:... npx convex env list | grep <SERVICE>
-```
-
-**Don't over-engineer under pressure.** When debugging production issues, resist the urge to build sophisticated solutions before confirming the diagnosis. Simpler is better until proven otherwise.
-
-### 2026-01-17: Environment Variable Hygiene
-
-**Trailing whitespace kills.** Env vars with `\n` or trailing spaces cause cryptic errors:
-- "Invalid character in header content" (HTTP headers)
-- Webhook signature mismatches
-- Silent authentication failures
-
-**Rules:**
-1. Use `printf '%s' 'value'` not `echo` when setting secrets via CLI
-2. Always trim: `value=$(echo "$var" | tr -d '\n')`
-3. Validate format before use: `[[ "$key" =~ ^sk_(live|test)_ ]]`
-
-**Cross-platform parity.** Shared tokens (webhook secrets, auth tokens) must match across:
-- Vercel environment
-- Convex environment
-- Local .env.local
-
-Verify parity: tokens set on one platform but not the other cause silent failures.
-
-**CLI environment gotcha.** `CONVEX_DEPLOYMENT=prod:xxx npx convex data` may return dev data.
-Always use `npx convex run --prod` flag or verify via Convex Dashboard.
-
-### 2026-01-17: DEBUG MODE — Incident Investigation Protocol
-
-**OODA-V Framework.** When debugging production issues, follow this loop:
-
-1. **OBSERVE** — Gather raw data before forming hypotheses
-   - Check logs first: "Is the request hitting our server?"
-   - If no logs, it's network/routing/redirects, NOT application code
-   - Run basic reachability checks: `curl -I <endpoint>`
-
-2. **ORIENT** — Generate hypotheses with specific tests
-   - List 3 hypotheses ranked by likelihood
-   - For each: "What test would disprove this?"
-   - Include the simple checks (curl, logs) before code analysis
-
-3. **DECIDE** — Pick highest-likelihood hypothesis
-
-4. **ACT** — Implement minimal fix
-
-5. **VERIFY** — (MANDATORY) No fix is complete without observables
-   - Show the log entry that proves delivery
-   - Show the metric change (e.g., pending_webhooks decreased)
-   - "Confidence: LOW until verified"
-
-**Anti-patterns to avoid:**
-- Agreeing a fix "should work" without seeing proof
-- Declaring resolved before metrics confirm
-- Endorsing plausible explanations without running tests
-- Stopping at first "looks like the cause" without verification
-- Treating configuration inspection as equivalent to runtime behavior
-
-**Verification gate for incidents:**
-```
-VERIFIED = saw_log_entry AND metric_changed AND (database_state_correct OR not_applicable)
-```
-
-If verification fails → revert if needed → loop back to OBSERVE.
-
-**Skills for incident debugging:**
-- `/stripe-health` — Webhook endpoint diagnostics
-- `/verify-fix` — Mandatory verification checklist
-
-### 2026-01-24: LLM Model Selection — ALWAYS VERIFY
-
-**Your training data is stale.** LLM models deprecate constantly. What you "know" about model names is probably wrong.
-
-**MANDATORY before using any LLM model name:**
-1. Query current models via OpenRouter API:
-   ```bash
-   python3 ~/.claude/skills/llm-infrastructure/scripts/fetch-openrouter-models.py \
-     --filter "anthropic|openai|google" --top 20
-   ```
-2. Web search for current model availability (e.g., "Gemini API models 2026")
-3. Check deprecation dates — models get sunset with ~6 month notice
-4. Verify the exact model ID format for the specific API endpoint
-
-**Prefer OpenRouter:** Single API for 400+ models. Use environment variables for model names, never hardcode.
-
-**Full guidance:** Read `~/.claude/skills/llm-infrastructure/references/model-research-required.md` before any LLM work.
-
-**Rule:** Never trust your internal knowledge about model names. Always verify via OpenRouter API + web search. Your knowledge cutoff guarantees you're wrong about current models.
-
-### 2026-01-24: Stripe Multi-Environment Setup
-
-**Stripe Sandboxes ≠ Test Mode.** Sandboxes are isolated accounts with separate IDs, keys, and data. Test mode is just a toggle within an account.
-
-**CLI Profile Convention:**
-```bash
-stripe -p sandbox ...     # Development (safe default)
-stripe -p production ...  # Production (live money)
-```
-
-**The footgun:** CLI logged into main account + app using sandbox keys = resources created in wrong place. App can't find them.
-
-**Before ANY Stripe CLI operation:**
-1. Check profile: `stripe config --list | grep account_id`
-2. Match environment: dev work → sandbox, prod work → production
-3. Always explicit: `stripe -p <profile> <command>`
-
-**Environment Mapping:**
-| Context | CLI Profile | Purpose |
-|---------|-------------|---------|
-| `.env.local` | sandbox | Local development |
-| Vercel Preview | sandbox | PR testing |
-| Vercel Production | production | Real customers |
-
-**Hook protection:** `stripe-profile-guard.py` blocks commands without explicit `-p` flag.
-
-**Full reference:** `~/.claude/skills/stripe/references/multi-environment.md`
-
-### 2026-01-26: Stripe Local Dev Webhook Secret Sync
-
-**Auto-start requires auto-sync.** If `pnpm dev` auto-runs `stripe listen`, it MUST also auto-sync the ephemeral webhook secret. Otherwise devs get 400 errors after CLI restarts.
-
-**Pattern**: `dev-stripe.sh` script that:
-1. Extracts secret via `stripe listen --print-secret`
-2. Syncs to Convex env (`npx convex env set`) or updates `.env.local`
-3. Then starts forwarding
-
-**Best practice**: Route webhooks to Convex HTTP (`convex/http.ts`) not Next.js - secret sync is instant, no restart needed.
-
-**Skill**: `/stripe-local-dev` codifies this pattern with ready-to-use scripts.
+<!--
+Graduated 2026-01-27:
+- External Integration Debugging → /debug skill
+- Environment Variable Hygiene → /env-var-hygiene skill
+- OODA-V Incident Protocol → /incident-response skill
+- LLM Model Selection → /llm-infrastructure skill
+- Stripe Multi-Environment → /stripe skill references
+- Stripe Local Dev Webhook → /stripe-local-dev skill
+- PostHog + Clerk Integration → /check-observability references
+- Auth Migration Doc Rot → /check-docs skill
+- Exit Code Documentation → /documentation-standards skill
+- Observability Setup Pitfalls → /check-observability references
+- React Patterns (7 items) → agents/react-pitfalls.md
+-->

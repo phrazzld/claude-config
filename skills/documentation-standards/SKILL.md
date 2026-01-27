@@ -359,3 +359,15 @@ The best documentation is code that doesn't need documentation. But when code ca
 - Something to write and forget
 
 **Remember:** Undocumented code is hard to use. Documented wrong code is harder.
+
+---
+
+## Exit Codes and Error Codes
+
+**Documentation drift is silent.** When documenting exit codes, error codes, or error-to-behavior mappings:
+
+1. **Trace actual code paths.** Don't document intent—document what the code actually does.
+2. **Check all callers.** An error code might be defined but never used, or used differently than named.
+3. **Grep for the constant.** `grep -rn "ExitCodeFoo" internal/` reveals actual usage.
+
+**Verification rule:** After writing error/exit code docs, verify each code against its actual trigger in the codebase.
