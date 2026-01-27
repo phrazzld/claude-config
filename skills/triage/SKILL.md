@@ -1,10 +1,10 @@
 ---
 name: triage
 description: |
-  Multi-source observability triage. Checks Sentry, Vercel logs, health endpoints.
+  Multi-source observability triage. Checks Sentry, Vercel logs, health endpoints, GitHub CI/CD.
   Drives: investigate -> fix -> PR -> postmortem workflow.
-  Invoke for: production issues, error spikes, user reports, incident response.
-argument-hint: "[action: status | investigate ISSUE-ID | fix | postmortem ISSUE-ID]"
+  Invoke for: production issues, error spikes, CI failures, user reports, incident response.
+argument-hint: "[action: status | investigate ISSUE-ID | investigate-ci RUN-ID | fix | postmortem ISSUE-ID]"
 ---
 
 # /triage
@@ -17,7 +17,8 @@ Fix production issues. Run audit, investigate, fix, postmortem.
 
 ```bash
 /triage                        # Audit and fix highest priority (default)
-/triage investigate VOL-456    # Deep dive on specific issue
+/triage investigate VOL-456    # Deep dive on specific Sentry issue
+/triage investigate-ci 12345   # Deep dive on specific CI run failure
 /triage fix                    # Create PR for current fix
 /triage postmortem VOL-456     # Generate postmortem after merge
 ```
@@ -30,6 +31,7 @@ Invoke `/check-production` primitive for parallel checks:
 1. **Sentry** - Unresolved issues via triage scripts
 2. **Vercel logs** - Recent errors in stream
 3. **Health endpoints** - `/api/health` response
+4. **GitHub CI/CD** - Failed workflow runs
 
 **Output format:**
 ```
@@ -40,6 +42,11 @@ SENTRY (volume-fitness)
   [P0] 3 unresolved issues
   Top: VOL-456 "PaymentIntent failed" (Score: 147, 23 users)
 
+GITHUB CI/CD
+  [P1] Main branch failing: "CI" workflow (run #1234)
+       Failed: Type check - 2h ago
+  [P2] 2 feature branches blocked
+
 VERCEL LOGS
   [OK] No errors in last 10 minutes
 
@@ -47,13 +54,17 @@ HEALTH ENDPOINTS
   [OK] volume.fitness/api/health (200, 45ms)
 
 RECOMMENDATION:
-  Investigate VOL-456 immediately - 23 users affected
-  Run: /triage investigate VOL-456
+  1. Investigate VOL-456 immediately - 23 users affected
+     Run: /triage investigate VOL-456
+  2. Fix main branch CI - blocking all deploys
+     Run: /triage investigate-ci 1234
 ```
 
 If all clean: "All systems nominal. No action required."
 
 ## Stage 2: Investigate
+
+### Sentry Issues
 
 **Command:** `/triage investigate ISSUE-ID`
 
@@ -65,6 +76,32 @@ Actions:
 5. Form root cause hypothesis
 
 **Output:** Investigation summary with hypothesis and next steps.
+
+### CI/CD Failures
+
+**Command:** `/triage investigate-ci RUN-ID`
+
+Actions:
+1. Fetch failed workflow run details
+   ```bash
+   gh run view RUN-ID --log-failed
+   ```
+2. Identify failed step and error message
+3. Create branch: `fix/ci-[workflow-name]-[date]`
+4. Load affected files based on error
+5. Check recent commits that may have caused regression
+
+**Common CI failure patterns:**
+
+| Failure Type | Typical Cause | Fix Approach |
+|--------------|---------------|--------------|
+| Type check | New code with type errors | Fix types locally, push |
+| Lint | Style violations | Run `pnpm lint --fix` |
+| Test | Broken/flaky tests | Run tests locally, fix or skip flaky |
+| Build | Missing deps, config issues | Check package.json, build config |
+| Deploy | Env vars, permissions | Check Vercel/platform settings |
+
+**Output:** CI investigation summary with specific error and fix approach.
 
 ## Stage 3: Fix
 
@@ -132,6 +169,28 @@ sentry-cli issues describe ISSUE-ID
 ~/.claude/skills/triage/scripts/generate_postmortem.sh ISSUE-ID
 ```
 
+### Via GitHub CLI
+
+```bash
+# List failed runs on main branch
+gh run list --branch main --status failure --limit 10
+
+# List all recent failures
+gh run list --status failure --limit 10
+
+# View failed run details
+gh run view RUN-ID
+
+# View only failed step logs
+gh run view RUN-ID --log-failed
+
+# Re-run failed jobs (after fix pushed)
+gh run rerun RUN-ID --failed
+
+# Watch a run in progress
+gh run watch RUN-ID
+```
+
 ## Workflow
 
 ```
@@ -140,21 +199,32 @@ sentry-cli issues describe ISSUE-ID
    v
 [Issues found?]
    |
-   +-- Yes --> /triage investigate ISSUE-ID
-   |              |
-   |              v
-   |           [Fix locally]
-   |              |
-   |              v
-   |           /triage fix (creates PR)
-   |              |
-   |              v
-   |           [PR merged & deployed]
-   |              |
-   |              v
-   |           /triage postmortem ISSUE-ID
+   +-- Sentry issue --> /triage investigate ISSUE-ID
+   |                       |
+   |                       v
+   |                    [Fix locally]
+   |                       |
+   |                       v
+   |                    /triage fix (creates PR)
+   |                       |
+   |                       v
+   |                    [PR merged & deployed]
+   |                       |
+   |                       v
+   |                    /triage postmortem ISSUE-ID
    |
-   +-- No --> "All systems nominal"
+   +-- CI failure --> /triage investigate-ci RUN-ID
+   |                     |
+   |                     v
+   |                  [Fix locally, push]
+   |                     |
+   |                     v
+   |                  [CI re-runs automatically]
+   |                     |
+   |                     v
+   |                  [Verify CI green]
+   |
+   +-- No issues --> "All systems nominal"
 ```
 
 ## Environment Variables

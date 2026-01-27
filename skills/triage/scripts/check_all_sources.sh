@@ -17,6 +17,7 @@ mkdir -p "$TRIAGE_TMPDIR"
 SENTRY_OUT="$TRIAGE_TMPDIR/sentry"
 VERCEL_OUT="$TRIAGE_TMPDIR/vercel"
 HEALTH_OUT="$TRIAGE_TMPDIR/health"
+GITHUB_OUT="$TRIAGE_TMPDIR/github"
 
 # Cleanup on exit
 cleanup() {
@@ -39,14 +40,21 @@ pid_vercel=$!
 timeout 15 "$SCRIPT_DIR/check_health_endpoints.sh" "$OUTPUT_FORMAT" > "$HEALTH_OUT" 2>&1 &
 pid_health=$!
 
+timeout 15 "$SCRIPT_DIR/check_github_ci.sh" > "$GITHUB_OUT" 2>&1 &
+pid_github=$!
+
 # Wait for all checks
 wait $pid_sentry 2>/dev/null; sentry_exit=$?
 wait $pid_vercel 2>/dev/null; vercel_exit=$?
 wait $pid_health 2>/dev/null; health_exit=$?
+wait $pid_github 2>/dev/null; github_exit=$?
 
 # Output results
 echo ""
 if [ -s "$SENTRY_OUT" ]; then cat "$SENTRY_OUT"; else echo "SENTRY: check timed out"; fi
+
+echo ""
+if [ -s "$GITHUB_OUT" ]; then cat "$GITHUB_OUT"; else echo "GITHUB CI/CD: check timed out"; fi
 
 echo ""
 if [ -s "$VERCEL_OUT" ]; then cat "$VERCEL_OUT"; else echo "VERCEL LOGS: check timed out"; fi
@@ -93,6 +101,17 @@ elif grep -qE "\[WARN\]" "$VERCEL_OUT" 2>/dev/null; then
   has_issues=true
 fi
 
+# Check GitHub CI results
+ci_failure_id=""
+if grep -qE "\[P1\]" "$GITHUB_OUT" 2>/dev/null; then
+  has_critical=true
+  has_issues=true
+  # Extract run ID from P1 line
+  ci_failure_id=$(grep -oE "investigate-ci [0-9]+" "$GITHUB_OUT" 2>/dev/null | grep -oE "[0-9]+" | head -1)
+elif grep -qE "\[P2\]" "$GITHUB_OUT" 2>/dev/null; then
+  has_issues=true
+fi
+
 # Output recommendation
 if $has_critical; then
   echo -e "${RED}${BOLD}RECOMMENDATION:${NC}"
@@ -107,6 +126,7 @@ if $has_critical; then
   echo ""
   echo "  Next steps:"
   [ -n "$top_issue" ] && echo "    /triage investigate $top_issue"
+  [ -n "$ci_failure_id" ] && echo "    /triage investigate-ci $ci_failure_id"
   echo "    Check Sentry dashboard"
   echo "    Review Vercel logs: vercel logs --since 30m"
 elif $has_issues; then
