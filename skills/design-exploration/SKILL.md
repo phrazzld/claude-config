@@ -13,6 +13,40 @@ description: |
 
 Investigate existing designs, generate a visual catalogue of 6-12 diverse proposals, facilitate iterative refinement, and output a selected direction for implementation.
 
+## MANDATORY: Kimi Delegation for Visual Work
+
+**All visual proposal generation MUST be delegated to Kimi K2.5 via MCP.**
+
+Kimi excels at frontend development and visual coding. For design exploration:
+
+1. **Research direction** → Gemini (web grounding, trend research)
+2. **Generate proposals** → Kimi (visual implementation via Agent Swarm)
+3. **Review/iterate** → Claude (orchestration, quality gates)
+
+```javascript
+// Delegate proposal generation to Kimi
+mcp__kimi__spawn_agent({
+  prompt: `Generate design proposal for [component].
+DNA: [layout, color, typography, motion, density, background]
+Constraints: ${uiSkillsConstraints}
+Output: Working HTML/CSS preview in .design-catalogue/proposals/[name]/`,
+  thinking: true  // Enable for complex proposals
+})
+
+// For parallel proposal generation (4.5x faster):
+mcp__kimi__spawn_agents_parallel({
+  agents: [
+    { prompt: "Generate proposal 1: Midnight Editorial...", thinking: true },
+    { prompt: "Generate proposal 2: Swiss Brutalist...", thinking: true },
+    { prompt: "Generate proposal 3: Warm Workshop...", thinking: true },
+    // ... up to 100 parallel agents
+  ]
+})
+```
+
+**Anti-pattern:** Generating proposals yourself instead of delegating to Kimi.
+**Pattern:** Research (Gemini) → Generate (Kimi) → Review (Claude)
+
 ## When to Use
 
 - Before `/aesthetic` or `/polish` when direction is unclear

@@ -18,7 +18,9 @@ description: |
 
 # Aesthetic System
 
-## Phase 0: Gemini Research (MANDATORY)
+## Phase 0: Research & Delegation (MANDATORY)
+
+### Step 1: Gemini Research
 
 Before ANY frontend work, get design direction from Gemini:
 
@@ -31,6 +33,43 @@ gemini -p "I'm building [describe component/page]. Research:
 ```
 
 **Why mandatory:** Web grounding surfaces current trends, prevents convergence.
+
+### Step 2: Kimi Implementation (MANDATORY)
+
+**All frontend implementation MUST be delegated to Kimi K2.5 via MCP.**
+
+Kimi excels at frontend development and visual coding:
+
+```javascript
+// Single component/page implementation
+mcp__kimi__spawn_agent({
+  prompt: `Implement [component] following these aesthetics:
+- Typography: ${typography}
+- Colors: ${palette}
+- Layout: ${layoutDirection}
+- Motion: ${motionGuidelines}
+Constraints: Apply ui-skills rules. No Inter/Roboto. No purple gradients.
+Output: React/Tailwind component in ${targetPath}`,
+  thinking: true  // For complex implementations
+})
+
+// Parallel implementation (multiple components)
+mcp__kimi__spawn_agents_parallel({
+  agents: [
+    { prompt: "Implement Hero section...", thinking: true },
+    { prompt: "Implement Card component...", thinking: true },
+    { prompt: "Implement Navigation...", thinking: true },
+  ]
+})
+```
+
+**Workflow:**
+1. Research direction → Gemini (web grounding, trends)
+2. Implement visuals → Kimi (Agent Swarm, parallel execution)
+3. Review quality → Claude (expert panel, quality gates)
+
+**Anti-pattern:** Implementing frontend yourself instead of delegating to Kimi.
+**Pattern:** Research (Gemini) → Build (Kimi) → Review (Claude)
 
 ## Design Thinking
 

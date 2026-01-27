@@ -13,6 +13,28 @@ argument-hint: "[route-or-url]"
 
 Generate a catalog of 5-8 design proposals before implementing anything.
 
+## MANDATORY: Kimi Delegation
+
+**All proposal generation MUST be delegated to Kimi K2.5 via MCP.**
+
+Kimi excels at frontend/visual work. Claude orchestrates, Kimi implements:
+
+```javascript
+// Generate proposals in parallel (4.5x faster than sequential)
+mcp__kimi__spawn_agents_parallel({
+  agents: [
+    { prompt: "Generate proposal 1: [DNA code]. Output: .design-catalog/proposals/01-[name]/", thinking: true },
+    { prompt: "Generate proposal 2: [DNA code]. Output: .design-catalog/proposals/02-[name]/", thinking: true },
+    // ... 5-8 total proposals
+  ]
+})
+```
+
+**Workflow:**
+1. Research direction → Gemini (web grounding)
+2. Generate proposals → Kimi (parallel agents)
+3. Validate & review → Claude (quality gates, expert panel)
+
 ## Why Catalogs
 
 Design is visual and iterative. Showing options before implementing:

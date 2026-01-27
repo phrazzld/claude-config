@@ -8,12 +8,41 @@ description: Opinionated constraints for building better interfaces with agents.
 
 When invoked, apply these opinionated constraints for building better interfaces.
 
+## MANDATORY: Kimi Delegation for UI Implementation
+
+**All UI implementation work MUST be delegated to Kimi K2.5 via MCP.**
+
+Kimi excels at frontend development. Claude reviews, Kimi builds:
+
+```javascript
+// Delegate UI implementation to Kimi
+mcp__kimi__spawn_agent({
+  prompt: `Implement [component/feature].
+Apply ui-skills constraints:
+- Tailwind CSS defaults, cn() utility
+- Accessible primitives (Base UI/Radix/React Aria)
+- No h-screen (use h-dvh), respect safe-area-inset
+- Animator only transform/opacity, max 200ms feedback
+- text-balance for headings, tabular-nums for data
+Existing patterns: [reference files]
+Output: ${targetPath}`,
+  thinking: true
+})
+```
+
+**Workflow:**
+1. Define constraints → Claude (this skill)
+2. Implement UI → Kimi (Agent Swarm)
+3. Review quality → Claude (expert panel review)
+
+**Anti-pattern:** Implementing UI yourself instead of delegating to Kimi.
+
 ## How to use
 
-- `/ui-skills`  
+- `/ui-skills`
   Apply these constraints to any UI work in this conversation.
 
-- `/ui-skills <file>`  
+- `/ui-skills <file>`
   Review the file against all constraints below and output:
   - violations (quote the exact line/snippet)
   - why it matters (1 short sentence)

@@ -13,6 +13,31 @@ argument-hint: "[selected-direction]"
 
 Implement a theme system with proper design tokens.
 
+## MANDATORY: Kimi Delegation
+
+**Theme implementation MUST be delegated to Kimi K2.5 via MCP.**
+
+Kimi excels at CSS/Tailwind work:
+
+```javascript
+mcp__kimi__spawn_agent({
+  prompt: `Implement design theme with tokens:
+Direction: ${selectedDNA}
+Typography: ${fontStack}
+Colors: ${palette}
+Use Tailwind 4 @theme directive (CSS-first).
+OKLCH for colors. Modular type scale.
+Output: Update app/globals.css with token architecture.
+Then update components to use tokens.`,
+  thinking: true
+})
+```
+
+**Workflow:**
+1. Define direction → Claude (from catalog selection)
+2. Implement tokens → Kimi (CSS/Tailwind work)
+3. Validate → Claude (quality checks)
+
 ## When to Use
 
 - After `/design-catalog` — user selected a direction
