@@ -47,5 +47,9 @@ plugins/marketplaces/claude-code-plugins/
 # Skill dependencies (generated)
 skills/*/node_modules/
 skills/*/pnpm-lock.yaml
+
+# MCP server virtual environments
+mcps/*/.venv/
+
 image-cache/
 telemetry/
