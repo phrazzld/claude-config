@@ -1,5 +1,10 @@
 {
   "mcpServers": {
+    "kimi": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["--from", "/Users/phaedrus/.claude/mcps/kimi-as-mcp", "kimi-as-mcp"]
+    },
     "exa": {
       "type": "http",
       "url": "https://mcp.exa.ai/mcp",
@@ -7,17 +12,20 @@
     },
     "sentry": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sentry"],
-      "env": {
-        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
-        "SENTRY_ORG": "${SENTRY_ORG}"
-      }
+      "args": [
+        "-y",
+        "@sentry/mcp-server",
+        "--access-token",
+        "${SENTRY_AUTH_TOKEN}",
+        "--organization-slug",
+        "${SENTRY_ORG}"
+      ]
     },
     "posthog": {
-      "command": "npx",
-      "args": ["-y", "@andrew_eragon/mcp-server-posthog"],
-      "env": {
-        "POSTHOG_API_KEY": "${POSTHOG_PERSONAL_API_KEY}"
+      "type": "http",
+      "url": "https://mcp.posthog.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${POSTHOG_PERSONAL_API_KEY}"
       }
     }
   }
