@@ -47,10 +47,10 @@ def has_stripe_integration() -> bool:
 
 
 def get_webhook_urls() -> list[str]:
-    """Get webhook URLs from Stripe CLI."""
+    """Get webhook URLs from Stripe CLI (production, live mode)."""
     try:
         result = subprocess.run(
-            ['stripe', 'webhook_endpoints', 'list'],
+            ['stripe', '-p', 'production', 'webhook_endpoints', 'list', '--live'],
             capture_output=True,
             text=True,
             timeout=10

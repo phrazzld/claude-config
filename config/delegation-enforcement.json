@@ -7,7 +7,8 @@
       "/Users/phaedrus/daybook",
       "/Users/phaedrus/Development/overmind",
       "/Users/phaedrus/Development/conviction",
-      "/Users/phaedrus/Development/heartbeat"
+      "/Users/phaedrus/Development/heartbeat",
+      "/Users/phaedrus/Development/volume"
     ],
     "patterns": [
       "**/daybook/**"

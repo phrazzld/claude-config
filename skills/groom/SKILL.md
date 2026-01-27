@@ -232,7 +232,9 @@ Invoke in sequence (each creates GitHub issues):
 | `/log-quality-issues` | Tests, CI/CD, hooks | P0-P3 |
 | `/log-doc-issues` | Documentation | P0-P3 |
 | `/log-observability-issues` | Monitoring, logging | P0-P3 |
-| `/log-stripe-issues` | Payments | P0-P3 |
+| `/log-stripe-issues` | Stripe payments | P0-P3 |
+| `/log-bitcoin-issues` | Bitcoin on-chain | P0-P3 |
+| `/log-lightning-issues` | Lightning Network | P0-P3 |
 | `/log-virality-issues` | Sharing, referrals | P0-P3 |
 | `/log-landing-issues` | Landing page | P0-P3 |
 | `/log-onboarding-issues` | New user experience | P0-P3 |
@@ -395,7 +397,7 @@ All issues created by /groom (via skills or agents):
 
 ## Labels
 - priority/p0|p1|p2|p3
-- domain/production|quality|docs|observability|stripe|virality|landing|onboarding|security|architecture|design|innovation
+- domain/production|quality|docs|observability|stripe|bitcoin|lightning|payments|virality|landing|onboarding|security|architecture|design|innovation
 - type/bug|enhancement|chore
 
 ## Body
@@ -436,16 +438,18 @@ User can:
 
 ### Primitives (Investigate)
 - `/check-production`, `/check-docs`, `/check-quality`, `/check-observability`
-- `/check-stripe`, `/check-virality`, `/check-landing`, `/check-onboarding`
+- `/check-stripe`, `/check-bitcoin`, `/check-lightning`, `/check-btcpay`, `/check-payments`
+- `/check-virality`, `/check-landing`, `/check-onboarding`
 
 ### Issue Creators (Document)
 - `/log-production-issues`, `/log-doc-issues`, `/log-quality-issues`
-- `/log-observability-issues`, `/log-stripe-issues`, `/log-virality-issues`
-- `/log-landing-issues`, `/log-onboarding-issues`
+- `/log-observability-issues`, `/log-stripe-issues`, `/log-bitcoin-issues`, `/log-lightning-issues`
+- `/log-virality-issues`, `/log-landing-issues`, `/log-onboarding-issues`
 
 ### Fixers (Act)
 - `/triage`, `/fix-docs`, `/fix-quality`, `/fix-observability`
-- `/fix-stripe`, `/fix-virality`, `/fix-landing`, `/fix-onboarding`
+- `/fix-stripe`, `/fix-bitcoin`, `/fix-lightning`
+- `/fix-virality`, `/fix-landing`, `/fix-onboarding`
 
 ## Running Individual Domains
 

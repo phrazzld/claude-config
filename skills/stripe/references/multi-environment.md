@@ -52,16 +52,30 @@ display_name = 'Your App'
 ## CLI Commands Pattern
 
 ```bash
-# ALWAYS use explicit profile
-stripe -p sandbox prices list           # Development
-stripe -p production prices list        # Production
+# ALWAYS use explicit profile AND mode flag for production
+stripe -p sandbox prices list              # Development (test mode is fine)
+stripe -p production prices list --live    # Production (MUST use --live)
 
 # Safe commands (no profile needed)
-stripe config --list                    # Check current profiles
-stripe login -p sandbox                 # Login to sandbox
-stripe login -p production              # Login to production
-stripe --help                           # Help
+stripe config --list                       # Check current profiles
+stripe login -p sandbox                    # Login to sandbox
+stripe login -p production                 # Login to production
+stripe --help                              # Help
 ```
+
+**CRITICAL: Production requires `--live` flag**
+
+The Stripe CLI defaults to test mode. Without `--live`, you'll query test data even on the production account:
+
+```bash
+# WRONG - returns test mode product IDs (prod_Tq7S...)
+stripe -p production products list
+
+# CORRECT - returns live mode product IDs (prod_TrIw...)
+stripe -p production products list --live
+```
+
+Sandboxes are isolated test environments, so test mode is appropriate. Production accounts handle real money, so always use `--live`.
 
 ## Environment Mapping
 

@@ -217,3 +217,17 @@ function ParentProvider({ children }: { children: React.ReactNode }) {
 Detection strategy:
 - Look for parent `useEffect` that initializes global/client SDKs.
 - Check child effects for SDK usage without a readiness gate.
+
+## biome-ignore for Sanitized HTML
+
+When using `dangerouslySetInnerHTML` with DOMPurify sanitization, add a biome-ignore comment:
+
+```tsx
+{/* biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized via DOMPurify */}
+<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }} />
+```
+
+The comment must:
+1. Be a JSX comment (`{/* */}`) not a JS comment
+2. Placed immediately before the element with the attribute
+3. Include rationale documenting the sanitization method

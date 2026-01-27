@@ -4,6 +4,10 @@ Stripe CLI profile guard for Claude Code.
 
 Blocks stripe commands without explicit -p/--project-name flag.
 Forces explicit environment targeting to prevent sandbox/production confusion.
+
+IMPORTANT: Production profile requires --live flag.
+- Sandbox account: isolated test environment, test mode is appropriate
+- Production account: real money, ALWAYS use --live flag
 """
 import json
 import re
@@ -23,7 +27,8 @@ SAFE_PATTERNS = [
     r"^stripe\s+login",
 ]
 
-HAS_PROFILE = re.compile(r"\s+-p\s+\w+|\s+--project-name[=\s]+\w+")
+HAS_PROFILE = re.compile(r"\s+-p\s+(\w+)|\s+--project-name[=\s]+(\w+)")
+HAS_LIVE_FLAG = re.compile(r"\s+--live\b")
 
 
 def check_command(cmd: str) -> tuple[bool, str]:
@@ -35,15 +40,33 @@ def check_command(cmd: str) -> tuple[bool, str]:
     for pattern in SAFE_PATTERNS:
         if re.search(pattern, cmd, re.IGNORECASE):
             return False, ""
-    if HAS_PROFILE.search(cmd):
-        return False, ""
-    return True, (
-        "Stripe command without explicit profile (-p flag).\n\n"
-        "Use:\n"
-        "  stripe -p sandbox ...     # Development\n"
-        "  stripe -p production ...  # Production\n\n"
-        "To check profiles: stripe config --list"
-    )
+
+    # Check for profile flag
+    profile_match = HAS_PROFILE.search(cmd)
+    if not profile_match:
+        return True, (
+            "Stripe command without explicit profile (-p flag).\n\n"
+            "Use:\n"
+            "  stripe -p sandbox ...            # Development (test mode)\n"
+            "  stripe -p production ... --live  # Production (live mode)\n\n"
+            "To check profiles: stripe config --list"
+        )
+
+    # Extract profile name
+    profile = profile_match.group(1) or profile_match.group(2)
+
+    # Production profile requires --live flag
+    if profile == "production" and not HAS_LIVE_FLAG.search(cmd):
+        return True, (
+            "Production profile requires --live flag.\n\n"
+            "Stripe CLI defaults to test mode. Production account must use live mode.\n\n"
+            "Use:\n"
+            "  stripe -p production ... --live\n\n"
+            "Example:\n"
+            "  stripe -p production products list --live"
+        )
+
+    return False, ""
 
 
 def main():
