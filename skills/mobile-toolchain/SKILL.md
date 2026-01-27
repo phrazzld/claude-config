@@ -232,6 +232,31 @@ eas submit --platform android
 }
 ```
 
+## Monorepo Integration
+
+Use monorepo when mobile must share code with web (design system, types, API clients, business logic). Prefer single repo over copy-paste.
+
+**Setup + migration:**
+- For greenfield monorepo setup, use `/monorepo-scaffold`
+- For existing app migration, use `/mobile-migrate`
+- See `/mobile-migrate` skill for complete migration workflow
+
+**Key monorepo considerations:**
+- Metro needs workspace visibility:
+  - Configure `metro.config.js` `watchFolders` to include repo root and shared packages
+  - Ensure Metro resolves workspace symlinks (Expo docs patterns)
+- Workspace references must be explicit:
+  - Use package manager workspaces (`workspace:*` or equivalent)
+  - Avoid relative `../shared` imports between apps
+- Standard shared packages layout:
+  - `packages/shared` for types, utils, API clients
+  - `packages/ui` for cross-platform components/tokens
+  - Keep mobile-only modules out of shared packages
+- TypeScript must agree with bundler:
+  - Add path aliases for shared packages in root `tsconfig`
+  - Mirror aliases in Babel/Metro resolver settings
+  - Export stable entrypoints from shared packages
+
 ## OTA Updates
 
 ```bash

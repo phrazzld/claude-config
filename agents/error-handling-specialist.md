@@ -47,6 +47,21 @@ Ensure applications handle errors gracefully with clear messages, proper logging
   }
   ```
 
+- [ ] **Next.js error.tsx MUST call Sentry**: Segment error boundaries catch before global-error.tsx
+  ```tsx
+  // app/error.tsx or app/dashboard/error.tsx
+  "use client";
+  import * as Sentry from "@sentry/nextjs";
+
+  export default function Error({ error, reset }: { error: Error; reset: () => void }) {
+    useEffect(() => {
+      Sentry.captureException(error);  // REQUIRED - global-error won't see this
+    }, [error]);
+    // ... render UI
+  }
+  ```
+  **Note:** `global-error.tsx` only catches errors that bubble up from root layout. Segment-specific `error.tsx` intercepts first.
+
 - [ ] **No setState in Render**: Prevent infinite render loops
   ```tsx
   // ❌ Bad: setState during render

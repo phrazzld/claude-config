@@ -234,6 +234,17 @@ try {
 }
 ```
 
+**Note on Error serialization:** Pino handles Error objects natively, but `JSON.stringify(new Error("msg"))` returns `{}` because `message`, `name`, `stack` are non-enumerable. For custom loggers, manually extract:
+
+```typescript
+function serializeError(err: unknown): Record<string, unknown> {
+  if (err instanceof Error) {
+    return { name: err.name, message: err.message, stack: err.stack };
+  }
+  return { value: String(err) };
+}
+```
+
 ### Performance Logging
 
 ```typescript

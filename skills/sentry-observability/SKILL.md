@@ -66,6 +66,32 @@ For projects **with** Sentry. Use for triage and monitoring.
 3. **Security by Default** - PII redaction, hide source maps
 4. **CLI Automation** - Version-controlled alerts
 5. **Cost Awareness** - Free tier = 5k errors/month
+6. **Env-Controlled Sampling** - Never hardcode `tracesSampleRate: 1`
+
+## tracesSampleRate Configuration
+
+**NEVER hardcode `tracesSampleRate: 1` (100%)** - exhausts quota in production.
+
+```typescript
+// sentry.*.config.ts
+function getTracesSampleRate(): number {
+  const rate = parseFloat(process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE || "");
+  if (isNaN(rate)) return 0.1;  // Default 10%
+  return Math.max(0, Math.min(1, rate));  // Clamp 0-1
+}
+
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  tracesSampleRate: getTracesSampleRate(),
+  // ...
+});
+```
+
+Add to `.env.example`:
+```bash
+# Traces sample rate (0-1, default 0.1 = 10% of requests traced)
+NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE=0.1
+```
 
 ## Environment Variables
 

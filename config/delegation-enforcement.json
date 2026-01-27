@@ -34,6 +34,7 @@
     "**/.env*",
     "**/package.json",
     "**/*.lock",
-    "**/CLAUDE.md"
+    "**/CLAUDE.md",
+    "**/.tool-versions"
   ]
 }

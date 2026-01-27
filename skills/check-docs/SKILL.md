@@ -64,6 +64,30 @@ find . -name "*.md" \( -path "./docs/*" -o -name "README.md" -o -name "CONTRIBUT
 done
 ```
 
+### 4a. Auth System Consistency Check
+
+When auth system changes (Clerk, Auth0, Convex Auth, etc.), docs often reference the old system.
+
+```bash
+# Detect auth inconsistencies
+# Check README for current auth
+current_auth=$(grep -oE "Clerk|Auth0|Convex Auth|NextAuth|Magic Link|Supabase Auth" README.md 2>/dev/null | head -1)
+
+# Check docs for references to OTHER auth systems
+if [ "$current_auth" = "Clerk" ]; then
+  # Look for outdated auth references
+  grep -rlE "Magic Link|Resend|RESEND_API_KEY|Convex Auth|EMAIL_FROM" docs/ 2>/dev/null | while read f; do
+    echo "⚠ INCONSISTENT ($f): References old auth system, but README uses Clerk"
+  done
+fi
+```
+
+**Common auth migration leftovers:**
+- `RESEND_API_KEY` when moved to Clerk (Clerk handles email)
+- `Magic Link` references when using Clerk social login
+- `Convex Auth` when using Clerk with Convex
+- `EMAIL_FROM` env var when no longer sending auth emails
+
 ### 5. Link Validation
 
 ```bash
