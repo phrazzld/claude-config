@@ -84,3 +84,55 @@ When invoked, apply these opinionated constraints for building better interfaces
 - MUST give empty states one clear next action
 - SHOULD limit accent color usage to one per view
 - SHOULD use existing theme or Tailwind CSS color tokens before introducing new ones
+
+## Expert Panel Review (MANDATORY)
+
+**Before returning ANY design output to the user, it MUST pass expert panel review.**
+
+See full details: `references/expert-panel-review.md`
+
+### Quick Reference
+
+1. Simulate 10 world-class advertorial experts:
+   - **Ogilvy** (advertising), **Rams** (industrial design), **Scher** (typography)
+   - **Wiebe** (conversion copy), **Laja** (CRO), **Walter** (UX)
+   - **Cialdini** (persuasion), **Ive** (product design), **Wroblewski** (mobile)
+   - **Millman** (brand strategy)
+
+2. Each expert scores 0-100 with specific improvement feedback
+
+3. **Threshold: 90+ average required**
+
+4. If below 90: implement feedback, iterate, re-review
+
+5. Only return design to user when 90+ achieved
+
+### Example Output
+
+```markdown
+Expert Panel Review: Hero Section
+
+| Expert | Score | Critical Improvement |
+|--------|-------|---------------------|
+| Ogilvy | 88 | Lead with benefit, not feature |
+| Rams | 94 | Clean, focused |
+| Scher | 86 | H2 needs more weight contrast |
+| Wiebe | 81 | "Get Started" → "Start Free Trial" |
+| Laja | 77 | No social proof above fold |
+| Walter | 90 | Good emotional resonance |
+| Cialdini | 83 | Add urgency element |
+| Ive | 92 | Refined execution |
+| Wroblewski | 88 | Touch targets good |
+| Millman | 85 | Voice slightly inconsistent |
+
+**Average: 86.4** ❌ Below threshold
+
+Implementing: Laja (social proof), Wiebe (CTA), Cialdini (urgency)...
+```
+
+### Anti-Patterns
+
+- ❌ Skipping review for "quick fixes"
+- ❌ Accepting 85+ as "close enough"
+- ❌ Generic feedback ("make it better")
+- ❌ Returning design without 90+ score

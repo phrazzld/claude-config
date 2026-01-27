@@ -446,6 +446,23 @@ Maintain consistency throughout, but adjust intensity:
 
 ---
 
+## Expert Panel Review (MANDATORY)
+
+**Before returning copy to user, run expert panel review.**
+
+See: `ui-skills/references/expert-panel-review.md`
+
+1. Have 10 advertorial experts (Ogilvy, Wiebe, Cialdini, etc.) score the copy 0-100
+2. Each provides specific improvement feedback
+3. **If average < 90:** Implement feedback, iterate
+4. **Only return copy when 90+ average achieved**
+
+Key reviewers for copywriting:
+- **Ogilvy** - Headlines, persuasion
+- **Wiebe** - CTA clarity, conversion copy
+- **Cialdini** - Psychological triggers
+- **Millman** - Brand voice consistency
+
 ## Related Skills
 
 - **copy-editing**: For polishing and improving existing copy (use after writing your first draft)

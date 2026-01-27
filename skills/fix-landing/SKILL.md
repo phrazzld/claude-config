@@ -108,9 +108,37 @@ Add testimonials section:
 </section>
 ```
 
-### 4. Verify
+### 4. Expert Panel Review (MANDATORY)
 
-After fix:
+**Before returning fix to user, run expert panel review.**
+
+See: `ui-skills/references/expert-panel-review.md`
+
+1. Simulate 10 world-class advertorial experts (Ogilvy, Rams, Scher, Wiebe, Laja, Walter, Cialdini, Ive, Wroblewski, Millman)
+2. Each expert scores the fixed section 0-100 with specific feedback
+3. Calculate average score
+4. **If average < 90:** Implement highest-impact feedback, iterate
+5. **If average ≥ 90:** Proceed to verification
+
+Example review output:
+```markdown
+Expert Panel Review: Hero Section Fix
+
+| Expert | Score | Critical Improvement |
+|--------|-------|---------------------|
+| Ogilvy | 85 | Lead with user benefit, not feature |
+| Wiebe | 82 | CTA needs specificity ("Start Free Trial" not "Get Started") |
+| Laja | 78 | Add social proof above fold |
+| Cialdini | 84 | Include urgency element |
+...
+**Average: 84.5** ❌ → Implementing top 4 improvements...
+```
+
+**Do not proceed until 90+ average achieved.**
+
+### 5. Verify
+
+After fix passes expert review:
 ```bash
 # Check headline exists
 grep -E "text-(4xl|5xl|6xl)" app/page.tsx
@@ -125,7 +153,7 @@ grep -E "sm:|md:|lg:" app/page.tsx | head -5
 lighthouse http://localhost:3000 --only-categories=performance
 ```
 
-### 5. Report
+### 6. Report
 
 ```
 Fixed: [P1] No clear value proposition

@@ -233,6 +233,31 @@ Options: [Finalist names]
 + "Make more changes first"
 ```
 
+### 5.5. Expert Panel Review (MANDATORY)
+
+**Before presenting any design to user, run expert panel review.**
+
+See: `ui-skills/references/expert-panel-review.md`
+
+1. Simulate 10 world-class advertorial experts (Ogilvy, Rams, Scher, Wiebe, Laja, Walter, Cialdini, Ive, Wroblewski, Millman)
+2. Each expert scores 0-100 and provides specific improvement feedback
+3. Calculate average score
+4. **If average < 90:** Implement highest-impact feedback, iterate, re-review
+5. **If average ≥ 90:** Proceed to handoff
+
+```markdown
+Expert Panel Review: [Design Name]
+
+| Expert | Score | Critical Improvement |
+|--------|-------|---------------------|
+| Ogilvy | 88 | Headline needs stronger benefit |
+| Rams | 92 | Clean execution |
+| ...
+**Average: 89.2** ❌ → Iterating...
+```
+
+**Do not return design until 90+ average achieved.**
+
 ### 6. Output & Handoff
 
 **Return selected direction:**

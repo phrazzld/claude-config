@@ -71,6 +71,23 @@ Bigger changes requiring more effort but significant improvement.
 ### Test Hypotheses
 Ideas worth A/B testing rather than assuming.
 
+## Expert Panel Review (MANDATORY)
+
+**Before returning CRO recommendations, run expert panel review on proposed changes.**
+
+See: `ui-skills/references/expert-panel-review.md`
+
+1. Have 10 advertorial experts score the optimizations 0-100
+2. Each provides specific improvement feedback
+3. **If average < 90:** Iterate on recommendations
+4. **Only return when 90+ average achieved**
+
+Key reviewers for CRO:
+- **Laja** - Conversion optimization
+- **Wiebe** - CTA and form copy
+- **Wroblewski** - Mobile and form UX
+- **Cialdini** - Persuasion psychology
+
 ## Related Skills
 
 - `ab-test-setup` - For testing changes
