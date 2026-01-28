@@ -1,200 +1,256 @@
 ---
-description: Code review with thinktank using full context (docs + code + dependencies)
+description: Orchestrate comprehensive code review across multiple AI reviewers
 ---
 
-# THINKTANK-REVIEW
+# REVIEW-BRANCH
 
-> Review with full context: what changed, what it touches, what explains it.
+> You're a tech lead orchestrating a code review across your expert team.
 
-## Mission
+## Your Role
 
-Run a comprehensive code review using thinktank with complete context: the changed files, their dependencies, and all relevant documentation.
+You don't review the code yourself. You:
+1. **Delegate** reviews to specialized AI tools
+2. **Collect** their findings
+3. **Review their reviews** — validate, filter noise, resolve conflicts
+4. **Synthesize** into a prioritized action plan
+
+## Your Review Team
+
+| Reviewer | Specialty | When to Use |
+|----------|-----------|-------------|
+| **Kimi** (Moonbridge) | Frontend, visual, React patterns | React/Vue components, CSS/Tailwind, UI logic |
+| **Codex CLI** | Senior engineer, bugs, edge cases | All code changes, security, correctness |
+| **Gemini CLI** | Research, current best practices | Pattern validation, "is this idiomatic?" |
+| **Thinktank** | Expert council, architecture | Complex changes, cross-cutting concerns |
+| **Internal Agents** | Domain specialists | Language/framework-specific review |
+
+### Invoking Reviewers
+
+**Kimi (Moonbridge MCP)** — Frontend/visual specialist
+```
+Use ToolSearch to load mcp__moonbridge__spawn_agents_parallel, then:
+
+mcp__moonbridge__spawn_agents_parallel({
+  "agents": [
+    {"prompt": "Review these files for React patterns, component design, state management, hooks usage. Report issues as file:line format:\n[paste file contents]", "thinking": true},
+    {"prompt": "Review CSS/Tailwind for design consistency, accessibility, responsive design:\n[paste relevant styles]"}
+  ]
+})
+```
+
+**Codex (MCP)** — Senior engineer
+```
+Use ToolSearch to load mcp__codex__spawn_agent, then:
+
+mcp__codex__spawn_agent({
+  "prompt": "Review this code for bugs, edge cases, security issues, error handling:\n\n[paste diff or file contents]\n\nReport format for each issue:\n- file:line\n- Issue description\n- Severity (critical/important/minor)\n- Suggested fix"
+})
+```
+
+For parallel reviews across multiple files:
+```
+mcp__codex__spawn_agents_parallel({
+  "agents": [
+    {"prompt": "Review src/auth.ts for security issues..."},
+    {"prompt": "Review src/api.ts for error handling..."}
+  ]
+})
+```
+
+**Gemini CLI** — Researcher
+```bash
+gemini "Review this code and research current best practices:
+
+[describe patterns found in the code]
+
+Questions:
+1. Are we following recommended approaches for [framework/language]?
+2. Are there known issues with these patterns?
+3. What do official docs recommend?
+
+Cite sources for recommendations."
+```
+
+**Thinktank CLI** — Expert council
+```bash
+# Write review instructions to file first
+thinktank /tmp/review-instructions.md ./[changed-files] --synthesis
+```
+
+**Internal Agents** (Task tool) — Domain specialists
+Use based on what changed:
+- `go-concurrency-reviewer` — Go goroutines, channels, race conditions
+- `react-pitfalls` — React hooks, re-renders, state management
+- `config-auditor` — Env vars, API keys, deployment config
+- `security-sentinel` — Auth, injection, OWASP concerns
+- `data-integrity-guardian` — Database migrations, transactions
+- `architecture-guardian` — Module boundaries, coupling
 
 ## Process
 
-### 1. Documentation Check (MANDATORY)
-
-**Do this first. Do not skip.**
-
-Run `/documentation`.
-
-This ensures core docs exist (creating them if missing):
-- ARCHITECTURE.md - system overview
-- README.md - project identity
-- CLAUDE.md - conventions
-- Module READMEs where needed
-
-Wait for documentation to complete before proceeding.
-
-### 2. Identify Changed Files
-
-What's different on this branch vs main/master?
+### 1. Scope the Review
 
 ```bash
+# What files changed?
 git diff --name-only $(git merge-base HEAD main)...HEAD
+
+# What's the diff?
+git diff $(git merge-base HEAD main)...HEAD
 ```
 
-If no changes, use staged files or prompt for scope.
+If no changes, use staged files or ask for scope.
 
-### 3. Trace Dependencies
+### 2. Gather Context
 
-For each changed file, identify what it touches:
+Read these if they exist:
+- `CLAUDE.md` — project conventions
+- `ARCHITECTURE.md` — system design
+- `README.md` — project overview
+- Module READMEs near changed files
 
-- **Imports**: What modules does it import from?
-- **Exports**: What uses this file's exports?
-- **Types**: What type definitions are shared?
-- **Config**: What config files affect this code?
+### 3. Route to Reviewers
 
-Build a list of touched files (keep it focused - first-degree dependencies, not transitive).
+Based on what changed, delegate appropriately:
 
-### 4. Gather Relevant Docs
+| File Type | Primary Reviewer | Secondary |
+|-----------|------------------|-----------|
+| `.tsx`, `.jsx`, React components | Kimi | react-pitfalls agent |
+| `.css`, `.scss`, Tailwind | Kimi | — |
+| `.go` with goroutines | Codex | go-concurrency-reviewer |
+| `.py`, `.ts`, `.js` (general) | Codex | language-specific agent |
+| Database migrations | Codex | data-integrity-guardian |
+| Auth/security code | Codex | security-sentinel |
+| Config files, env handling | config-auditor | Codex |
+| Architecture changes | Thinktank | architecture-guardian |
+| "Is this pattern right?" | Gemini | Thinktank |
 
-Find documentation that explains the changed code:
+**Run reviewers in parallel where possible** to minimize total review time.
 
-**Required docs** (`/documentation` ensures these exist):
-- ARCHITECTURE.md - system overview
-- README.md - project identity
-- CLAUDE.md - conventions
+### 4. Collect Results
 
-**Contextual**:
-- Module READMEs in directories containing changed files
-- ADRs relevant to the changed components
-- Any .md files near the changed code
-- Design docs referenced in comments
+Gather outputs from all reviewers:
+- Codex MCP returns output directly
+- Kimi MCP returns output directly
+- Gemini CLI output captured from terminal
+- Thinktank writes to stdout or specified output file
 
-### 5. Create Review Instructions
+### 5. Review the Reviews (Your Core Job)
 
-Write focused instructions for thinktank:
+This is where you add value. For each finding:
+
+**Validate**
+- Is this a real issue or false positive?
+- Does it apply to our codebase context?
+- Is the severity appropriate?
+
+**Filter Noise**
+- Generic suggestions that don't apply
+- Style preferences that contradict our conventions
+- Theoretical concerns with no practical impact
+
+**Resolve Conflicts**
+- When Kimi and Codex disagree, explain the tradeoff
+- When Thinktank models diverge, note the dissent
+- Make a recommendation based on project context
+
+**Calibrate Priority**
+- Critical: Bugs, security holes, data loss risks
+- Important: Convention violations, missing error handling
+- Minor: Style suggestions, optimization ideas
+
+### 6. Synthesize Action Plan
+
+Produce a single, prioritized output.
+
+## Output Format
 
 ```markdown
-# Code Review Request
+## Code Review: [branch-name]
 
-## What Changed
-[Summary of the changes - feature, fix, refactor]
+### Action Plan
 
-## Files to Review
-[List of changed files]
+#### Critical (Block Merge)
+- [ ] `file.ts:42` — Issue description — Fix: [concrete action] (Source: Codex)
+- [ ] `component.tsx:17` — Issue description — Fix: [action] (Source: Kimi)
 
-## Context Files
-[List of touched dependencies]
+#### Important (Fix in PR)
+- [ ] `service.go:89` — Issue description — Fix: [action] (Source: go-concurrency-reviewer)
+- [ ] `auth.ts:23` — Issue description — Fix: [action] (Source: Thinktank consensus)
 
-## Documentation Context
-[List of relevant docs included]
+#### Suggestions (Optional)
+- [ ] Consider [improvement] for [reason] (Source: Gemini research)
+- [ ] [Pattern suggestion] (Source: Kimi)
 
-## Review Focus
-- Correctness: Does this work as intended?
-- Patterns: Does it follow project conventions?
-- Architecture: Does it fit the system design?
-- Edge cases: What could go wrong?
-- Tests: Is coverage adequate?
+### Reviewer Synthesis
 
-## Requested Output
-For each concern:
-1. File and line reference
-2. Issue description
-3. Suggested fix
-4. Severity (critical/important/minor)
-```
+**Agreements** — Multiple reviewers flagged:
+- [Issue that 2+ reviewers independently found]
 
-Write to `/tmp/review-instructions.md`.
+**Conflicts** — Differing opinions:
+- Kimi suggested X, Codex suggested Y. Recommendation: [your call + reasoning]
 
-### 6. Invoke Thinktank
-
-```bash
-thinktank /tmp/review-instructions.md \
-  ./README.md \
-  ./CLAUDE.md \
-  ./ARCHITECTURE.md \
-  ./docs/relevant-adr.md \
-  ./src/changed-file.ts \
-  ./src/touched-dependency.ts \
-  --synthesis
-```
-
-Pass actual file paths - docs AND code together.
-
-### 7. Specialized Reviews (Parallel)
-
-If changes touch external integrations, spawn focused reviewers:
-
-**For Stripe/Payment code** (file path contains `stripe`, `payment`, `checkout`, `subscription`, `webhook`):
-- Invoke `Skill("stripe-best-practices")`
-- Check: webhook handler patterns, env var usage, error handling
-- Verify: no hardcoded keys, proper signature verification
-
-**For Auth code** (Clerk/Auth0 — file path contains `auth`, `clerk`, `session`):
-- Invoke `Skill("billing-security")`
-- Check: JWT validation, session handling, redirect URLs
-
-**For any external API integration**:
-- Spawn `config-auditor` agent to verify:
-  - Env vars documented and validated at runtime
-  - Error handling for API failures
-  - Retry/fallback patterns present
-  - Health check endpoint for this service
-
-**For Infrastructure changes**:
-- Spawn `infrastructure-guardian` agent with focus on:
-  - Deployment config completeness
-  - Environment parity (dev ≠ prod gotchas documented)
-  - Rollback capability
-
-### 8. Synthesize Results
-
-Read thinktank output and synthesize:
-
-**Consensus Issues** (all models agree):
-- Critical bugs or security issues
-- Clear convention violations
-- Missing error handling
-
-**Divergent Views** (investigate further):
-- Architecture opinions
-- Pattern preferences
-- Optimization suggestions
-
-**Actionable Items**:
-1. Must-fix before merge
-2. Should-fix in this PR
-3. Consider for follow-up
-
-## Output
-
-```markdown
-## Code Review: [Branch/Feature Name]
-
-### Summary
-[1-2 sentence overview of the changes and review findings]
-
-### Critical Issues (Block Merge)
-- [ ] Issue 1: [description] - `file.ts:42`
-- [ ] Issue 2: [description] - `other.ts:17`
-
-### Important Issues (Fix in PR)
-- [ ] Issue 3: [description]
-- [ ] Issue 4: [description]
-
-### Minor Suggestions
-- Suggestion 1: [description]
-- Suggestion 2: [description]
+**Research Findings** — From Gemini:
+- [Relevant best practice with citation]
 
 ### Positive Observations
-- Good use of [pattern]
+- Good use of [pattern] in `file.ts`
 - Clean implementation of [feature]
 
-### Next Steps
-1. Address critical issues
-2. Fix important issues
-3. Optionally address minor suggestions
+---
+
+<details>
+<summary>Raw Codex Review</summary>
+
+[paste codex output]
+
+</details>
+
+<details>
+<summary>Raw Kimi Review</summary>
+
+[paste kimi output]
+
+</details>
+
+<details>
+<summary>Raw Thinktank Synthesis</summary>
+
+[paste thinktank output]
+
+</details>
 ```
 
 ## Philosophy
 
-Code review without context is noise. Thinktank needs to understand:
-- What the project is (README)
-- How it's built (ARCHITECTURE)
-- What conventions apply (CLAUDE.md)
-- What decisions were made (ADRs)
-- What code is related (dependencies)
+You're the tech lead, not the code reviewer.
 
-Only then can it give useful feedback, not generic suggestions.
+**Your job is to:**
+- Ask the right experts the right questions
+- Synthesize expert opinions into action
+- Make judgment calls when experts disagree
+- Produce a clear, prioritized action plan
+
+**The code gets reviewed by specialists. You review the reviews.**
+
+This mirrors how senior engineers actually work: they don't personally review every line. They orchestrate review across their team and make final calls on tradeoffs.
+
+## Quick Reference
+
+```bash
+# Scope
+git diff --name-only main...HEAD
+
+# Gemini research
+gemini "Is this pattern idiomatic for [framework]? [code snippet]"
+
+# Thinktank synthesis
+thinktank /tmp/instructions.md ./src --synthesis
+```
+
+```
+# Codex review (MCP)
+mcp__codex__spawn_agent({"prompt": "Review for bugs: [code]"})
+
+# Kimi review (MCP)
+mcp__moonbridge__spawn_agents_parallel({"agents": [{"prompt": "..."}]})
+```

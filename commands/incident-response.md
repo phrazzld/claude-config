@@ -36,6 +36,11 @@ Creates `INCIDENT-{timestamp}.md` with:
 - Hypotheses
 - Root cause
 
+**Multi-AI Investigation** (see `/delegate`):
+- **Codex**: Debug stack traces, trace code paths
+- **Gemini**: Research similar issues, check for known bugs
+- **Thinktank**: Validate root cause hypothesis
+
 ### 2. Branch
 
 If on `master`/`main`, create fix branch:
@@ -73,6 +78,9 @@ Creates blameless postmortem:
 - 5 Whys
 - What went well/wrong
 - Follow-up actions
+
+**Multi-AI Review** (see `/delegate`):
+- **Thinktank**: Review postmortem for gaps, validate prevention plan
 
 ### 6. Prevent
 

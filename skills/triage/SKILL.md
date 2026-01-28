@@ -64,6 +64,13 @@ If all clean: "All systems nominal. No action required."
 
 ## Stage 2: Investigate
 
+### Delegation Pattern
+
+For complex issues, delegate investigation to agentic tools (see `/delegate`):
+- **Codex** — Code archaeology, stack trace analysis, debugging
+- **Gemini** — Research current patterns, check for known issues
+- **Thinktank** — Validate proposed fix before implementing
+
 ### Sentry Issues
 
 **Command:** `/triage investigate ISSUE-ID`
@@ -73,7 +80,7 @@ Actions:
 2. Create branch: `fix/ISSUE-ID-description`
 3. Load affected files from stack trace
 4. Check git history for related changes
-5. Form root cause hypothesis
+5. Form root cause hypothesis (delegate to Codex for complex traces)
 
 **Output:** Investigation summary with hypothesis and next steps.
 
@@ -285,3 +292,4 @@ Or local with token:
 - `/observability` - Full observability setup
 - `/sentry-observability` - Sentry-specific operations
 - `/verify-fix` - Verification checklist
+- `/delegate` - Multi-AI orchestration pattern

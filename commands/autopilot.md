@@ -66,6 +66,12 @@ Read issue comments. If no `## Technical Design` section:
 /architect $ISSUE
 ```
 
+**Design Validation** (see `/delegate`):
+For significant features, validate design via Thinktank before building:
+```bash
+thinktank design.md ./relevant-code --synthesis
+```
+
 ### 4. Build
 
 ```
