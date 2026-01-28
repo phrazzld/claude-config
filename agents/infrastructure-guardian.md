@@ -177,6 +177,14 @@ Ensure every project has the foundational infrastructure needed for reliability,
 ### CI/CD Pipeline
 
 - [ ] **GitHub Actions / GitLab CI / CircleCI**: Automated builds
+
+**⚠️ Permissions Gotcha**: When you set explicit `permissions:` in GitHub Actions, ALL implicit defaults are disabled. Always include `contents: read` if using `actions/checkout`:
+  ```yaml
+  permissions:
+    contents: read    # Required for actions/checkout
+    id-token: write   # If using OIDC (PyPI, cloud auth)
+  ```
+
   ```yaml
   # .github/workflows/ci.yml
   name: CI

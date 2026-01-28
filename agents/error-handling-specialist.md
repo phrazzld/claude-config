@@ -426,6 +426,74 @@ let config = (try? Config.load()) ?? Config.default
 - [ ] **State gating**: Gate state transitions on operation success, not just attempt
 - [ ] **Diagnostics logging**: Use `Diagnostics.error()` for all observable failures
 
+## Go Error Handling
+
+### os.Exit and Defer Anti-Pattern
+
+**Problem:** Using `os.Exit()` after resources are opened prevents `defer` from running, potentially corrupting databases or leaving resources in inconsistent state.
+
+```go
+// BAD: defer s.Close() never runs on error
+func main() {
+    s, err := store.Open("")
+    if err != nil {
+        os.Exit(1)
+    }
+    defer s.Close()
+
+    if err := run(); err != nil {
+        os.Exit(1)  // Defer skipped!
+    }
+}
+
+// GOOD: Use run() pattern - all os.Exit happens in main() after defers
+func main() {
+    if err := run(); err != nil {
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+        os.Exit(1)  // Safe: no defers in main()
+    }
+}
+
+func run() error {
+    s, err := store.Open("")
+    if err != nil {
+        return fmt.Errorf("opening store: %w", err)
+    }
+    defer s.Close()  // Always runs when run() returns
+
+    // ... rest of logic ...
+    return nil
+}
+```
+
+**Rule:** Extract all resource-owning logic into a `run() error` function. Keep `main()` trivial.
+
+### "Down" Status Is a Result, Not an Error
+
+**Problem:** Health check functions that return both a result AND an error when network fails cause callers to discard valid "down" status.
+
+```go
+// BAD: Caller ignores result if err != nil
+func CheckHealth(url string) (*HealthResult, error) {
+    resp, err := client.Get(url)
+    if err != nil {
+        return &HealthResult{Status: "down"}, err  // Result lost!
+    }
+    // ...
+}
+
+// GOOD: "down" is a valid determination, not an error
+func CheckHealth(url string) (*HealthResult, error) {
+    resp, err := client.Get(url)
+    if err != nil {
+        return &HealthResult{Status: "down"}, nil  // Valid result
+    }
+    // ...
+}
+```
+
+**Rule:** When a function can successfully determine a negative outcome (down, invalid, expired), that's a successful result, not an error. Errors are for unexpected failures (context canceled, internal bug).
+
 ## Common Patterns
 
 ### Pattern: Circuit Breaker

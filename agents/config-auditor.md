@@ -85,6 +85,35 @@ ls scripts/verify-env.sh 2>/dev/null
 grep -l "STRIPE\|CLERK\|SENDGRID" .env.local
 ```
 
+### Context-Aware Credential Warnings
+
+**Problem:** Warnings about missing credentials are noisy when the corresponding service isn't used.
+
+```go
+// BAD: Always warns about Stripe even if no products use it
+func warnIfEmptyCredentials(cfg *Config) {
+    if cfg.Credentials.Stripe.SecretKey == "" {
+        log.Println("warning: stripe secret_key is empty")  // Noisy!
+    }
+}
+
+// GOOD: Only warn if service is actually configured for a product
+func warnIfEmptyCredentials(cfg *Config) {
+    stripeInUse := false
+    for _, p := range cfg.Products {
+        if p.Stripe.ProductID != "" {
+            stripeInUse = true
+            break
+        }
+    }
+    if stripeInUse && cfg.Credentials.Stripe.SecretKey == "" {
+        log.Println("warning: stripe secret_key is empty but required by at least one product")
+    }
+}
+```
+
+**Rule:** Credential/config warnings should be context-aware. Only warn about credentials for services that are actually configured to be used.
+
 ## Investigation Process
 
 1. **Scan for external services**: Look for imports from `stripe`, `@clerk`, `@sendgrid`, etc.

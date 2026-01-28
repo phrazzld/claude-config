@@ -218,6 +218,46 @@ Detection strategy:
 - Look for parent `useEffect` that initializes global/client SDKs.
 - Check child effects for SDK usage without a readiness gate.
 
+### 8. Form Reset on Object Identity
+
+Rule: useEffect dependencies on freshly-created objects reset on every render.
+
+Anti-pattern:
+```tsx
+// Parent passes new object each render
+<ThesisForm defaultValues={{ name: thesis.name, status: thesis.status }} />
+
+// Child resets on every parent re-render
+function ThesisForm({ defaultValues }) {
+  const resetForm = useCallback(() => { /* reset logic */ }, [defaultValues]);
+
+  useEffect(() => {
+    if (open) resetForm();  // Runs on EVERY parent re-render!
+  }, [open, resetForm]);
+}
+```
+
+Correct pattern:
+```tsx
+function ThesisForm({ open, defaultValues }) {
+  const prevOpenRef = useRef(open);
+  const resetForm = useCallback(() => { /* reset logic */ }, [defaultValues]);
+
+  useEffect(() => {
+    // Only reset on open transition (false → true)
+    if (open && !prevOpenRef.current) {
+      resetForm();
+    }
+    prevOpenRef.current = open;
+  }, [open, resetForm]);
+}
+```
+
+Detection strategy:
+- Find `useEffect` with `open` dependency that calls reset/init functions
+- Check if the effect depends on object props (defaultValues, config, etc.)
+- Verify there's a transition guard, not just `if (open)`
+
 ## biome-ignore for Sanitized HTML
 
 When using `dangerouslySetInnerHTML` with DOMPurify sanitization, add a biome-ignore comment:
