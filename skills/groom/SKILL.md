@@ -3,6 +3,8 @@ name: groom
 description: |
   Comprehensive backlog grooming. Orchestrates issue-creator skills and agents.
   Creates prioritized GitHub issues across all domains.
+  Uses Gemini, Kimi, Codex, and Thinktank to flesh out issues with research,
+  implementation recommendations, and multi-perspective validation.
   No flags. Always comprehensive.
 ---
 
@@ -16,6 +18,12 @@ Orchestrate comprehensive backlog grooming. Create prioritized issues across all
 
 **Unix philosophy.** Small, focused skills that compose. Investigate ≠ Fix.
 
+**AI-augmented analysis.** External AI tools provide specialized capabilities:
+- **Gemini** — Web-grounded research, current best practices, huge context
+- **Kimi** — Frontend/visual expertise, Agent Swarm for parallel analysis
+- **Codex** — Implementation recommendations, concrete code suggestions
+- **Thinktank** — Multi-model consensus, diverse expert perspectives
+
 **No flags.** Always runs full audit. Always creates issues.
 
 ## What This Does
@@ -24,9 +32,10 @@ Orchestrate comprehensive backlog grooming. Create prioritized issues across all
 2. **Capture what's on your mind** — Bugs, UX friction, nitpicks from using the app
 3. **Audit existing backlog** — Validate, reprioritize, close stale issues
 4. **Run issue-creator skills** — Each domain gets audited, issues created
-5. **Adaptive agent analysis** — Based on backlog size, run specialized agents
-6. **Dedupe & consolidate** — Merge duplicates, finalize issue set
-7. **Summarize** — Report P0/P1/P2/P3 counts and recommended focus
+5. **AI-assisted enrichment** — Gemini, Kimi, Codex, Thinktank flesh out issues
+6. **Adaptive agent analysis** — Based on backlog size, run specialized agents
+7. **Dedupe & consolidate** — Merge duplicates, finalize issue set
+8. **Summarize** — Report P0/P1/P2/P3 counts and recommended focus
 
 ## Priority System
 
@@ -247,9 +256,89 @@ Invoke in sequence (each creates GitHub issues):
 - Can be run independently
 - Easy to update without changing groom
 
-### Step 5: Adaptive Agent Analysis
+### Step 5: AI-Assisted Issue Enrichment
 
-After issue creation, count by priority:
+After basic issue creation, use external AI tools to flesh out issues with deeper analysis.
+
+**Why external tools?**
+- **Gemini**: Web-grounded research for current best practices, framework docs
+- **Kimi**: Frontend/visual expertise, can coordinate sub-agents for UI issues
+- **Codex**: Implementation recommendations, concrete code suggestions
+- **Thinktank**: Multi-model consensus for architecture/design decisions
+
+**Run enrichment by domain:**
+
+```bash
+# 1. Gemini: Research current best practices for flagged issues
+gemini "Review these issues and research current best practices:
+$(gh issue list --label domain/quality --state open --json title,number --jq '.[] | "#\(.number): \(.title)"')
+
+For each issue, provide:
+- Current industry best practices (2024-2025)
+- Recommended tools/libraries
+- Common pitfalls to avoid
+
+Be specific and cite sources."
+
+# 2. Kimi: Analyze frontend/visual issues with Agent Swarm
+kimi "Analyze the UI/UX issues in this codebase:
+$(gh issue list --label domain/landing,domain/onboarding --state open --json title,number --jq '.[] | "#\(.number): \(.title)"')
+
+For each issue:
+- Assess current implementation quality
+- Suggest specific visual improvements
+- Recommend component patterns" --thinking
+
+# 3. Codex: Generate implementation recommendations
+codex "For these technical issues, provide concrete implementation steps:
+$(gh issue list --label priority/p0,priority/p1 --state open --json title,number,body --jq '.[:5] | .[] | "### #\(.number): \(.title)\n\(.body)\n"')
+
+For each:
+- Specific files to modify
+- Code patterns to follow
+- Test cases needed" --full-auto
+
+# 4. Thinktank: Multi-perspective validation for architecture issues
+thinktank "Evaluate these architecture decisions:
+$(gh issue list --label domain/architecture --state open --json title,body --jq '.[] | "## \(.title)\n\(.body)\n"')
+
+Provide:
+- Consensus recommendation
+- Dissenting opinions worth considering
+- Risk assessment" ./src --synthesis
+```
+
+**Update issues with findings:**
+
+```bash
+# Append Gemini research to issue body
+gh issue edit {number} --body "$(gh issue view {number} --json body --jq .body)
+
+---
+## Research (Gemini)
+{gemini_findings}"
+
+# Add implementation notes from Codex
+gh issue comment {number} --body "## Implementation Recommendations (Codex)
+{codex_recommendations}"
+
+# Add architecture review from Thinktank
+gh issue comment {number} --body "## Architecture Review (Thinktank)
+{thinktank_synthesis}"
+```
+
+**When to run which tool:**
+
+| Issue Domain | Primary Tool | Why |
+|--------------|--------------|-----|
+| Quality, Docs, Observability | Gemini | Needs current best practices research |
+| Landing, Onboarding, Design | Kimi | Visual/frontend expertise |
+| Security, Architecture | Thinktank | Needs multi-perspective validation |
+| All P0/P1 technical issues | Codex | Implementation recommendations |
+
+### Step 6: Adaptive Agent Analysis
+
+After issue enrichment, count by priority:
 
 ```bash
 p0_count=$(gh issue list --label priority/p0 --state open --json number | jq length)
@@ -275,7 +364,7 @@ Full suite:
 
 Each agent receives `{vision}` context and creates additional issues.
 
-### Step 6: Dedupe & Consolidate
+### Step 7: Dedupe & Consolidate
 
 **Three sources of duplicates:**
 1. User observations (Step 2) may overlap with automated findings
@@ -307,7 +396,7 @@ gh issue list --state open --json number,title,labels | jq '.[] | .title' | sort
 - Verify all open issues have domain labels
 - Verify no orphaned issues (no priority, no domain)
 
-### Step 7: Summarize
+### Step 8: Summarize
 
 Output final report:
 
