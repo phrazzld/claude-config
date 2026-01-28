@@ -3,6 +3,7 @@
 /todos
 /statsig
 /*.bak*
+*.backup
 /thinktank_*/
 *.log
 *.jsonl
