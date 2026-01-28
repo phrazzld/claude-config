@@ -1,9 +1,8 @@
 {
   "mcpServers": {
-    "kimi": {
+    "moonbridge": {
       "type": "stdio",
-      "command": "uvx",
-      "args": ["--from", "/Users/phaedrus/.claude/mcps/kimi-as-mcp", "kimi-as-mcp"]
+      "command": "moonbridge"
     },
     "exa": {
       "type": "http",
