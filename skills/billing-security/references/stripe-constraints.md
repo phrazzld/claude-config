@@ -112,3 +112,58 @@ async function handleWebhook(event: Stripe.Event) {
 ```
 
 Or use database constraint on event ID.
+
+---
+
+## MRR Calculation - Billing Interval Normalization
+
+### Common Mistake
+Using `unit_amount` directly for MRR without considering:
+1. **Quantity** - subscription items can have quantity > 1
+2. **Billing interval** - annual/quarterly subscriptions must be normalized
+
+### Wrong Implementation
+```go
+// BAD - undercounts MRR for quantity>1, overcounts for annual subscriptions
+for _, item := range sub.Items.Data {
+    mrr += *item.Price.UnitAmount
+}
+```
+
+### Correct Implementation
+```go
+for _, item := range sub.Items.Data {
+    qty := int64(1)
+    if item.Quantity != nil {
+        qty = *item.Quantity
+    }
+    monthlyRate := *item.Price.UnitAmount * qty
+
+    // Normalize to monthly
+    if item.Price.Recurring != nil {
+        switch item.Price.Recurring.Interval {
+        case "year":
+            monthlyRate /= 12
+        case "quarter":
+            monthlyRate /= 3
+        case "week":
+            monthlyRate = monthlyRate * 52 / 12
+        case "day":
+            monthlyRate = monthlyRate * 365 / 12
+        }
+    }
+    mrr += monthlyRate
+}
+```
+
+### Stripe Price Recurring Object
+```json
+{
+  "recurring": {
+    "interval": "year" | "quarter" | "month" | "week" | "day",
+    "interval_count": 1
+  }
+}
+```
+
+Note: Also consider `interval_count` for non-standard intervals like "every 2 months".

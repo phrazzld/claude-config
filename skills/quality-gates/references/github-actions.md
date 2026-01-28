@@ -1,5 +1,29 @@
 # GitHub Actions Workflows
 
+## Permissions Gotcha
+
+**When you set explicit `permissions:`, GitHub disables all implicit defaults.**
+
+```yaml
+# BROKEN - checkout will fail (no contents:read)
+permissions:
+  id-token: write
+
+# CORRECT - explicitly include what you need
+permissions:
+  contents: read    # Required for actions/checkout
+  id-token: write   # Required for OIDC (PyPI trusted publishing, etc.)
+```
+
+Common permissions needed:
+- `contents: read` - clone repo (`actions/checkout`)
+- `contents: write` - push commits, create releases
+- `pull-requests: write` - comment on PRs, update status
+- `id-token: write` - OIDC authentication (PyPI, cloud providers)
+- `packages: write` - publish to GitHub Packages
+
+**Rule:** If you add any `permissions:` block, you must explicitly list everything you need.
+
 ## Basic CI Workflow
 
 ```yaml

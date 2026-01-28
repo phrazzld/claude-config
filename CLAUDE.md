@@ -179,6 +179,139 @@ Learnings land here first. When this section grows, `/distill` graduates items t
 
 <!-- Add learnings below this line -->
 
+### HogQL/ClickHouse String Escaping
+
+**Problem:** PostHog HogQL queries use ClickHouse SQL syntax. Single quotes in LIKE patterns cause injection/query breakage.
+
+**Pattern:**
+```go
+// BAD - hostFilter like "o'reilly.com" breaks query
+query := fmt.Sprintf("... LIKE '%%%s%%'", hostFilter)
+
+// GOOD - Escape for HogQL/ClickHouse
+func escapeHogQLLike(s string) string {
+    s = strings.ReplaceAll(s, "\\", "\\\\")  // Backslash first
+    s = strings.ReplaceAll(s, "'", "''")     // Single quote → two quotes
+    s = strings.ReplaceAll(s, "%", "\\%")    // LIKE wildcards
+    s = strings.ReplaceAll(s, "_", "\\_")
+    return s
+}
+```
+
+**Rule:** When building HogQL queries with user input, escape: `\` → `\\`, `'` → `''`, `%` → `\%`, `_` → `\_`
+
+### Vercel OAuth vs Integrations - Two Different Flows
+
+**Problem:** Vercel has two similar-looking but functionally different OAuth flows:
+- `/integrations/{slug}/new` - Marketplace Integration installation (team-scoped, long-lived token)
+- `/oauth/authorize` - Standard OAuth 2.0 with PKCE (user-scoped, refresh tokens)
+
+**Mistake:** Using integration URL for PKCE OAuth flow results in redirecting to non-existent page.
+
+**Pattern:**
+```typescript
+// WRONG - Integration flow (for Vercel Marketplace integrations)
+NextResponse.redirect(`https://vercel.com/integrations/${clientId}/new?${params}`);
+
+// RIGHT - OAuth flow (for "Sign in with Vercel" or user auth)
+NextResponse.redirect(`https://vercel.com/oauth/authorize?${params}`);
+// client_id goes in params, NOT in the URL path
+```
+
+**When to use which:**
+- Building a Vercel Marketplace Integration that installs on teams → `/integrations/{slug}/new`
+- Building "Sign in with Vercel" or user-granted authorization → `/oauth/authorize`
+
+### TypeScript Date/Time - UTC Consistency
+
+**Problem:** Mixing local time and UTC methods causes timezone bugs. Code may work in one timezone but fail in others, or produce off-by-one day errors.
+
+**Pattern:**
+```typescript
+// BAD - Local time methods on UTC data
+const date = new Date(utcTimestamp);
+date.setMonth(date.getMonth() - 1);  // Local time!
+date.setDate(1);
+date.setHours(0, 0, 0, 0);
+
+// GOOD - Consistent UTC methods
+const date = new Date(utcTimestamp);
+date.setUTCMonth(date.getUTCMonth() - 1);
+date.setUTCDate(1);
+date.setUTCHours(0, 0, 0, 0);
+```
+
+**Rule:** If data is stored/transmitted as UTC timestamps, use `getUTC*`/`setUTC*` methods throughout. Never mix local and UTC in the same calculation.
+
+### JavaScript Date Month Rollover Bug
+
+**Problem:** Sequential `setUTCMonth` then `setUTCDate` can cause rollover when the current day exceeds the target month's length.
+
+```typescript
+// BUG - On March 31, this produces March 3, not February 1!
+const d = new Date("2025-03-31T00:00:00Z");
+d.setUTCMonth(d.getUTCMonth() - 1);  // Feb 31 → Mar 3 (rollover!)
+d.setUTCDate(1);                      // Mar 1, NOT Feb 1
+
+// FIX - Use atomic Date.UTC constructor
+const d = new Date(Date.UTC(year, month - 1, 1));  // Always correct
+```
+
+**Rule:** When calculating month boundaries, always use `Date.UTC(year, month, day)` instead of mutating a Date object step by step.
+
+### TypeScript Switch Exhaustiveness
+
+**Problem:** Switch statements without `never` type default case can silently pass through when union types are extended.
+
+**Pattern:**
+```typescript
+// BAD - Compiles fine even if PRType adds new variant
+switch (type) {
+  case "weight": return "...";
+  case "volume": return "...";
+}
+
+// GOOD - Compile error if PRType is extended
+switch (type) {
+  case "weight": return "...";
+  case "volume": return "...";
+  default: {
+    const _exhaustiveCheck: never = type;
+    throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
+  }
+}
+```
+
+### Config Threshold Duplication
+
+**Problem:** Coverage thresholds defined in multiple files (vitest.config.ts vs coverage-verifier.ts) can drift, causing inconsistent enforcement.
+
+**Pattern:** When changing thresholds in one file, grep for the same values in related files:
+```bash
+rg "lines.*47|branches.*83" --type ts
+```
+
+Update all occurrences together, including test files that assert on threshold values.
+
+### Client-Side Validation Must Have Server-Side Mirror
+
+**Problem:** HTML `maxLength` and form validation are trivially bypassed. Direct API calls can submit any value.
+
+**Pattern:** When adding client-side constraints, always add matching server-side validation:
+```typescript
+// Client (form)
+<textarea maxLength={500} />
+
+// Server (mutation handler) - MUST MATCH
+function validateDescription(description: string | undefined) {
+  if (description && description.length > 500) {
+    throw new Error("Description must be 500 characters or less");
+  }
+}
+```
+
+**Rule:** Every `maxLength`, `min`, `max`, `pattern` on the client needs a corresponding validator in the mutation handler. Client validation is UX; server validation is security.
+
 <!--
 Graduated 2026-01-27:
 - External Integration Debugging → /debug skill

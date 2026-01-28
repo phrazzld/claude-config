@@ -5,10 +5,12 @@
     "repositories": [
       "/Users/phaedrus/.claude",
       "/Users/phaedrus/daybook",
+      "/Users/phaedrus/Documents/daybook",
       "/Users/phaedrus/Development/overmind",
       "/Users/phaedrus/Development/conviction",
       "/Users/phaedrus/Development/heartbeat",
-      "/Users/phaedrus/Development/volume"
+      "/Users/phaedrus/Development/volume",
+      "/Users/phaedrus/Development/moonbridge"
     ],
     "patterns": [
       "**/daybook/**"
