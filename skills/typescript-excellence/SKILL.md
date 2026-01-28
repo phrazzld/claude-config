@@ -99,7 +99,7 @@ async function fetchUser(id: string): Promise<User> {
 }
 ```
 
-Cancellation: Use `AbortController` for long operations.
+Cancellation: Use `AbortController` for long operations. Always clean up timeouts in `finally` blocks.
 
 ## Toolchain
 
@@ -125,3 +125,4 @@ Cancellation: Use `AbortController` for long operations.
 - [toolchain-setup.md](references/toolchain-setup.md) - pnpm, Vitest, tsup, ESLint config
 - [type-patterns.md](references/type-patterns.md) - Utility types, generics, guards
 - [testing-strategy.md](references/testing-strategy.md) - Test pyramid, behavior focus
+- [async-patterns.md](references/async-patterns.md) - Timeout cleanup, error-specific catch, cancellation
