@@ -123,6 +123,107 @@ type Client struct {
 func (c *Client) Fetch(ctx context.Context, url string) (*Response, error)
 ```
 
+### 5. rand.Rand is NOT Goroutine-Safe
+
+`math/rand.Rand` instances are NOT safe for concurrent use. Shared RNG in structs causes data races.
+
+**Vulnerable:**
+```go
+// BAD - shared rand.Rand causes race condition
+type Generator struct {
+    rng *rand.Rand  // RACE when called from multiple goroutines
+}
+
+func (g *Generator) Generate() int {
+    return g.rng.Intn(100)  // RACE: concurrent read/write of internal state
+}
+```
+
+**Safe Options:**
+```go
+// Option 1: Per-call RNG (preferred for infrequent use)
+func (g *Generator) Generate() int {
+    rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+    return rng.Intn(100)
+}
+
+// Option 2: Mutex-protected (better for high-frequency use)
+type Generator struct {
+    mu  sync.Mutex
+    rng *rand.Rand
+}
+
+func (g *Generator) Generate() int {
+    g.mu.Lock()
+    defer g.mu.Unlock()
+    return g.rng.Intn(100)
+}
+
+// Option 3: Use crypto/rand for truly concurrent-safe randomness
+```
+
+### 6. TOCTOU Race in File/Directory Creation
+
+Time-of-check-time-of-use: checking existence then creating is NOT atomic.
+
+**Vulnerable:**
+```go
+// BAD - Race between Stat and Mkdir
+if _, err := os.Stat(path); os.IsNotExist(err) {
+    if err := os.Mkdir(path, 0755); err != nil {  // RACE: another goroutine may create it
+        return err
+    }
+}
+```
+
+**Safe:**
+```go
+// GOOD - Atomic create, handle collision
+if err := os.Mkdir(path, 0755); err != nil {
+    if os.IsExist(err) {
+        // Collision detected, handle appropriately (retry with new name, etc.)
+        return nil  // or retry logic
+    }
+    return err  // Real error
+}
+```
+
+### 7. Prefer atomic.Uint32 over Plain uint32 with Atomic Ops
+
+Go 1.19+ provides typed atomic values. Using `atomic.StoreUint32(&plainUint32, val)` is error-prone - the plain type doesn't enforce atomic access.
+
+**Vulnerable:**
+```go
+// BAD - nothing prevents non-atomic access
+type Counter struct {
+    count uint32  // Caller might accidentally do count++ instead of atomic
+}
+
+func (c *Counter) Inc() {
+    atomic.AddUint32(&c.count, 1)
+}
+
+func (c *Counter) Get() uint32 {
+    return c.count  // BUG: non-atomic read!
+}
+```
+
+**Safe:**
+```go
+// GOOD - type enforces atomic access
+type Counter struct {
+    count atomic.Uint32  // All access goes through atomic methods
+}
+
+func (c *Counter) Inc() {
+    c.count.Add(1)
+}
+
+func (c *Counter) Get() uint32 {
+    return c.count.Load()  // Must use Load(), can't accidentally read directly
+}
+```
+
 ## Review Checklist
 
 When reviewing Go code, verify:
@@ -133,6 +234,9 @@ When reviewing Go code, verify:
 - [ ] **Context usage**: Passed per-call, not stored in structs?
 - [ ] **Channel ownership**: Clear producer/consumer, proper closing?
 - [ ] **WaitGroup usage**: Add before goroutine, Done deferred?
+- [ ] **rand.Rand in structs**: Is it protected or per-call? (NOT goroutine-safe)
+- [ ] **File/dir creation**: Atomic create with IsExist check, not Stat-then-Mkdir?
+- [ ] **Atomic variables**: Using `atomic.Uint32` type, not plain `uint32` with atomic ops?
 
 ## Detection Commands
 
@@ -145,6 +249,15 @@ grep -rn "^var.*= make\(map" --include="*.go"
 
 # Find concurrent append patterns
 grep -rn "go func" --include="*.go" -A 10 | grep "append"
+
+# Find rand.Rand in struct fields (potential race)
+grep -rn "rand\.Rand" --include="*.go" | grep -v "_test\.go"
+
+# Find TOCTOU patterns (Stat then Mkdir/Create)
+grep -rn "os\.Stat" --include="*.go" -A 3 | grep -E "os\.(Mkdir|Create|Open)"
+
+# Find plain uint32/int32/int64 with atomic operations (should use atomic.Uint32 etc)
+grep -rn "atomic\.(Store|Load|Add|Swap)Uint32" --include="*.go"
 
 # Run race detector
 go test -race ./...

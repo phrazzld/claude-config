@@ -312,6 +312,36 @@ function validateDescription(description: string | undefined) {
 
 **Rule:** Every `maxLength`, `min`, `max`, `pattern` on the client needs a corresponding validator in the mutation handler. Client validation is UX; server validation is security.
 
+### Go Test Cleanup - Use t.Cleanup Not Defer with Error Suppression
+
+**Problem:** Using `defer` with error suppression (`_ = os.Chdir(orig)`) in tests causes staticcheck SA4017 and hides cleanup failures.
+
+**Pattern:**
+```go
+// BAD - Error suppression, runs even if test panics early
+func TestFoo(t *testing.T) {
+    orig, _ := os.Getwd()
+    os.Chdir(tempDir)
+    defer func() { _ = os.Chdir(orig) }()  // SA4017: result of os.Chdir discarded
+}
+
+// GOOD - Proper error handling, registered immediately
+func TestFoo(t *testing.T) {
+    orig, err := os.Getwd()
+    require.NoError(t, err)
+
+    t.Cleanup(func() {
+        if err := os.Chdir(orig); err != nil {
+            t.Errorf("cleanup failed: %v", err)
+        }
+    })
+
+    require.NoError(t, os.Chdir(tempDir))
+}
+```
+
+**Rule:** In Go tests, use `t.Cleanup()` for teardown with proper error handling instead of `defer` with error suppression. `t.Cleanup` runs after test completes (even on panic) and integrates with test reporting.
+
 <!--
 Graduated 2026-01-27:
 - External Integration Debugging → /debug skill

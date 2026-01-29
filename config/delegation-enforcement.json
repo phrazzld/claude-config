@@ -10,7 +10,8 @@
       "/Users/phaedrus/Development/conviction",
       "/Users/phaedrus/Development/heartbeat",
       "/Users/phaedrus/Development/volume",
-      "/Users/phaedrus/Development/moonbridge"
+      "/Users/phaedrus/Development/moonbridge",
+      "/Users/phaedrus/Development/thinktank"
     ],
     "patterns": [
       "**/daybook/**"
