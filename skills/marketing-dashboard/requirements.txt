@@ -1,0 +1,6 @@
+click
+rich
+stripe
+google-auth
+google-api-python-client
+httpx

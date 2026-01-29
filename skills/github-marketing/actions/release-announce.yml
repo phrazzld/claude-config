@@ -1,0 +1,44 @@
+name: Release Announce
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build message
+        id: msg
+        run: |
+          set -euo pipefail
+          name="${{ github.event.release.name }}"
+          tag="${{ github.event.release.tag_name }}"
+          url="${{ github.event.release.html_url }}"
+          title="${name:-$tag}"
+          echo "message=🚀 ${title} released: ${url}" >> "$GITHUB_OUTPUT"
+
+      - name: Tweet release
+        if: ${{ secrets.TWITTER_CONSUMER_KEY != '' && secrets.TWITTER_ACCESS_TOKEN != '' }}
+        uses: ethomson/send-tweet-action@v1
+        with:
+          status: ${{ steps.msg.outputs.message }}
+        env:
+          TWITTER_CONSUMER_KEY: ${{ secrets.TWITTER_CONSUMER_KEY }}
+          TWITTER_CONSUMER_SECRET: ${{ secrets.TWITTER_CONSUMER_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+
+      - name: Post to Discord
+        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MESSAGE: ${{ steps.msg.outputs.message }}
+        run: |
+          set -euo pipefail
+          payload=$(python3 - <<'PY'
+          import json, os
+          print(json.dumps({"content": os.environ["MESSAGE"]}))
+          PY
+          )
+          curl -sS -X POST -H "Content-Type: application/json" -d "${payload}" "${DISCORD_WEBHOOK_URL}" >/dev/null

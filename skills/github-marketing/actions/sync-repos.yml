@@ -1,0 +1,26 @@
+name: Sync Private to Public
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_TOKEN }}
+          fetch-depth: 0
+
+      - name: Push to public
+        env:
+          DEST_REPO: ${{ secrets.DEST_REPO }}
+          DEST_TOKEN: ${{ secrets.DEST_TOKEN }}
+        run: |
+          set -euo pipefail
+          git remote add public "https://x-access-token:${DEST_TOKEN}@github.com/${DEST_REPO}.git"
+          git push public --force --prune "+refs/heads/*:refs/heads/*" "+refs/tags/*:refs/tags/*"
