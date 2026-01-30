@@ -38,7 +38,7 @@ Implement Issue #$1. Ship working, tested, committed code.
 
 ```bash
 gh issue view $1 --comments
-gh issue edit $1 --remove-label "status/ready" --add-label "status/in-progress"
+gh issue edit $1 --remove-label "status/ready" --add-label "status/in-progress" --add-assignee phrazzld
 ```
 
 Extract: Product Spec (WHAT), Technical Design (HOW).
