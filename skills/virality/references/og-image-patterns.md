@@ -203,6 +203,39 @@ export async function GET(request: Request) {
 
 ## Using in Metadata
 
+### Inheritance (DRY pattern)
+
+Next.js automatically inherits `title` and `description` from top-level metadata into `openGraph` and `twitter` objects. Don't duplicate:
+
+```typescript
+// ❌ REDUNDANT - duplicates title/description
+export const metadata: Metadata = {
+  title: "My App",
+  description: "App description",
+  openGraph: {
+    title: "My App",           // Redundant
+    description: "App description", // Redundant
+    siteName: "My App",
+  },
+};
+
+// ✅ CLEAN - let Next.js inherit
+export const metadata: Metadata = {
+  title: "My App",
+  description: "App description",
+  openGraph: {
+    type: "website",
+    siteName: "My App",
+    url: "https://myapp.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+};
+```
+
+### Dynamic metadata
+
 ```typescript
 // app/blog/[slug]/page.tsx
 export async function generateMetadata({ params }): Promise<Metadata> {
@@ -217,14 +250,10 @@ export async function generateMetadata({ params }): Promise<Metadata> {
     title: post.title,
     description: post.excerpt,
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
       images: [ogImageUrl.toString()],
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
-      description: post.excerpt,
       images: [ogImageUrl.toString()],
     },
   };
@@ -288,3 +317,36 @@ Edge runtime has limited emoji support. Either:
 1. Use an emoji font (Noto Color Emoji)
 2. Replace emoji with images
 3. Avoid emoji in OG images
+
+### Font format error: "Unsupported OpenType signature wOF2"
+
+**Satori (which powers ImageResponse) does NOT support woff2 fonts.** Use TTF instead.
+
+```typescript
+// ❌ WRONG - woff2 causes "Unsupported OpenType signature wOF2"
+const fontData = await fetch(
+  "https://fonts.gstatic.com/s/inter/v20/...woff2"
+).then(res => res.arrayBuffer());
+
+// ✅ CORRECT - use TTF format
+const fontData = await fetch(
+  "https://fonts.gstatic.com/s/inter/v20/...ttf"
+).then(res => res.arrayBuffer());
+```
+
+To get TTF URLs from Google Fonts:
+```bash
+# Don't include woff2 user-agent - gets TTF by default
+curl -s "https://fonts.googleapis.com/css?family=Inter:wght@500" | grep -o "https://[^)]*"
+```
+
+### Google Fonts URLs return 404
+
+Google Fonts URLs are version-specific (v14, v16, v20, etc.). Hardcoded URLs break when versions change.
+
+**Solution:** Fetch fresh URLs from the Google Fonts CSS API rather than hardcoding:
+```bash
+curl -s "https://fonts.googleapis.com/css?family=Bebas+Neue" | grep -o "https://[^)]*"
+```
+
+Or pin to a known working version and add a comment noting it may need updating.
