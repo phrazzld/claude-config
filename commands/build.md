@@ -84,6 +84,24 @@ If changes touch Stripe/Clerk/external APIs:
 - Verify env validation exists at module load
 - Check for integration tests
 
+## Commenting on Issues
+
+Leave a comment on the issue when:
+- Starting work (brief: "Picking this up—looks like the issue is in the validation layer")
+- Hitting a significant decision point ("Went with approach B because X was blocking on Y")
+- Discovering scope creep ("This touched more than expected—opened #123 for the related cleanup")
+- Completion ("Done. See PR #456. The tricky bit was...")
+
+Write comments like you're leaving breadcrumbs for future-you:
+- **Concise** — One sentence beats three paragraphs
+- **High-context** — Reference files, functions, specific behaviors
+- **Useful** — What's not obvious? What might bite someone?
+- **Human** — Dry humor welcome. "Fixed the thing" is boring. "The race condition was hiding behind a useEffect that should've been a useMemo—classic" is better.
+
+```bash
+gh issue comment $1 --body "Picking this up. Initial read: looks like the auth middleware is swallowing the error before it hits the handler."
+```
+
 ## Completion
 
 Report: commits made, files changed, verification status.
