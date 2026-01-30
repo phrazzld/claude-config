@@ -122,6 +122,42 @@ func NewApp() *App {
 }
 ```
 
+## Deps Struct Pattern (5+ Parameters)
+
+When constructor takes 5+ parameters, use a deps struct:
+
+```go
+// Group dependencies into named struct
+type ServiceDeps struct {
+    Repo     Repository
+    Mailer   EmailSender
+    Logger   Logger
+    Config   *Config
+    Cache    Cache
+}
+
+// Panic on nil - catches programming errors at construction
+func NewService(deps ServiceDeps) *Service {
+    if deps.Repo == nil {
+        panic("NewService: Repo cannot be nil")
+    }
+    if deps.Mailer == nil {
+        panic("NewService: Mailer cannot be nil")
+    }
+    // ... check all required deps
+    return &Service{...}
+}
+```
+
+**Benefits:**
+- Named fields = self-documenting call sites
+- Adding deps doesn't change signature
+- Nil panics catch bugs at construction, not at runtime
+
+**When changing old constructor to deps struct:**
+- Update ALL call sites to struct literal pattern
+- Check for tests expecting old nil-tolerance behavior
+
 ## Anti-Patterns
 
 - Goroutines without cancellation path (leaks)

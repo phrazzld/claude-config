@@ -263,6 +263,26 @@ Always add a comment explaining WHY the exclusion is necessary.
 
 ## Test Quality and Smells
 
+### Behavior Change Conflicts
+
+When changing behavior (e.g., constructor now panics on nil), existing tests may expect the OLD behavior:
+
+```go
+// OLD test expected nil tolerance
+expectPanic: false, // Should handle nil gracefully
+
+// NEW behavior panics on nil
+// Test now fails with "panicked unexpectedly"
+```
+
+**Before changing behavior that tests might cover:**
+1. Search for test functions related to the change
+2. Check assertions about the OLD behavior
+3. Update or remove conflicting tests
+4. Add tests for the NEW behavior
+
+**Pattern:** `rg "TestNew.*NilDependencies" --type go` to find tests
+
 ### Test Smells (Anti-Patterns)
 
 ❌ **Too many mocks** (>3 mocks)
