@@ -11,10 +11,12 @@
       "/Users/phaedrus/Development/heartbeat",
       "/Users/phaedrus/Development/volume",
       "/Users/phaedrus/Development/moonbridge",
-      "/Users/phaedrus/Development/thinktank"
+      "/Users/phaedrus/Development/thinktank",
+      "/Users/phaedrus/Development/misty-step"
     ],
     "patterns": [
-      "**/daybook/**"
+      "**/daybook/**",
+      "**/design-lab/**"
     ]
   },
   "thresholds": {
