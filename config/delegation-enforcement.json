@@ -12,7 +12,8 @@
       "/Users/phaedrus/Development/volume",
       "/Users/phaedrus/Development/moonbridge",
       "/Users/phaedrus/Development/thinktank",
-      "/Users/phaedrus/Development/misty-step"
+      "/Users/phaedrus/Development/misty-step",
+      "/Users/phaedrus/Development/vox"
     ],
     "patterns": [
       "**/daybook/**",
