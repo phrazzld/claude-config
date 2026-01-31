@@ -258,6 +258,74 @@ Detection strategy:
 - Check if the effect depends on object props (defaultValues, config, etc.)
 - Verify there's a transition guard, not just `if (open)`
 
+### 9. Async Action Feedback
+
+Rule: Every async action (mutation, fetch, API call) needs both success and error feedback.
+
+Anti-pattern:
+```tsx
+const handleSubmit = async () => {
+  try {
+    const result = await submitAction({});
+    if (!result.success) {
+      toast.error(result.error || "Something went wrong");
+    }
+    // No success feedback - user doesn't know it worked
+  } catch (error) {
+    toast.error("Failed to submit");
+  }
+};
+```
+
+Correct pattern:
+```tsx
+const handleSubmit = async () => {
+  try {
+    const result = await submitAction({});
+    if (!result.success) {
+      toast.error(result.error || "Something went wrong");
+    } else {
+      toast.success("Submitted successfully");
+    }
+  } catch (error) {
+    toast.error(error instanceof Error ? error.message : "Failed to submit");
+  }
+};
+```
+
+Detection strategy:
+- Find async handlers with `toast.error` but no `toast.success`
+- Check catch blocks for generic error messages that discard `error.message`
+
+### 10. Type Duplication vs Import
+
+Rule: Import types from source of truth (schema, API types) instead of duplicating.
+
+Anti-pattern:
+```tsx
+// Duplicating a type that exists in schema
+type UserStatus = "active" | "inactive" | "pending";
+
+function StatusBadge({ status }: { status: UserStatus }) {
+  // ...
+}
+```
+
+Correct pattern:
+```tsx
+import type { Doc } from "@/convex/_generated/dataModel";
+
+type UserStatus = Doc<"users">["status"];
+
+function StatusBadge({ status }: { status: UserStatus }) {
+  // ...
+}
+```
+
+Detection strategy:
+- Find local type definitions that match schema field types
+- Recommend importing from generated types to prevent drift
+
 ## biome-ignore for Sanitized HTML
 
 When using `dangerouslySetInnerHTML` with DOMPurify sanitization, add a biome-ignore comment:
