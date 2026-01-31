@@ -1,6 +1,6 @@
 ---
 name: codex-coworker
-description: "Invoke Codex CLI as a coworker for implementation, brainstorming, specs, and reviews. Use when you want parallel thinking, cheap execution, or a second opinion. Codex tokens are cheaper than yours — delegate aggressively. Keywords: codex, delegate, implement, draft, review, brainstorm, write tests, code review."
+description: "Invoke Codex as a coworker for implementation, brainstorming, specs, and reviews. Use when you want parallel thinking, cheap execution, or a second opinion. Codex tokens are cheaper than yours — delegate aggressively. Keywords: codex, delegate, implement, draft, review, brainstorm, write tests, code review, moonbridge."
 ---
 
 # Codex as Coworker
@@ -17,15 +17,30 @@ Your tokens are expensive and limited. Codex tokens are cheap. Delegate aggressi
 
 ## Invocation
 
-**Preferred: File output (minimizes your token consumption)**
+**Preferred: Moonbridge MCP (unified interface)**
+```
+mcp__moonbridge__spawn_agent({
+  "prompt": "Implement X following the pattern in Y. Run pnpm typecheck after.",
+  "adapter": "codex",
+  "reasoning_effort": "high"
+})
+```
+
+**Parallel tasks (multiple agents at once):**
+```
+mcp__moonbridge__spawn_agents_parallel({
+  "agents": [
+    {"prompt": "Implement feature A", "adapter": "codex", "reasoning_effort": "high"},
+    {"prompt": "Write tests for A", "adapter": "codex", "reasoning_effort": "medium"},
+    {"prompt": "Review for bugs", "adapter": "codex", "reasoning_effort": "high"}
+  ]
+})
+```
+
+**Fallback: CLI (when MCP unavailable)**
 ```bash
 codex exec --full-auto "Implement X" --output-last-message /tmp/codex-out.md 2>/dev/null
 # Then validate via: git diff --stat, pnpm test, or read summary only if needed
-```
-
-**Quick tasks (output comes back to you):**
-```bash
-codex exec --full-auto "Implement X following the pattern in Y"
 ```
 
 **Interactive session for complex problems:**
@@ -50,23 +65,25 @@ To maximize savings:
 
 ## Reasoning Effort
 
-Always use `gpt-5.2-codex`. Vary reasoning effort based on task complexity:
+Vary reasoning effort based on task complexity:
 
-| Task | Effort | Flag |
+| Task | Effort | When |
 |------|--------|------|
-| Simple edits, boilerplate, straightforward | `medium` | `-c model_reasoning_effort=medium` |
-| Most implementation work (default) | `high` | `-c model_reasoning_effort=high` |
-| Complex debugging, tricky logic, architecture | `xhigh` | `-c model_reasoning_effort=xhigh` |
+| Simple edits, boilerplate | `medium` | Getters, CRUD, obvious changes |
+| Most implementation (default) | `high` | Features, refactors, tests |
+| Complex debugging, architecture | `xhigh` | Race conditions, security, hard bugs |
 
-Examples:
+**Via Moonbridge MCP:**
+```
+mcp__moonbridge__spawn_agent({
+  "prompt": "Debug this race condition",
+  "adapter": "codex",
+  "reasoning_effort": "xhigh"
+})
+```
+
+**Via CLI (fallback):**
 ```bash
-# Standard (most tasks) - high effort
-codex exec --full-auto "Implement auth middleware"
-
-# Simple task - dial down to medium
-codex exec --full-auto -c model_reasoning_effort=medium "Add getter/setter methods"
-
-# Hard problem - dial up to xhigh
 codex exec --full-auto -c model_reasoning_effort=xhigh "Debug this race condition"
 ```
 
@@ -186,3 +203,20 @@ After Codex completes:
 5. **Review integration points:**
    - You handle complex integration across files
    - Check redirects, configs, and cross-file dependencies
+
+## Why Moonbridge MCP
+
+**Prefer Moonbridge over CLI or direct Codex MCP:**
+
+| Method | Pros | Cons |
+|--------|------|------|
+| `mcp__moonbridge__spawn_agent` | Unified interface, parallel support, adapter flexibility | None |
+| `mcp__codex__spawn_agent` | Works | Separate interface, deprecated |
+| `codex exec` CLI | Works outside Claude | Bash overhead, output handling |
+
+**Key benefits:**
+- **Mixed parallel:** Run Codex + Kimi in same `spawn_agents_parallel` call
+- **Consistent params:** Same interface for both adapters
+- **Better control:** `reasoning_effort` for Codex, `thinking` for Kimi
+
+See `/delegate` for full orchestration patterns.
