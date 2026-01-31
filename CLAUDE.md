@@ -81,6 +81,35 @@ Output code that is:
 - **textbook** - clear, well-structured, teaches by example
 - **formalize** - explicit structure over implicit assumptions
 
+## Testing Discipline
+
+**TDD is the default.** Write failing tests first for bugs, refactors, and new features.
+
+**The TDD Loop:**
+1. Write a failing test that captures expected behavior
+2. Verify it fails for the right reason (not syntax, not wrong assertion)
+3. Implement minimal code to pass
+4. Refactor while green
+5. Repeat
+
+**Test Isolation:**
+- No shared state between tests
+- No execution order dependencies
+- One behavior per test
+- Descriptive names: `test_build_failsWhenSchemeNotFound`
+
+**Before Writing Tests:**
+1. Check if behavior is already tested (not just code path covered)
+2. List failure modes and edge cases before implementation
+3. Write in order: happy path → error cases → edge cases
+
+**When to Skip TDD (requires justification):**
+- Pure exploration/prototyping (will be deleted)
+- UI layout work (test interactions, not pixels)
+- Generated code you don't maintain
+
+See `/testing-philosophy` for full patterns.
+
 ## Default Tactics
 
 - Use `rg` when you can write a precise pattern; use `ast-grep` or Morph `warp_grep` when structure or "how/where/what" spans many files.
@@ -341,6 +370,67 @@ func TestFoo(t *testing.T) {
 ```
 
 **Rule:** In Go tests, use `t.Cleanup()` for teardown with proper error handling instead of `defer` with error suppression. `t.Cleanup` runs after test completes (even on panic) and integrates with test reporting.
+
+### External API Format Research Before Integration
+
+**Problem:** Integrated Deepgram as STT fallback, assumed CAF audio format would work. Spent debugging time before discovering Deepgram doesn't support CAF.
+
+**Pattern:**
+```
+Before integrating any external API that processes files:
+1. Check official docs for supported formats/encodings
+2. Verify your input format is in the supported list
+3. If not, plan conversion strategy upfront
+```
+
+**Common format gotchas:**
+- Deepgram STT: No CAF support (use WAV, MP3, FLAC)
+- Most speech APIs: Prefer WAV or MP3 over platform-specific formats
+- Image APIs: Check color space requirements (RGB vs CMYK)
+
+**Rule:** Always verify format compatibility in API docs before writing integration code. Platform-specific formats (CAF, HEIC, etc.) often need conversion.
+
+### macOS Audio Format Conversion
+
+**Problem:** AVAudioFile.write() crashes with certain format combinations. Need reliable audio conversion on macOS.
+
+**Pattern:**
+```swift
+// UNRELIABLE - AVAudioFile can crash with format mismatches
+let outputFile = try AVAudioFile(forWriting: outputURL, settings: inputFile.processingFormat.settings)
+try outputFile.write(from: buffer)  // May crash with signal 5
+
+// RELIABLE - Use macOS built-in afconvert CLI
+let process = Process()
+process.executableURL = URL(fileURLWithPath: "/usr/bin/afconvert")
+process.arguments = [
+    inputPath,
+    "-o", outputPath,
+    "-f", "WAVE",  // Output format
+    "-d", "LEI16"  // Little-endian 16-bit integer
+]
+try process.run()
+process.waitUntilExit()
+```
+
+**Rule:** For audio format conversion on macOS, prefer `/usr/bin/afconvert` over AVAudioFile for reliability. For tests, use `ffmpeg` to generate test audio files.
+
+### Fallback Provider Error Scope
+
+**Problem:** FallbackSTTProvider only caught `.throttled` and `.quotaExceeded`. Bad API key caused auth error that wasn't caught, so no fallback occurred.
+
+**Pattern:**
+```swift
+// INCOMPLETE - Misses auth errors
+case .throttled, .quotaExceeded:
+    return try await fallback.transcribe(audioURL: audioURL)
+
+// COMPLETE - Catch all provider-failure errors
+case .throttled, .quotaExceeded, .auth:
+    return try await fallback.transcribe(audioURL: audioURL)
+```
+
+**Rule:** Fallback providers should catch ALL errors that indicate the provider is unusable (not just rate limits). Auth errors, quota errors, and service unavailable should all trigger fallback.
 
 <!--
 Graduated 2026-01-27:

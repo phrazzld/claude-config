@@ -94,19 +94,25 @@ Tests should verify what code does, not how it does it. Implementation can chang
 - Simple getters/setters (unless they have logic)
 - Framework code (trust the framework)
 
-### TDD: Sometimes, When It Adds Value
+### TDD: Always (With Rare Exceptions)
 
-**Use TDD for:**
-- Complex logic (algorithms, business rules)
-- Well-defined requirements (you know what to build)
-- Critical functionality (high-risk code)
+**TDD is the default for all production code:**
+- Bug fixes (failing test captures the bug before fixing)
+- New features (tests define the contract before implementation)
+- Refactors (tests ensure behavior preserved)
+- Simple CRUD (yes, even simple code—tests are cheap, regressions aren't)
 
-**Skip TDD for:**
-- UI prototyping (exploring design)
-- Exploratory work (discovering requirements)
-- Simple CRUD (straightforward logic)
+**The Critical Step Most Skip:**
+After writing a failing test, verify it fails **for the right reason**:
+- Not a syntax error
+- Not a wrong import
+- Not an incorrect assertion
+- The test should fail because the behavior doesn't exist yet
 
-**When in doubt:** Write test after if TDD feels like overhead.
+**Skip TDD only with justification:**
+- Pure exploration (will be deleted, not shipped)
+- UI layout prototyping (test interactions, not pixels)
+- Generated code you don't maintain
 
 ### Coverage Philosophy: Meaningful > Percentage
 
@@ -174,6 +180,22 @@ Tests should verify what code does, not how it does it. Implementation can chang
 
 **Pattern:** If the mock path starts with `@/` or `../`, stop and reconsider.
 
+### Test Isolation: No Shared State
+
+**Tests must be independent:**
+- No shared mutable state between tests
+- No execution order dependencies
+- Each test sets up and tears down its own context
+- Parallel execution should be safe
+
+**Red flags:**
+- Test passes alone, fails in suite (or vice versa)
+- Test relies on previous test's side effects
+- Global state modified without cleanup
+- Flaky tests that pass "sometimes"
+
+**Pattern:** If tests share setup, use fresh fixtures per test (factory functions, not shared instances).
+
 ### Test Structure: AAA (Arrange, Act, Assert)
 
 **Clear three-phase structure:**
@@ -195,6 +217,7 @@ verify result matches expectation
 - Visual separation between phases (blank lines)
 - One logical assertion per test (can have multiple assert statements for same behavior)
 - Keep Arrange simple (complex setup = simplify production code)
+- One behavior per test—if you need multiple headings to describe it, split it
 
 ### Test Naming: Descriptive Sentences
 
@@ -376,10 +399,10 @@ Tests are documentation. Clarity trumps reuse.
 6. Will this test give confidence? → Yes, write it
 
 **Should I use TDD?**
-1. Requirements clear? → Consider TDD
-2. Complex logic? → Consider TDD
-3. Exploring solution? → Skip TDD, test after
-4. Simple CRUD? → Skip TDD, test after
+1. Production code? → Yes, use TDD
+2. Bug fix? → Yes, failing test first captures the bug
+3. Exploring/prototyping (will delete)? → Skip TDD
+4. UI layout only (not behavior)? → Skip TDD
 
 **Should I mock this?**
 1. External system? → Mock it
