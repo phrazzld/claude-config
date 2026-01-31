@@ -30,6 +30,37 @@ Offer a trial (14 days standard). After trial: pay or lose access.
 
 No freemium. No "free forever with limits." Trial is the only free path.
 
+## Credit Card Upfront
+
+**Require payment method at trial signup.** This is the standard SaaS pattern:
+
+1. User enters credit card during signup
+2. Trial starts immediately (no charge)
+3. If user cancels before trial ends → no charge
+4. If trial ends without cancellation → automatic charge, subscription begins
+
+**Why upfront:**
+- Higher conversion (commitment at signup)
+- Qualified leads (real intent to pay)
+- Smoother UX (no second checkout flow)
+- Less support burden (no "how do I upgrade?" questions)
+
+**Stripe implementation:**
+```typescript
+await stripe.checkout.sessions.create({
+  mode: 'subscription',
+  payment_method_collection: 'always',  // Require card
+  subscription_data: {
+    trial_period_days: 14,  // Or use trial_end for specific date
+  },
+});
+```
+
+**UX messaging:**
+- "Start your 14-day free trial"
+- "You won't be charged until [date]"
+- "Cancel anytime during trial"
+
 ## Trial Completion on Upgrade
 
 When a user upgrades mid-trial, honor the remaining trial days.

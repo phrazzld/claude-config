@@ -311,17 +311,25 @@ case 'payment_method.updated':
 | past_due | "Payment failed - update card" | Red |
 | incomplete | "Complete payment setup" | Red |
 
-### Trial Banner
+### Trial Banner (Credit Card Upfront Model)
 
-Show a non-intrusive but clear trial banner:
+With credit card collected upfront, the trial banner focuses on when billing starts:
 
 ```tsx
 {user.subscriptionStatus === 'trialing' && (
   <Banner variant="info">
-    {daysRemaining} days left in your trial.
-    <Link href="/pricing">Subscribe now</Link>
+    Your free trial ends on {formatDate(trialEndsAt)}.
+    You'll be charged ${amount} unless you cancel.
+    <Link href="/settings">Manage subscription</Link>
   </Banner>
 )}
+```
+
+**Key messaging for credit card upfront:**
+- "Free trial ends on [date]" (not "X days left")
+- "You won't be charged until [date]"
+- "Cancel anytime before [date] to avoid charges"
+- Link to manage/cancel, not to "subscribe"
 ```
 
 ### Canceled State

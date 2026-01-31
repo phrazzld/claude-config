@@ -28,14 +28,39 @@ Best practices for managing subscription states, trials, and access control with
 
 ## Trial-to-Paid Flow
 
-### The Right Way: Use Stripe's `trial_end`
+### Preferred: Credit Card Upfront
 
-When a user subscribes during their trial, honor remaining days:
+Collect payment method at signup, let Stripe handle the trial-to-paid transition:
 
 ```typescript
-// In checkout session creation
-const TRIAL_DURATION_MS = 14 * 24 * 60 * 60 * 1000;
+// User signs up and provides payment info immediately
+const session = await stripe.checkout.sessions.create({
+  mode: 'subscription',
+  payment_method_collection: 'always',  // Require card upfront
+  subscription_data: {
+    trial_period_days: 14,
+    metadata: { userId },
+  },
+  // ...
+});
+```
 
+**Benefits:**
+- Single checkout flow (no second "upgrade" step)
+- Stripe auto-charges when trial ends
+- User can cancel anytime during trial to avoid charge
+- Higher conversion, qualified leads
+
+**UX messaging:**
+- "Start free trial" (not "Subscribe")
+- "You won't be charged until [trial_end_date]"
+- "Cancel anytime" prominently displayed
+
+### Alternative: Subscribe During Trial
+
+If a user starts without payment and subscribes mid-trial, honor remaining days:
+
+```typescript
 // Calculate remaining trial
 const trialEndMs = user?.trialEndsAt
   ?? (user?._creationTime ? user._creationTime + TRIAL_DURATION_MS : null);
@@ -46,7 +71,6 @@ const trialEndSeconds = hasRemainingTrial ? Math.floor(trialEndMs / 1000) : unde
 
 // Pass to Stripe - it handles billing delay
 const session = await stripe.checkout.sessions.create({
-  // ...
   subscription_data: {
     metadata: { userId },
     ...(trialEndSeconds && { trial_end: trialEndSeconds }),
@@ -54,10 +78,7 @@ const session = await stripe.checkout.sessions.create({
 });
 ```
 
-**Benefits:**
-- Stripe delays first charge until `trial_end`
-- User sees "trial ends on X" in Stripe customer portal
-- No manual billing logic needed
+**Note:** This pattern is less common now. Prefer credit card upfront for new integrations.
 
 ### Prevent Zombie Trials
 

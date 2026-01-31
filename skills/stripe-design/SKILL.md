@@ -42,6 +42,7 @@ Produce a design document covering:
 - What mode? (subscription, payment, setup)
 - Customer creation strategy
 - Success/cancel URLs
+- **Trial strategy:** Credit card upfront (preferred) with `trial_period_days`
 
 **Webhook Events**
 - Which events to handle?
