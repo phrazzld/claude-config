@@ -2,8 +2,8 @@
   "mcpServers": {
     "moonbridge": {
       "type": "stdio",
-      "command": "uv",
-      "args": ["run", "--directory", "/Users/phaedrus/Development/moonbridge", "python", "-m", "moonbridge.server"]
+      "command": "uvx",
+      "args": ["moonbridge@latest"]
     },
     "exa": {
       "type": "http",
