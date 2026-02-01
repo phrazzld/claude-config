@@ -1,145 +1,199 @@
 ---
 name: respond
 description: |
-  Systematically analyze all PR review feedback and comments, categorize them by priority and scope, and create actionable responses for immediate and future work.
+  Respond to PR review feedback with maximum transparency. Analyze feedback, get second opinions on non-trivial decisions, post comments documenting every judgment, and implement fixes. All reasoning must be visible in PR comments. Keywords: PR review, code review response, review feedback, address comments, fix review.
 ---
 
-Systematically analyze all PR review feedback and comments, categorize them by priority and scope, and create actionable responses for immediate and future work.
+# Respond to PR Review Feedback
 
-## 1. Review Analysis
-- **Goal:** Comprehensively evaluate all PR comments and feedback.
-- **Actions:**
-    - **Collect all feedback types** - GitHub PRs have three distinct comment sources:
-        - **Review comments**: Inline code comments attached to specific file lines (where bots like Codex leave suggestions)
-        - **Issue comments**: General PR conversation comments
-        - **Review summaries**: Top-level review state and summary feedback
-        - Use pagination when fetching to ensure no comments are missed on large PRs
-    - **Parse bot-generated feedback** - Automated review bots (e.g., Codex, Danger, lint bots) often include:
-        - Priority/severity indicators (P0, P1, P2 badges or similar)
-        - Structured suggestions with specific line numbers and file paths
-        - Links to documentation or standards
-        - Extract and respect these priority signals when categorizing
-    - **Handle large PRs strategically** - For PRs with >1000 lines changed or >10 comments:
-        - First assess scope: count comments by type and priority
-        - Group related feedback by file/component
-        - Process high-priority/blocking items first to avoid context overflow
-        - Consider loading only changed portions of large files rather than full diffs
-    - Think critically about each comment's legitimacy, scope, and impact.
-    - Assess technical merit, alignment with project goals, and implementation complexity.
-    - Consider reviewer expertise and context behind each suggestion.
+You're a senior engineer responding to code review feedback on a PR. Your job is to analyze, decide, act, and **document everything publicly in the PR**.
 
-## 2. Categorize Feedback
-- **Goal:** Classify comments into actionable categories based on urgency and scope.
-- **Categories:**
-    - **Critical/Merge-blocking:** Issues that must be addressed before merge
-    - **In-scope improvements:** Enhancements that fit this branch's purpose
-    - **Follow-up work:** Valid suggestions for future iterations
-    - **Low priority/Not applicable:** Comments that don't warrant immediate action
+## Core Philosophy: Radical Transparency
 
-## 3. Create Action Plans
+**Never work silently.** Every judgment, decision, categorization, and action must be documented in PR comments. The PR comment history should tell the complete story of how feedback was handled and why.
 
-### Categorization Summary
-First, present categorized summary:
-- **Critical/Merge-blocking**: {count} items
-- **In-scope improvements**: {count} items
-- **Follow-up work**: {count} items
-- **Low priority/Not applicable**: {count} items
+Why this matters:
+- Reviewers see their feedback was heard and considered
+- Future readers understand the reasoning behind decisions
+- Rubber-ducking improves decision quality
+- Creates institutional memory
 
-### Parallel Fix Implementation (Critical + In-scope)
+## Workflow
 
-For actionable feedback, use parallel pr-comment-resolver agents:
+### 1. Gather All Feedback
 
-**If 1-3 comments**: Launch Task agents in parallel
-```
-Task pr-comment-resolver("Comment: Add error handling to payment processing method at PaymentService.ts:45")
-Task pr-comment-resolver("Comment: Extract validation logic from UserController to helper at app/controllers/users_controller.rb:120")
-Task pr-comment-resolver("Comment: Fix variable naming - rename `data` to `userData` in UserService.ts:78")
+Collect from all three GitHub comment sources:
+- Review comments (inline on code)
+- Issue comments (general discussion)
+- Review summaries (top-level review state)
+
+Use pagination. Don't miss anything.
+
+### 2. Post Initial Acknowledgment
+
+**MANDATORY**: Before any analysis, post a comment acknowledging receipt:
+
+```bash
+gh pr comment <PR_NUMBER> --body "$(cat <<'EOF'
+## 📋 Review Feedback Received
+
+I'm analyzing feedback from this PR. Will post my assessment shortly.
+
+**Found:**
+- X review comments
+- Y issue comments
+- Z review summaries
+
+Working through categorization and will respond to each item.
+EOF
+)"
 ```
 
-**If 4+ comments**: Process in batches of 3-5 to avoid overwhelming context
-```
-# Batch 1: Most critical issues
-Task pr-comment-resolver("Comment 1 details")
-Task pr-comment-resolver("Comment 2 details")
-Task pr-comment-resolver("Comment 3 details")
+### 3. Analyze and Categorize (with Second Opinions)
 
-# Wait for completion, review changes, commit
+For each piece of feedback:
+1. Assess technical merit and scope
+2. **For non-trivial decisions**, get a second opinion via Moonbridge:
+   ```bash
+   # Get Codex perspective
+   mcp__moonbridge__spawn_agent --adapter codex --prompt "Review this feedback: [quote]. Is this valid? Should it block merge?"
 
-# Batch 2: Remaining issues
-Task pr-comment-resolver("Comment 4 details")
-Task pr-comment-resolver("Comment 5 details")
-```
+   # Get Gemini perspective for architectural questions
+   mcp__moonbridge__spawn_agent --adapter gemini --prompt "Analyze this architectural suggestion: [quote]. What are the tradeoffs?"
+   ```
+3. Document your reasoning
 
-**Agent input format**: Pass comment text with file location context
-- Include: File path, line number, reviewer's specific request
-- Each agent makes changes and reports resolution independently
-- Review agent reports before committing
+Categories:
+- **Critical/Merge-blocking**: Must fix before merge
+- **In-scope improvements**: Valid, fits this PR's purpose
+- **Follow-up work**: Valid, but separate concern
+- **Declined**: Not addressing, with explicit reasoning
 
-**Manual fallback**: If comment is ambiguous or requires design decision:
-- Add to TODO.md as regular task
-- Document question/blocker in task details
+### 4. Post Categorization Summary
 
-### For Follow-up Work
-- Create GitHub issues for valid suggestions using `gh issue create`
-- Include rationale for deferring and link back to original PR comments
-- Label appropriately (e.g., `enhancement`, `tech-debt`, `low-priority`)
+**MANDATORY**: Post your categorized assessment as a PR comment:
 
-### For Low Priority/Rejected Feedback
-- Document reasoning for not addressing immediately
-- Consider: erroneous suggestions, out-of-scope changes, low ROI improvements
-- Provide clear justification to inform future discussions
+```bash
+gh pr comment <PR_NUMBER> --body "$(cat <<'EOF'
+## 📊 Feedback Analysis
 
-## 4. Document Decisions
-- **Goal:** Create transparent record of feedback handling decisions.
-- **Actions:**
-    - Summarize analysis approach and decision criteria
-    - For each comment category, explain rationale and next steps
-    - Ensure all feedback is acknowledged and appropriately addressed
+### Critical/Merge-blocking (X items)
+| Feedback | Source | My Assessment |
+|----------|--------|---------------|
+| [quote] | @reviewer | Valid - will fix. [reasoning] |
 
-## 5. MANDATORY CODIFICATION
+### In-scope Improvements (X items)
+| Feedback | Source | My Assessment |
+|----------|--------|---------------|
+| [quote] | @reviewer | Agreed - implementing. [reasoning] |
 
-After addressing PR comments, codification is REQUIRED, not optional.
+### Follow-up Work (X items)
+| Feedback | Issue Created | Rationale for Deferring |
+|----------|---------------|-------------------------|
+| [quote] | #123 | [why not in this PR] |
 
-### Philosophy
+### Declined (X items)
+| Feedback | Source | Why Not Addressing |
+|----------|--------|-------------------|
+| [quote] | @reviewer | [explicit reasoning] |
 
-Every piece of PR feedback represents something the system failed to prevent. The goal is not just to fix this PR, but to make this class of issue impossible in future PRs.
-
-### Process
-
-For each piece of feedback received, brainstorm how to prevent it systemically:
-
-- Could a **hook** catch this before the code was written?
-- Should an **agent** reviewer flag this pattern?
-- Is there a **skill** that should encode this workflow?
-- Does **CLAUDE.md** need this convention documented?
-
-Don't be prescriptive about targets. Think creatively about prevention.
-
-### Output Format
-
-After resolving PR feedback, include:
-
-```
-CODIFICATION:
-- [feedback] → [target]: [what was added/updated]
-- [feedback] → [target]: [what was added/updated]
-
-NOT CODIFIED (with justification):
-- [feedback]: Already in [exact path] OR External constraint: [explanation]
+---
+*Consulted: Codex (for X), Gemini (for Y)*
+EOF
+)"
 ```
 
-### Invalid Justifications
+### 5. Implement Fixes (Narrating as You Go)
 
-- ❌ "First occurrence" - Cross-session memory doesn't exist
-- ❌ "Pattern not detected" - One occurrence IS enough
-- ❌ "Seems minor" - Minor issues compound
-- ❌ "Not sure how to codify" - Brainstorm, don't skip
+For each fix, post a comment explaining what you're doing:
 
-See CLAUDE.md "Continuous Learning Philosophy" for valid exceptions.
+```bash
+gh pr comment <PR_NUMBER> --body "$(cat <<'EOF'
+### Addressing: [feedback summary]
 
-### Invoke Codification
+**What I'm changing:**
+- [specific change 1]
+- [specific change 2]
 
-After documenting decisions, invoke:
+**Why this approach:**
+[reasoning]
+
+Will commit shortly.
+EOF
+)"
 ```
-/codify-learning
+
+Then implement using pr-comment-resolver agents or directly.
+
+### 6. Post Resolution Summary
+
+After all fixes are committed:
+
+```bash
+gh pr comment <PR_NUMBER> --body "$(cat <<'EOF'
+## ✅ Feedback Resolution Complete
+
+### Changes Made
+- [commit hash]: [what it fixed]
+- [commit hash]: [what it fixed]
+
+### Issues Created
+- #123: [deferred item]
+
+### Still Open
+- [anything that needs reviewer re-review]
+
+Ready for another look when you have time, @reviewer.
+EOF
+)"
 ```
+
+### 7. Codify Learnings
+
+Every piece of feedback represents a gap in our preventive systems. After resolving:
+
+1. Brainstorm prevention mechanisms (hooks, agents, skills, CLAUDE.md)
+2. Implement codification
+3. Post what was codified:
+
+```bash
+gh pr comment <PR_NUMBER> --body "$(cat <<'EOF'
+## 📚 Codified from This Review
+
+To prevent similar feedback in future PRs:
+
+- **[feedback pattern]** → Added to `[target]`: [what]
+
+This class of issue should now be caught earlier.
+EOF
+)"
+```
+
+## Decision Framework
+
+**When to get a second opinion (Moonbridge):**
+- Architectural suggestions
+- Disagreements with reviewer
+- Ambiguous requirements
+- Tradeoff decisions
+- Anything you're uncertain about
+
+**When to decline feedback:**
+- Out of scope for this PR (create issue instead)
+- Technically incorrect (explain why)
+- Already addressed elsewhere (link to it)
+- Would introduce regression (explain risk)
+
+Always explain declined feedback publicly. Never silently ignore.
+
+## Anti-Patterns
+
+❌ Silent fixes with no explanation
+❌ Categorizing without posting rationale
+❌ Making decisions without documenting reasoning
+❌ Ignoring feedback without explicit comment
+❌ Working through feedback without acknowledging receipt
+
+## Remember
+
+The PR comment thread is the permanent record. Future you, future maintainers, and future AI agents will read it. Make it tell the complete story.
