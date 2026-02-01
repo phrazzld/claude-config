@@ -114,6 +114,25 @@ func warnIfEmptyCredentials(cfg *Config) {
 
 **Rule:** Credential/config warnings should be context-aware. Only warn about credentials for services that are actually configured to be used.
 
+### Config Threshold Duplication
+
+**Problem:** Thresholds defined in multiple files (vitest.config.ts + coverage-verifier.ts) can drift, causing inconsistent enforcement.
+
+```typescript
+// vitest.config.ts
+coverage: { thresholds: { lines: 47, branches: 83 } }
+
+// coverage-verifier.ts
+const THRESHOLDS = { lines: 50, branches: 80 }  // Drifted!
+```
+
+**Detection:**
+```bash
+rg "lines.*47|branches.*83" --type ts  # Find all threshold definitions
+```
+
+**Rule:** When changing thresholds, grep for same values in related files. Update all occurrences together, including test assertions.
+
 ## Investigation Process
 
 1. **Scan for external services**: Look for imports from `stripe`, `@clerk`, `@sendgrid`, etc.

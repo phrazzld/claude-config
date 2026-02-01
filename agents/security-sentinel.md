@@ -46,6 +46,7 @@ Hunt for unvalidated inputs that could enable:
 - **Command Injection**: User input in shell commands
 - **Path Traversal**: Unsanitized file paths
 - **LDAP/XML/NoSQL Injection**: Format-specific attacks
+- **Client-Side Validation Bypass**: Form constraints without server-side mirror
 
 **Output Format**:
 ```
@@ -77,6 +78,19 @@ Impact: CRITICAL - Remote code execution
 Fix: Validate filename against whitelist, use spawn() with array args
 Effort: 30m | Severity: CRITICAL
 ```
+
+```
+[CLIENT-SIDE BYPASS] components/Form.tsx:34 + api/submit.ts:12
+Code (client): <textarea maxLength={500} />
+Code (server): // No validation
+Vulnerability: Client constraints without server-side mirror
+Attack: Bypass form, POST directly with 10MB payload
+Impact: MEDIUM - DoS, data corruption, storage abuse
+Fix: Add server validation: if (desc.length > 500) throw Error("Description must be 500 chars or less")
+Effort: 10m | Severity: MEDIUM
+```
+
+**Rule:** Every `maxLength`, `min`, `max`, `pattern` on client needs corresponding server validator. Client = UX; server = security.
 
 ### 3. Secret & Credential Management
 

@@ -297,6 +297,19 @@ const event = JSON.parse(body); // No signature check!
 // Debugging nightmare when things go wrong
 ```
 
+## API Format Research (Before Integration)
+
+Before writing integration code, verify format compatibility:
+
+1. Check official docs for supported formats/encodings
+2. Verify your input format is in the supported list
+3. If not, plan conversion strategy upfront
+
+**Common format gotchas:**
+- Deepgram STT: No CAF support (use WAV, MP3, FLAC)
+- Speech APIs: Prefer WAV/MP3 over platform-specific formats (CAF, HEIC)
+- Image APIs: Check color space requirements (RGB vs CMYK)
+
 ## Service-Specific Notes
 
 ### Stripe

@@ -326,6 +326,43 @@ Detection strategy:
 - Find local type definitions that match schema field types
 - Recommend importing from generated types to prevent drift
 
+### 11. Async Button Guard Pattern
+
+Rule: Every async button handler needs loading state, early return guard, and disabled prop.
+
+Anti-pattern:
+```tsx
+const handleClick = async () => {
+  const result = await expensiveOperation();  // Can fire multiple times!
+};
+```
+
+Correct pattern:
+```tsx
+const [isLoading, setIsLoading] = useState(false);
+
+const handleClick = async () => {
+  if (isLoading) return;  // Guard
+  setIsLoading(true);
+  try {
+    const result = await expensiveOperation();
+  } finally {
+    setIsLoading(false);  // Always in finally
+  }
+};
+
+<button disabled={isLoading} onClick={handleClick}>
+  {isLoading ? "Loading..." : "Submit"}
+</button>
+```
+
+Detection strategy:
+- Find async onClick handlers without `useState` for loading
+- Check for missing `disabled={isLoading}` on buttons with async handlers
+- Verify `finally` block resets loading state
+
+---
+
 ## biome-ignore for Sanitized HTML
 
 When using `dangerouslySetInnerHTML` with DOMPurify sanitization, add a biome-ignore comment:

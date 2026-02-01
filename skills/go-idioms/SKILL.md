@@ -158,6 +158,24 @@ func NewService(deps ServiceDeps) *Service {
 - Update ALL call sites to struct literal pattern
 - Check for tests expecting old nil-tolerance behavior
 
+## Test Cleanup
+
+Use `t.Cleanup()` for teardown, not `defer` with error suppression:
+
+```go
+// BAD - Error suppression hides failures
+defer func() { _ = os.Chdir(orig) }()  // SA4017 warning
+
+// GOOD - Proper cleanup with error handling
+t.Cleanup(func() {
+    if err := os.Chdir(orig); err != nil {
+        t.Errorf("cleanup failed: %v", err)
+    }
+})
+```
+
+`t.Cleanup` runs after test completes (even on panic), integrates with test reporting.
+
 ## Anti-Patterns
 
 - Goroutines without cancellation path (leaks)
@@ -167,6 +185,7 @@ func NewService(deps ServiceDeps) *Service {
 - Global singletons for dependencies
 - Generic everything (overuse of generics)
 - `interface{}` / `any` without justification
+- `defer` with error suppression in tests
 
 ## Embrace Boring
 

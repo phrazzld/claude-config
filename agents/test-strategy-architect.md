@@ -372,6 +372,30 @@ Ensure comprehensive test coverage with the right tests at the right levels. Gui
   }, 30000)  // 30 second timeout
   ```
 
+### Interface Edge Case Coverage
+
+When testing edge cases (e.g., window unavailable), verify ALL interface methods, not just the first one:
+
+```typescript
+// ❌ BAD: Only tests setItem, forgets getItem/removeItem have same branch
+describe('without window', () => {
+  it('setItem returns false', () => { /* ... */ });
+  // Missing: getItem, removeItem
+});
+
+// ✅ GOOD: Test all methods that share the branch
+describe('without window', () => {
+  beforeAll(() => { /* remove window once */ });
+  afterAll(() => { /* restore window once */ });
+
+  it('setItem returns false', () => { /* ... */ });
+  it('getItem returns null', () => { /* ... */ });
+  it('removeItem does not throw', () => { /* ... */ });
+});
+```
+
+**Rule:** When writing tests for an edge case branch, verify ALL interface methods are covered. Use `beforeAll`/`afterAll` to share expensive setup.
+
 ## Red Flags
 
 - [ ] ❌ Tests that test implementation details (mocking internal functions)
@@ -384,6 +408,7 @@ Ensure comprehensive test coverage with the right tests at the right levels. Gui
 - [ ] ❌ Integration tests that mock database
 - [ ] ❌ Test names that don't explain what's being tested
 - [ ] ❌ Flaky tests (pass/fail randomly)
+- [ ] ❌ Edge case tests that only cover one interface method
 
 ## Test-First Development
 
