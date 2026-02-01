@@ -38,21 +38,21 @@ mcp__moonbridge__spawn_agents_parallel({
 })
 ```
 
-**Codex (MCP)** — Senior engineer
+**Codex (via Moonbridge)** — Senior engineer
 ```
-Use ToolSearch to load mcp__codex__spawn_agent, then:
-
-mcp__codex__spawn_agent({
-  "prompt": "Review this code for bugs, edge cases, security issues, error handling:\n\n[paste diff or file contents]\n\nReport format for each issue:\n- file:line\n- Issue description\n- Severity (critical/important/minor)\n- Suggested fix"
+mcp__moonbridge__spawn_agent({
+  "prompt": "Review this code for bugs, edge cases, security issues, error handling:\n\n[paste diff or file contents]\n\nReport format for each issue:\n- file:line\n- Issue description\n- Severity (critical/important/minor)\n- Suggested fix",
+  "adapter": "codex",
+  "reasoning_effort": "high"
 })
 ```
 
 For parallel reviews across multiple files:
 ```
-mcp__codex__spawn_agents_parallel({
+mcp__moonbridge__spawn_agents_parallel({
   "agents": [
-    {"prompt": "Review src/auth.ts for security issues..."},
-    {"prompt": "Review src/api.ts for error handling..."}
+    {"prompt": "Review src/auth.ts for security issues...", "adapter": "codex", "reasoning_effort": "high"},
+    {"prompt": "Review src/api.ts for error handling...", "adapter": "codex", "reasoning_effort": "high"}
   ]
 })
 ```
@@ -129,8 +129,7 @@ Based on what changed, delegate appropriately:
 ### 4. Collect Results
 
 Gather outputs from all reviewers:
-- Codex MCP returns output directly
-- Kimi MCP returns output directly
+- Moonbridge MCP returns output directly (both Codex and Kimi)
 - Gemini CLI output captured from terminal
 - Thinktank writes to stdout or specified output file
 
@@ -248,9 +247,12 @@ thinktank /tmp/instructions.md ./src --synthesis
 ```
 
 ```
-# Codex review (MCP)
-mcp__codex__spawn_agent({"prompt": "Review for bugs: [code]"})
+# Codex review (via Moonbridge)
+mcp__moonbridge__spawn_agent({"prompt": "Review for bugs: [code]", "adapter": "codex"})
 
-# Kimi review (MCP)
-mcp__moonbridge__spawn_agents_parallel({"agents": [{"prompt": "..."}]})
+# Kimi review (via Moonbridge)
+mcp__moonbridge__spawn_agent({"prompt": "Review UI: [code]", "adapter": "kimi", "thinking": true})
+
+# Parallel reviews
+mcp__moonbridge__spawn_agents_parallel({"agents": [{"prompt": "...", "adapter": "codex"}]})
 ```

@@ -206,13 +206,12 @@ After Codex completes:
 
 ## Why Moonbridge MCP
 
-**Prefer Moonbridge over CLI or direct Codex MCP:**
+**Use Moonbridge for all Codex delegation:**
 
-| Method | Pros | Cons |
-|--------|------|------|
-| `mcp__moonbridge__spawn_agent` | Unified interface, parallel support, adapter flexibility | None |
-| `mcp__codex__spawn_agent` | Works | Separate interface, deprecated |
-| `codex exec` CLI | Works outside Claude | Bash overhead, output handling |
+| Method | When |
+|--------|------|
+| `mcp__moonbridge__spawn_agent` | Primary method — unified interface |
+| `codex exec` CLI | Fallback when MCP unavailable |
 
 **Key benefits:**
 - **Mixed parallel:** Run Codex + Kimi in same `spawn_agents_parallel` call

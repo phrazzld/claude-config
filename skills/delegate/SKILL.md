@@ -211,9 +211,9 @@ For each finding:
 - **Architecture decisions** — Thinktank for consensus
 - **Audit/check tasks** — Parallel investigation across domains
 
-## Migration Note
+## Note
 
-**Unified on Moonbridge MCP.** The separate `mcp__codex__spawn_agent` tools are deprecated. Use `mcp__moonbridge__spawn_agent` with `adapter: "codex"` instead. This gives you:
+All Codex delegation goes through Moonbridge MCP. Use `mcp__moonbridge__spawn_agent` with `adapter: "codex"`. This gives you:
 - Single interface for both Kimi and Codex
 - Mixed-adapter parallel spawning
 - Consistent parameter naming
