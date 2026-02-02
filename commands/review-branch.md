@@ -78,8 +78,32 @@ mcp__moonbridge__spawn_agents_parallel({
 ```
 Task: security-sentinel — "Review this diff for security vulnerabilities"
 Task: performance-pathfinder — "Review this diff for performance issues"
-Task: data-integrity-guardian — "Review this diff for data integrity issues"
 Task: architecture-guardian — "Review this diff for architectural concerns"
+```
+
+**For data-integrity-guardian, detect if migrations exist and enhance prompt:**
+```
+# Check if diff contains migrations
+if diff contains *.sql, migration files, or DDL (CREATE/ALTER/DROP):
+
+  Task: data-integrity-guardian — "Review this diff for data integrity issues.
+
+  CRITICAL: This PR contains database migrations. You MUST include a Migration Visibility Report:
+
+  1. For each new column, identify if it's used in WHERE/JOIN predicates in the codebase
+  2. State what value existing rows will have (NULL, default, backfilled)
+  3. Prove visibility preservation: 'Existing [entity] will [still be queryable / become invisible] because [reason]'
+  4. If visibility is NOT preserved, flag as CRITICAL with required backfill SQL
+
+  Your output MUST include:
+  | Table.Column | Used in Predicate | Legacy Value | Query Result | Action Required |
+  |--------------|-------------------|--------------|--------------|-----------------|
+
+  [DIFF]"
+
+else:
+
+  Task: data-integrity-guardian — "Review this diff for data integrity issues"
 ```
 
 ### Phase 3: Hindsight Review

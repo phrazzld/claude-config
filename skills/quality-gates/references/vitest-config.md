@@ -1,5 +1,7 @@
 # Vitest Configuration
 
+> For advanced vitest configuration (pools, performance, mocking), see `/vitest`.
+
 ## Why Vitest
 - Fast, modern test runner
 - Jest-compatible API (easy migration)
