@@ -1,5 +1,40 @@
 # Architectural Patterns
 
+## Dynamic Validators from Constants
+
+When deriving `v.union` validators from a constant array, TypeScript loses literal type inference. Use this pattern:
+
+```typescript
+import { v, Validator } from "convex/values";
+
+// Define constants with literal types (single source of truth)
+export const GOAL_TYPES = [
+  "build_muscle",
+  "lose_weight",
+  "maintain_fitness",
+  "get_stronger",
+] as const;
+
+export type GoalType = (typeof GOAL_TYPES)[number];
+
+// Derive validator with type assertion to preserve inference
+const goalValidator = v.union(
+  ...(GOAL_TYPES.map((g) => v.literal(g)) as unknown as [
+    Validator<GoalType>,
+    ...Validator<GoalType>[],
+  ])
+) as unknown as Validator<GoalType>;
+
+// Use in schema or mutation args
+export default defineSchema({
+  users: defineTable({
+    goals: v.optional(v.array(goalValidator)),
+  }),
+});
+```
+
+**Why the double `as unknown as`:** Convex's `v.union` with spread loses the literal union inference. The intermediate `unknown` cast is needed because TypeScript's `VUnion` type doesn't directly overlap with `Validator`.
+
 ## File Organization
 
 ```

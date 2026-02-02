@@ -1,258 +1,306 @@
 ---
-description: Orchestrate comprehensive code review across multiple AI reviewers
+description: Orchestrate comprehensive code review across ~12 AI reviewers
 ---
 
 # REVIEW-BRANCH
 
-> You're a tech lead orchestrating a code review across your expert team.
+> You're a tech lead orchestrating a rigorous code review across your expert team.
 
 ## Your Role
 
 You don't review the code yourself. You:
-1. **Delegate** reviews to specialized AI tools
-2. **Collect** their findings
-3. **Review their reviews** — validate, filter noise, resolve conflicts
-4. **Synthesize** into a prioritized action plan
+1. **Scope** the review (diff, context, conventions)
+2. **Delegate** to ~12 specialized reviewers in parallel
+3. **Synthesize** their findings (dedupe, resolve conflicts, prioritize)
+4. **Produce** a prioritized action plan
 
-## Your Review Team
+## Your Review Team (~12 Reviewers)
 
-| Reviewer | Specialty | When to Use |
-|----------|-----------|-------------|
-| **Kimi** (Moonbridge) | Frontend, visual, React patterns | React/Vue components, CSS/Tailwind, UI logic |
-| **Codex CLI** | Senior engineer, bugs, edge cases | All code changes, security, correctness |
-| **Gemini CLI** | Research, current best practices | Pattern validation, "is this idiomatic?" |
-| **Thinktank** | Expert council, architecture | Complex changes, cross-cutting concerns |
-| **Internal Agents** | Domain specialists | Language/framework-specific review |
+### Tier 1: Personas (Philosophy) — via Moonbridge
 
-### Invoking Reviewers
+| Reviewer | Focus | Prompt Essence |
+|----------|-------|----------------|
+| **Grug** | Complexity demons | "is complexity demon here? abstraction too early?" |
+| **Carmack** | Shippability, YAGNI | "is this simplest solution? can deploy now?" |
+| **Ousterhout** | Module depth | "deep modules? information hiding? narrow interfaces?" |
+| **Beck** | TDD discipline | "test behavior not implementation? red-green-refactor?" |
+| **Fowler** | Code smells | "duplication? long methods? feature envy? shotgun surgery?" |
 
-**Kimi (Moonbridge MCP)** — Frontend/visual specialist
-```
-Use ToolSearch to load mcp__moonbridge__spawn_agents_parallel, then:
+### Tier 2: Domain Specialists — via Task tool
 
-mcp__moonbridge__spawn_agents_parallel({
-  "agents": [
-    {"prompt": "Review these files for React patterns, component design, state management, hooks usage. Report issues as file:line format:\n[paste file contents]", "thinking": true},
-    {"prompt": "Review CSS/Tailwind for design consistency, accessibility, responsive design:\n[paste relevant styles]"}
-  ]
-})
-```
+| Agent | Focus |
+|-------|-------|
+| **security-sentinel** | Auth, injection, secrets, OWASP |
+| **performance-pathfinder** | Bottlenecks, N+1, scaling |
+| **data-integrity-guardian** | Transactions, migrations, referential integrity |
+| **architecture-guardian** | Module boundaries, coupling, abstraction depth |
 
-**Codex (via Moonbridge)** — Senior engineer
-```
-mcp__moonbridge__spawn_agent({
-  "prompt": "Review this code for bugs, edge cases, security issues, error handling:\n\n[paste diff or file contents]\n\nReport format for each issue:\n- file:line\n- Issue description\n- Severity (critical/important/minor)\n- Suggested fix",
-  "adapter": "codex",
-  "reasoning_effort": "high"
-})
-```
+### Tier 3: Meta-reviewers — Sequential after Tier 1+2
 
-For parallel reviews across multiple files:
-```
-mcp__moonbridge__spawn_agents_parallel({
-  "agents": [
-    {"prompt": "Review src/auth.ts for security issues...", "adapter": "codex", "reasoning_effort": "high"},
-    {"prompt": "Review src/api.ts for error handling...", "adapter": "codex", "reasoning_effort": "high"}
-  ]
-})
-```
-
-**Gemini CLI** — Researcher
-```bash
-gemini "Review this code and research current best practices:
-
-[describe patterns found in the code]
-
-Questions:
-1. Are we following recommended approaches for [framework/language]?
-2. Are there known issues with these patterns?
-3. What do official docs recommend?
-
-Cite sources for recommendations."
-```
-
-**Thinktank CLI** — Expert council
-```bash
-# Write review instructions to file first
-thinktank /tmp/review-instructions.md ./[changed-files] --synthesis
-```
-
-**Internal Agents** (Task tool) — Domain specialists
-Use based on what changed:
-- `go-concurrency-reviewer` — Go goroutines, channels, race conditions
-- `react-pitfalls` — React hooks, re-renders, state management
-- `config-auditor` — Env vars, API keys, deployment config
-- `security-sentinel` — Auth, injection, OWASP concerns
-- `data-integrity-guardian` — Database migrations, transactions
-- `architecture-guardian` — Module boundaries, coupling
+| Reviewer | Purpose |
+|----------|---------|
+| **hindsight-reviewer** | "Would you do it the same way from scratch?" |
+| **Synthesizer (You)** | Resolve conflicts, prioritize, deduplicate |
 
 ## Process
 
-### 1. Scope the Review
+### Phase 1: Scope & Context
 
 ```bash
-# What files changed?
+# What changed?
 git diff --name-only $(git merge-base HEAD main)...HEAD
 
-# What's the diff?
+# Full diff
 git diff $(git merge-base HEAD main)...HEAD
+
+# Read context files if they exist
+# - CLAUDE.md, AGENTS.md, ARCHITECTURE.md
 ```
 
-If no changes, use staged files or ask for scope.
+### Phase 2: Parallel Reviews
 
-### 2. Gather Context
+Run ALL reviewers concurrently:
 
-Read these if they exist:
-- `CLAUDE.md` — project conventions
-- `ARCHITECTURE.md` — system design
-- `README.md` — project overview
-- Module READMEs near changed files
+**Moonbridge (5 persona reviews):**
+```
+mcp__moonbridge__spawn_agents_parallel({
+  "agents": [
+    {"prompt": "[GRUG REVIEW]\n\nReview for complexity demons...\n\n[DIFF]", "adapter": "codex"},
+    {"prompt": "[CARMACK REVIEW]\n\nReview for shippability...\n\n[DIFF]", "adapter": "codex"},
+    {"prompt": "[OUSTERHOUT REVIEW]\n\nReview for module depth...\n\n[DIFF]", "adapter": "codex"},
+    {"prompt": "[BECK REVIEW]\n\nReview for TDD discipline...\n\n[DIFF]", "adapter": "codex"},
+    {"prompt": "[FOWLER REVIEW]\n\nReview for code smells...\n\n[DIFF]", "adapter": "codex"}
+  ]
+})
+```
 
-### 3. Route to Reviewers
+**Task tool (4 domain specialist reviews):**
+```
+Task: security-sentinel — "Review this diff for security vulnerabilities"
+Task: performance-pathfinder — "Review this diff for performance issues"
+Task: data-integrity-guardian — "Review this diff for data integrity issues"
+Task: architecture-guardian — "Review this diff for architectural concerns"
+```
 
-Based on what changed, delegate appropriately:
+### Phase 3: Hindsight Review
 
-| File Type | Primary Reviewer | Secondary |
-|-----------|------------------|-----------|
-| `.tsx`, `.jsx`, React components | Kimi | react-pitfalls agent |
-| `.css`, `.scss`, Tailwind | Kimi | — |
-| `.go` with goroutines | Codex | go-concurrency-reviewer |
-| `.py`, `.ts`, `.js` (general) | Codex | language-specific agent |
-| Database migrations | Codex | data-integrity-guardian |
-| Auth/security code | Codex | security-sentinel |
-| Config files, env handling | config-auditor | Codex |
-| Architecture changes | Thinktank | architecture-guardian |
-| "Is this pattern right?" | Gemini | Thinktank |
+After Phase 2 completes, run hindsight review:
 
-**Run reviewers in parallel where possible** to minimize total review time.
+```
+Task: hindsight-reviewer — "Review this diff from a hindsight perspective.
+Other reviewers found: [summary of Phase 2 findings]
+Question: Would you build it the same way from scratch?"
+```
 
-### 4. Collect Results
+### Phase 4: Synthesis (Your Job)
 
-Gather outputs from all reviewers:
-- Moonbridge MCP returns output directly (both Codex and Kimi)
-- Gemini CLI output captured from terminal
-- Thinktank writes to stdout or specified output file
+**Deduplicate:** Multiple reviewers often find the same issue.
 
-### 5. Review the Reviews (Your Core Job)
+**Resolve conflicts:** When reviewers disagree:
+- Security concerns always take priority
+- 3+ reviewers agreeing is a strong signal
+- Document reasoning when overriding a persona
 
-This is where you add value. For each finding:
-
-**Validate**
-- Is this a real issue or false positive?
-- Does it apply to our codebase context?
-- Is the severity appropriate?
-
-**Filter Noise**
-- Generic suggestions that don't apply
-- Style preferences that contradict our conventions
-- Theoretical concerns with no practical impact
-
-**Resolve Conflicts**
-- When Kimi and Codex disagree, explain the tradeoff
-- When Thinktank models diverge, note the dissent
-- Make a recommendation based on project context
-
-**Calibrate Priority**
-- Critical: Bugs, security holes, data loss risks
-- Important: Convention violations, missing error handling
-- Minor: Style suggestions, optimization ideas
-
-### 6. Synthesize Action Plan
-
-Produce a single, prioritized output.
+**Calibrate severity:**
+- **Critical**: Security holes, data loss, broken functionality
+- **Important**: Convention violations, missing error handling, performance issues
+- **Suggestion**: Style improvements, refactoring opportunities, nice-to-haves
 
 ## Output Format
 
 ```markdown
 ## Code Review: [branch-name]
 
+**Scope:** [X files, Y lines changed]
+**Reviewers:** Grug, Carmack, Ousterhout, Beck, Fowler, security-sentinel, performance-pathfinder, data-integrity-guardian, architecture-guardian, hindsight-reviewer
+
+---
+
 ### Action Plan
 
 #### Critical (Block Merge)
-- [ ] `file.ts:42` — Issue description — Fix: [concrete action] (Source: Codex)
-- [ ] `component.tsx:17` — Issue description — Fix: [action] (Source: Kimi)
+- [ ] `file.ts:42` — [Issue] — Fix: [action] (Source: [reviewer])
+- [ ] `api.ts:17` — [Issue] — Fix: [action] (Source: [reviewer], [reviewer])
 
 #### Important (Fix in PR)
-- [ ] `service.go:89` — Issue description — Fix: [action] (Source: go-concurrency-reviewer)
-- [ ] `auth.ts:23` — Issue description — Fix: [action] (Source: Thinktank consensus)
+- [ ] `service.go:89` — [Issue] — Fix: [action] (Source: [reviewer])
 
 #### Suggestions (Optional)
-- [ ] Consider [improvement] for [reason] (Source: Gemini research)
-- [ ] [Pattern suggestion] (Source: Kimi)
+- [ ] Consider [improvement] (Source: [reviewer])
 
-### Reviewer Synthesis
+---
 
-**Agreements** — Multiple reviewers flagged:
-- [Issue that 2+ reviewers independently found]
+### Synthesis Notes
 
-**Conflicts** — Differing opinions:
-- Kimi suggested X, Codex suggested Y. Recommendation: [your call + reasoning]
+**Consensus findings (2+ reviewers):**
+- [Issue that multiple reviewers flagged independently]
 
-**Research Findings** — From Gemini:
-- [Relevant best practice with citation]
+**Conflicts resolved:**
+- [Reviewer A] said X, [Reviewer B] said Y. Decision: [your call + reasoning]
+
+**Hindsight insights:**
+- [Strategic observation about design decisions]
+
+---
 
 ### Positive Observations
-- Good use of [pattern] in `file.ts`
-- Clean implementation of [feature]
+- [What was done well]
+- [Good patterns to continue]
 
 ---
 
 <details>
-<summary>Raw Codex Review</summary>
+<summary>Raw Reviewer Outputs</summary>
 
-[paste codex output]
+### Grug
+[output]
 
-</details>
+### Carmack
+[output]
 
-<details>
-<summary>Raw Kimi Review</summary>
+### Ousterhout
+[output]
 
-[paste kimi output]
+### Beck
+[output]
 
-</details>
+### Fowler
+[output]
 
-<details>
-<summary>Raw Thinktank Synthesis</summary>
+### security-sentinel
+[output]
 
-[paste thinktank output]
+### performance-pathfinder
+[output]
+
+### data-integrity-guardian
+[output]
+
+### architecture-guardian
+[output]
+
+### hindsight-reviewer
+[output]
 
 </details>
 ```
+
+## Reviewer Prompt Templates
+
+### Grug Prompt
+```
+[GRUG REVIEW]
+
+You are Grug. complexity very, very bad.
+
+Review this diff for:
+- Complexity demons (too many layers? too clever?)
+- Abstraction too early (only one use but already interface/factory?)
+- Can grug debug this? (can put log and understand?)
+- Chesterton Fence violations (removing code without understanding why?)
+
+Report format:
+- [ ] file:line — [Issue] — Severity: critical/important/suggestion
+
+[DIFF]
+```
+
+### Carmack Prompt
+```
+[CARMACK REVIEW]
+
+You are John Carmack. Direct implementation. Always shippable.
+
+Review this diff for:
+- Is this the simplest solution? (fewer abstractions possible?)
+- Is this shippable now? (can deploy immediately?)
+- Premature optimization? (measuring before optimizing?)
+- Speculative features? ("might need later")
+
+Report format:
+- [ ] file:line — [Issue] — Severity: critical/important/suggestion
+
+[DIFF]
+```
+
+### Ousterhout Prompt
+```
+[OUSTERHOUT REVIEW]
+
+You are John Ousterhout, author of "A Philosophy of Software Design".
+
+Review this diff for:
+- Shallow modules (lots of boilerplate, little functionality)
+- Wide interfaces (too many methods/parameters)
+- Information leakage (implementation details exposed)
+- Pass-through methods (just delegate to another layer)
+- Configuration explosion (too many options)
+
+Report format:
+- [ ] file:line — [Issue] — Severity: critical/important/suggestion
+
+[DIFF]
+```
+
+### Beck Prompt
+```
+[BECK REVIEW]
+
+You are Kent Beck, father of TDD and XP.
+
+Review this diff for:
+- Tests testing implementation not behavior?
+- Missing tests for changed behavior?
+- Tests that would break on refactor?
+- Overmocking (>3 mocks = smell)?
+- Test isolation (shared state between tests)?
+
+Report format:
+- [ ] file:line — [Issue] — Severity: critical/important/suggestion
+
+[DIFF]
+```
+
+### Fowler Prompt
+```
+[FOWLER REVIEW]
+
+You are Martin Fowler, author of "Refactoring".
+
+Review this diff for:
+- Code smells: Long Method, Feature Envy, Data Clumps
+- Duplication (Rule of Three violations)
+- Shotgun Surgery (change requires touching many files)
+- Primitive Obsession (should be value object?)
+- Message Chains (a.b.c.d.e)
+
+Report format:
+- [ ] file:line — [Issue] — Severity: critical/important/suggestion
+
+[DIFF]
+```
+
+## Scaling Guidance
+
+**Small PRs (<100 lines):**
+- Skip Thinktank (overkill)
+- Run all Moonbridge personas + 2-3 most relevant specialists
+
+**Medium PRs (100-500 lines):**
+- Full review with all 12 reviewers
+
+**Large PRs (>500 lines):**
+- Consider splitting the PR
+- If can't split: run full review but expect longer synthesis time
 
 ## Philosophy
 
-You're the tech lead, not the code reviewer.
+**You review the reviews, not the code.**
 
-**Your job is to:**
+Your value is orchestration + judgment:
 - Ask the right experts the right questions
-- Synthesize expert opinions into action
-- Make judgment calls when experts disagree
-- Produce a clear, prioritized action plan
+- Synthesize conflicting opinions
+- Produce actionable priorities
+- Make the final call on tradeoffs
 
-**The code gets reviewed by specialists. You review the reviews.**
-
-This mirrors how senior engineers actually work: they don't personally review every line. They orchestrate review across their team and make final calls on tradeoffs.
-
-## Quick Reference
-
-```bash
-# Scope
-git diff --name-only main...HEAD
-
-# Gemini research
-gemini "Is this pattern idiomatic for [framework]? [code snippet]"
-
-# Thinktank synthesis
-thinktank /tmp/instructions.md ./src --synthesis
-```
-
-```
-# Codex review (via Moonbridge)
-mcp__moonbridge__spawn_agent({"prompt": "Review for bugs: [code]", "adapter": "codex"})
-
-# Kimi review (via Moonbridge)
-mcp__moonbridge__spawn_agent({"prompt": "Review UI: [code]", "adapter": "kimi", "thinking": true})
-
-# Parallel reviews
-mcp__moonbridge__spawn_agents_parallel({"agents": [{"prompt": "...", "adapter": "codex"}]})
-```
+This mirrors senior engineering: you don't personally review every line. You build systems that ensure quality.

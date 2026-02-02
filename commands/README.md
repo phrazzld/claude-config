@@ -19,7 +19,9 @@ Unix philosophy: small composable primitives + thin orchestration.
 
 **Code review:**
 ```
-/review-branch   # Multi-model review of current branch
+/review-branch   # ~12 reviewers: personas + specialists + hindsight
+/review-and-fix  # Full flow: review → fix → quality → pr
+/address-review  # TDD fix workflow for review findings
 /critique grug   # Adversarial review from persona
 ```
 
@@ -30,15 +32,37 @@ Unix philosophy: small composable primitives + thin orchestration.
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ WORKFLOWS (Thin Orchestrators)                              │
-│ /autopilot, /incident-response, /design-sprint              │
+│ /autopilot, /incident-response, /design-sprint,             │
+│ /review-and-fix                                             │
 ├─────────────────────────────────────────────────────────────┤
 │ DOMAIN COMMANDS (Single-Purpose)                            │
 │ /spec, /architect, /build, /groom, /investigate, /commit    │
 ├─────────────────────────────────────────────────────────────┤
 │ PRIMITIVES (Deep Modules)                                   │
 │ /pr, /thinktank, /critique, /implement, /fix, /check-quality│
+│ /review-branch, /address-review, /respond                   │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### Code Review System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ /review-and-fix (Thin Orchestrator)                         │
+│   Chains: review-branch → address-review → check-quality → pr│
+├─────────────────────────────────────────────────────────────┤
+│ PRIMITIVES                                                  │
+├──────────────────┬──────────────────┬───────────────────────┤
+│ /review-branch   │ /address-review  │ /respond              │
+│ ~12 reviewers    │ TDD fix workflow │ Human PR feedback     │
+│ parallel exec    │ GitHub issues    │ Radical transparency  │
+└──────────────────┴──────────────────┴───────────────────────┘
+```
+
+**Reviewers (~12):**
+- **Personas:** Grug, Carmack, Ousterhout, Beck, Fowler (via Moonbridge)
+- **Specialists:** security-sentinel, performance-pathfinder, data-integrity-guardian, architecture-guardian (via Task)
+- **Meta:** hindsight-reviewer, Synthesizer (orchestrator)
 
 ---
 
@@ -113,7 +137,9 @@ Workflows orchestrate multiple commands. They assume you start on `master`/`main
 | Command | Purpose |
 |---------|---------|
 | `/groom` | Run 12 grooming perspectives → create issues |
-| `/review-branch` | Multi-model code review with thinktank |
+| `/review-branch` | ~12 reviewers: personas + specialists + hindsight |
+| `/review-and-fix` | Full flow: review → fix → quality → pr |
+| `/address-review` | TDD fix workflow for review findings |
 | `/fix-ci` | Analyze CI failure → fix → verify |
 | `/check-quality` | Bundled tests + lint + typecheck |
 

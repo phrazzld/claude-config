@@ -54,6 +54,38 @@ gemini "[technology] [problem type] official recommendations"
 Why: Don't just codify what you did. Incorporate current best practices.
 Skip if: Pattern is project-specific internal convention.
 
+### 0.5. Classify Skill Type
+
+Before creating, determine if foundational or workflow:
+
+| Type | Characteristics | Frontmatter | Action |
+|------|-----------------|-------------|--------|
+| **Foundational** | Universal patterns, applies broadly, no explicit trigger needed | `user-invocable: false` | Add compressed summary to CLAUDE.md |
+| **Workflow** | Explicit trigger, action-oriented, user/model invokes | (default) | Skill only |
+
+**If Foundational:**
+1. Write skill as normal with `user-invocable: false`
+2. Create 20-30 line compressed summary extracting core principles
+3. Add summary to CLAUDE.md "Passive Knowledge Index" section
+4. Add skill to Skills Index (pipe-delimited format)
+5. Inform user: "Added to passive context — no invocation needed"
+
+**If Workflow:**
+1. Write skill as normal (default is invocable)
+2. No CLAUDE.md changes needed
+3. Inform user of trigger terms
+
+**Foundational indicators:**
+- Would benefit all code, not specific triggers
+- Patterns that should "always be on"
+- Language-agnostic principles
+- Universal conventions (naming, testing, docs)
+
+**Workflow indicators:**
+- Explicit action verb (audit, configure, check, fix)
+- Specific domain (stripe, posthog, lightning)
+- User would say "/skill-name" to invoke
+
 ### 1. Identify the Knowledge
 - What problem does this solve?
 - What trigger terms would activate it?
