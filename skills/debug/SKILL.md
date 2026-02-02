@@ -64,6 +64,33 @@ Find root cause. Propose fix. Verify it works.
 | Build failure | Bundler error, missing module | Check deps, config |
 | Behavior mismatch | "It should do X but does Y" | Trace code path, find divergence |
 
+## Timing-Based Debugging
+
+When symptom is "slow" or performance-related:
+
+1. **Add timing instrumentation**
+   ```typescript
+   const start = performance.now()
+   // suspected slow code
+   console.log(`[TIMING] ${operation}: ${performance.now() - start}ms`)
+   ```
+
+2. **Run with timing enabled**
+   Collect timing data from logs
+
+3. **Analyze and identify bottleneck**
+   - What's >100ms?
+   - What's called most frequently?
+
+4. **Fix and verify**
+   Re-run with timing, confirm improvement
+
+**Codex delegation:**
+```bash
+codex exec "Add timing instrumentation to $FILE. Log timing for each major operation." \
+  --output-last-message /tmp/codex-timing.md 2>/dev/null
+```
+
 ## Output
 
 Report what you found:

@@ -450,3 +450,81 @@ Good tests give confidence to refactor. Bad tests give false confidence and slow
 - Replace thinking about design
 
 **Remember:** The goal is confidence, not coverage. Write tests that make you confident the code works, not tests that make metrics happy.
+
+---
+
+## Integration Test Patterns
+
+### API Route Tests
+
+```typescript
+describe('POST /api/users', () => {
+  it('creates user and persists to database', async () => {
+    const res = await request(app)
+      .post('/api/users')
+      .send({ email: 'test@example.com' })
+
+    expect(res.status).toBe(201)
+
+    // Verify side effects
+    const user = await db.users.findByEmail('test@example.com')
+    expect(user).toBeDefined()
+  })
+})
+```
+
+### Database Integration
+
+- Use real test database, not mocks
+- Transaction rollback for isolation:
+
+```typescript
+beforeEach(() => db.beginTransaction())
+afterEach(() => db.rollback())
+```
+
+### Webhook Integration
+
+```typescript
+it('handles Stripe webhook end-to-end', async () => {
+  const payload = stripeFixtures.subscriptionCreated
+  const signature = stripe.webhooks.generateTestHeaderString({ payload })
+
+  const res = await request(app)
+    .post('/api/webhooks/stripe')
+    .set('stripe-signature', signature)
+    .send(payload)
+
+  expect(res.status).toBe(200)
+  // Verify database state changed
+})
+```
+
+### Convex Integration Tests
+
+```typescript
+import { convexTest } from "convex-test"
+import { api } from "./_generated/api"
+import schema from "./schema"
+
+describe('user workflows', () => {
+  it('creates user and sends welcome email', async () => {
+    const t = convexTest(schema)
+
+    // Act
+    const userId = await t.mutation(api.users.create, {
+      email: 'test@example.com'
+    })
+
+    // Assert database state
+    const user = await t.query(api.users.get, { id: userId })
+    expect(user.email).toBe('test@example.com')
+
+    // Assert scheduled actions
+    const scheduledFunctions = await t.run((ctx) =>
+      ctx.db.system.query("_scheduled_functions").collect()
+    )
+    expect(scheduledFunctions).toHaveLength(1)
+  })
+})
+```

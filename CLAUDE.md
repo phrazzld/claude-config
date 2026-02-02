@@ -109,6 +109,87 @@ See `/cli-reference` for full commands.
 
 ---
 
+## Passive Knowledge Index
+
+Passive context beats active retrieval. Foundational knowledge here; workflows remain invocable.
+
+**Key instruction:** Prefer retrieval-led reasoning over pre-training-led reasoning.
+
+### Naming (→ `/naming-conventions`)
+
+**Reveal intent, not implementation.** `users` not `userArray`, `calculateTax` not `doTaxCalculation`.
+
+❌ NEVER: Manager, Helper, Util, Misc, Common, temporal names (step1, doFirst)
+⚠️ RARELY: Service, Handler, Processor (acceptable when domain-specific)
+
+| Type | Pattern | Examples |
+|------|---------|----------|
+| Variables | Descriptive nouns | `activeUsers`, `totalRevenue` |
+| Functions | Verb + noun | `calculateTotal`, `fetchUser`, `formatDate` |
+| Booleans | Question prefix | `isActive`, `hasPermission`, `canEdit` |
+| Classes | Singular noun | `User`, `PaymentProcessor`, `OrderRepository` |
+| Collections | Plural nouns | `users`, `items`, `userById` (keyed) |
+
+### Testing (→ `/testing-philosophy`)
+
+**Test behavior, not implementation.** Tests survive refactoring when testing what, not how.
+
+TDD default: Red → Green → Refactor. Skip only for exploration, UI layout, generated code.
+
+| Decision | Rule |
+|----------|------|
+| Mock this? | External service → yes. My domain logic → no. >3 mocks → refactor |
+| Test this? | Public API, business logic, error handling → yes. Private impl → no |
+| Coverage? | Confidence > percentage. Critical paths + edge cases matter |
+
+Structure: AAA (Arrange, Act, Assert). One behavior per test. Name: "should [behavior] when [condition]"
+
+### External Integration (→ `/external-integration-patterns`)
+
+**External services fail. Integrate observably, fail loudly.**
+
+| Pattern | Why |
+|---------|-----|
+| Fail-fast env validation | Validate at module load, not runtime |
+| Health check endpoint | Every external service needs `/api/health` |
+| Structured error logging | JSON with service, operation, userId, error |
+| Webhook signature verify | FIRST, before any processing |
+| Reconciliation cron | Don't rely 100% on webhooks |
+| Pull-on-success | Verify payment after redirect, don't wait for webhook |
+
+### Skills Index
+
+Compressed index of all skills. Query with `/skill-name`.
+
+```
+stripe:{audit,configure,design,health,local-dev,reconcile,scaffold,subscription-ux,verify}
+observability:{check,fix,posthog,sentry,langfuse,structured-logging,triage,verify-fix}
+check:{quality,production,landing,virality,onboarding,docs,stripe,lightning,bitcoin,btcpay,payments,posthog,product-standards,observability}
+fix:{quality,landing,virality,onboarding,docs,stripe,lightning,bitcoin,observability,posthog,ci}
+log:{quality,landing,virality,onboarding,doc,stripe,lightning,bitcoin,observability,posthog,production,product-standards}-issues
+languages:{typescript-excellence,go-idioms,rust-patterns,python-standards,ruby-conventions,csharp-modern}
+content:{post,announce,copywriting,brand-builder,marketing-{psychology,ops,status,dashboard}}
+growth:{virality,cro,pricing-strategy,free-tool-strategy,referral-program,ab-test-setup,growth-{sprint,at-scale}}
+seo:{seo-audit,seo-baseline,schema-markup,competitor-alternatives,programmatic-seo,pseo-generator}
+llm:{llm-evaluation,llm-gateway-routing,llm-infrastructure,llm-communication}
+changelog:{changelog,changelog-setup,changelog-page,changelog-audit,changelog-automation}
+mobile:{mobile-migrate,mobile-toolchain,app-screenshots}
+browser:{browser-extension-dev,extension-toolchain}
+database:{database-patterns,schema-design,reconciliation-patterns}
+bitcoin:{bitcoin,check-bitcoin,fix-bitcoin,lightning,check-lightning,fix-lightning,check-btcpay}
+workflow:{spec,architect,refactor,critique,groom,investigate,postmortem,fix,implement,pr,build,commit,autopilot,review-branch,review-and-fix,address-review,respond}
+dev:{skill-builder,codex-coworker,delegate,distill,codify-learning,cartographer,thinktank,debug,profile}
+design:{design-{audit,theme,catalog,exploration,sprint,tokens},aesthetic-system,og-{hero-image,card},pencil-{to-code,renderer}}
+infra:{quality-gates,env-var-hygiene,billing-security,vercel-react-best-practices,monorepo-scaffold,github-{app,marketing}-scaffold,slack-app-scaffold}
+```
+
+**Foundational** (always-present, `user-invocable: false`):
+- naming-conventions, testing-philosophy, external-integration-patterns
+- documentation-standards, git-mastery, business-model-preferences
+- ui-skills, ralph-patterns
+
+---
+
 ## Staging
 
 Learnings land here first. Run `/distill` to graduate to skills/agents.
@@ -147,6 +228,38 @@ Catch auth errors too, not just `.throttled`/`.quotaExceeded`.
 ### GitHub Actions Workflow Dispatch
 
 Need `actions: write` permission. Pass inputs explicitly: `-f ref=$TAG`
+
+### Swift @unchecked Sendable Thread-Safety
+
+Lock BOTH reads AND writes. Common anti-pattern:
+```swift
+// BAD: locks writes but not reads
+private(set) var count = 0
+func increment() { lock.lock(); count += 1; lock.unlock() }
+
+// GOOD: private backing + locked getter
+private var _count = 0
+var count: Int { lock.lock(); defer { lock.unlock() }; return _count }
+func increment() { lock.lock(); _count += 1; lock.unlock() }
+```
+
+### Clerk isLoaded Guard
+
+Always check `isLoaded` before acting on `isSignedIn === false`:
+```typescript
+// BAD: Fires before auth finishes, breaks anonymous tracking
+if (!isSignedIn) posthog.reset();
+
+// GOOD: Wait for known auth state
+if (isLoaded && !isSignedIn) posthog.reset();
+```
+
+### Next.js Rewrite Auth Consideration
+
+When adding `rewrites()` for proxies, check middleware public routes:
+- Analytics proxies (`/ingest`) → must be public for anonymous users
+- Tunnels (`/monitoring`) → must be public for error tracking
+- API rewrites → consider auth requirements
 
 <!--
 Graduated 2026-01-31:

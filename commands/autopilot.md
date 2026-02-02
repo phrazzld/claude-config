@@ -118,6 +118,23 @@ Handles: branching, implementation (Codex), commits.
 /update-docs
 ```
 
+### 5.5. Deep Module Review
+
+After simplification, invoke the `ousterhout` agent:
+
+Launch `ousterhout` agent with prompt:
+"Review the recently modified code for deep module design:
+- Module depth: Is interface simple relative to functionality?
+- Information hiding: Are implementation details hidden?
+- Change amplification: Would small changes require many edits?
+- Red flags: Shallow modules, generic names, pass-through methods?
+
+Focus on files changed in this implementation. Suggest concrete refactorings."
+
+If agent identifies refactoring opportunities:
+1. Implement suggested refactorings for high-impact items
+2. Commit: `refactor: improve module depth (#$ISSUE)`
+
 ### 6. Ship
 
 ```
