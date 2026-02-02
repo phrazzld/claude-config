@@ -28,8 +28,9 @@ convex/
 
 1. **ALWAYS commit `convex/_generated/`** - Required for type-checking, CI/CD, team productivity
 2. **Index what you query** - `.withIndex()` not `.filter()` for efficient queries
-3. **Paginate everything** - Never unbounded `.collect()` on user-facing queries
-4. **Trust `ctx.auth` only** - Never user-provided auth data
+3. **Compound indexes for multi-field filters** - If querying `userId + status`, create index `["userId", "status"]` to filter at index level, not post-fetch
+4. **Paginate everything** - Never unbounded `.collect()` on user-facing queries
+5. **Trust `ctx.auth` only** - Never user-provided auth data
 
 ## Quick Reference
 

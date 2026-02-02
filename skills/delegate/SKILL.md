@@ -42,6 +42,17 @@ mcp__moonbridge__spawn_agent({
 })
 ```
 
+**Timeout:** Moonbridge defaults: Codex=30min, Kimi=10min. Override for edge cases:
+
+| Task | Timeout |
+|------|---------|
+| Quick check | `60` |
+| Large refactor | `3600` |
+
+```
+mcp__moonbridge__spawn_agent({ ..., "timeout_seconds": 3600 })
+```
+
 **Parallel agents (same or mixed adapters):**
 ```
 mcp__moonbridge__spawn_agents_parallel({
