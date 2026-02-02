@@ -52,6 +52,13 @@ Skip TDD only for: exploration (will delete), UI layout, generated code.
 
 See `/testing-philosophy` for patterns.
 
+## Verification Standards
+
+Never mark complete without proving correctness:
+- Run tests, check logs, demonstrate behavior
+- Diff against main when behavior change is relevant
+- Skip elegance-check for simple/obvious fixes—don't over-engineer
+
 ## Default Tactics
 
 - Full file reads over code searches. Context windows handle it.
@@ -59,6 +66,10 @@ See `/testing-philosophy` for patterns.
 - Document invariants, not obvious mechanics.
 - Web search external API versions—never trust internal knowledge.
 - Adversarial code review framing: "find the bugs" not "double-check"
+- If something goes sideways, STOP. Re-plan immediately—don't keep pushing.
+- Before marking done: "Would a staff engineer approve this?"
+- Non-trivial changes: pause and ask "is there a more elegant solution?"
+- Bug reports: just fix. Don't ask for hand-holding. Point at logs/errors/tests → resolve.
 
 ## Continuous Learning
 
@@ -73,6 +84,8 @@ Codification targets:
 - CLAUDE.md: philosophy
 
 **Invalid justifications:** "First occurrence", "seems minor"
+
+**After ANY user correction:** Add pattern to Staging section immediately. Don't wait.
 
 ## CLI-First (MANDATORY)
 
@@ -181,6 +194,10 @@ workflow:{spec,architect,refactor,critique,groom,investigate,postmortem,fix,impl
 dev:{skill-builder,codex-coworker,delegate,distill,codify-learning,cartographer,thinktank,debug,profile}
 design:{design-{audit,theme,catalog,exploration,sprint,tokens},aesthetic-system,og-{hero-image,card},pencil-{to-code,renderer}}
 infra:{quality-gates,env-var-hygiene,billing-security,vercel-react-best-practices,monorepo-scaffold,github-{app,marketing}-scaffold,slack-app-scaffold}
+next:{next-best-practices,next-cache-components,next-upgrade}
+bun:{bun,check-bun,fix-bun,bun-best-practices}
+diagram:{beautiful-mermaid}
+browser:{agent-browser}
 ```
 
 **Foundational** (always-present, `user-invocable: false`):
@@ -195,6 +212,31 @@ infra:{quality-gates,env-var-hygiene,billing-security,vercel-react-best-practice
 Learnings land here first. Run `/distill` to graduate to skills/agents.
 
 <!-- Add learnings below this line -->
+
+### Daybook Conversation Workflow (MANDATORY)
+
+When user shares voice transcripts or stream-of-consciousness input in daybook:
+
+**Sequence: Log → Reflect → Explore → Ideate → Respond**
+
+1. **LOG FIRST** - Capture near-verbatim to journal before anything else
+   - Blockquote format, light cleanup only (filler words, transcription errors)
+   - Write to `journal/YYYY/MM/DD.md` IMMEDIATELY
+   - Raw transcript = primary source. Never skip to synthesis.
+
+2. **REFLECT** - Extract themes, feelings, key points below the transcript
+
+3. **EXPLORE** - Ask clarifying questions, dig into what's interesting
+
+4. **IDEATE** - Generate ideas, connections, surface related vault content
+
+5. **RESPOND** - Actually reply to the human
+
+**Recognition triggers:** Conversational flow, "you know" patterns, stream of consciousness, long blocks that read like speech not writing.
+
+**Anti-pattern:** Reading transcript → synthesizing → responding. This destroys nuance.
+
+**Pattern:** See transcript → write to journal → then process.
 
 ### HogQL String Escaping
 
