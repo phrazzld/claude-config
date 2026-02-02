@@ -133,6 +133,10 @@ Once all subagents complete, synthesize their outputs:
 4. **Build the architecture diagram** showing module relationships
 5. **Extract key navigation paths** for common tasks
 
+### Diagram Rendering
+
+For architecture diagrams, invoke `/beautiful-mermaid` to render Mermaid as production-quality SVG/PNG.
+
 ### 6. Write CODEBASE_MAP.md
 
 Create `docs/CODEBASE_MAP.md` with this structure:

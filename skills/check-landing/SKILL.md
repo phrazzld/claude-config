@@ -176,9 +176,14 @@ grep -rE "title:|description:" --include="*.tsx" app/page.tsx app/layout.tsx 2>/
 
 When fixing issues found by this audit, all design changes MUST pass expert panel review (90+ average) before delivery. See `ui-skills/references/expert-panel-review.md`.
 
+## Visual Verification
+
+Use `/agent-browser` to capture screenshots for visual regression testing and cross-browser verification.
+
 ## Related
 
 - `/log-landing-issues` - Create GitHub issues from findings
 - `/fix-landing` - Fix landing page issues (includes mandatory expert review)
 - `/copywriting` - Improve marketing copy
 - `/cro` - Conversion rate optimization
+- `/agent-browser` - Visual verification and screenshot capture

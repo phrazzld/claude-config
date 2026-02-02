@@ -193,7 +193,7 @@ Reference `documentation-standards` skill throughout. Key principles:
 6. Contributing (if applicable)
 7. License
 
-**Architecture docs:** Use Cartographer for comprehensive mapping.
+**Architecture docs:** Use Cartographer for comprehensive mapping. Generate diagrams with `/beautiful-mermaid` for visual architecture representation.
 
 **ADR format:** Context → Decision → Consequences → Alternatives Considered
 

@@ -140,9 +140,17 @@ command -v lychee >/dev/null && lychee --offline *.md docs/**/*.md 2>/dev/null |
 | Missing ADRs | P2 |
 | Polish and extras | P3 |
 
+## Next.js Specific Checks
+
+For Next.js projects, also verify:
+- App Router conventions documented (reference `/next-best-practices`)
+- RSC vs client component boundaries explained
+- Route handlers and middleware documented
+
 ## Related
 
 - `/log-doc-issues` - Create GitHub issues from findings
 - `/fix-docs` - Fix documentation gaps
 - `/documentation` - Full documentation workflow
 - `/cartographer` - Generate architecture docs
+- `/next-best-practices` - Next.js conventions to document

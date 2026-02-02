@@ -269,6 +269,12 @@ For every architectural issue:
 - Large interfaces (10-15 methods)
 - Minor coupling issues
 
+## Related Skills
+
+For React/Next.js component architecture specifically, also reference:
+- `/vercel-composition-patterns` - React composition patterns that scale
+- `/next-best-practices` - Next.js file conventions and RSC boundaries
+
 ## Philosophy
 
 > "The complexity of a system is determined by its dependencies." — Modularity Tenet

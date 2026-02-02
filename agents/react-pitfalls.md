@@ -363,6 +363,14 @@ Detection strategy:
 
 ---
 
+## Related Skills
+
+For broader React/Next.js best practices beyond runtime pitfalls:
+- `/next-best-practices` - Next.js file conventions and RSC boundaries
+- `/vercel-react-best-practices` - Performance optimization guidelines
+
+---
+
 ## biome-ignore for Sanitized HTML
 
 When using `dangerouslySetInnerHTML` with DOMPurify sanitization, add a biome-ignore comment:

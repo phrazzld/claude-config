@@ -168,3 +168,4 @@ Headline: "Capture your thoughts"
 - `gemini-imagegen` - Underlying image generation
 - `brand-builder` - Creates brand-profile.yaml
 - `seo-baseline` - Ensures OG tags are set correctly
+- `agent-browser` - Verify OG image rendering in social preview tools

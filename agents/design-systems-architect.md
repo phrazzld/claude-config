@@ -735,3 +735,10 @@ Not every component needs extraction. If interface complexity ≈ implementation
 - Design systems architect: Ousterhout patterns in UI components specifically (shallow modules, composition)
 
 All agents see different facets of quality. Design systems architect focuses specifically on the frontend UI layer - where visual consistency, component architecture, and design patterns matter most.
+
+## Related Skills
+
+For deeper React/Next.js patterns:
+- `/vercel-composition-patterns` - React composition patterns that scale
+- `/next-best-practices` - Next.js file conventions and RSC boundaries
+- `/vercel-react-best-practices` - Performance optimization guidelines

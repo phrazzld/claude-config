@@ -120,6 +120,12 @@ Each rule file contains:
 - Correct code example with explanation
 - Additional context and references
 
+## Related Skills
+
+- `/next-best-practices` - Next.js file conventions and RSC boundaries
+- `/next-cache-components` - Next.js 16 Cache Components and PPR
+- `/vercel-composition-patterns` - React composition patterns that scale
+
 ## Full Compiled Document
 
 For the complete guide with all rules expanded: `AGENTS.md`

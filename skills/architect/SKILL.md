@@ -42,7 +42,9 @@ codex exec "INVESTIGATE architecture for [feature]. Find existing patterns, iden
 
 3. **Interview**: Use AskUserQuestion for constraints, preferred patterns, optimization priorities
 
-4. **Research** (if needed): `gemini "Current best practices for [topic]"`
+4. **Research** (if needed):
+   - `gemini "Current best practices for [topic]"`
+   - For React/Next.js designs, reference `/next-best-practices` and `/vercel-composition-patterns`
 
 5. **Draft alternatives**: Have Codex brainstorm approaches
 ```bash

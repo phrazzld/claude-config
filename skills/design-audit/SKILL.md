@@ -98,6 +98,10 @@ Check:
 2. [Improvement]
 ```
 
+## Diagram Documentation
+
+For design system diagrams (component hierarchy, token relationships), use `/beautiful-mermaid` for production-quality renders.
+
 ## Output
 
 Audit report ready. Next: `/design-catalog` to explore new directions, or `/design-theme` to fix issues.
