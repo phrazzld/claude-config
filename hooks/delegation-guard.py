@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Codex delegation guard - graduated enforcement for delegation.
+Delegation guard - graduated enforcement for delegation.
 
 PreToolUse hook with tiered responses:
 - Silent: excluded repos, trivial edits
@@ -274,16 +274,16 @@ def main():
         output_warn(
             f"⚠️  DELEGATION ENCOURAGED\n\n"
             f"{summary}\n\n"
-            f"Consider: spawn_agent() MCP tool or:\n"
-            f"  codex exec --full-auto \"[task]\" --output-last-message /tmp/codex-out.md"
+            f"Consider delegating via Moonbridge:\n"
+            f"  spawn_agent(prompt=\"[task]\", adapter=\"codex|kimi\")"
         )
 
     elif tier == "ask":
         output_ask(
             f"📋 DELEGATION RECOMMENDED\n\n"
             f"{summary}\n\n"
-            f"Use spawn_agent() MCP tool or:\n"
-            f"  codex exec --full-auto \"[task]\"\n\n"
+            f"Delegate via Moonbridge:\n"
+            f"  spawn_agent(prompt=\"[task]\", adapter=\"codex|kimi\")\n\n"
             f"Continue with direct edit?"
         )
 
