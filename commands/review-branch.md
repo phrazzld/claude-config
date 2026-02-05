@@ -28,12 +28,14 @@ You don't review the code yourself. You:
 
 ### Tier 2: Domain Specialists — via Task tool
 
-| Agent | Focus |
-|-------|-------|
-| **security-sentinel** | Auth, injection, secrets, OWASP |
-| **performance-pathfinder** | Bottlenecks, N+1, scaling |
-| **data-integrity-guardian** | Transactions, migrations, referential integrity |
-| **architecture-guardian** | Module boundaries, coupling, abstraction depth |
+| Agent | Focus | Priority |
+|-------|-------|----------|
+| **security-sentinel** | Auth, injection, secrets, OWASP, zero-day patterns | **MANDATORY** — always run |
+| **performance-pathfinder** | Bottlenecks, N+1, scaling | Standard |
+| **data-integrity-guardian** | Transactions, migrations, referential integrity | Standard |
+| **architecture-guardian** | Module boundaries, coupling, abstraction depth | Standard |
+
+> **Opus 4.6 security note:** The model found 500 zero-day vulnerabilities in open-source code during pre-release testing. Security review is no longer optional — it's a first-class reviewer on every PR regardless of size.
 
 ### Tier 3: Meta-reviewers — Sequential after Tier 1+2
 
@@ -308,7 +310,7 @@ Report format:
 
 **Small PRs (<100 lines):**
 - Skip Thinktank (overkill)
-- Run all Moonbridge personas + 2-3 most relevant specialists
+- Run all Moonbridge personas + security-sentinel (mandatory) + 1-2 most relevant specialists
 
 **Medium PRs (100-500 lines):**
 - Full review with all 12 reviewers

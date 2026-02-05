@@ -84,7 +84,7 @@ git commit -m "fix(auth): validate email format in createUser
 Review finding: Missing input validation allows invalid emails
 Test: should reject invalid email format
 
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 
 **Commit message pattern:**
@@ -94,7 +94,7 @@ fix(scope): brief description
 Review finding: [quote the original finding]
 Test: [name of the test that proves the fix]
 
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 ```
 
 ## Test Types by Finding Category
@@ -192,7 +192,7 @@ Review finding: Session cookies missing secure flag
 Verification: Manual - inspected Set-Cookie header in browser devtools
 Note: Cookie flag verification requires browser; mocking deemed too brittle
 
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 
 ### Option 3: Reconsider the Fix

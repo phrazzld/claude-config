@@ -4,6 +4,7 @@ description: |
   Audit quality gates: tests, CI/CD, hooks, coverage, linting.
   Outputs structured findings. Use log-quality-issues to create issues.
   Invoke for: quality infrastructure audit, test coverage gaps, CI review.
+effort: high
 ---
 
 # /check-quality
@@ -16,7 +17,8 @@ Audit quality infrastructure. Output findings as structured report.
 2. Check git hooks (Lefthook, Husky)
 3. Check CI/CD (GitHub Actions)
 4. Check linting/formatting (ESLint, Prettier, Biome)
-5. Output prioritized findings (P0-P3)
+5. **Security scan** — spawn `security-sentinel` for vulnerability analysis
+6. Output prioritized findings (P0-P3)
 
 **This is a primitive.** It only investigates and reports. Use `/log-quality-issues` to create GitHub issues or `/fix-quality` to fix.
 
@@ -98,6 +100,17 @@ pnpm coverage 2>/dev/null | tail -20 || npm run coverage 2>/dev/null | tail -20 
 
 Spawn `test-strategy-architect` agent for deep test quality analysis if tests exist.
 
+### 7. Security Scan
+
+Spawn `security-sentinel` agent to analyze source code for:
+- Hardcoded secrets, API keys, credentials
+- SQL injection, XSS, command injection vectors
+- Insecure dependencies (`npm audit` / `pnpm audit`)
+- OWASP Top 10 vulnerabilities
+- Auth/authz misconfigurations
+
+> **Opus 4.6 found 500 zero-day vulnerabilities in pre-release testing.** Security scanning is now a mandatory step in quality audits, not optional.
+
 ## Output Format
 
 ```markdown
@@ -141,6 +154,7 @@ Spawn `test-strategy-architect` agent for deep test quality analysis if tests ex
 |-----|----------|
 | No test runner | P0 |
 | No CI workflow | P0 |
+| Security vulnerabilities found | P0 |
 | No coverage | P1 |
 | No git hooks | P1 |
 | No linting | P1 |

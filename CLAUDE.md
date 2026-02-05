@@ -31,7 +31,8 @@ Delegation is default mode, not fallback.
 - "The fix is small" → TASK isn't small. Delegate.
 - "I understand now, might as well implement" → Understanding = better Codex prompt
 
-**3+ Read/Grep calls without delegating = you're doing Codex's job. STOP.**
+**3+ Read/Grep calls for IMPLEMENTATION without delegating = you're doing Codex's job. STOP.**
+**5+ Read/Grep for INVESTIGATION is acceptable — 1M context makes this cheap.**
 
 **Delegation pattern:**
 ```bash
@@ -61,7 +62,7 @@ Never mark complete without proving correctness:
 
 ## Default Tactics
 
-- Full file reads over code searches. Context windows handle it.
+- Full project reads over incremental searches. 1M context handles entire codebases.
 - Narrow patches. No drive-by fixes.
 - Document invariants, not obvious mechanics.
 - Web search external API versions—never trust internal knowledge.
@@ -70,6 +71,19 @@ Never mark complete without proving correctness:
 - Before marking done: "Would a staff engineer approve this?"
 - Non-trivial changes: pause and ask "is there a more elegant solution?"
 - Bug reports: just fix. Don't ask for hand-holding. Point at logs/errors/tests → resolve.
+
+## Bug-Fixing Discipline
+
+- **Test-first for bugs.** When given a bug report, first write a test that reproduces it. Fix passes when test passes.
+- **Root vs symptom.** After investigation, explicitly ask: "Are we solving the root problem or just treating a symptom?"
+- **Research before implementing.** For non-trivial problems, research the industry-standard approach first. Use it to guide yours.
+- **Durability check.** Before finalizing a fix, ask: "What breaks if we revert this in 6 months?" If the answer reveals fragility, you're treating symptoms.
+
+**Delegation pattern for bugs:**
+```bash
+codex exec "Bug: [description]. First write failing test in [test file]. Research idiomatic [lang] approach. Fix [file] until test passes. Verify: is this ROOT cause or symptom?" \
+  --output-last-message /tmp/codex-out.md 2>/dev/null
+```
 
 ## Continuous Learning
 
@@ -170,6 +184,16 @@ Structure: AAA (Arrange, Act, Assert). One behavior per test. Name: "should [beh
 | Reconciliation cron | Don't rely 100% on webhooks |
 | Pull-on-success | Verify payment after redirect, don't wait for webhook |
 
+### Bug-Fixing (→ `/debug`)
+
+**Test first, investigate second.** Don't start by trying to fix—start by writing a test that reproduces the bug. Then fix until test passes.
+
+| Question | When to Ask |
+|----------|-------------|
+| Root or symptom? | After investigation, before fix |
+| What's the idiomatic solution? | Before implementing |
+| What breaks on revert? | Before finalizing fix |
+
 ### Skills Index
 
 Compressed index of all skills. Query with `/skill-name`.
@@ -177,7 +201,7 @@ Compressed index of all skills. Query with `/skill-name`.
 ```
 stripe:{audit,configure,design,health,local-dev,reconcile,scaffold,subscription-ux,verify}
 observability:{check,fix,posthog,sentry,langfuse,structured-logging,triage,verify-fix}
-check:{quality,production,landing,virality,onboarding,docs,stripe,lightning,bitcoin,btcpay,payments,posthog,product-standards,observability}
+check:{quality,production,landing,virality,onboarding,docs,stripe,lightning,bitcoin,btcpay,payments,posthog,product-standards,observability,security-scan}
 fix:{quality,landing,virality,onboarding,docs,stripe,lightning,bitcoin,observability,posthog,ci}
 log:{quality,landing,virality,onboarding,doc,stripe,lightning,bitcoin,observability,posthog,production,product-standards}-issues
 languages:{typescript-excellence,go-idioms,rust-patterns,python-standards,ruby-conventions,csharp-modern}
@@ -191,7 +215,7 @@ browser:{browser-extension-dev,extension-toolchain}
 database:{database-patterns,schema-design,reconciliation-patterns}
 bitcoin:{bitcoin,check-bitcoin,fix-bitcoin,lightning,check-lightning,fix-lightning,check-btcpay}
 workflow:{spec,architect,refactor,critique,groom,investigate,postmortem,fix,implement,pr,build,commit,autopilot,review-branch,review-and-fix,address-review,respond}
-dev:{skill-builder,codex-coworker,delegate,distill,codify-learning,cartographer,thinktank,debug,profile}
+dev:{skill-builder,codex-coworker,delegate,distill,codify-learning,cartographer,thinktank,debug,profile,techdebt}
 design:{design-{audit,theme,catalog,exploration,sprint,tokens},aesthetic-system,og-{hero-image,card},pencil-{to-code,renderer}}
 infra:{quality-gates,env-var-hygiene,billing-security,vercel-react-best-practices,monorepo-scaffold,github-{app,marketing}-scaffold,slack-app-scaffold}
 next:{next-best-practices,next-cache-components,next-upgrade}
@@ -212,6 +236,26 @@ browser:{agent-browser}
 Learnings land here first. Run `/distill` to graduate to skills/agents.
 
 <!-- Add learnings below this line -->
+
+### AI Writing Tells to Avoid
+
+**Vocabulary:** Don't use "additionally," "moreover," "furthermore," "comprehensive," "crucial," "landscape," "showcasing," "delve," "testament."
+
+**Structure:**
+- Vary sentence length (don't default to medium)
+- Don't start every paragraph with "The [noun]"
+- Em dashes sparingly—one per message max
+- Tables only for actual data, not every list
+- Skip artificial triplets; use natural quantities
+
+**Communication:**
+- No sycophantic openers ("Great question!")
+- No filler ("in order to" → "to")
+- No hedge stacking ("could potentially possibly" → "might")
+- No sign-offs ("I hope this helps")
+- Just do things; don't announce ("Let me..." → just do it)
+
+**Voice:** Concise > formal. Short sentences mixed with longer ones. Personal perspective when appropriate.
 
 ### Daybook Conversation Workflow (MANDATORY)
 
@@ -302,6 +346,49 @@ When adding `rewrites()` for proxies, check middleware public routes:
 - Analytics proxies (`/ingest`) → must be public for anonymous users
 - Tunnels (`/monitoring`) → must be public for error tracking
 - API rewrites → consider auth requirements
+
+### 2-Action Rule for Multimodal
+
+After 2 view/browser/search operations, save key findings to file immediately.
+Visual/multimodal data doesn't persist—text does.
+
+### Read vs Write Heuristic
+
+| Situation | Action |
+|-----------|--------|
+| Just wrote file | DON'T read (still in context) |
+| Viewed image/PDF | Write findings NOW |
+| Browser returned data | Write to file |
+| Starting new phase | Read plan |
+
+### Moonbridge Delegation (MANDATORY)
+
+**Always use Moonbridge** (`mcp__moonbridge__spawn_agent`), never `codex exec` via Bash.
+
+| Parameter | Rule |
+|-----------|------|
+| `adapter` | Always `codex` (explicit) |
+| `reasoning_effort` | `xhigh` default. `high` acceptable minimum. **Never** `medium` or `low`. |
+| `timeout_seconds` | `2400` minimum (40min). Context compaction + 1M window = longer productive runs. |
+
+### Opus 4.6 Capabilities (2026-02-05)
+
+**What changed:** 1M context (beta), 128K output, adaptive thinking, effort parameter GA, context compaction, agent teams (preview), prefill removal (breaking).
+
+**Effort routing** — match intelligence to task:
+
+| Task Type | Effort | Examples |
+|-----------|--------|---------|
+| Architecture, security, complex debug | `max` | `/architect`, `/investigate`, security-sentinel |
+| Implementation, code review, tests | `high` | Default. Most skills. |
+| Commit messages, linting, scaffolding | `medium` | `/commit`, `/changelog`, `/seo-baseline` |
+| Lookups, template expansion | `low` | `/cli-reference`, simple file scaffolding |
+
+**Adaptive thinking:** Use `thinking: {type: "adaptive"}` not `budget_tokens` (deprecated).
+
+**Context compaction:** API auto-summarizes old context. Sessions can run hours without degradation.
+
+**Breaking:** Assistant message prefills return 400. Use structured outputs or system prompts.
 
 <!--
 Graduated 2026-01-31:
