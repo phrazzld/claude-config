@@ -6,6 +6,7 @@ description: |
   signup/checkout flows, reduce friction, increase activation, create paywalls, or 
   improve popup/modal performance. Keywords: CRO, conversion, funnel, friction, 
   optimize, activation, paywall, popup, form, signup, onboarding.
+effort: high
 ---
 
 # Conversion Rate Optimization

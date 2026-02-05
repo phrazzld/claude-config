@@ -1,6 +1,7 @@
 ---
 name: extension-toolchain
 description: "Apply modern browser extension toolchain patterns: WXT (default), Plasmo, CRXJS for Chrome/Firefox/Safari extensions. Use when building browser extensions, choosing extension frameworks, or discussing manifest v3 patterns."
+effort: high
 ---
 
 # Extension Toolchain

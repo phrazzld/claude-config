@@ -1,6 +1,7 @@
 ---
 name: design-tokens
 description: "Apply design token patterns using Tailwind CSS 4 @theme directive: CSS variables, semantic naming, color systems, typography scales, spacing, dark mode. Use when designing UI systems, reviewing design consistency, or establishing brand guidelines. Integrates with frontend-design skill for aesthetic execution."
+effort: high
 ---
 
 # Design Tokens

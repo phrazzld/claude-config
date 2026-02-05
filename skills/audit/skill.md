@@ -7,6 +7,7 @@ description: |
   Use when: starting on a new project, periodic health check, onboarding.
 disable-model-invocation: true
 argument-hint: "[focus: all | stripe | observability | quality | docs | llm | changelog]"
+effort: high
 ---
 
 # /audit

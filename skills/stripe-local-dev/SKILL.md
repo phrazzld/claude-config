@@ -9,6 +9,7 @@ description: |
   "No signatures found matching", webhooks not working locally, checkout succeeds
   but subscription doesn't update, STRIPE_WEBHOOK_SECRET mismatch, setting up
   stripe listen, configuring pnpm dev with Stripe.
+effort: high
 ---
 
 # /stripe-local-dev

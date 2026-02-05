@@ -5,6 +5,7 @@ description: |
   feature flags, and data quality. Outputs structured findings.
   Use log-posthog-issues to create issues. Use fix-posthog to fix.
   Invoke for: analytics audit, event tracking review, PostHog health check.
+effort: high
 ---
 
 # /check-posthog

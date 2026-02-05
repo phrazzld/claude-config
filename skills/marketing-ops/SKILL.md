@@ -4,6 +4,7 @@ description: |
   Marketing workflow orchestrator. Composes primitives for pSEO launches, GitHub releases, ad campaigns, and growth tracking.
   Use when: launching pSEO pages, announcing releases, running campaigns, tracking marketing metrics across tools.
   Keywords: marketing workflow, launch, campaign, pSEO, release, announce, metrics
+effort: high
 ---
 
 # /marketing-ops

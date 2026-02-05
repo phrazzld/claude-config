@@ -4,6 +4,7 @@ description: |
   Run /check-onboarding, then fix the highest priority onboarding issue.
   Creates one fix per invocation. Invoke again for next issue.
   Use /log-onboarding-issues to create issues without fixing.
+effort: high
 ---
 
 # /fix-onboarding

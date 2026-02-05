@@ -1,6 +1,7 @@
 ---
 name: mobile-toolchain
 description: "Apply modern mobile development toolchain patterns: Expo (default), React Native, Tauri for iOS/Android apps. Use when building mobile applications, choosing cross-platform frameworks, or discussing mobile architecture."
+effort: high
 ---
 
 # Mobile Toolchain

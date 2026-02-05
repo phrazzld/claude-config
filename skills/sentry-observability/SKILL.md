@@ -10,6 +10,7 @@ description: |
   Scripts: detect_sentry.sh, init_sentry.sh, list_issues.sh, triage_score.sh
   Keywords: Sentry, production errors, error tracking, triage, alerts,
   observability, Session Replay, PII redaction, source maps, monitoring
+effort: high
 ---
 
 # Sentry Observability

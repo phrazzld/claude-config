@@ -9,6 +9,7 @@ description: |
   - A/B testing different models
   - Self-hosting an LLM proxy
   Keywords: openrouter, litellm, llm gateway, model routing, fallback, A/B testing
+effort: high
 ---
 
 # LLM Gateway & Routing

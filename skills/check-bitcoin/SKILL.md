@@ -5,6 +5,7 @@ description: |
   address management, UTXO hygiene, and network configuration. Use when:
   reviewing Bitcoin setup, diagnosing payment issues, or pre-launch audit.
   Keywords: bitcoin, btc, on-chain, wallet, utxo, node.
+effort: high
 ---
 
 # /check-bitcoin

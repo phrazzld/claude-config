@@ -2,6 +2,7 @@
 name: design-catalog
 description: |
   DESIGN-CATALOG
+effort: high
 ---
 
 ---

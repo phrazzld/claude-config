@@ -7,6 +7,7 @@ description: |
   Uses fastlane (free) not SaaS. Keywords: app store, play store, screenshot,
   device frame, fastlane, snapshot, frameit, localization.
 argument-hint: "[app path] [platforms: ios, android] [locales: en, es]"
+effort: high
 ---
 
 ## What This Does

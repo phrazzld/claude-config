@@ -6,6 +6,7 @@ description: |
   Use when: preparing full launch, generating all marketing assets at once.
   Keywords: launch, assets, marketing, bundle, all assets.
 argument-hint: "[product name]"
+effort: high
 ---
 
 # /launch-assets

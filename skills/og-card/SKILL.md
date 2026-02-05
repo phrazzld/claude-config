@@ -7,6 +7,7 @@ description: |
   consistent, branded templates. Keywords: og image, open graph, satori,
   social card, meta image, twitter card.
 argument-hint: "[template: blog, product, changelog] [title]"
+effort: medium
 ---
 
 # /og-card

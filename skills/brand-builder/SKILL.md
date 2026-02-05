@@ -6,6 +6,7 @@ description: |
 
   Run once per project to establish voice, audience, topics.
 argument-hint: "[project-name]"
+effort: medium
 ---
 
 # /brand-builder

@@ -3,6 +3,7 @@ name: stripe-scaffold
 description: |
   Generate Stripe integration code from a design document.
   Produces working code, not just templates.
+effort: high
 ---
 
 # Stripe Scaffold

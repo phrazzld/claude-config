@@ -7,6 +7,7 @@ description: |
   Auto-invoke when: user wants to post about a product, share an update,
   generate social content, or needs post ideas.
 argument-hint: "[product] \"message\" | --ideas [product]"
+effort: medium
 ---
 
 # /post

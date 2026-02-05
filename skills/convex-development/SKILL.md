@@ -6,6 +6,7 @@ description: |
   reviewing Convex code, designing schemas, planning migrations, or discussing Convex architecture.
   Keywords: Convex, real-time database, queries, mutations, actions, indexes, pagination,
   vector search, embeddings, schema, migrations, ctx.auth, convex-helpers, bandwidth.
+effort: high
 ---
 
 # Convex Development

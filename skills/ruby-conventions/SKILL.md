@@ -9,6 +9,7 @@ description: |
   - Optimizing Rails performance (N+1, caching)
   Keywords: Ruby, Rails, RSpec, FactoryBot, service object, strong params,
   N+1 query, Sidekiq, RuboCop, Thor CLI
+effort: high
 ---
 
 # Ruby Conventions

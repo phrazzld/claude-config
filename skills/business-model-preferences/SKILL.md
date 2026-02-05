@@ -4,6 +4,7 @@ description: |
   Pricing philosophy and business model constraints.
   Auto-invoke when: evaluating pricing, checkout flows, subscription logic, tier structures.
 user-invocable: false
+effort: low
 ---
 
 # Business Model Preferences

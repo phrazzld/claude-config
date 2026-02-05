@@ -5,6 +5,7 @@ description: "Apply universal naming principles: avoid Manager/Helper/Util, use 
 allowed-tools:
   - Read
   - Grep
+effort: low
 ---
 
 # Naming Conventions

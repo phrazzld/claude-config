@@ -4,6 +4,7 @@ description: |
   Run /check-landing, then fix the highest priority landing page issue.
   Creates one fix per invocation. Invoke again for next issue.
   Use /log-landing-issues to create issues without fixing.
+effort: high
 ---
 
 # /fix-landing

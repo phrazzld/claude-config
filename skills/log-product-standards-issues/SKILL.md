@@ -3,6 +3,7 @@ name: log-product-standards-issues
 description: |
   Run /check-product-standards, then create GitHub issues for all findings.
   Invoked by /groom as P1 fundamental check.
+effort: medium
 ---
 
 # /log-product-standards-issues

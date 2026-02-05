@@ -3,6 +3,7 @@ name: stripe-configure
 description: |
   Configure Stripe Dashboard and deployment environments.
   Sets up products, prices, webhooks, and environment variables.
+effort: high
 ---
 
 # Stripe Configure

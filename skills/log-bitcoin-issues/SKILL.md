@@ -4,6 +4,7 @@ description: |
   Run /check-bitcoin, then create GitHub issues for all findings.
   Issues are created with priority labels and structured format.
   Use /fix-bitcoin instead if you want to fix issues immediately.
+effort: medium
 ---
 
 # /log-bitcoin-issues

@@ -2,6 +2,7 @@
 name: sync-configs
 description: |
   SYNC-CONFIGS
+effort: high
 ---
 
 ---

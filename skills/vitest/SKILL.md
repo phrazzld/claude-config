@@ -5,6 +5,7 @@ description: |
   Use when: auditing vitest.config.ts, optimizing CI, debugging test failures,
   configuring coverage, troubleshooting mocking, upgrading to Node 22+.
 user-invocable: true
+effort: high
 ---
 
 # Vitest Best Practices

@@ -6,6 +6,7 @@ allowed-tools:
   - Read
   - Grep
   - Glob
+effort: high
 ---
 
 # Documentation Standards

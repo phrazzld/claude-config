@@ -4,6 +4,7 @@ description: |
   Transform session learnings into permanent, executable improvements.
   Invoke at end of any session that involved debugging, fixing, or learning something.
   Default: Codify everything. Exception: Justify not codifying.
+effort: high
 ---
 
 # /codify-learning

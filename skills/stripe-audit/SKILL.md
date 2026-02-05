@@ -3,6 +3,7 @@ name: stripe-audit
 description: |
   Comprehensive audit of existing Stripe integration.
   Checks configuration, code patterns, security, and business model alignment.
+effort: max
 ---
 
 # Stripe Audit

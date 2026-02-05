@@ -4,6 +4,7 @@ description: |
   CLI dashboard for marketing metrics. Pulls from PostHog, Stripe,
   and Postiz MCPs when configured. Shows traffic, activation, conversion.
   Includes CLI script examples for direct API access.
+effort: high
 ---
 
 # /marketing-status

@@ -9,6 +9,7 @@ description: |
   - Following Unix conventions
   Keywords: CLI, command line, terminal, help text, exit codes,
   flags, arguments, Commander, Thor, Cobra, oclif
+effort: high
 ---
 
 # CLI Development

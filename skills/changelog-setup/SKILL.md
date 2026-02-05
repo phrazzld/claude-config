@@ -3,6 +3,7 @@ name: changelog-setup
 description: |
   Full changelog infrastructure from scratch. Greenfield workflow.
   Installs semantic-release, commitlint, GitHub Actions, LLM synthesis, public page.
+effort: medium
 ---
 
 # Changelog Setup

@@ -2,6 +2,7 @@
 name: critique
 description: |
   CRITIQUE
+effort: high
 ---
 
 ---

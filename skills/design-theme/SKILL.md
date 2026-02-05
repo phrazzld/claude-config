@@ -2,6 +2,7 @@
 name: design-theme
 description: |
   DESIGN-THEME
+effort: high
 ---
 
 ---

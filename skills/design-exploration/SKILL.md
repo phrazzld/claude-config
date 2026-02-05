@@ -7,6 +7,7 @@ description: |
   - Starting /aesthetic or /polish without clear direction
   - User says "explore designs", "show me options", "design directions"
   Keywords: design catalogue, proposals, visual exploration, aesthetic directions, DNA
+effort: high
 ---
 
 # Design Exploration

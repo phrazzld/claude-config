@@ -1,6 +1,7 @@
 ---
 name: schema-design
 description: "Universal database schema design principles: normalization strategy, data types, primary keys, constraints, anti-patterns, and red flags. Apply when designing schemas, reviewing database architecture, or refactoring data models."
+effort: high
 ---
 
 # Database Schema Design Principles

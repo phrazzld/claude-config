@@ -4,6 +4,7 @@ description: |
   Audit documentation: README, architecture, API docs, .env.example.
   Outputs structured findings. Use log-doc-issues to create issues.
   Invoke for: documentation audit, gap analysis, staleness check.
+effort: high
 ---
 
 # /check-docs

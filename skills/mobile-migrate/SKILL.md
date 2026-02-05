@@ -1,6 +1,7 @@
 ---
 name: mobile-migrate
 description: "Add an Expo + EAS React Native mobile app to an existing web project, sharing logic, design tokens, auth, and backend integrations. Use when migrating a web codebase into a web+mobile monorepo."
+effort: high
 ---
 
 # Mobile Migrate

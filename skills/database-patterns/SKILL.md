@@ -9,6 +9,7 @@ description: |
   - Designing audit logging
   Keywords: database, migration, SQL, query optimization, index, transaction,
   connection pool, N+1, ORM, audit log
+effort: high
 ---
 
 # Database Patterns

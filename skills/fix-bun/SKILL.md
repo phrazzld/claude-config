@@ -4,6 +4,7 @@ description: |
   Run /check-bun, then fix the highest priority Bun issue.
   One fix at a time, verify after each change.
   Invoke for: fix bun migration issue, migrate to bun, bun setup.
+effort: high
 ---
 
 # /fix-bun

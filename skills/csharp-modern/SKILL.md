@@ -9,6 +9,7 @@ description: |
   - Setting up .NET projects
   Keywords: C#, .NET, async, await, ConfigureAwait, nullable, record,
   pattern matching, xUnit, ValueTask
+effort: high
 ---
 
 # Modern C#

@@ -8,6 +8,7 @@ description: |
 
   Use when: design-exploration or user needs implementation code
   from a finalized Pencil design.
+effort: high
 ---
 
 # Pencil to Code

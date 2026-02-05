@@ -11,6 +11,7 @@ description: |
   - Optimizing large repository performance
   Keywords: git, commit, branch, merge, rebase, PR, pull request, trunk-based,
   conventional commits, atomic commits, git hooks, CODEOWNERS
+effort: high
 ---
 
 # Git Mastery

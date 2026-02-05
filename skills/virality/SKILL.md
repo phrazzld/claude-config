@@ -4,6 +4,7 @@ description: |
   Viral growth infrastructure. Social sharing, OG images, referral systems, distribution.
   Make your product inherently shareable. Audit, implement, verify—every time.
 argument-hint: "[focus area, e.g. 'og-images' or 'referrals']"
+effort: high
 ---
 
 # /virality

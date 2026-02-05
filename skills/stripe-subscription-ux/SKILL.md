@@ -11,6 +11,7 @@ keywords:
   - billing history
   - settings
   - manage subscription
+effort: high
 ---
 
 # Subscription Management UX

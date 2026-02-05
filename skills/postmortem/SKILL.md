@@ -2,6 +2,7 @@
 name: postmortem
 description: |
   POSTMORTEM
+effort: max
 ---
 
 ---

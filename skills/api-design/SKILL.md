@@ -9,6 +9,7 @@ description: |
   - Handling API errors
   Keywords: REST, API, OpenAPI, Swagger, versioning, HTTP methods,
   status codes, pagination, error handling
+effort: high
 ---
 
 # API Design

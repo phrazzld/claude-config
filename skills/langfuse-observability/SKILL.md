@@ -7,6 +7,7 @@ description: |
   - Debugging failed generations
   - Comparing model outputs across runs
   Keywords: langfuse, traces, observability, LLM metrics, prompt management, generations
+effort: high
 ---
 
 # Langfuse Observability

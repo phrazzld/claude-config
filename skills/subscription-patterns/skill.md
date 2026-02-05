@@ -14,6 +14,7 @@ keywords:
   - webhook
   - cancel
   - resubscribe
+effort: high
 ---
 
 # Subscription Lifecycle Patterns

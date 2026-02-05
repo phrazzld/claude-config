@@ -4,6 +4,7 @@ description: |
   Audit onboarding: first-run, time to aha, friction points, empty states.
   Outputs structured findings. Use log-onboarding-issues to create issues.
   Invoke for: onboarding review, new user experience, activation audit.
+effort: high
 ---
 
 # /check-onboarding

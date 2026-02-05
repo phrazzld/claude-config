@@ -1,6 +1,7 @@
 ---
 name: structured-logging
 description: "Apply structured logging best practices using Pino for Node.js applications: JSON output, log levels, context, redaction, correlation IDs, and centralization. Use when implementing logging, reviewing log statements, or discussing observability."
+effort: high
 ---
 
 # Structured Logging

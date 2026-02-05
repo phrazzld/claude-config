@@ -6,6 +6,7 @@ description: |
 
   Use for product launches, major updates, or milestone announcements.
 argument-hint: "[url] [description]"
+effort: medium
 ---
 
 # /announce

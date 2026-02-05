@@ -4,6 +4,7 @@ description: |
   Complete changelog and release notes infrastructure. Audits current state,
   implements missing components, and verifies the release pipeline works end-to-end.
 argument-hint: "[focus area, e.g. 'LLM synthesis' or 'public page']"
+effort: medium
 ---
 
 # /changelog

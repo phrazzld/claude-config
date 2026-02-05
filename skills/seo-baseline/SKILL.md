@@ -7,6 +7,7 @@ description: |
   Auto-invoke when: shipping new product, reviewing landing page,
   or user mentions SEO basics.
 argument-hint: "[url]"
+effort: medium
 ---
 
 # /seo-baseline

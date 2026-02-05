@@ -7,6 +7,7 @@ description: |
   Zero external deps - pure content generation. Keywords: product hunt, launch,
   tagline, maker comment, PH, producthunt.
 argument-hint: "[product name]"
+effort: high
 ---
 
 # /product-hunt-kit

@@ -1,6 +1,7 @@
 ---
 name: stripe-health
 description: "Stripe webhook health diagnostics. Invoke for: webhook delivery failures, pending_webhooks issues, redirect problems (307/308), subscription sync failures, pre-deployment webhook verification, incident investigation involving Stripe."
+effort: high
 ---
 
 # /stripe-health - Stripe Webhook Health Check

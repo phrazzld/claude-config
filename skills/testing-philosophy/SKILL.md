@@ -7,6 +7,7 @@ allowed-tools:
   - Grep
   - Glob
   - Bash
+effort: high
 ---
 
 # Testing Philosophy

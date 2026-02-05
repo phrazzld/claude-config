@@ -4,6 +4,7 @@ description: |
   Audit observability: error tracking, logging, health checks, analytics.
   Outputs structured findings. Use log-observability-issues to create issues.
   Invoke for: monitoring audit, logging review, alerting gaps.
+effort: high
 ---
 
 # /check-observability

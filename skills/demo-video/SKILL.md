@@ -6,6 +6,7 @@ description: |
   marketing videos, or app previews. Handles screen capture, voiceover sync,
   and rendering. Keywords: demo, video, screencast, explainer, walkthrough.
 argument-hint: "[product] [feature to demo, e.g. 'status page builder']"
+effort: high
 ---
 
 # Demo Video

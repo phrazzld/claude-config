@@ -7,6 +7,7 @@ description: |
   Auto-invoke when: files contain stripe/payment/checkout/webhook, imports stripe
   package, references STRIPE_* env vars, webhook handlers modified.
 argument-hint: "[focus area, e.g. 'webhooks' or 'subscription UX']"
+effort: high
 ---
 
 # /stripe

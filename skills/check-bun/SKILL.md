@@ -4,6 +4,7 @@ description: |
   Audit project for Bun compatibility and adoption opportunities.
   Outputs structured findings. Use fix-bun to fix issues.
   Invoke for: bun audit, bun compatibility check, bun migration assessment.
+effort: high
 ---
 
 # /check-bun

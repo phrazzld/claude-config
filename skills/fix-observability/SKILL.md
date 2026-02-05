@@ -4,6 +4,7 @@ description: |
   Run /check-observability, then fix the highest priority observability issue.
   Creates one fix per invocation. Invoke again for next issue.
   Use /log-observability-issues to create issues without fixing.
+effort: high
 ---
 
 # /fix-observability

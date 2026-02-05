@@ -5,6 +5,7 @@ allowed-tools:
   - Read
   - Grep
   - Glob
+effort: high
 ---
 
 # Code Review Checklist

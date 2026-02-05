@@ -4,6 +4,7 @@ description: |
   Multi-provider payment audit. Runs check-stripe, check-bitcoin, check-lightning.
   Outputs consolidated findings. Use log-*-issues to create GitHub issues.
   Invoke for: comprehensive payment review, multi-provider audit.
+effort: high
 ---
 
 # /check-payments

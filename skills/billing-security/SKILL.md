@@ -13,6 +13,7 @@ keywords:
   - subscription
   - customer_creation
   - webhook_secret
+effort: max
 ---
 
 # Billing & Security Integration Patterns

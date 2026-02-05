@@ -9,6 +9,7 @@ description: |
   - Comparing prompt or model performance
   - Building evaluation suites for RAG, factuality, or safety
   Keywords: promptfoo, llm evaluation, prompt testing, red team, CI/CD, regression testing
+effort: high
 ---
 
 # LLM Evaluation & Testing

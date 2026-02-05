@@ -2,6 +2,7 @@
 name: design-audit
 description: |
   DESIGN-AUDIT
+effort: high
 ---
 
 ---

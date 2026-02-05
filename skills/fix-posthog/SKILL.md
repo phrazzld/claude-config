@@ -4,6 +4,7 @@ description: |
   Run /check-posthog, then fix the highest priority PostHog integration
   issues. Focuses on one issue at a time for safe, incremental fixes.
   Invoke for: PostHog not working, events not sending, analytics broken.
+effort: high
 ---
 
 # /fix-posthog

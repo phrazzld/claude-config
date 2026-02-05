@@ -2,6 +2,7 @@
 name: respond
 description: |
   Respond to PR review feedback with maximum transparency. Analyze feedback, get second opinions on non-trivial decisions, post comments documenting every judgment, and implement fixes. All reasoning must be visible in PR comments. Keywords: PR review, code review response, review feedback, address comments, fix review.
+effort: high
 ---
 
 # Respond to PR Review Feedback

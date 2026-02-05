@@ -5,6 +5,7 @@ argument-hint: <file-or-pattern>
 metadata:
   author: vercel
   version: "1.0.0"
+effort: high
 ---
 
 # Web Interface Guidelines

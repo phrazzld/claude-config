@@ -3,6 +3,7 @@ name: check-product-standards
 description: |
   Verify Misty Step product standards: version display, attribution, contact link.
   Required for all shipping products. Invoked by /groom as P1 fundamental.
+effort: high
 ---
 
 # /check-product-standards

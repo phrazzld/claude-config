@@ -5,6 +5,7 @@ description: |
   completion signals, progress tracking, and iteration patterns.
   Ralph = autonomous issue-to-merged-PR loop.
 user-invocable: false
+effort: high
 ---
 
 # Ralph Loop Patterns

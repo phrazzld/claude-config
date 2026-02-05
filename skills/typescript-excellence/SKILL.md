@@ -9,6 +9,7 @@ description: |
   - Avoiding type gymnastics or any-abuse
   Keywords: TypeScript, tsconfig, strict mode, no-any, pnpm, Vitest, tsup,
   TanStack Query, discriminated unions, type safety, ESLint
+effort: high
 ---
 
 # TypeScript Excellence

@@ -2,6 +2,7 @@
 name: fix-ci
 description: |
   CI
+effort: high
 ---
 
 ---
@@ -80,6 +81,15 @@ gh pr checks
 **Cause**: CI config doesn't match local environment
 **Fix**: Update workflow YAML, sync versions
 **Evidence**: Works locally, fails in CI consistently
+
+## Pre-Fix Checklist
+
+Before implementing any fix:
+
+- [ ] Do we have a failing test that reproduces this? If not, write one.
+- [ ] Is this the ROOT cause or a symptom of deeper issue?
+- [ ] What's the idiomatic way to solve this in [language/framework]?
+- [ ] What breaks if we revert in 6 months?
 
 ## Phase 3: Analyze Failure
 

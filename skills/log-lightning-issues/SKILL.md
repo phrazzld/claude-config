@@ -4,6 +4,7 @@ description: |
   Run /check-lightning, then create GitHub issues for all findings.
   Issues are created with priority labels and structured format.
   Use /fix-lightning instead if you want to fix issues immediately.
+effort: medium
 ---
 
 # /log-lightning-issues

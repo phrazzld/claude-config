@@ -9,6 +9,7 @@ description: |
   - Configuring Cargo features
   Keywords: Rust, ownership, borrowing, Result, thiserror, anyhow, trait,
   lifetimes, Cargo features, unsafe
+effort: high
 ---
 
 # Rust Patterns

@@ -2,6 +2,7 @@
 name: architect
 description: |
   ARCHITECT
+effort: max
 ---
 
 ---

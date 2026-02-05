@@ -1,6 +1,7 @@
 ---
 name: clerk-auth
 description: "Clerk authentication integration patterns for Next.js and Convex. Invoke for: user authentication, session management, JWT templates, webhook handling, middleware configuration, protected routes, Convex auth integration."
+effort: high
 ---
 
 # Clerk Authentication Patterns

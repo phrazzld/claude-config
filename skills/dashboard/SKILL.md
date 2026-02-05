@@ -6,6 +6,7 @@ description: |
 
   Auto-invoke when: user asks about metrics, traction, analytics, revenue across products.
 argument-hint: "[--html to export to file]"
+effort: high
 ---
 
 # /dashboard

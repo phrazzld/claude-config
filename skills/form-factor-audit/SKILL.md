@@ -1,6 +1,7 @@
 ---
 name: form-factor-audit
 description: "Evaluate which product form factors will create the most leverage: mobile app, Slack app, GitHub app, or browser extension. Use when deciding how an application should surface, notify, or automate work."
+effort: high
 ---
 
 # Form Factor Audit

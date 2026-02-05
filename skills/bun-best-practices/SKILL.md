@@ -5,6 +5,7 @@ description: |
   vs runtime, workspace configuration, compatibility considerations.
   Invoke for: bun adoption decision, bun vs pnpm, bun migration planning.
 user-invocable: false
+effort: high
 ---
 
 # Bun Best Practices

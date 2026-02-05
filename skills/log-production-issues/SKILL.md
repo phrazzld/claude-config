@@ -4,6 +4,7 @@ description: |
   Run /check-production, then create GitHub issues for all findings.
   Issues are created with priority labels and structured format.
   Use /triage instead if you want to fix issues immediately.
+effort: medium
 ---
 
 # /log-production-issues

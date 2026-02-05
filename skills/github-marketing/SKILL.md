@@ -1,6 +1,7 @@
 ---
 name: github-marketing
 description: When the user wants to use open source as a distribution strategy, grow on GitHub, convert README traffic, design open-core, or build community-led funnels (stars, deploys, sponsors, plugins).
+effort: high
 ---
 
 # GitHub Marketing

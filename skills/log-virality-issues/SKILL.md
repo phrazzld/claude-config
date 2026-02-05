@@ -4,6 +4,7 @@ description: |
   Run /check-virality, then create GitHub issues for all findings.
   Issues are created with priority labels and structured format.
   Use /fix-virality instead if you want to fix issues immediately.
+effort: medium
 ---
 
 # /log-virality-issues

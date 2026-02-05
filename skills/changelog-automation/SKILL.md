@@ -1,6 +1,7 @@
 ---
 name: changelog-automation
 description: "Apply changelog automation and semantic versioning patterns using Changesets or semantic-release: conventional commits, automated version bumping, release notes generation. Use when setting up release workflows, discussing versioning, or implementing changelog automation."
+effort: medium
 ---
 
 # Changelog Automation

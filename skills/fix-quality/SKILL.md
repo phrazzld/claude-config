@@ -4,6 +4,7 @@ description: |
   Run /check-quality, then fix the highest priority quality issue.
   Creates one fix per invocation. Invoke again for next issue.
   Use /log-quality-issues to create issues without fixing.
+effort: high
 ---
 
 # /fix-quality

@@ -4,6 +4,7 @@ description: |
   Audit viral growth: social sharing, OG images, referrals, distribution.
   Outputs structured findings. Use log-virality-issues to create issues.
   Invoke for: shareability audit, referral review, distribution analysis.
+effort: high
 ---
 
 # /check-virality

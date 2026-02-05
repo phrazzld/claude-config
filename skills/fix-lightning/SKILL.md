@@ -4,6 +4,7 @@ description: |
   Run /check-lightning, then fix the highest priority Lightning issue.
   Creates one fix per invocation. Invoke again for next issue.
   Use /log-lightning-issues to create issues without fixing.
+effort: high
 ---
 
 # /fix-lightning

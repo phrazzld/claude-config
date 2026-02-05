@@ -4,6 +4,7 @@ description: |
   Run /check-quality, then create GitHub issues for all findings.
   Issues are created with priority labels and structured format.
   Use /fix-quality instead if you want to fix issues immediately.
+effort: medium
 ---
 
 # /log-quality-issues

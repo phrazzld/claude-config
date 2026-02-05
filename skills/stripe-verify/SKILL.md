@@ -3,6 +3,7 @@ name: stripe-verify
 description: |
   End-to-end verification of Stripe integration. Deep testing including
   real checkout flows, webhook delivery, and subscription state transitions.
+effort: high
 ---
 
 # Stripe Verify

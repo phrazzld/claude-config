@@ -4,6 +4,7 @@ description: |
   Complete documentation infrastructure. Audits current docs, generates missing pieces,
   updates stale content, and verifies everything works. Every run does the full cycle.
 argument-hint: "[focus area, e.g. 'README' or 'architecture']"
+effort: high
 ---
 
 # /documentation

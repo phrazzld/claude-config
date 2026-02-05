@@ -1,6 +1,7 @@
 ---
 name: copy-lab
 description: Orchestrate copy exploration. Brief, generate 5 distinct approaches, adversarial review, iterate to 90+ composite, present catalog, user selects, execute.
+effort: high
 ---
 
 # Copy Lab Skill

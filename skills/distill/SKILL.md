@@ -2,6 +2,7 @@
 name: distill
 description: |
   DISTILL
+effort: high
 ---
 
 ---

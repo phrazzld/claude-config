@@ -9,6 +9,7 @@ description: |
   - Organizing Python packages
   Keywords: Python, pyproject.toml, uv, ruff, mypy, pytest, type hints,
   virtual environment, lockfile, package structure
+effort: high
 ---
 
 # Python Standards

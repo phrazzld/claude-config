@@ -1,6 +1,7 @@
 ---
 name: github-app-scaffold
 description: "Scaffold and implement GitHub Apps from existing automation ideas using Probot + @octokit/app. Use when turning scripts, bots, or manual GitHub workflows into a proper GitHub App."
+effort: high
 ---
 
 # GitHub App Scaffold

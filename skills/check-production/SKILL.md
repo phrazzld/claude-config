@@ -4,6 +4,7 @@ description: |
   Check production health: Sentry errors, Vercel logs, health endpoints, GitHub CI/CD.
   Outputs structured findings. Use log-production-issues to create issues.
   Invoke for: production diagnostics, error audit, health status, CI failures.
+effort: high
 ---
 
 # /check-production

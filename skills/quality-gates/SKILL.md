@@ -2,6 +2,7 @@
 name: quality-gates
 description: |
   Apply quality gate standards for git hooks, testing, CI/CD, and automation using Lefthook, Vitest, GitHub Actions, and quality enforcement. Use when setting up quality infrastructure, configuring hooks, discussing automation, or reviewing quality practices.
+effort: high
 ---
 
 # /quality-gates

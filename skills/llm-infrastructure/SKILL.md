@@ -9,6 +9,7 @@ description: |
 
   CRITICAL: Training data lags months. ALWAYS web search before LLM decisions.
 argument-hint: "[focus area, e.g. 'models' or 'evals' or 'prompts']"
+effort: high
 ---
 
 # /llm-infrastructure

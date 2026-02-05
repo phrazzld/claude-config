@@ -1,6 +1,7 @@
 ---
 name: codex-coworker
 description: "Invoke Codex as a coworker for implementation, brainstorming, specs, and reviews. Use when you want parallel thinking, cheap execution, or a second opinion. Codex tokens are cheaper than yours — delegate aggressively. Keywords: codex, delegate, implement, draft, review, brainstorm, write tests, code review, moonbridge."
+effort: high
 ---
 
 # Codex as Coworker

@@ -4,6 +4,7 @@ description: |
   Audit landing page: value prop, CTA, social proof, mobile, load time.
   Outputs structured findings. Use log-landing-issues to create issues.
   Invoke for: landing page review, conversion audit, launch readiness.
+effort: high
 ---
 
 # /check-landing

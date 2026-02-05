@@ -4,6 +4,7 @@ description: |
   Run /check-virality, then fix the highest priority virality issue.
   Creates one fix per invocation. Invoke again for next issue.
   Use /log-virality-issues to create issues without fixing.
+effort: high
 ---
 
 # /fix-virality

@@ -9,6 +9,7 @@ description: |
   - Structuring Go projects
   Keywords: Go, golang, error wrapping, interface design, goroutine, channel,
   context, package design, dependency injection, race condition
+effort: high
 ---
 
 # Go Idioms

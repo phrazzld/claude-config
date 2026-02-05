@@ -2,6 +2,7 @@
 name: refactor
 description: |
   REFACTOR
+effort: high
 ---
 
 ---

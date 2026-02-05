@@ -3,6 +3,7 @@ name: changelog-page
 description: |
   Scaffold public changelog page for Next.js apps.
   Creates page, RSS feed, and GitHub API client.
+effort: medium
 ---
 
 # Changelog Page

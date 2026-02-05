@@ -3,6 +3,7 @@ name: changelog-audit
 description: |
   Audit existing changelog/release infrastructure.
   Finds issues, misconfigurations, and drift.
+effort: medium
 ---
 
 # Changelog Audit

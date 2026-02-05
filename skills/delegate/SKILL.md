@@ -4,6 +4,7 @@ description: |
   Multi-AI orchestration primitive. Delegate to specialized AI tools, collect outputs, synthesize.
   Use when: analysis, review, audit, investigation tasks need multiple expert perspectives.
   Keywords: orchestrate, delegate, multi-ai, parallel, synthesis, consensus, dag, swarm
+effort: high
 ---
 
 # /delegate

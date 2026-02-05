@@ -2,6 +2,7 @@
 name: investigate
 description: |
   INVESTIGATE
+effort: max
 ---
 
 ---
@@ -67,6 +68,19 @@ Update `INCIDENT-{timestamp}.md` as you go:
 - **Actions**: What you tried, what you learned
 - **Root cause**: When you find it
 - **Fix**: What you did to resolve it
+
+## Root Cause Discipline
+
+For each hypothesis, explicitly categorize:
+
+- **ROOT**: Fixing this removes the fundamental cause
+- **SYMPTOM**: Fixing this masks an underlying issue
+
+Prefer investigating root hypotheses first. If you find yourself proposing a symptom fix, ask:
+
+> "What's the underlying architectural issue this symptom reveals?"
+
+**Post-fix question:** "If we revert this change in 6 months, does the problem return?"
 
 ## Investigation Philosophy
 

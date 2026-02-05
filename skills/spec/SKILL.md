@@ -2,6 +2,7 @@
 name: spec
 description: |
   SPEC
+effort: high
 ---
 
 ---

@@ -5,6 +5,7 @@ description: |
   Drives: investigate -> fix -> PR -> postmortem workflow.
   Invoke for: production issues, error spikes, CI failures, user reports, incident response.
 argument-hint: "[action: status | investigate ISSUE-ID | investigate-ci RUN-ID | fix | postmortem ISSUE-ID]"
+effort: max
 ---
 
 # /triage

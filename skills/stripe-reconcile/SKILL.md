@@ -3,6 +3,7 @@ name: stripe-reconcile
 description: |
   Fix issues found by stripe-audit. Reconciles configuration drift,
   fixes code patterns, and resolves discrepancies.
+effort: high
 ---
 
 # Stripe Reconcile

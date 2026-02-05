@@ -1,6 +1,7 @@
 ---
 name: monorepo-scaffold
 description: "Convert single-app repos into a Turborepo monorepo using pnpm workspaces. Use when splitting apps into apps/ and shared code into packages/ with cached pipelines."
+effort: high
 ---
 
 # Monorepo Scaffold

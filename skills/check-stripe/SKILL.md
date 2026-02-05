@@ -4,6 +4,7 @@ description: |
   Audit Stripe integration: configuration, webhooks, subscription logic, security.
   Outputs structured findings. Use log-stripe-issues to create issues.
   Invoke for: Stripe audit, payment review, subscription analysis.
+effort: high
 ---
 
 # /check-stripe

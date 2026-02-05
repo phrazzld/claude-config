@@ -2,6 +2,7 @@
 name: address-review
 description: |
   Systematically address code review findings using TDD. Fixes in-scope issues, creates GitHub issues for out-of-scope items. Keywords: address review, fix review, review findings, TDD fix, code review response.
+effort: high
 ---
 
 # Address Review Findings

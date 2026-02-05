@@ -1,6 +1,7 @@
 ---
 name: llm-communication
 description: "Write effective LLM prompts, commands, and agent instructions. Goal-oriented over step-prescriptive. Role + Objective + Latitude pattern. Use when writing prompts, designing agents, building Claude Code commands, or reviewing LLM instructions. Keywords: prompt engineering, agent design, command writing."
+effort: high
 ---
 
 # Talking to LLMs

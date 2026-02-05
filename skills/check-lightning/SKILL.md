@@ -5,6 +5,7 @@ description: |
   peer connectivity, invoice handling, and routing. Use when: reviewing
   Lightning setup, diagnosing payment failures, or capacity planning.
   Keywords: lightning, lnd, cln, channels, invoices, bolt11.
+effort: high
 ---
 
 # /check-lightning

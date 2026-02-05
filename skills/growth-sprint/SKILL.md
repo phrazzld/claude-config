@@ -3,6 +3,7 @@ name: growth-sprint
 description: |
   Weekly growth ritual. Pick one product to push. Guide through content, distribution,
   outreach, and measurement. Creates sprint log for tracking.
+effort: high
 ---
 
 # /growth-sprint

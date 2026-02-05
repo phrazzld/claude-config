@@ -7,6 +7,7 @@ description: |
   /fix-ci (CI pipeline). Keywords: debug, why doesn't, broken, failing, error, crash,
   undefined, unexpected, doesn't work, local testing.
 argument-hint: <symptoms - error message, unexpected behavior, what's broken>
+effort: high
 ---
 
 # DEBUG
@@ -14,6 +15,17 @@ argument-hint: <symptoms - error message, unexpected behavior, what's broken>
 You're a senior engineer debugging a local issue.
 
 **The user's symptoms:** $ARGUMENTS
+
+## Test-First Protocol
+
+When a bug is reported:
+
+1. **Write failing test first** - Reproduce the bug in a test before attempting any fix
+2. **Verify test fails** - Confirm it fails for the right reason
+3. **Then investigate** - Now gather context and implement fix
+4. **Test passes** - Fix is complete when the test passes
+
+> "Don't start by trying to fix it. Start by writing a test that reproduces it."
 
 ## The Codex First-Draft Pattern
 
@@ -64,6 +76,14 @@ Find root cause. Propose fix. Verify it works.
 | Build failure | Bundler error, missing module | Check deps, config |
 | Behavior mismatch | "It should do X but does Y" | Trace code path, find divergence |
 
+## Research Phase
+
+After classifying the error type, before diving into context:
+
+1. **Check idiomatic approach**: "How do senior [language] engineers typically debug [error type]?"
+2. **Search for prior art**: Similar issues in this codebase? How were they resolved?
+3. **Framework guidance**: What does the [framework] documentation say about this error?
+
 ## Timing-Based Debugging
 
 When symptom is "slow" or performance-related:
@@ -90,6 +110,18 @@ When symptom is "slow" or performance-related:
 codex exec "Add timing instrumentation to $FILE. Log timing for each major operation." \
   --output-last-message /tmp/codex-timing.md 2>/dev/null
 ```
+
+## Root Cause Verification
+
+Before implementing a fix, answer explicitly:
+
+> "Are we solving the ROOT problem, or just treating a SYMPTOM?"
+
+If symptom: dig deeper. The true fix prevents the symptom from recurring.
+
+**Durability test:** "What breaks if we revert this fix in 6 months?"
+- If answer is "nothing because root cause is gone" → good fix
+- If answer is "the same bug returns" → you're treating symptoms
 
 ## Output
 

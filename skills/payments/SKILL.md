@@ -5,6 +5,7 @@ description: |
   Bitcoin, and Lightning checks. Use when: comprehensive payment review,
   multi-provider audit, or unified payment status.
   Keywords: payments, billing, stripe, bitcoin, lightning, multi-provider.
+effort: high
 ---
 
 # /payments

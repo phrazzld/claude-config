@@ -14,6 +14,7 @@ description: |
   MANDATORY: Consult Gemini before any frontend work.
 
   See also: references/dna-codes.md, references/banned-patterns.md
+effort: high
 ---
 
 # Aesthetic System

@@ -9,6 +9,7 @@ description: |
   - Planning extension updates
   Keywords: browser extension, Manifest V3, content script, background script,
   permissions, Chrome extension, Firefox addon, WebExtensions API
+effort: high
 ---
 
 # Browser Extension Development

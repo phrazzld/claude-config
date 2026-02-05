@@ -4,6 +4,7 @@ description: |
   Run /check-stripe, then fix the highest priority Stripe issue.
   Creates one fix per invocation. Invoke again for next issue.
   Use /log-stripe-issues to create issues without fixing.
+effort: high
 ---
 
 # /fix-stripe

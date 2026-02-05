@@ -4,6 +4,7 @@ description: |
   Run /check-posthog, then create GitHub issues for all findings.
   Each finding becomes a separate, actionable issue with clear acceptance criteria.
   Invoke for: PostHog audit to issues, analytics backlog creation.
+effort: medium
 ---
 
 # /log-posthog-issues

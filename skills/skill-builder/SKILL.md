@@ -8,6 +8,7 @@ description: |
   - After solving a problem in a novel way worth repeating
   - Noticing repeated patterns across sessions
   AUTONOMOUS: Create skills proactively, then inform user what was created.
+effort: high
 ---
 
 # Skill Builder

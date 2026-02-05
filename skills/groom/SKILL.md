@@ -6,6 +6,7 @@ description: |
   Uses Gemini, Kimi, Codex, and Thinktank to flesh out issues with research,
   implementation recommendations, and multi-perspective validation.
   No flags. Always comprehensive.
+effort: high
 ---
 
 # /groom

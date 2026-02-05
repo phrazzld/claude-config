@@ -1,6 +1,7 @@
 ---
 name: reconciliation-patterns
 description: "Patterns for syncing state between external services (Stripe, Clerk) and local database. Invoke for: webhook failures, data sync issues, eventual consistency, recovery from missed events, subscription state management."
+effort: high
 ---
 
 # Reconciliation Patterns

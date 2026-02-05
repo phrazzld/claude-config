@@ -6,6 +6,7 @@ description: |
   podcast intros, or any TTS need. Keywords: voiceover, TTS, text to speech,
   ElevenLabs, narration, audio, timestamps.
 argument-hint: "[script text or file path]"
+effort: high
 ---
 
 # Voiceover (ElevenLabs)

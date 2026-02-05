@@ -4,6 +4,7 @@ description: |
   Run /check-docs, then fix the highest priority documentation issue.
   Creates one fix per invocation. Invoke again for next issue.
   Use /log-doc-issues to create issues without fixing.
+effort: high
 ---
 
 # /fix-docs

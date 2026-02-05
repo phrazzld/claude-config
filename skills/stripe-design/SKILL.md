@@ -3,6 +3,7 @@ name: stripe-design
 description: |
   Design a Stripe integration based on business requirements and organizational preferences.
   Produces a design document that stripe-scaffold will implement.
+effort: high
 ---
 
 # Stripe Design

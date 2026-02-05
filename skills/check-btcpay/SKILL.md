@@ -5,6 +5,7 @@ description: |
   payment notifications, and API connectivity. Use when: running BTCPay
   as payment processor, diagnosing webhook issues, or verifying setup.
   Keywords: btcpay, btcpayserver, greenfield, payment processor.
+effort: high
 ---
 
 # /check-btcpay

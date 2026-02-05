@@ -7,6 +7,7 @@ description: |
   DO NOT USE until /dashboard shows consistent traction signal.
   This is Phase 2 - after finding product-market fit.
 argument-hint: "[product-with-traction]"
+effort: high
 ---
 
 # /growth-at-scale
