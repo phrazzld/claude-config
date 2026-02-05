@@ -129,7 +129,7 @@ See `/cli-reference` for full commands.
 
 ## Key References
 
-- `/commands/README.md` — Command architecture, daily workflows
+- `/commands/README.md` — Skill architecture, daily workflows
 - `/agents/README` — 15-agent composition system
 - `/docs/tenets.md` — Simplicity, Modularity, Explicitness, Maintainability
 - `/docs/ousterhout-principles.md` — Deep modules, information hiding
