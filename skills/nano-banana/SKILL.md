@@ -1,35 +1,95 @@
 ---
-name: gemini-imagegen
-description: Generate and edit images using the Gemini API (Nano Banana). Use this skill when creating images from text prompts, editing existing images, applying style transfers, generating logos with text, creating stickers, product mockups, or any image generation/manipulation task. Supports text-to-image, image editing, multi-turn refinement, and composition from multiple reference images.
+name: nano-banana
+description: AI image generation with curated prompt library. Use for creating images from text prompts, editing existing images, or browsing 6000+ professional prompt templates. Supports avatars, social media, product shots, logos, infographics, and more.
+effort: high
 ---
 
-# Gemini Image Generation (Nano Banana)
+# Nano Banana - Image Generation + Prompt Library
 
-Generate and edit images using Google's Gemini API. The environment variable `GEMINI_API_KEY` must be set.
+Generate images using Gemini API with access to 6000+ curated professional prompts.
 
-## Available Models
+## Quick Start
 
-| Model | Alias | Resolution | Best For |
-|-------|-------|------------|----------|
-| `gemini-2.5-flash-image` | Nano Banana | 1024px | Speed, high-volume tasks |
-| `gemini-3-pro-image-preview` | Nano Banana Pro | Up to 4K | Professional assets, complex instructions, text rendering |
-
-## Quick Start Scripts
-
-### Text-to-Image
+### Direct Generation
 ```bash
 python scripts/generate_image.py "A cat wearing a wizard hat" output.png
 ```
 
-### Edit Existing Image
+### Search Prompts First
 ```bash
-python scripts/edit_image.py input.png "Add a rainbow in the background" output.png
+python scripts/search_prompts.py "avatar professional"
 ```
 
-### Multi-Turn Chat (Iterative Refinement)
+### Edit Existing Image
+```bash
+python scripts/edit_image.py input.png "Add rainbow background" output.png
+```
+
+## Workflow
+
+### Step 0: Mode Detection
+
+Classify user intent:
+
+| Mode | Signal | Action |
+|------|--------|--------|
+| Direct | Clear prompt provided | Generate immediately |
+| Exploration | Vague request, needs ideas | Search prompts first |
+| Content-based | User provides article/context | Extract themes, then search |
+
+### Step 1: Prompt Search (exploration mode)
+
+Search by category:
+- `avatars` - Headshots, portraits, profile pictures
+- `social_media` - Instagram, Twitter, Facebook content (3800+)
+- `product_marketing` - Ads, campaigns (1900+)
+- `infographic` - Data visualization
+- `thumbnails` - YouTube covers
+- `comics` - Sequential art, storyboards
+- `ecommerce` - Product photography
+- `game_assets` - Sprites, characters
+- `posters` - Events, announcements
+- `web_design` - UI mockups
+
+**Token optimization:** Use grep patterns, NEVER fully load reference files.
+
+Present max 3 matching prompts with sample images when available.
+
+### Step 2: Generation
+
+| Source | Action |
+|--------|--------|
+| Curated prompt selected | Use EXACT prompt text |
+| No match / user declines | Generate custom, label [AI-Generated] |
+
+### Step 3: Refinement (optional)
+
+Use multi-turn chat for iterative editing:
 ```bash
 python scripts/multi_turn_chat.py
 ```
+
+## Prompt Categories
+
+| Category | Count | Best For |
+|----------|-------|----------|
+| Social Media | 3800+ | Instagram, Twitter, Facebook |
+| Product Marketing | 1900+ | Ads, campaigns |
+| Avatars | 700+ | Headshots, portraits |
+| Infographic | 350+ | Data visualization |
+| Posters | 300+ | Events, announcements |
+| Comics | 200+ | Sequential art |
+| E-commerce | 200+ | Product shots |
+| Game Assets | 200+ | Sprites, characters |
+| Thumbnails | 100+ | Video covers |
+| Web Design | 100+ | UI mockups |
+
+## Models
+
+| Model | Resolution | Best For |
+|-------|------------|----------|
+| `gemini-2.5-flash-image` | 1024px | Speed, high-volume |
+| `gemini-3-pro-image-preview` | Up to 4K | Professional assets, text rendering |
 
 ## Core API Pattern
 
@@ -157,17 +217,9 @@ response = client.models.generate_content(
 )
 ```
 
-## REST API (curl)
+## Environment
 
-```bash
-curl -s -X POST \
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent" \
-  -H "x-goog-api-key: $GEMINI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "contents": [{"parts": [{"text": "A serene mountain landscape"}]}]
-  }' | jq -r '.candidates[0].content.parts[] | select(.inlineData) | .inlineData.data' | base64 --decode > output.png
-```
+Requires `GEMINI_API_KEY` environment variable.
 
 ## Notes
 

@@ -69,7 +69,10 @@ COLOR_EXCEPTIONS = [
 # Files where hardcoded colors are allowed (theme previews, etc)
 COLOR_ALLOWED_FILES = [
     r'lib/themes\.ts$',  # Theme preview colors for UI
+    r'lib/design/presets/.*\.ts$',  # Design token preset definitions
     r'\.css$',           # CSS files
+    r'\.test\.tsx?$',    # Test files (assert on actual values)
+    r'__tests__/',       # Test directories
 ]
 
 

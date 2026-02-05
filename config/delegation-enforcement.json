@@ -13,7 +13,8 @@
       "/Users/phaedrus/Development/moonbridge",
       "/Users/phaedrus/Development/thinktank",
       "/Users/phaedrus/Development/misty-step",
-      "/Users/phaedrus/Development/vox"
+      "/Users/phaedrus/Development/vox",
+      "/Users/phaedrus/Development/sprite-base"
     ],
     "patterns": [
       "**/daybook/**",
