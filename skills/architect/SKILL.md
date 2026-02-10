@@ -53,7 +53,19 @@ codex exec "Draft 3 approaches for implementing [feature]. Consider tradeoffs." 
   --output-last-message /tmp/designs.md
 ```
 
-6. **Validate**: Run Thinktank on chosen approach
+6. **Parallel Design Exploration (Agent Teams)**
+
+When the design space is large and approaches are fundamentally different:
+
+1. Spawn 2-3 architect teammates, each exploring a different approach
+2. Require plan approval — lead reviews before any implementation
+3. Synthesize: present all approaches with tradeoffs to user
+4. Validate winner via Thinktank
+
+Use when: greenfield module, multiple valid architectures, high-stakes decision.
+Don't use when: clear pattern to follow, incremental feature, single approach.
+
+7. **Validate**: Run Thinktank on chosen approach
 ```bash
 thinktank /tmp/arch-review.md ./ARCHITECTURE.md ./CLAUDE.md --synthesis
 ```

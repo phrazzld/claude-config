@@ -78,6 +78,27 @@ mcp__moonbridge__spawn_agents_parallel({
 - Invocation: `thinktank instructions.md ./files --synthesis` (bash)
 - **Note**: Cannot take action. Use for validation, not investigation.
 
+### Agent Teams — Full Claude Code Teammates
+
+When workers need to communicate, challenge each other, or coordinate across layers.
+
+**Start a team:** Describe the task and team structure in natural language. Claude handles spawning.
+
+**Lead in delegate mode:** Shift+Tab after team creation. Lead coordinates only.
+
+**Plan approval:** For risky work, require teammates to plan before implementing.
+Lead reviews and approves/rejects plans.
+
+**When to use over Moonbridge:**
+
+| Signal | Teams | Moonbridge |
+|--------|-------|------------|
+| Workers must discuss findings | YES | no |
+| Competing hypotheses / debate | YES | no |
+| Cross-layer (FE+BE+tests) | YES | no |
+| "Implement this spec" | no | YES |
+| Result-only, no coordination | no | YES |
+
 ### Internal Agents (Task tool)
 
 Domain specialists for focused review:

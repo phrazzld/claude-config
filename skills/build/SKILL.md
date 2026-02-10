@@ -47,6 +47,18 @@ For each logical chunk:
 
 Final commit: `feat: complete feature (closes #$1)`
 
+## Multi-Module Mode (Agent Teams)
+
+When the issue spans 3+ distinct modules (e.g., API + UI + tests):
+
+1. Create team with one teammate per module
+2. Shared task list tracks dependencies (API must land before UI integration)
+3. Each teammate runs its own Codex delegation loop on its module
+4. Lead coordinates commit sequencing
+
+Use when: cross-layer features, 3+ modules, clear boundaries.
+Don't use when: single module, sequential dependencies dominate.
+
 ## Post-Implementation
 
 1. `code-simplifier:code-simplifier` agent for clarity

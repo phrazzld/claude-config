@@ -45,6 +45,21 @@ Deliver Issue `$ARGUMENTS` (or highest-priority open issue) as a draft PR with t
 5. **Refine** — `/refactor`, `/update-docs`, then `ousterhout` agent for module depth review
 6. **Ship** — `/pr` with `Closes #N`
 
+## Parallel Refinement (Agent Teams)
+
+After `/build` completes, parallelize the refinement phase:
+
+| Teammate | Task |
+|----------|------|
+| **Simplifier** | Run code-simplifier agent, commit |
+| **Depth reviewer** | Run ousterhout agent, commit |
+| **Doc updater** | Run /update-docs, commit |
+
+Lead sequences commits after all teammates finish. Then `/pr`.
+
+Use when: substantial feature with multiple refinement needs.
+Don't use when: small fix where sequential is fast enough.
+
 ## Stopping Conditions
 
 Stop only if: issue explicitly blocked, build fails after multiple attempts, requires external action.

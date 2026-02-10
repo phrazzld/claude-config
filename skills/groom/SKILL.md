@@ -233,6 +233,33 @@ gh issue close 123 --comment "Duplicate of #456"
 
 This prevents backlog bloat and ensures the backlog reflects current reality.
 
+### Team-Accelerated Grooming (Default)
+
+Steps 4-6 run as an agent team for parallel execution:
+
+**Lead (you):** Coordinates team, handles Steps 1-3 and 7-8 directly.
+Switch to delegate mode (Shift+Tab) before spawning.
+
+**Spawn teammates by domain cluster:**
+
+| Teammate | Skills/Tasks | Focus |
+|----------|-------------|-------|
+| **Infra** | log-production, log-quality, log-observability | P0-P1 foundation |
+| **Docs & Standards** | log-doc, log-product-standards | Documentation gaps |
+| **Payments** | log-stripe, log-bitcoin, log-lightning | Revenue infrastructure |
+| **Growth** | log-virality, log-landing, log-onboarding | User acquisition/activation |
+| **AI Enrichment** | Gemini research, Codex implementation recs | Issue enrichment |
+| **Agents** | security-sentinel, architecture-guardian, etc. | Adaptive analysis |
+
+Teammates share findings via messages. When Infra finds a P0, Growth teammate
+can check if it affects onboarding. When Payments finds a Stripe issue,
+AI Enrichment can research best practices immediately.
+
+After all teammates finish, lead runs dedup (Step 7) and summary (Step 8).
+
+**Fallback:** If team creation fails (experimental feature), fall back to
+sequential skill invocation (current behavior).
+
 ### Step 4: Run Issue-Creator Skills
 
 Invoke in sequence (each creates GitHub issues):

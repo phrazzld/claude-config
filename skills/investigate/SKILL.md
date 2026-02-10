@@ -27,6 +27,18 @@ codex exec "INVESTIGATE: $ERROR. Check env vars, logs, recent deploys. Report fi
 
 Then review Codex's findings. Don't investigate yourself first.
 
+## Multi-Hypothesis Mode (Agent Teams)
+
+When >2 plausible root causes and single Codex investigation would anchor on one:
+
+1. Create agent team with 3-5 investigators
+2. Each teammate gets one hypothesis to prove/disprove
+3. Teammates challenge each other's findings via messages
+4. Lead synthesizes consensus root cause into incident doc
+
+Use when: ambiguous stack trace, multiple services, flaky failures.
+Don't use when: obvious single cause, config issue, simple regression.
+
 ## Investigation Protocol
 
 ### Rule #1: Config Before Code

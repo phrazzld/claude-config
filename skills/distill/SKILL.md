@@ -19,6 +19,36 @@ Distill this repo's knowledge into a single, sharp `CLAUDE.md`.
 - Output must let a new contributor start useful work in minutes, without asking questions.
 - Scope is this repo only; global philosophy lives in `~/.claude/CLAUDE.md`.
 
+## The Kill Test
+
+Every line in CLAUDE.md must survive three questions:
+
+1. **Discoverable?** Would Claude figure this out from `ls`, `cat package.json`, or reading code? → DELETE
+2. **Surprising?** Does this describe something counter-intuitive or unexpected? If not → DELETE
+3. **Earned by pain?** Did this instruction come from something going wrong? → KEEP
+
+**Start with nothing. Wait for Claude to do something wrong. Write THAT down.**
+
+### What to kill
+
+- File trees (Claude can `ls`)
+- "This project uses React with TypeScript" (Claude can see tsconfig.json)
+- Architecture descriptions that restate what code shows
+- Technology stack versions (in package.json)
+- Module lists (in imports)
+- Development philosophy restating linter/type config
+- Sprint plans, roadmaps, marketing copy, performance metrics
+- Build system descriptions (in build config)
+- Testing framework choice (in test config)
+
+### What survives
+
+- "Run `yarn test:unit` not `npm test`" — weird, not discoverable
+- "Don't touch src/legacy/ — three enterprise clients depend on it" — earned by pain
+- "The auth middleware is load-bearing, all of it, don't be a hero" — counter-intuitive
+- "DATABASE_URL not POSTGRES_URL — Prisma's Rust engine reads it before Node" — painful gotcha
+- "e2e tests can't run headless due to extension limitations" — surprising constraint
+
 ## Inputs
 
 - Always read, if present:
@@ -67,11 +97,14 @@ Review Codex's draft. Refine for accuracy and compression.
 
 1. **Gather** (Codex does this)
    - Read inputs; understand what the repo does, how it runs, and how it fits into the wider system.
-2. **Classify existing CLAUDE content**
-   - Tag each line as:
-     - Repo-specific + useful → keep or rewrite.
+2. **Kill Test every line**
+   - For each line, ask three questions:
+     - **Discoverable?** Would Claude figure this out from `ls`, `cat package.json`, or reading code? → DELETE
+     - **Surprising?** Does this describe something counter-intuitive? If behavior is what you'd expect → DELETE
+     - **Earned by pain?** Did this come from something going wrong? → KEEP
+   - Also classify:
      - General / global → belongs in `~/.claude/CLAUDE.md`, do not restate here.
-     - Noise / obsolete → drop.
+     - Marketing copy / roadmaps / sprint plans → DROP (not instructions)
 3. **Draft new `CLAUDE.md`** (Codex produces first draft)
    - Fill the target shape above with tight, repo-specific bullets.
    - Prefer bullets over paragraphs; every line must earn its place.
@@ -88,23 +121,38 @@ Review Codex's draft. Refine for accuracy and compression.
 
 ## Checklist (must pass)
 
-- [ ] Readable in ≤3 minutes; roughly ≤120 lines.
-- [ ] Explains what this repo is and how it fits into the wider system.
-- [ ] Tells me exactly how to run and test locally.
-- [ ] Points to at least one concrete starting file/area (file:line ideal).
-- [ ] Captures non-obvious invariants and footguns; omits trivia.
+- [ ] Readable in ≤3 minutes; roughly ≤80 lines.
+- [ ] Every line fails the Kill Test (not discoverable from code/config/ls).
+- [ ] Run commands included (only if non-obvious — skip if standard `pnpm dev/test/build`).
+- [ ] Captures footguns, gotchas, and "don't touch X" warnings.
+- [ ] No file trees (Claude can `ls`).
+- [ ] No technology stack listings (Claude can read package.json).
+- [ ] No architecture descriptions that restate what code shows.
+- [ ] No marketing copy, roadmaps, or sprint plans.
 - [ ] Links to deeper docs / ADRs instead of copying them.
 - [ ] Does not restate global behavior or philosophy from `~/.claude/CLAUDE.md`.
 
 ## Compression Examples
 
-**Bad**: "We spent time discussing the authentication approach and eventually decided to use JWT tokens because they seemed like a good fit for our use case."
+**Kill** (discoverable): "The project uses Turborepo with pnpm workspaces, Next.js 15, React 19, Tailwind CSS, and TypeScript strict mode."
+→ Claude can read `package.json` and `tsconfig.json`.
 
-**Good**: "Purpose: auth + user accounts; legacy billing hooks remain here until `billing-service` migration completes."
+**Kill** (not surprising): "Content scripts inject into web pages. Background scripts handle lifecycle. Core modules have specific responsibilities."
+→ This is what every browser extension does.
 
-**Bad**: "The tests are currently not all passing because there's an issue with the mock setup that needs to be fixed."
+**Kill** (file tree):
+```
+├── apps/web/       # Next.js app
+├── packages/common/ # Shared types
+└── turbo.json      # Turborepo config
+```
+→ Claude can `ls`.
 
-**Good**: "Pitfall: `auth.test.ts` flakiness if `docker-compose up db redis` not running; fix env instead of tests."
+**Keep** (earned by pain): "DATABASE_URL not POSTGRES_URL — Prisma's Rust engine reads it before Node.js starts. Runtime env modifications are too late in serverless."
+
+**Keep** (surprising): "e2e tests can't run headless due to browser extension limitations."
+
+**Keep** (load-bearing): "Don't touch src/legacy/ — three enterprise clients depend on it, and there are no tests."
 
 ## Philosophy
 
