@@ -18,28 +18,28 @@ Staff engineer leading this machine's development.
 | **Gemini** | Researcher | Web-grounded research, huge-context analysis |
 | **Thinktank** | Expert council | Multi-perspective validation, architecture review |
 
-Delegation is default mode, not fallback.
+Use the right tool for the job. Delegation is a strength, not a requirement.
 
 ## Operating Mode
 
-**MANDATORY: Delegate to Codex.** Exempt only:
-1. Claude Code config files
-2. Single-line typo fixes
+Implement directly when it's efficient. For larger tasks, Codex via Moonbridge is
+available and often faster/cheaper for implementation, tests, and boilerplate.
 
-**Anti-patterns you'll fall into:**
-- "Just read a few files first" → Write Codex prompt instead
-- "The fix is small" → TASK isn't small. Delegate.
-- "I understand now, might as well implement" → Understanding = better Codex prompt
+**When Codex shines:**
+- Multi-file implementation across a codebase
+- Boilerplate, tests, repetitive changes
+- Tasks where a good prompt + verification is faster than doing it yourself
 
-**3+ Read/Grep calls for IMPLEMENTATION without delegating = you're doing Codex's job. STOP.**
-**5+ Read/Grep for INVESTIGATION is acceptable — 1M context makes this cheap.**
+**When to just do it yourself:**
+- Config files, small edits, quick fixes
+- When context is already loaded and the change is obvious
+- When delegation overhead exceeds the work itself
 
-**Delegation pattern:**
+**Delegation pattern (when useful):**
 ```bash
-codex exec --full-auto "[ACTION] [what]. Follow pattern in [ref]. [VERIFY]." \
-  --output-last-message /tmp/codex-out.md 2>/dev/null
+spawn_agent(prompt="[task]", adapter="codex", reasoning_effort="xhigh")
 ```
-Then: `git diff --stat && pnpm typecheck && pnpm test`
+Then verify: `git diff --stat && pnpm typecheck && pnpm test`
 
 ## Code Style
 
@@ -127,13 +127,6 @@ See `/cli-reference` for full commands.
 - Hidden coupling, action-at-a-distance, magic shared state
 - Large diffs, untested branches, speculative abstractions
 
-## Key References
-
-- `/commands/README.md` — Skill architecture, daily workflows
-- `/agents/README` — 15-agent composition system
-- `/docs/tenets.md` — Simplicity, Modularity, Explicitness, Maintainability
-- `/docs/ousterhout-principles.md` — Deep modules, information hiding
-
 ---
 
 ## Passive Knowledge Index
@@ -184,50 +177,6 @@ Structure: AAA (Arrange, Act, Assert). One behavior per test. Name: "should [beh
 | Reconciliation cron | Don't rely 100% on webhooks |
 | Pull-on-success | Verify payment after redirect, don't wait for webhook |
 
-### Bug-Fixing (→ `/debug`)
-
-**Test first, investigate second.** Don't start by trying to fix—start by writing a test that reproduces the bug. Then fix until test passes.
-
-| Question | When to Ask |
-|----------|-------------|
-| Root or symptom? | After investigation, before fix |
-| What's the idiomatic solution? | Before implementing |
-| What breaks on revert? | Before finalizing fix |
-
-### Skills Index
-
-Compressed index of all skills. Query with `/skill-name`.
-
-```
-stripe:{audit,configure,design,health,local-dev,reconcile,scaffold,subscription-ux,verify}
-observability:{check,fix,posthog,sentry,langfuse,structured-logging,triage,verify-fix}
-check:{quality,production,landing,virality,onboarding,docs,stripe,lightning,bitcoin,btcpay,payments,posthog,product-standards,observability,security-scan}
-fix:{quality,landing,virality,onboarding,docs,stripe,lightning,bitcoin,observability,posthog,ci}
-log:{quality,landing,virality,onboarding,doc,stripe,lightning,bitcoin,observability,posthog,production,product-standards}-issues
-languages:{typescript-excellence,go-idioms,rust-patterns,python-standards,ruby-conventions,csharp-modern}
-content:{post,announce,copywriting,brand-builder,marketing-{psychology,ops,status,dashboard}}
-growth:{virality,cro,pricing-strategy,free-tool-strategy,referral-program,ab-test-setup,growth-{sprint,at-scale}}
-seo:{seo-audit,seo-baseline,schema-markup,competitor-alternatives,programmatic-seo,pseo-generator}
-llm:{llm-evaluation,llm-gateway-routing,llm-infrastructure,llm-communication}
-changelog:{changelog,changelog-setup,changelog-page,changelog-audit,changelog-automation}
-mobile:{mobile-migrate,mobile-toolchain,app-screenshots}
-browser:{browser-extension-dev,extension-toolchain}
-database:{database-patterns,schema-design,reconciliation-patterns}
-bitcoin:{bitcoin,check-bitcoin,fix-bitcoin,lightning,check-lightning,fix-lightning,check-btcpay}
-workflow:{spec,architect,refactor,critique,groom,investigate,postmortem,fix,implement,pr,build,commit,autopilot,review-branch,review-and-fix,address-review,respond}
-dev:{skill-builder,codex-coworker,delegate,distill,codify-learning,cartographer,thinktank,debug,profile,techdebt}
-design:{design-{audit,theme,catalog,exploration,sprint,tokens},aesthetic-system,og-{hero-image,card},pencil-{to-code,renderer}}
-infra:{quality-gates,env-var-hygiene,billing-security,vercel-react-best-practices,monorepo-scaffold,github-{app,marketing}-scaffold,slack-app-scaffold}
-next:{next-best-practices,next-cache-components,next-upgrade}
-bun:{bun,check-bun,fix-bun,bun-best-practices}
-diagram:{beautiful-mermaid}
-browser:{agent-browser}
-```
-
-**Foundational** (always-present, `user-invocable: false`):
-- naming-conventions, testing-philosophy, external-integration-patterns
-- documentation-standards, git-mastery, business-model-preferences
-- ui-skills, ralph-patterns
 
 ---
 
@@ -361,15 +310,15 @@ Visual/multimodal data doesn't persist—text does.
 | Browser returned data | Write to file |
 | Starting new phase | Read plan |
 
-### Moonbridge Delegation (MANDATORY)
+### Moonbridge Delegation
 
-**Always use Moonbridge** (`mcp__moonbridge__spawn_agent`), never `codex exec` via Bash.
+When delegating, prefer Moonbridge (`mcp__moonbridge__spawn_agent`) over `codex exec` via Bash.
 
-| Parameter | Rule |
-|-----------|------|
-| `adapter` | Always `codex` (explicit) |
-| `reasoning_effort` | `xhigh` default. `high` acceptable minimum. **Never** `medium` or `low`. |
-| `timeout_seconds` | `2400` minimum (40min). Context compaction + 1M window = longer productive runs. |
+| Parameter | Recommendation |
+|-----------|----------------|
+| `adapter` | `codex` for implementation tasks |
+| `reasoning_effort` | `xhigh` for complex work, `high` for standard tasks |
+| `timeout_seconds` | `2400` (40min) gives room for larger tasks |
 
 ### Opus 4.6 Capabilities (2026-02-05)
 
@@ -390,27 +339,23 @@ Visual/multimodal data doesn't persist—text does.
 
 **Breaking:** Assistant message prefills return 400. Use structured outputs or system prompts.
 
-<!--
-Graduated 2026-01-31:
-- React Async Button Guard → agents/react-pitfalls.md (#11)
-- TypeScript UTC consistency → skills/typescript-excellence (reference)
-- Go t.Cleanup pattern → skills/go-idioms/SKILL.md
-- API Format Research → skills/external-integration-patterns/SKILL.md
-- Client-Side Validation Mirror → agents/security-sentinel.md
-- Config Threshold Duplication → agents/config-auditor.md
-- macOS Audio afconvert → dropped (too platform-specific)
-- Test Interface Methods → agents/test-strategy-architect.md
+### Agent Teams (Experimental, 2026-02-05)
 
-Graduated 2026-01-27:
-- External Integration Debugging → /debug skill
-- Environment Variable Hygiene → /env-var-hygiene skill
-- OODA-V Incident Protocol → /incident-response skill
-- LLM Model Selection → /llm-infrastructure skill
-- Stripe Multi-Environment → /stripe skill references
-- Stripe Local Dev Webhook → /stripe-local-dev skill
-- PostHog + Clerk Integration → /check-observability references
-- Auth Migration Doc Rot → /check-docs skill
-- Exit Code Documentation → /documentation-standards skill
-- Observability Setup Pitfalls → /check-observability references
-- React Patterns (7 items) → agents/react-pitfalls.md
--->
+**When teams beat Moonbridge:**
+- Workers need to share findings / challenge each other
+- Competing hypotheses (>2 plausible root causes)
+- Cross-layer coordination (FE + BE + tests as separate teammates)
+
+**When Moonbridge beats teams:**
+- "Do X, report back" (no inter-worker communication needed)
+- Sequential pipeline (spec → build → ship)
+- Cost-sensitive tasks (teams ~5x token cost)
+
+**Lead rules:**
+- Always delegate mode (Shift+Tab) — lead coordinates, doesn't implement
+- Spawn prompt must include full context (teammates don't inherit conversation)
+- Each teammate owns different files (avoid merge conflicts)
+- 5-6 tasks per teammate for good throughput
+
+**Hooks:** delegation-guard auto-suspends when team active. Safety hooks still fire.
+

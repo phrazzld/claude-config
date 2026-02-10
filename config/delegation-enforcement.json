@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "mode": "graduated",
+  "mode": "advisory",
   "exclusions": {
     "repositories": [
       "/Users/phaedrus/.claude",
@@ -14,7 +14,9 @@
       "/Users/phaedrus/Development/thinktank",
       "/Users/phaedrus/Development/misty-step",
       "/Users/phaedrus/Development/vox",
-      "/Users/phaedrus/Development/sprite-base"
+      "/Users/phaedrus/Development/sprite-base",
+      "/Users/phaedrus/Development/bitterblossom",
+      "/Users/phaedrus/Development/cerberus"
     ],
     "patterns": [
       "**/daybook/**",
@@ -23,18 +25,13 @@
   },
   "thresholds": {
     "silent": {
-      "maxLines": 20,
-      "maxFiles": 1,
-      "maxNewFiles": 0
-    },
-    "warn": {
       "maxLines": 50,
-      "maxFiles": 2,
+      "maxFiles": 3,
       "maxNewFiles": 1
     },
-    "ask": {
-      "maxLines": 100,
-      "maxFiles": 4,
+    "warn": {
+      "maxLines": 150,
+      "maxFiles": 6,
       "maxNewFiles": 3
     }
   },
@@ -44,5 +41,8 @@
     "**/*.lock",
     "**/CLAUDE.md",
     "**/.tool-versions"
-  ]
+  ],
+  "teamMode": {
+    "suspendForTeams": true
+  }
 }

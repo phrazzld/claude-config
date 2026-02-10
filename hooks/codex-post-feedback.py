@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """
-Codex post-edit feedback - shows cumulative session stats.
+Post-edit session stats - shows cumulative edit metrics.
 
-PostToolUse hook that displays session metrics after each edit,
-reinforcing delegation pressure with economics reminder.
+PostToolUse hook that displays session metrics after each edit.
+Includes a gentle reminder about Moonbridge for larger sessions.
 """
 import json
 import os
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from lib.team_utils import is_in_active_team
 
 
 def get_state_file() -> Path:
@@ -71,11 +74,15 @@ def main():
 
     print(f"[codex] {file_path} (+{lines}) → Session: {stats}")
 
-    # Economics reminder on substantial work
-    if total_lines >= 50 or num_files >= 3:
+    # Suppress delegation pressure for agent team teammates
+    if is_in_active_team():
+        print(f"[team] {file_path} (+{lines}) → Session: {stats}")
+        sys.exit(0)
+
+    # Gentle reminder on substantial sessions
+    if total_lines >= 100 or num_files >= 5:
         print(
-            "[codex] 💡 Codex is ~80% cheaper for implementation. "
-            "Consider delegating remaining work."
+            "[codex] 💡 Moonbridge delegation available if this grows further."
         )
 
     sys.exit(0)

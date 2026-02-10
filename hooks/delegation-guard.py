@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Delegation guard - graduated enforcement for delegation.
+Delegation advisor - gentle reminders about delegation tools.
 
-PreToolUse hook with tiered responses:
-- Silent: excluded repos, trivial edits
-- Warn: approaching thresholds (shows message, allows)
-- Ask: exceeds soft limits (prompts user confirmation)
-- Block: exceeds hard limits (denies with MCP suggestion)
+PreToolUse hook with advisory responses:
+- Silent: excluded repos, trivial edits, within thresholds
+- Warn: larger sessions get a reminder that Moonbridge is available
+
+Never blocks or denies edits. Just surfaces awareness.
 
 Config: ~/.claude/config/delegation-enforcement.json
 Session state: /tmp/claude-delegation-{PPID}.json
@@ -16,6 +16,9 @@ import json
 import os
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from lib.team_utils import is_in_active_team
 
 CONFIG_PATH = Path.home() / ".claude/config/delegation-enforcement.json"
 
@@ -223,6 +226,11 @@ def main():
     if not config.get("enabled", True):
         sys.exit(0)
 
+    # Suspend for active agent teams — teammates implement directly
+    if config.get("teamMode", {}).get("suspendForTeams", False):
+        if is_in_active_team():
+            output_silent()
+
     tool_name = data.get("tool_name", "")
     tool_input = data.get("tool_input") or {}
     cwd = data.get("cwd", os.getcwd())
@@ -272,29 +280,16 @@ def main():
 
     elif tier == "warn":
         output_warn(
-            f"⚠️  DELEGATION ENCOURAGED\n\n"
-            f"{summary}\n\n"
-            f"Consider delegating via Moonbridge:\n"
-            f"  spawn_agent(prompt=\"[task]\", adapter=\"codex|kimi\")"
+            f"💡 {summary}\n\n"
+            f"Tip: Codex via Moonbridge can handle larger implementations:\n"
+            f"  spawn_agent(prompt=\"[task]\", adapter=\"codex\")"
         )
 
-    elif tier == "ask":
-        output_ask(
-            f"📋 DELEGATION RECOMMENDED\n\n"
-            f"{summary}\n\n"
-            f"Delegate via Moonbridge:\n"
-            f"  spawn_agent(prompt=\"[task]\", adapter=\"codex|kimi\")\n\n"
-            f"Continue with direct edit?"
-        )
-
-    else:  # block
-        output_block(
-            f"🛑 DELEGATION REQUIRED\n\n"
-            f"{summary}\n\n"
-            f"Delegate via MCP:\n"
-            f"  spawn_agent(\"[task description]\")\n\n"
-            f"Or add repo to exclusions in:\n"
-            f"  ~/.claude/config/delegation-enforcement.json"
+    else:  # ask or beyond — just remind, never block
+        output_warn(
+            f"💡 {summary}\n\n"
+            f"This is a substantial session. Moonbridge delegation available:\n"
+            f"  spawn_agent(prompt=\"[task]\", adapter=\"codex\")"
         )
 
 

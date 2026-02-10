@@ -55,3 +55,4 @@ mcps/*/.venv/
 image-cache/
 telemetry/
 __pycache__/
+teams/
