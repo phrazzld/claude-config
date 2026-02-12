@@ -5,6 +5,8 @@ description: |
   Creates prioritized GitHub issues across all domains.
   Uses Gemini, Kimi, Codex, and Thinktank to flesh out issues with research,
   implementation recommendations, and multi-perspective validation.
+  Enforces Misty Step org-wide standards: canonical labels, issue types,
+  milestones, and project linking.
   No flags. Always comprehensive.
 effort: high
 ---
@@ -26,6 +28,125 @@ Orchestrate comprehensive backlog grooming. Create prioritized issues across all
 - **Thinktank** — Multi-model consensus, diverse expert perspectives
 
 **No flags.** Always runs full audit. Always creates issues.
+
+## Misty Step Org-Wide Standards (MANDATORY)
+
+Every issue created or modified by /groom MUST comply with these standards.
+These apply to ALL repositories in the misty-step organization.
+
+### Canonical Label Taxonomy
+
+Labels are enforced org-wide. Use ONLY these labels (plus repo-specific `domain/` labels).
+Legacy labels (`priority/p0`, `P0`, `priority:p0`, `type/bug`, `type:bug`, etc.) are deprecated.
+
+**Priority** (exactly one required):
+- `p0` — Critical: production broken or security vulnerability
+- `p1` — Essential: foundation and fundamentals
+- `p2` — Important: launch readiness
+- `p3` — Nice to have: polish and innovation
+
+**Type** (exactly one required):
+- `bug` — Something isn't working
+- `feature` — New capability or behavior
+- `task` — Implementation work item
+- `refactor` — Code improvement without behavior change
+- `research` — Investigation or spike
+- `epic` — Large multi-issue initiative
+
+**Horizon** (exactly one required):
+- `now` — Current sprint focus
+- `next` — Next sprint candidate
+- `later` — Backlog, not yet scheduled
+- `blocked` — Waiting on external dependency
+
+**Effort** (recommended):
+- `effort/s` — Less than a day
+- `effort/m` — 1-3 days
+- `effort/l` — 3-5 days
+- `effort/xl` — More than a week
+
+**Source** (exactly one required for groom-created issues):
+- `source/groom` — Created by /groom skill
+- `source/user` — Reported by user observation
+- `source/agent` — Created by AI agent
+
+**Domain** (at least one, repo-specific):
+- `domain/{name}` — e.g., `domain/api`, `domain/infra`, `domain/security`
+- These vary per repo and that's expected
+
+### Issue Types (GitHub native)
+
+Every issue MUST have an issue type set via GraphQL. Available types:
+- **Bug** (node_id: `IT_kwDODnuAzs4Bxgbl`) — For bugs
+- **Task** (node_id: `IT_kwDODnuAzs4Bxgbk`) — For tasks, refactors, research
+- **Feature** (node_id: `IT_kwDODnuAzs4Bxgbm`) — For features
+
+Set issue type after creation:
+```bash
+# Get issue node ID
+ISSUE_ID=$(gh api graphql -f query='{ repository(owner: "misty-step", name: "REPO") { issue(number: NUM) { id } } }' --jq '.data.repository.issue.id')
+
+# Set issue type
+gh api graphql -f query="mutation { updateIssue(input: { id: \"$ISSUE_ID\", issueTypeId: \"TYPE_NODE_ID\" }) { issue { number issueType { name } } } }"
+```
+
+Map label type → issue type:
+- `bug` label → Bug issue type
+- `feature` label → Feature issue type
+- `task`, `refactor`, `research`, `epic` labels → Task issue type
+
+### Milestones (REQUIRED)
+
+Every issue MUST be assigned to a milestone. If the repo has no milestones:
+1. Create a "Backlog" milestone (no due date) for unscheduled work
+2. Create milestone(s) for current work based on vision.md focus
+
+```bash
+# Check existing milestones
+gh api "/repos/misty-step/REPO/milestones" --jq '.[].title'
+
+# Create milestone if needed
+gh api -X POST "/repos/misty-step/REPO/milestones" -f title="Backlog" -f description="Unscheduled work items"
+
+# Assign issue to milestone
+gh issue edit NUM --milestone "Milestone Name"
+```
+
+Rules:
+- `now` horizon issues → current sprint/active milestone
+- `next` horizon issues → next milestone or "Backlog"
+- `later` horizon issues → "Backlog" or "Someday"
+- `blocked` issues → keep in their target milestone
+
+### Org-Level Projects
+
+Three org-level GitHub Projects exist. Link issues to them as appropriate:
+- **Active Sprint** — Issues with `now` horizon
+- **Product Roadmap** — All `p0`, `p1`, `p2` issues across repos
+- **Triage Inbox** — New issues pending classification
+
+After creating issues, add high-priority ones to the relevant project:
+```bash
+# Add to project (get project number first)
+gh project item-add PROJECT_NUMBER --owner misty-step --url "https://github.com/misty-step/REPO/issues/NUM"
+```
+
+### Label Migration (during backlog audit)
+
+When auditing existing issues (Step 3), migrate legacy labels:
+```bash
+# Example: migrate priority/p0 → p0
+gh issue edit NUM --remove-label "priority/p0" --add-label "p0"
+gh issue edit NUM --remove-label "P0" --add-label "p0"
+gh issue edit NUM --remove-label "priority:p0" --add-label "p0"
+
+# Example: migrate type/bug → bug
+gh issue edit NUM --remove-label "type/bug" --add-label "bug"
+gh issue edit NUM --remove-label "type:bug" --add-label "bug"
+
+# Add missing required labels (horizon, source)
+gh issue edit NUM --add-label "later" # if no horizon set
+```
 
 ## What This Does
 
@@ -164,10 +285,18 @@ nitpicks while using the app? These become issues alongside the automated findin
 ## Title
 [P{0-3}] {user's description, cleaned up}
 
-## Labels
-- priority/p{n}
-- domain/{best-fit}
-- source/user-observation
+## Labels (canonical)
+- p{n}                  (priority)
+- bug|feature|task      (type — infer from description)
+- now|next|later        (horizon — based on urgency)
+- source/user           (source)
+- domain/{best-fit}     (domain)
+
+## Issue Type
+Set via GraphQL after creation (Bug/Task/Feature)
+
+## Milestone
+Assign to current active milestone or "Backlog"
 
 ## Body
 ### Problem
@@ -299,7 +428,7 @@ After basic issue creation, use external AI tools to flesh out issues with deepe
 ```bash
 # 1. Gemini: Research current best practices for flagged issues
 gemini "Review these issues and research current best practices:
-$(gh issue list --label domain/quality --state open --json title,number --jq '.[] | "#\(.number): \(.title)"')
+$(gh issue list --label task --label domain/quality --state open --json title,number --jq '.[] | "#\(.number): \(.title)"')
 
 For each issue, provide:
 - Current industry best practices (2024-2025)
@@ -319,7 +448,7 @@ For each issue:
 
 # 3. Codex: Generate implementation recommendations
 codex "For these technical issues, provide concrete implementation steps:
-$(gh issue list --label priority/p0,priority/p1 --state open --json title,number,body --jq '.[:5] | .[] | "### #\(.number): \(.title)\n\(.body)\n"')
+$(gh issue list --label p0 --label p1 --state open --json title,number,body --jq '.[:5] | .[] | "### #\(.number): \(.title)\n\(.body)\n"')
 
 For each:
 - Specific files to modify
@@ -369,8 +498,8 @@ gh issue comment {number} --body "## Architecture Review (Thinktank)
 After issue enrichment, count by priority:
 
 ```bash
-p0_count=$(gh issue list --label priority/p0 --state open --json number | jq length)
-p1_count=$(gh issue list --label priority/p1 --state open --json number | jq length)
+p0_count=$(gh issue list --label p0 --state open --json number | jq length)
+p1_count=$(gh issue list --label p1 --state open --json number | jq length)
 total=$((p0_count + p1_count))
 ```
 
@@ -419,10 +548,15 @@ gh issue list --state open --json number,title,labels | jq '.[] | .title' | sort
 - If new findings add to old → update old issue with new details
 - If old issue is more comprehensive → close new, reference old
 
-**Final pass:**
-- Verify all open issues have correct priority labels
-- Verify all open issues have domain labels
-- Verify no orphaned issues (no priority, no domain)
+**Final pass (org-wide standards compliance):**
+- Verify all open issues have exactly one priority label (p0/p1/p2/p3)
+- Verify all open issues have exactly one type label (bug/feature/task/refactor/research/epic)
+- Verify all open issues have exactly one horizon label (now/next/later/blocked)
+- Verify all open issues have at least one domain label (domain/*)
+- Verify all open issues have a source label (source/groom, source/user, source/agent)
+- Verify all open issues have a milestone assigned
+- Verify all open issues have issue type set (Bug/Task/Feature)
+- Migrate any legacy labels found during audit (priority/p0 → p0, P0 → p0, etc.)
 
 ### Step 8: Summarize
 
@@ -458,7 +592,9 @@ Recommended Focus Order:
 ...
 
 View all: gh issue list --state open
-View P0: gh issue list --label priority/p0
+View P0: gh issue list --label p0
+View now: gh issue list --label now
+View bugs: gh issue list --label bug
 ```
 
 ## Agent Prompts
@@ -508,16 +644,28 @@ Output: prioritized vision-alignment actions as GitHub issues.
 
 ## Issue Format
 
-All issues created by /groom (via skills or agents):
+All issues created by /groom (via skills or agents) MUST comply with org-wide standards:
 
 ```markdown
 ## Title
 [P{0-3}] Clear, actionable description
 
-## Labels
-- priority/p0|p1|p2|p3
-- domain/production|quality|docs|observability|product-standards|stripe|bitcoin|lightning|payments|virality|landing|onboarding|security|architecture|design|innovation
-- type/bug|enhancement|chore
+## Labels (canonical — no legacy formats)
+- p0|p1|p2|p3                    (priority — exactly one)
+- bug|feature|task|refactor|research|epic  (type — exactly one)
+- now|next|later|blocked          (horizon — exactly one)
+- effort/s|m|l|xl                 (effort — recommended)
+- source/groom|source/user|source/agent  (source — exactly one)
+- domain/{name}                   (domain — at least one, repo-specific)
+
+## Issue Type (GitHub native — set via GraphQL after creation)
+- bug label → Bug issue type
+- feature label → Feature issue type
+- task/refactor/research/epic → Task issue type
+
+## Milestone (REQUIRED — every issue must have one)
+- now → current active milestone
+- next/later → "Backlog" or appropriate future milestone
 
 ## Body
 ### Problem
@@ -536,6 +684,18 @@ Which skill or agent identified this
 Created by `/groom`
 ```
 
+### Issue Creation Checklist
+
+After creating each issue, verify:
+- [ ] Has exactly one priority label (p0/p1/p2/p3)
+- [ ] Has exactly one type label (bug/feature/task/refactor/research/epic)
+- [ ] Has exactly one horizon label (now/next/later/blocked)
+- [ ] Has at least one domain label (domain/*)
+- [ ] Has a source label (source/groom, source/user, or source/agent)
+- [ ] Has issue type set via GraphQL (Bug/Task/Feature)
+- [ ] Is assigned to a milestone
+- [ ] P0/P1 with `now` horizon added to Active Sprint project
+
 ## What You Get
 
 After running /groom:
@@ -548,8 +708,11 @@ After running /groom:
 
 User can:
 - See all work in GitHub Issues
-- Filter by priority: `label:priority/p0`
+- Filter by priority: `label:p0`
+- Filter by type: `label:bug`
+- Filter by horizon: `label:now`
 - Filter by domain: `label:domain/stripe`
+- View cross-repo in org projects: Active Sprint, Product Roadmap, Triage Inbox
 - Assign and track progress
 - Run `/fix-*` skills to address issues
 
