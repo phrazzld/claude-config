@@ -32,9 +32,10 @@ Deliver Issue `$ARGUMENTS` (or highest-priority open issue) as a draft PR with t
 
 **Always work on the highest priority issue. No exceptions.**
 
-1. `priority/p1` > `priority/p2` > `priority/p3` > unlabeled
-2. Within tier: lower number first, `horizon/now` > `horizon/next`
-3. Scope, cleanliness, comfort don't matter — priority is absolute
+1. `p0` > `p1` > `p2` > `p3` > unlabeled
+2. Within tier: `horizon/now` > `horizon/next` > unlabeled
+3. Within same horizon: lower issue number first
+4. Scope, cleanliness, comfort don't matter — priority is absolute
 
 ## Workflow
 
