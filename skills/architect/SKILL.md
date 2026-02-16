@@ -1,12 +1,9 @@
 ---
 name: architect
 description: |
-  ARCHITECT
+  Interactive technical exploration. Answers HOW to build what the spec defined.
+  Dual mode: full exploration (user-invoked) or quick design (autopilot-invoked).
 effort: max
----
-
----
-description: Add technical design to GitHub issue
 argument-hint: <issue-id>
 ---
 
@@ -16,61 +13,74 @@ argument-hint: <issue-id>
 
 ## Role
 
-You are the technical lead designing HOW to build what the product spec defined.
+Technical lead designing HOW to build what the product spec defined.
+Codex drafts alternatives. Thinktank validates. Gemini researches patterns.
 
-Codex can draft design alternatives. Thinktank validates architecture. Gemini researches current patterns.
+## Dual Mode
 
-## Objective
+**Exploration mode** — User invokes directly. Full interactive design session.
+**Quick mode** — Autopilot invokes on specced issue. Investigate, design, validate, post.
 
-Add technical design to Issue #$1. Post as comment, update labels to `status/ready`.
+Detection: Autopilot pipeline with specced issue = quick mode.
+User-invoked, or complex design space = exploration mode.
 
-## Latitude
+---
 
-- Use Codex to draft multiple design approaches quickly
-- Use Gemini for current best practices research
-- Use Thinktank for architecture validation
-- Favor existing codebase patterns over novel ones
+## Exploration Mode
 
-## Process
+### Phase 1: Absorb
 
-1. **Read**: `gh issue view $1 --comments` (get product spec)
+1. Read product spec: `gh issue view $1 --comments`
+2. Investigate codebase — existing patterns, touch points, adjacent systems:
+   ```bash
+   codex exec "INVESTIGATE architecture for [feature]. Find existing patterns, identify touch points, list files to modify." \
+     --output-last-message /tmp/codex-investigation.md 2>/dev/null
+   ```
+3. Research current best practices (Gemini):
+   ```bash
+   gemini "Current best practices for [topic]. Framework docs, common patterns, pitfalls."
+   ```
+4. Reference `/next-best-practices`, `/vercel-composition-patterns` for React/Next.js
 
-2. **Investigate** (Codex first draft): Delegate codebase exploration to Codex
-```bash
-codex exec "INVESTIGATE architecture for [feature]. Find existing patterns, identify touch points, list files to modify." \
-  --output-last-message /tmp/codex-arch-investigation.md 2>/dev/null
-```
+Present: "Here's the landscape — existing patterns, relevant prior art, constraints."
 
-3. **Interview**: Use AskUserQuestion for constraints, preferred patterns, optimization priorities
+### Phase 2: Explore Architectures
 
-4. **Research** (if needed):
-   - `gemini "Current best practices for [topic]"`
-   - For React/Next.js designs, reference `/next-best-practices` and `/vercel-composition-patterns`
+Generate 3-5 technical approaches. For each:
 
-5. **Draft alternatives**: Have Codex brainstorm approaches
-```bash
-codex exec "Draft 3 approaches for implementing [feature]. Consider tradeoffs." \
-  --output-last-message /tmp/designs.md
-```
+- **Architecture sketch** — Components, data flow, interfaces
+- **Files to modify/create** — Concrete touch points
+- **Pattern alignment** — Does this match existing codebase patterns?
+- **Tradeoffs** — Complexity, performance, maintainability, deletability
+- **Effort estimate** — S/M/L/XL
 
-6. **Parallel Design Exploration (Agent Teams)**
+**For fundamentally different approaches**, use Agent Teams:
+- Spawn 2-3 architect teammates, each developing one approach in depth
+- Each teammate owns a different design direction
+- Thinktank validates after synthesis
 
-When the design space is large and approaches are fundamentally different:
+**Recommend one approach.** Present all with clear reasoning:
+- Why the recommended approach wins
+- When you'd pick each alternative instead
+- What risks each carries
 
-1. Spawn 2-3 architect teammates, each exploring a different approach
-2. Require plan approval — lead reviews before any implementation
-3. Synthesize: present all approaches with tradeoffs to user
-4. Validate winner via Thinktank
+### Phase 3: Discussion Loop
 
-Use when: greenfield module, multiple valid architectures, high-stakes decision.
-Don't use when: clear pattern to follow, incremental feature, single approach.
+Iterate with the user. Continues until design is locked:
 
-7. **Validate**: Run Thinktank on chosen approach
-```bash
-thinktank /tmp/arch-review.md ./ARCHITECTURE.md ./CLAUDE.md --synthesis
-```
+1. Present approaches with recommendation
+2. User pushes back on patterns, questions scaling, proposes alternatives
+3. Agents refine — investigate feasibility, prototype interfaces, research edge cases
+4. Update approaches based on discussion
+5. User locks direction — or explores more
 
-7. **Post design**:
+Use AskUserQuestion for binary decisions. Plain conversation for design exploration.
+
+No limit on rounds. The design isn't ready until the user says it is.
+
+### Phase 4: Codify
+
+Post technical design on the issue:
 
 ```markdown
 ## Technical Design
@@ -82,37 +92,59 @@ thinktank /tmp/arch-review.md ./ARCHITECTURE.md ./CLAUDE.md --synthesis
 - `path/file.ts` — [what changes]
 
 ### Interfaces
-[Key types, APIs, data structures]
+[Key types, APIs, data structures — actual code blocks]
 
 ### Implementation Sequence
-1. [First chunk for Codex]
+1. [First Codex-sized chunk]
 2. [Second chunk]
+3. ...
 
 ### Testing Strategy
-[What to test, how]
+[What to test, how, which patterns]
 
 ### Risks & Mitigations
-[Technical risks]
+[Technical risks and how to handle them]
 ```
 
-8. **Stress-test**: Run `/adversarial $1` to find design flaws
+Post as comment: `gh issue comment $1 --body "..."`
 
-9. **Update labels**:
+Stress-test with `/critique $1` to find design flaws.
+
+Update labels:
 ```bash
 gh issue edit $1 --remove-label "status/needs-design" --add-label "status/ready"
 ```
 
-## Philosophy
+---
 
-This codebase will outlive you. The patterns you establish will be copied. The corners you cut will be cut again.
+## Quick Mode (Autopilot)
+
+Triggered when autopilot calls `/architect` on a specced issue.
+
+1. Read spec from issue: `gh issue view $1 --comments`
+2. Codex investigates codebase + drafts design:
+   ```bash
+   codex exec "Design implementation for [feature]. Spec: [summary]. Find patterns, draft approach, list files." \
+     --output-last-message /tmp/codex-design.md 2>/dev/null
+   ```
+3. Gemini researches relevant patterns
+4. Thinktank validates:
+   ```bash
+   thinktank /tmp/arch-review.md ./CLAUDE.md --synthesis
+   ```
+5. Post design, update labels to `status/ready`
+
+---
 
 ## Principles
 
 - Minimize touch points (fewer files = less risk)
 - Design for deletion (easy to remove later)
+- Favor existing patterns over novel ones
 - Break into Codex-sized chunks in Implementation Sequence
-- Every design decision shapes the project's future—choose wisely
+- Every design decision shapes the project's future
 
 ## Completion
 
-Report: "Technical design complete. Next: `/build $1`"
+**Exploration mode:** "Technical design locked. Ready for `/build $1`."
+**Quick mode:** "Technical design complete. Next: `/build $1`"

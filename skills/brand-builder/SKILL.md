@@ -1,17 +1,26 @@
 ---
 name: brand-builder
 description: |
+  PREFER /brand-init for new projects (outputs unified brand.yaml).
+  This skill outputs the legacy brand-profile.yaml format.
+  Use --legacy flag or when brand-kit is not available.
+
   Interactive brand discovery for a project. Creates brand-profile.yaml
   that guides all future content generation.
 
   Run once per project to establish voice, audience, topics.
-argument-hint: "[project-name]"
+argument-hint: "[project-name] [--legacy]"
 effort: medium
 ---
 
 # /brand-builder
 
 Establish brand identity. Generate content that fits.
+
+> **Note:** For new projects, prefer `/brand-init` which outputs the unified
+> `brand.yaml` format consumed by brand-kit. This skill outputs the legacy
+> `brand-profile.yaml` format. Use `/brand-init` for the full brand-as-code
+> pipeline (tokens + assets + templates).
 
 ## What This Does
 

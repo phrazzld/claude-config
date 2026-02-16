@@ -164,6 +164,20 @@ TDD default: Red → Green → Refactor. Skip only for exploration, UI layout, g
 
 Structure: AAA (Arrange, Act, Assert). One behavior per test. Name: "should [behavior] when [condition]"
 
+### Pull Requests (→ `/pr`)
+
+**Every PR must justify its existence.** A diff summary is not a PR description.
+
+Five mandatory sections — missing any = not ready:
+
+| Section | Purpose |
+|---------|---------|
+| **Summary** | What changed AND why it matters. Link issue. |
+| **Changes** | Concise list of what was done. Key files/functions. |
+| **Acceptance Criteria** | From issue or derived. Checkboxes. |
+| **Manual QA** | Step-by-step verification: commands, URLs, expected output. |
+| **Test Coverage** | Specific test files/functions. Note gaps and why. |
+
 ### External Integration (→ `/external-integration-patterns`)
 
 **External services fail. Integrate observably, fail loudly.**
