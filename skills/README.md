@@ -4,20 +4,36 @@ Unix philosophy: small composable primitives + thin orchestration.
 
 ## Core Delivery Pipeline
 
-The primary workflow. Four skills that cover the full lifecycle from backlog to merged PR.
+The primary workflow from backlog to merged PR.
 
 ```
-/groom  →  /autopilot  →  /pr-fix  →  /pr-polish  →  merge
- plan       build        unblock      elevate
+/groom  →  /shape (ad hoc)  →  /autopilot  →  /pr-fix  →  /pr-polish  →  merge
+ explore     product + tech        build        unblock      elevate
+ brainstorm  exploration
+ synthesize  in one session
 ```
 
-### `/groom` — Plan the work
+`/groom` produces a prioritized backlog. `/shape` handles ad hoc ideas between groom sessions. Both produce issues ready for `/autopilot`. `/spec` and `/architect` work as standalone primitives or as components of `/shape` and `/autopilot`.
 
-Comprehensive backlog grooming. Loads vision, captures user observations, audits existing issues, runs domain auditors in parallel, enriches with external AI (Gemini, Codex, Thinktank), deduplicates, and produces a prioritized backlog.
+### `/groom` — Explore and plan the work
 
-**Composes:** 11 `log-*-issues` skills, security-sentinel, architecture-guardian, aesthetician, pioneer, visionary agents.
+Interactive backlog grooming. Explores the product landscape with the user: loads vision, captures observations, runs domain auditors, synthesizes findings into strategic themes, brainstorms approaches per theme with the user, then creates prioritized issues from agreed directions.
+
+**Phases:** Context → Discovery → Exploration Loop → Synthesis
+
+**Composes:** 11 `check-*` skills (audit), 11 `log-*` skills (issues), Gemini, Codex, Thinktank.
 
 **Output:** Prioritized GitHub issues (P0-P3) with labels, milestones, and org project links.
+
+### `/shape` — Shape a single idea
+
+Full interactive planning for one idea. Product AND technical thinking in one session. Named after Basecamp's Shape Up. Creates issue(s) with both product spec and technical design.
+
+**Phases:** Understand → Product Exploration (`/spec`) → Technical Exploration (`/architect`) → Synthesis
+
+**Key feature:** Technical constraints can revisit product decisions and vice versa.
+
+**Output:** Implementation-ready issue(s) with spec + design, labeled `status/ready`.
 
 ### `/autopilot` — Build the work
 
@@ -48,7 +64,8 @@ Holistic quality pass for a PR that already works. Starts with hindsight analysi
 Run individually or chain:
 
 ```
-/groom                    # Populate backlog
+/groom                    # Interactive backlog session
+/shape "new feature idea" # Shape one idea: product + technical
 /autopilot 42             # Build issue #42
 /pr-fix                   # Unblock if stuck
 /pr-polish                # Elevate before merge
@@ -64,10 +81,11 @@ Skills invoked by the pipeline or used standalone.
 
 | Skill | Purpose | Invoked By |
 |-------|---------|------------|
-| `/spec` | Product requirements from issue | `/autopilot` |
-| `/architect` | Technical design from spec | `/autopilot` |
+| `/spec` | Interactive product exploration (dual mode) | `/autopilot`, `/shape`, standalone |
+| `/architect` | Interactive technical exploration (dual mode) | `/autopilot`, `/shape`, standalone |
+| `/shape` | Product + technical planning in one session | standalone |
 | `/build` | Implementation with Codex | `/autopilot` |
-| `/critique` | Adversarial review | standalone |
+| `/critique` | Adversarial review | `/spec`, `/architect`, standalone |
 
 ### Code Quality
 
@@ -195,10 +213,12 @@ Reference-style but remain invocable for explicit use.
 
 ---
 
-## Next Steps
+## Planning Skill Selection
 
-Areas to flesh out in future iterations:
-
-- **Grooming & planning depth** — `/groom` and `/spec` are the top of the hourglass. Expand product thinking: user research patterns, competitive analysis, prioritization frameworks.
-- **Product skills** — Vision management, roadmap generation, sprint planning beyond what `/groom` currently covers.
-- **Spec → Architect handoff** — Tighten the contract between product spec and technical design.
+| Situation | Skill |
+|-----------|-------|
+| Full backlog session, many issues | `/groom` |
+| Just need a product spec | `/spec` |
+| Just need a technical design | `/architect` |
+| Full planning for one idea: product + technical | `/shape` |
+| Autonomous build from issue to PR | `/autopilot` |
