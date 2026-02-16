@@ -1,6 +1,10 @@
 ---
 name: og-card
 description: |
+  SUPERSEDED by /brand-assets (brand-kit). Use /brand-assets for new projects.
+  This skill remains for backward compatibility with projects not yet migrated
+  to brand.yaml.
+
   Generate deterministic, template-based Open Graph cards with Satori.
   Use when: creating OG images for blog posts, product pages, changelogs,
   or comparison pages. Complements /og-hero-image (AI creative) with

@@ -14,11 +14,13 @@ effort: high
 All launch assets. One command.
 
 ## What This Orchestrates
-1. /brand-builder - if no brand-profile.yaml exists
-2. /product-hunt-kit - PH launch copy + checklist
-3. /og-hero-image - AI hero image for social
-4. /announce - Multi-platform launch posts
-5. /app-screenshots - if apps/mobile exists
+1. /brand-init (if no brand.yaml) or /brand-builder (legacy, if no brand-profile.yaml)
+2. /brand-compile (if brand.yaml exists, compile tokens)
+3. /brand-assets (if brand.yaml exists, generate OG cards + social images)
+4. /product-hunt-kit - PH launch copy + checklist
+5. /og-hero-image - AI hero image for social
+6. /announce - Multi-platform launch posts
+7. /app-screenshots - if apps/mobile exists
 Usage:
 - `/launch-assets heartbeat`
 - `/launch-assets caesar without screenshots`

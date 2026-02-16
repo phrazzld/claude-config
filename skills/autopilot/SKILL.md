@@ -43,7 +43,7 @@ Deliver Issue `$ARGUMENTS` (or highest-priority open issue) as a draft PR with t
 3. **Design** — Invoke `/architect` if no `## Technical Design` section
 4. **Build** — Invoke `/build` (branching, Codex implementation, commits)
 5. **Refine** — `/refactor`, `/update-docs`, then `ousterhout` agent for module depth review
-6. **Ship** — `/pr` with `Closes #N`
+6. **Ship** — `/pr` with `Closes #N` (must satisfy all PR Body Requirements from `/pr` skill)
 
 ## Parallel Refinement (Agent Teams)
 
