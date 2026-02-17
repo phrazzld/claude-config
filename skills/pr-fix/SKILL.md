@@ -101,7 +101,23 @@ Watch checks. If a phase-4 fix broke CI, invoke `/fix-ci` again (count toward 2-
 
 If 2 full retries exhausted: stop, summarize state, ask user.
 
-### 6. Signal
+### 6. Update PR Description with Before / After
+
+Edit the PR body to include a Before / After section documenting the fix:
+
+```bash
+# Get current body, append Before/After section
+gh pr edit $PR --body "$(current body + before/after section)"
+```
+
+**Text (MANDATORY)**: Describe the blocked state (before) and the unblocked state (after).
+Example: "Before: CI failing on type error in auth module. After: Types corrected, CI green."
+
+**Screenshots (when applicable)**: Capture before/after for any visible change — CI status pages, error output, UI changes from review fixes. Use `![before](url)` / `![after](url)`.
+
+Skip screenshots only when all fixes are purely internal (conflict resolution with no behavior change, CI config fixes with no visible output difference).
+
+### 7. Signal
 
 Post summary comment on PR:
 

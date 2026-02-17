@@ -27,7 +27,7 @@ Create a draft PR from current branch. Link to issue, explain what/why/how.
 
 ## PR Body Requirements (MANDATORY)
 
-Every PR body must contain all five sections. A PR missing any section is not ready.
+Every PR body must contain all six sections. A PR missing any section is not ready.
 
 ```
 ## Summary
@@ -44,6 +44,16 @@ Copied or derived from the linked issue. Checkboxes.
 Step-by-step instructions a reviewer can follow to verify the change works.
 Include: setup steps, exact commands, expected output, URLs to visit.
 
+## Before / After
+Show the state before and after this PR. MANDATORY for every PR.
+
+**Text**: Describe the previous behavior/state and the new behavior/state.
+**Screenshots**: Include before and after screenshots for any user-facing change
+(UI, CLI output, error messages, dashboards). Use `![before](url)` / `![after](url)`.
+
+Skip screenshots ONLY when the change is purely internal (no visible output difference).
+When in doubt, screenshot.
+
 ## Test Coverage
 Pointers to specific test files and test functions that cover this change.
 Note any gaps: what ISN'T tested and why.
@@ -53,9 +63,10 @@ Note any gaps: what ISN'T tested and why.
 
 1. **Clean** — Commit any uncommitted changes with semantic message
 2. **Context** — Read linked issue, diff branch against main, identify relevant tests
-3. **Describe** — Title from issue, body follows PR Body Requirements above
-4. **Open** — `gh pr create --draft --assignee phrazzld`
-5. **Comment** — Add context comment if notable decisions were made
+3. **Describe** — Title from issue, body follows PR Body Requirements above (capture before state FIRST, before making changes if possible)
+4. **Before/After** — Screenshot before state, apply changes, screenshot after state. For non-UI changes, describe behavioral difference in text.
+5. **Open** — `gh pr create --draft --assignee phrazzld`
+6. **Comment** — Add context comment if notable decisions were made
 
 ## Comment Style
 

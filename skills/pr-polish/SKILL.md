@@ -104,7 +104,21 @@ pnpm typecheck && pnpm lint && pnpm test
 
 All gates must pass. Fix anything that doesn't.
 
-### 7. Codify (Optional)
+### 7. Update PR Description with Before / After
+
+Edit the PR body to include (or update) a Before / After section documenting the polish pass:
+
+```bash
+gh pr edit $PR --body "$(current body + before/after section)"
+```
+
+**Text (MANDATORY)**: Describe the state before polish (e.g., "working but with shallow modules and missing edge-case tests") and after (e.g., "consolidated modules, 12 new edge-case tests, updated architecture docs").
+
+**Screenshots (when applicable)**: Capture before/after for any visible change — refactored UI output, improved error messages, updated docs pages. Use `![before](url)` / `![after](url)`.
+
+Skip screenshots only when all polish was purely internal (refactoring with no visible output change).
+
+### 8. Codify (Optional)
 
 If patterns or learnings emerged during this polish pass, invoke `/distill` to capture them as permanent knowledge (hooks, agents, skills, CLAUDE.md entries).
 
