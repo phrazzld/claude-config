@@ -34,7 +34,7 @@ Env vars with `\n` or trailing spaces cause cryptic errors:
 printf '%s' 'sk_live_xxx' | vercel env add STRIPE_SECRET_KEY production
 
 # ✅ Trim when setting
-npx convex env set --prod KEY "$(echo 'value' | tr -d '\n')"
+bunx convex env set --prod KEY "$(echo 'value' | tr -d '\n')"  # or: npx convex ...
 
 # ❌ Don't use echo directly
 echo "sk_live_xxx" | vercel env add KEY production  # May add \n
@@ -55,7 +55,7 @@ Shared tokens (webhook secrets, auth tokens) must be identical across platforms:
 TOKEN=$(openssl rand -hex 32)
 
 # Set on ALL platforms
-npx convex env set --prod CONVEX_WEBHOOK_TOKEN "$(printf '%s' "$TOKEN")"
+bunx convex env set --prod CONVEX_WEBHOOK_TOKEN "$(printf '%s' "$TOKEN")"  # or: npx convex ...
 printf '%s' "$TOKEN" | vercel env add CONVEX_WEBHOOK_TOKEN production
 ```
 
@@ -81,7 +81,7 @@ Separate deployments have separate env var stores:
 **Always verify prod separately:**
 ```bash
 # Convex
-npx convex env list --prod
+bunx convex env list --prod  # or: npx convex ...
 
 # Vercel
 vercel env ls --environment=production
@@ -97,9 +97,18 @@ vercel env ls --environment=production
 CONVEX_DEPLOYMENT=prod:xxx npx convex data
 
 # ✅ Reliable
-npx convex run --prod module:function
-npx convex env list --prod
+bunx convex run --prod module:function  # or: npx convex ...
+bunx convex env list --prod
 ```
+
+### 6. Env Load Semantics (Restart Required)
+
+Many runtimes load `.env.local` once at process start.
+
+If code logs "missing X" but `.env.local` has X:
+- you edited `.env.local` after server started. Restart dev server.
+- your shell env overrides dotenv (incl empty string):
+  `printenv KEY` then `unset KEY`.
 
 ## Quick Reference
 
@@ -108,10 +117,10 @@ npx convex env list --prod
 **Convex:**
 ```bash
 # Dev
-npx convex env set KEY "value"
+bunx convex env set KEY "value"  # or: npx convex ...
 
 # Prod (use --prod flag)
-npx convex env set --prod KEY "$(printf '%s' 'value')"
+bunx convex env set --prod KEY "$(printf '%s' 'value')"
 ```
 
 **Vercel:**
@@ -127,8 +136,8 @@ vercel env add KEY production --force
 
 **Convex:**
 ```bash
-npx convex env list           # dev
-npx convex env list --prod    # prod
+bunx convex env list           # dev
+bunx convex env list --prod    # prod
 ```
 
 **Vercel:**
@@ -142,7 +151,7 @@ vercel env ls --environment=production     # prod only
 **Trailing whitespace:**
 ```bash
 # Check Convex prod
-npx convex env list --prod | while IFS= read -r line; do
+bunx convex env list --prod | while IFS= read -r line; do
   if [[ "$line" =~ [[:space:]]$ ]]; then
     echo "WARNING: $(echo "$line" | cut -d= -f1) has trailing whitespace"
   fi
@@ -152,7 +161,7 @@ done
 **Format validation:**
 ```bash
 # Validate Stripe key format
-value=$(npx convex env list --prod | grep "^STRIPE_SECRET_KEY=" | cut -d= -f2-)
+value=$(bunx convex env list --prod | grep "^STRIPE_SECRET_KEY=" | cut -d= -f2-)
 [[ "$value" =~ ^sk_(test|live)_[A-Za-z0-9]+$ ]] || echo "Invalid format"
 ```
 

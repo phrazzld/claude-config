@@ -94,6 +94,28 @@ Based on your web search, identify the right model for each use case in the app:
 
 Do not assume you know these. Research them.
 
+#### OpenRouter Compatibility + Reliability (If Using OpenRouter)
+
+**Verify supported parameters per model.**
+
+Use OpenRouter models API (or the included script) to confirm `supported_parameters` for every model you ship:
+
+```bash
+python3 ~/.claude/skills/llm-infrastructure/scripts/fetch-openrouter-models.py --filter "google/gemini-3|anthropic/claude|openai/gpt-5" --top 20
+```
+
+**Avoid sending unsupported params.**
+
+If you enable OpenRouter provider routing `require_parameters: true`, any unsupported param (for example `temperature` on some GPT-5 variants) can cause hard failures or provider selection failures.
+
+**For structured outputs (`response_format: { type: \"json_schema\" }`):**
+
+- Use `strict: true`.
+- Add `description` on every schema property (improves output quality).
+- Set `provider: { require_parameters: true }` (prevents providers that ignore structured outputs).
+- Enable Response Healing plugin for non-streaming: `plugins: [{ id: \"response-healing\" }]` (best-effort JSON repair).
+- Add model fallbacks: `models: [...]` and log `response.model` (actual model used) + token `usage`.
+
 #### Prompt Quality Audit
 
 **Check adherence to LLM communication principles.**

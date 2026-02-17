@@ -8,7 +8,7 @@ description: |
   Auto-invoke when: stripe webhooks return 400, "signature verification failed",
   "No signatures found matching", webhooks not working locally, checkout succeeds
   but subscription doesn't update, STRIPE_WEBHOOK_SECRET mismatch, setting up
-  stripe listen, configuring pnpm dev with Stripe.
+  stripe listen, configuring dev scripts with Stripe.
 effort: high
 ---
 
@@ -33,11 +33,16 @@ No signatures found matching the expected signature for payload
 2. Sync to environment (Convex env OR .env.local)
 3. THEN start forwarding
 
+Also: if checkout succeeds but access stays locked and you see:
+- `stripe_webhook_missing_convex_token`
+- `Webhook token is not configured`
+then `CONVEX_WEBHOOK_TOKEN` is missing/mismatched between Next runtime and Convex.
+
 ## Architecture Decision
 
 | Webhook Location | Secret Sync Target | Restart? | Recommendation |
 |-----------------|-------------------|----------|----------------|
-| Convex HTTP (`convex/http.ts`) | `npx convex env set` | No | Best |
+| Convex HTTP (`convex/http.ts`) | `bunx convex env set` (or `npx`) | No | Best |
 | Next.js API Route | `.env.local` | Yes | Requires orchestration |
 
 **Prefer Convex HTTP webhooks** - secret sync is instant, no restart needed.
@@ -76,7 +81,7 @@ Update package.json:
 
 After setup, run:
 ```bash
-pnpm dev
+bun run dev  # or: pnpm dev
 # Then in another terminal:
 stripe trigger checkout.session.completed
 # Check logs for 200 response, not 400
@@ -86,10 +91,11 @@ stripe trigger checkout.session.completed
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| All webhooks return 400 | Stale secret | Restart `pnpm dev` or run sync script |
+| All webhooks return 400 | Stale secret | Restart dev server or re-sync secret |
 | "signature verification failed" | Secret mismatch | Check CLI output matches env |
 | Works once, fails after restart | No auto-sync | Add `dev-stripe.sh` script |
 | CLI shows delivered, app shows error | Wrong env target | Check sync target (Convex vs .env.local) |
+| Checkout succeeds, still locked, confirm/webhook 5xx | Missing/mismatched `CONVEX_WEBHOOK_TOKEN` | Ensure token parity, restart Next.js |
 
 ## Related Skills
 

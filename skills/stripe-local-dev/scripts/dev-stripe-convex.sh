@@ -31,7 +31,16 @@ echo "[Stripe] Getting webhook secret..."
 SECRET=$(stripe -p sandbox listen --forward-to "$WEBHOOK_URL" --print-secret 2>/dev/null)
 
 if [[ -n "$SECRET" ]]; then
-  npx convex env set STRIPE_WEBHOOK_SECRET "$SECRET" > /dev/null 2>&1
+  convex_cmd="npx convex"
+  if command -v bunx >/dev/null 2>&1; then
+    convex_cmd="bunx convex"
+  elif command -v npx >/dev/null 2>&1; then
+    convex_cmd="npx convex"
+  elif command -v convex >/dev/null 2>&1; then
+    convex_cmd="convex"
+  fi
+
+  $convex_cmd env set STRIPE_WEBHOOK_SECRET "$SECRET" > /dev/null 2>&1
   echo "[Stripe] Secret synced to Convex"
 fi
 

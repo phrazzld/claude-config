@@ -4,8 +4,8 @@
 #
 # Understands that in Next.js + Convex projects:
 # - Stripe SDK runs in Next.js (Vercel), NOT Convex
-# - Convex only needs CONVEX_WEBHOOK_SECRET for authenticating webhook calls
-# - Webhooks hit Next.js API routes, which call Convex mutations
+# - For Next.js webhook handlers that call Convex actions: Convex needs CONVEX_WEBHOOK_TOKEN to validate calls
+# - Webhooks hit Next.js API routes; handlers call Convex mutations/actions
 #
 # Usage:
 #   stripe_audit.sh                  # Full audit with Stripe CLI
@@ -180,7 +180,7 @@ check_local_env() {
 
   local recommended_vars=(
     "STRIPE_PRICE_ID"
-    "CONVEX_WEBHOOK_SECRET"
+    "CONVEX_WEBHOOK_TOKEN"
   )
 
   if [ ! -f ".env.local" ]; then
@@ -212,14 +212,23 @@ check_convex_env() {
 
   log_section "Convex Environment ($label)"
 
-  if ! command -v npx &> /dev/null; then
-    log_warn "npx not found, skipping Convex env check"
+  local convex_cmd=""
+  if command -v bunx &> /dev/null; then
+    convex_cmd="bunx convex"
+  elif command -v npx &> /dev/null; then
+    convex_cmd="npx convex"
+  elif command -v convex &> /dev/null; then
+    convex_cmd="convex"
+  fi
+
+  if [ -z "$convex_cmd" ]; then
+    log_warn "Convex CLI not found, skipping Convex env check"
     return
   fi
 
-  local cmd="npx convex env list"
+  local cmd="$convex_cmd env list"
   if [ "$use_prod" = "true" ]; then
-    cmd="npx convex env list --prod"
+    cmd="$convex_cmd env list --prod"
   fi
 
   local env_output
@@ -230,12 +239,24 @@ check_convex_env() {
     return
   fi
 
-  # For Next.js + Convex: Convex only needs CONVEX_WEBHOOK_SECRET
-  # Stripe SDK runs in Next.js (Vercel), not Convex
-  if echo "$env_output" | grep -q "CONVEX_WEBHOOK_SECRET"; then
-    log_pass "CONVEX_WEBHOOK_SECRET is set in Convex $label"
+  local search_dirs
+  search_dirs=$(detect_source_dirs)
+
+  local webhook_auth_var=""
+  # shellcheck disable=SC2086
+  if grep -r "CONVEX_WEBHOOK_TOKEN" --include="*.ts" --include="*.tsx" $search_dirs 2>/dev/null | grep -v node_modules | grep -q .; then
+    webhook_auth_var="CONVEX_WEBHOOK_TOKEN"
+  # shellcheck disable=SC2086
+  elif grep -r "CONVEX_WEBHOOK_SECRET" --include="*.ts" --include="*.tsx" $search_dirs 2>/dev/null | grep -v node_modules | grep -q .; then
+    webhook_auth_var="CONVEX_WEBHOOK_SECRET"
+  fi
+
+  if [ -z "$webhook_auth_var" ]; then
+    log_warn "No CONVEX_WEBHOOK_* auth var detected in source; skipping webhook auth check"
+  elif echo "$env_output" | grep -q "$webhook_auth_var"; then
+    log_pass "$webhook_auth_var is set in Convex $label"
   else
-    log_fail "CONVEX_WEBHOOK_SECRET not set in Convex $label (required for webhook auth)"
+    log_fail "$webhook_auth_var not set in Convex $label (required for webhook auth)"
   fi
 
   # CLERK_JWT_ISSUER_DOMAIN is needed for Clerk auth
@@ -251,33 +272,53 @@ check_convex_env() {
   fi
 }
 
-# Check CONVEX_WEBHOOK_SECRET parity between Vercel and Convex
+# Check CONVEX_WEBHOOK_TOKEN parity between Vercel and Convex
 # This is CRITICAL for production - Vercel webhook handler must match Convex validator
-check_webhook_secret_parity() {
-  log_section "Webhook Secret Parity"
+check_webhook_token_parity() {
+  log_section "Webhook Token Parity"
+
+  local convex_cmd=""
+  if command -v bunx &> /dev/null; then
+    convex_cmd="bunx convex"
+  elif command -v npx &> /dev/null; then
+    convex_cmd="npx convex"
+  elif command -v convex &> /dev/null; then
+    convex_cmd="convex"
+  fi
 
   # Check if we can pull Vercel env (requires vercel CLI linked)
   local can_check_vercel=false
-  if command -v pnpm &> /dev/null; then
+  local vercel_cmd=""
+  if command -v vercel &> /dev/null; then
+    vercel_cmd="vercel"
+  elif command -v bunx &> /dev/null; then
+    vercel_cmd="bunx vercel"
+  elif command -v npx &> /dev/null; then
+    vercel_cmd="npx vercel"
+  elif command -v pnpm &> /dev/null; then
+    vercel_cmd="pnpm dlx vercel"
+  fi
+
+  if [ -n "$vercel_cmd" ]; then
     # Try to pull production env
-    if pnpm dlx vercel env pull .env.vercel-parity-check --environment=production --yes 2>/dev/null; then
+    if eval "$vercel_cmd env pull .env.vercel-parity-check --environment=production --yes" 2>/dev/null; then
       can_check_vercel=true
     fi
   fi
 
   if [ "$can_check_vercel" = true ]; then
-    local vercel_prod_secret
-    vercel_prod_secret=$(grep "^CONVEX_WEBHOOK_SECRET=" .env.vercel-parity-check 2>/dev/null | cut -d= -f2 | tr -d '"' || true)
+    local vercel_prod_token
+    vercel_prod_token=$(grep "^CONVEX_WEBHOOK_TOKEN=" .env.vercel-parity-check 2>/dev/null | cut -d= -f2 | tr -d '"' || true)
     /usr/bin/trash .env.vercel-parity-check 2>/dev/null || rm -f .env.vercel-parity-check 2>/dev/null || true
 
-    local convex_prod_secret
-    convex_prod_secret=$(npx convex env get --prod CONVEX_WEBHOOK_SECRET 2>/dev/null || true)
+    local convex_prod_token
+    convex_prod_token=$(eval "$convex_cmd env get --prod CONVEX_WEBHOOK_TOKEN" 2>/dev/null || true)
 
-    if [ -n "$vercel_prod_secret" ] && [ -n "$convex_prod_secret" ]; then
-      if [ "$vercel_prod_secret" = "$convex_prod_secret" ]; then
-        log_pass "CONVEX_WEBHOOK_SECRET matches between Vercel prod and Convex prod (critical!)"
+    if [ -n "$vercel_prod_token" ] && [ -n "$convex_prod_token" ]; then
+      if [ "$vercel_prod_token" = "$convex_prod_token" ]; then
+        log_pass "CONVEX_WEBHOOK_TOKEN matches between Vercel prod and Convex prod (critical!)"
       else
-        log_fail "CONVEX_WEBHOOK_SECRET MISMATCH between Vercel prod and Convex prod"
+        log_fail "CONVEX_WEBHOOK_TOKEN MISMATCH between Vercel prod and Convex prod"
         log_info "  Webhooks will fail authentication in production!"
         log_info "  Fix: Ensure both platforms have identical secrets"
       fi
@@ -290,17 +331,17 @@ check_webhook_secret_parity() {
 
   # Local vs Convex dev check (informational only)
   if [ -f ".env.local" ]; then
-    local local_secret
-    local_secret=$(grep "^CONVEX_WEBHOOK_SECRET=" .env.local 2>/dev/null | cut -d= -f2 || true)
+    local local_token
+    local_token=$(grep "^CONVEX_WEBHOOK_TOKEN=" .env.local 2>/dev/null | cut -d= -f2 || true)
 
-    local convex_dev_secret
-    convex_dev_secret=$(npx convex env get CONVEX_WEBHOOK_SECRET 2>/dev/null || true)
+    local convex_dev_token
+    convex_dev_token=$(eval "$convex_cmd env get CONVEX_WEBHOOK_TOKEN" 2>/dev/null || true)
 
-    if [ -n "$local_secret" ] && [ -n "$convex_dev_secret" ]; then
-      if [ "$local_secret" = "$convex_dev_secret" ]; then
-        log_pass "CONVEX_WEBHOOK_SECRET matches between local and Convex dev"
+    if [ -n "$local_token" ] && [ -n "$convex_dev_token" ]; then
+      if [ "$local_token" = "$convex_dev_token" ]; then
+        log_pass "CONVEX_WEBHOOK_TOKEN matches between local and Convex dev"
       else
-        log_info "CONVEX_WEBHOOK_SECRET differs between local and Convex dev (normal for separate envs)"
+        log_info "CONVEX_WEBHOOK_TOKEN differs between local and Convex dev (check for drift)"
       fi
     fi
   fi
@@ -521,7 +562,7 @@ main() {
   if [ "$PROJECT_TYPE" = "nextjs-convex" ]; then
     check_convex_env "false" "dev"
     check_convex_env "true" "prod"
-    check_webhook_secret_parity
+    check_webhook_token_parity
   fi
 
   check_webhook_verification
@@ -560,8 +601,8 @@ main() {
   if [ "$PROJECT_TYPE" = "nextjs-convex" ] && [ "$QUIET" = false ]; then
     echo ""
     echo -e "${BLUE}Architecture Note:${NC}"
-    echo "  Next.js (Vercel) needs: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CONVEX_WEBHOOK_SECRET"
-    echo "  Convex needs: CONVEX_WEBHOOK_SECRET, CLERK_JWT_ISSUER_DOMAIN"
+    echo "  Next.js (Vercel) needs: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CONVEX_WEBHOOK_TOKEN"
+    echo "  Convex needs: CONVEX_WEBHOOK_TOKEN, CLERK_JWT_ISSUER_DOMAIN"
     echo "  Stripe SDK runs in Next.js API routes, not Convex."
   fi
 

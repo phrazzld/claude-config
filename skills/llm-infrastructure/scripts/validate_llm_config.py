@@ -21,6 +21,7 @@ def scan_file(file_path: Path) -> list:
     findings = []
     content = file_path.read_text()
     lines = content.split('\n')
+    uses_openrouter = "openrouter" in content.lower()
 
     # Pattern 1: Hardcoded API keys
     key_patterns = [
@@ -57,6 +58,47 @@ def scan_file(file_path: Path) -> list:
                 "message": "Manual JSON.parse on LLM response - use structured outputs instead",
                 "code": match.group()
             })
+
+    # Pattern 2b: Structured outputs without OpenRouter hardening
+    if uses_openrouter and "response_format" in content and "json_schema" in content:
+        if "require_parameters" not in content:
+            findings.append({
+                "file": str(file_path),
+                "line": 1,
+                "pattern": "structured_outputs_missing_require_parameters",
+                "severity": "low",
+                "message": "OpenRouter structured outputs without provider.require_parameters - providers may ignore schema; add provider: { require_parameters: true }",
+                "code": ""
+            })
+        if "response-healing" not in content:
+            findings.append({
+                "file": str(file_path),
+                "line": 1,
+                "pattern": "structured_outputs_missing_response_healing",
+                "severity": "low",
+                "message": "OpenRouter structured outputs without response-healing plugin - consider plugins: [{ id: 'response-healing' }] for best-effort JSON repair",
+                "code": ""
+            })
+        if not re.search(r'\bmodels\s*:', content):
+            findings.append({
+                "file": str(file_path),
+                "line": 1,
+                "pattern": "missing_model_fallbacks",
+                "severity": "low",
+                "message": "No OpenRouter model fallbacks detected - consider models: [...] for automatic failover",
+                "code": ""
+            })
+
+    # Pattern 2c: Possibly unsupported sampling params for GPT-5 models
+    if uses_openrouter and re.search(r'openai/gpt-5', content) and re.search(r'\btemperature\b', content):
+        findings.append({
+            "file": str(file_path),
+            "line": 1,
+            "pattern": "possible_unsupported_temperature",
+            "severity": "medium",
+            "message": "OpenRouter GPT-5 model + temperature detected - verify model supported_parameters; some GPT-5 variants do not support temperature",
+            "code": ""
+        })
 
     # Pattern 3: Deprecated model names
     deprecated_models = [

@@ -110,6 +110,8 @@ def categorize_by_task(models: list, task: str) -> list:
 def format_model(model: dict) -> dict:
     """Format model for output."""
     pricing = model.get("pricing", {})
+    top_provider = model.get("top_provider") or {}
+    supported_parameters = model.get("supported_parameters") or []
 
     # Calculate cost per 1M tokens
     prompt_cost = float(pricing.get("prompt", 0)) * 1_000_000
@@ -119,6 +121,8 @@ def format_model(model: dict) -> dict:
         "id": model.get("id"),
         "name": model.get("name"),
         "context_length": model.get("context_length", 0),
+        "max_completion_tokens": top_provider.get("max_completion_tokens"),
+        "supported_parameters": supported_parameters,
         "pricing": {
             "prompt_per_1M": f"${prompt_cost:.2f}",
             "completion_per_1M": f"${completion_cost:.2f}",

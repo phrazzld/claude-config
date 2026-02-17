@@ -43,6 +43,11 @@ This compares your app's STRIPE_SECRET_KEY account with CLI profiles. If mismatc
 - Use correct CLI profile: `stripe -p sandbox` or `stripe -p production`
 - Or update `.env.local` to match your CLI account
 
+**Billing invariant (Next.js + Convex):**
+- `CONVEX_WEBHOOK_TOKEN` must be set in Next runtime (Vercel) and Convex env.
+- Values must match (token parity). If drift: payments may succeed but access never unlocks.
+- Local dev: `.env.local` changes require restart; exported env var overrides `.env.local` (run `unset CONVEX_WEBHOOK_TOKEN` if set).
+
 ### 1. Audit
 
 **Spawn the auditor.** Use the `stripe-auditor` subagent for deep parallel analysis. It examines:
@@ -81,10 +86,15 @@ Prioritize:
 **Configuration fixes (do directly):**
 ```bash
 # Missing env var
-npx convex env set --prod STRIPE_WEBHOOK_SECRET "$(printf '%s' 'whsec_...')"
+bunx convex env set --prod CONVEX_WEBHOOK_TOKEN "$(printf '%s' 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')"
+
+# Vercel (Next runtime): set the SAME value (production + preview + dev)
+vercel env add CONVEX_WEBHOOK_TOKEN production
+vercel env add CONVEX_WEBHOOK_TOKEN preview
+vercel env add CONVEX_WEBHOOK_TOKEN development
 
 # Verify
-npx convex env list --prod | grep STRIPE
+bunx convex env list --prod | rg "^(STRIPE_|CONVEX_WEBHOOK_TOKEN=)"
 ```
 
 **Code fixes (delegate to Codex):**
@@ -93,11 +103,11 @@ codex exec --full-auto "Fix [specific issue]. \
 File: [path]. Problem: [what's wrong]. \
 Solution: [what it should do]. \
 Reference: [pattern file]. \
-Verify: pnpm typecheck && pnpm test" \
+Verify: bun run typecheck && bun run test" \
 --output-last-message /tmp/codex-fix.md 2>/dev/null
 ```
 
-Then validate: `git diff --stat && pnpm typecheck`
+Then validate: `git diff --stat && bun run typecheck`
 
 **Webhook URL fixes:**
 Update in Stripe Dashboard to canonical domain. If redirects exist, use the final URL.
@@ -118,8 +128,8 @@ If missing, create it. This is non-negotiable.
 
 **Configuration verification:**
 ```bash
-npx convex env list | grep STRIPE
-npx convex env list --prod | grep STRIPE
+bunx convex env list | rg "^(STRIPE_|CONVEX_WEBHOOK_TOKEN=)"
+bunx convex env list --prod | rg "^(STRIPE_|CONVEX_WEBHOOK_TOKEN=)"
 curl -s -o /dev/null -w "%{http_code}" -I -X POST "$WEBHOOK_URL"
 ```
 

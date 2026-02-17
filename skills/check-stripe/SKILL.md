@@ -34,6 +34,7 @@ grep -q "stripe" package.json 2>/dev/null && echo "✓ Stripe SDK" || echo "✗ 
 [ -n "$STRIPE_SECRET_KEY" ] || grep -q "STRIPE_SECRET_KEY" .env.local 2>/dev/null && echo "✓ STRIPE_SECRET_KEY" || echo "✗ STRIPE_SECRET_KEY missing"
 [ -n "$STRIPE_WEBHOOK_SECRET" ] || grep -q "STRIPE_WEBHOOK_SECRET" .env.local 2>/dev/null && echo "✓ STRIPE_WEBHOOK_SECRET" || echo "✗ STRIPE_WEBHOOK_SECRET missing"
 [ -n "$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" ] || grep -q "STRIPE_PUBLISHABLE_KEY" .env.local 2>/dev/null && echo "✓ Publishable key" || echo "✗ Publishable key missing"
+[ -n "$CONVEX_WEBHOOK_TOKEN" ] || grep -q "^CONVEX_WEBHOOK_TOKEN=[a-f0-9]\\{64\\}$" .env.local 2>/dev/null && echo "✓ CONVEX_WEBHOOK_TOKEN" || echo "✗ CONVEX_WEBHOOK_TOKEN missing/invalid"
 
 # Test vs Production keys
 grep "STRIPE_SECRET_KEY" .env.local 2>/dev/null | grep -q "sk_test" && echo "✓ Using test key (dev)" || echo "⚠ Check key type"
@@ -91,7 +92,7 @@ stripe config --list 2>/dev/null | head -5 || echo "Stripe CLI not configured"
 ### 6. Local Dev Webhook Sync Check
 
 ```bash
-# Does pnpm dev auto-start stripe listener?
+# Does bun run dev auto-start stripe listener?
 if grep -q "stripe.*listen" package.json 2>/dev/null; then
   echo "✓ Auto-starts stripe listen"
 
@@ -106,7 +107,22 @@ else
 fi
 ```
 
-### 7. Deep Audit
+### 7. Token Parity (Next ↔ Convex)
+
+If checkout succeeds but access stays locked, this is often token drift.
+
+```bash
+local_token=$(grep "^CONVEX_WEBHOOK_TOKEN=" .env.local 2>/dev/null | head -n1 | cut -d= -f2-)
+convex_token=$(bunx convex env list 2>/dev/null | grep "^CONVEX_WEBHOOK_TOKEN=" | head -n1 | cut -d= -f2-)
+
+if [ -n "$local_token" ] && [ -n "$convex_token" ] && [ "$local_token" = "$convex_token" ]; then
+  echo "✓ CONVEX_WEBHOOK_TOKEN matches (local ↔ Convex dev)"
+else
+  echo "✗ CONVEX_WEBHOOK_TOKEN mismatch or missing (local ↔ Convex dev)"
+fi
+```
+
+### 8. Deep Audit
 
 Spawn `stripe-auditor` agent for comprehensive review:
 - Checkout session parameters
@@ -123,6 +139,7 @@ Spawn `stripe-auditor` agent for comprehensive review:
 ### P0: Critical (Payment Failures)
 - STRIPE_WEBHOOK_SECRET missing - Webhooks unverified (security risk)
 - Hardcoded test key in production code
+- CONVEX_WEBHOOK_TOKEN missing/mismatched - Payments may process but access never unlocks
 
 ### P1: Essential (Must Fix)
 - Webhook signature not verified - Security vulnerability
@@ -135,7 +152,7 @@ Spawn `stripe-auditor` agent for comprehensive review:
 - Subscription cancellation not handled gracefully
 - No retry logic on transient Stripe errors
 - Stripe CLI not using profiles (sandbox vs production)
-- No auto-sync of local webhook secret - `pnpm dev` auto-starts `stripe listen` but doesn't sync the ephemeral secret to `.env.local`. After CLI restart, webhooks will return 400.
+- No auto-sync of local webhook secret - dev script auto-starts `stripe listen` but doesn't sync the ephemeral secret to `.env.local`. After CLI restart, webhooks will return 400.
 
 ### P3: Nice to Have
 - Consider adding Stripe Tax
@@ -160,6 +177,7 @@ Spawn `stripe-auditor` agent for comprehensive review:
 |-----|----------|
 | Missing webhook secret | P0 |
 | Hardcoded keys | P0 |
+| Missing/mismatched CONVEX_WEBHOOK_TOKEN | P0 |
 | Webhook verification missing | P1 |
 | No customer portal | P1 |
 | Subscription status not checked | P1 |

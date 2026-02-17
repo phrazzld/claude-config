@@ -22,9 +22,16 @@ Before functional tests, verify all configuration:
 
 ```bash
 # Env vars exist
-npx convex env list | grep STRIPE
-npx convex env list --prod | grep STRIPE
-vercel env ls --environment=production | grep STRIPE
+bunx convex env list | rg "^(STRIPE_|CONVEX_WEBHOOK_TOKEN=)"
+bunx convex env list --prod | rg "^(STRIPE_|CONVEX_WEBHOOK_TOKEN=)"
+vercel env ls --environment=production 2>/dev/null | rg "^(STRIPE_|CONVEX_WEBHOOK_TOKEN=)" || true
+
+# Token parity (Next/Vercel ↔ Convex) - P0 invariant
+vercel env pull .env.vercel-parity-check --environment=production --yes >/dev/null
+vercel_token=$(rg "^CONVEX_WEBHOOK_TOKEN=" .env.vercel-parity-check | head -n1 | cut -d= -f2-)
+rm -f .env.vercel-parity-check
+convex_token=$(bunx convex env get --prod CONVEX_WEBHOOK_TOKEN 2>/dev/null || true)
+[ -n "$vercel_token" ] && [ -n "$convex_token" ] && [ "$vercel_token" = "$convex_token" ] && echo "✓ CONVEX_WEBHOOK_TOKEN parity (prod)" || echo "✗ CONVEX_WEBHOOK_TOKEN parity failed (prod)"
 
 # Webhook URL accessible
 curl -s -o /dev/null -w "%{http_code}" -I -X POST "$WEBHOOK_URL"
@@ -46,6 +53,7 @@ Create a real test checkout session:
 # - Session created successfully
 # - Redirect works
 # - Success page loads
+# - POST /api/stripe/checkout/confirm succeeds (or equivalent return-page sync)
 # - Webhook received (check logs)
 # - Subscription created in Stripe Dashboard
 # - User state updated in database
