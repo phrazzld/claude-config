@@ -126,14 +126,36 @@ python3 "$ENGINE" --repo "$REPO" add \
   --origins "random,random,random,..."
 ```
 
-**7. Generate catalog and serve:**
+**7. Generate catalog, VERIFY links work, and serve:**
 
 ```bash
 python3 "$ENGINE" --repo "$REPO" catalog
-cd "$REPO/.design-evolution" && python3 -m http.server 8888 &
+# Use project-specific port (deterministic hash, no cross-session collisions)
+python3 "$ENGINE" --repo "$REPO" serve &
+# Or get port only: python3 "$ENGINE" --repo "$REPO" port
 ```
 
-Open catalog in browser. Each card links to proposal previews.
+**NEVER hardcode port 8888.** The engine hashes project name → port 8800-9799.
+Different projects get different ports. No cross-session collisions.
+
+**MANDATORY VERIFICATION — DO NOT SKIP:**
+After generating the catalog, verify EVERY proposal is accessible:
+1. Check that catalog.html contains an `<a href=...>` link for each proposal ID
+2. Check that each linked HTML file exists on disk
+3. If ANY proposal is missing a link or its HTML file is missing, FIX IT before presenting to the user
+
+```bash
+# Verify all proposal HTML files exist
+for id in a b c d e f g h; do
+  ls "$REPO/.design-evolution/gen-${GEN}/${GEN}${id}/index.html" || echo "MISSING: ${GEN}${id}"
+done
+# Verify catalog has links
+grep -c "Open Preview" "$REPO/.design-evolution/catalog.html"
+# Must equal population count. If not, regenerate catalog.
+```
+
+The user MUST be able to click through from the catalog to every individual proposal.
+A catalog without working links to previews is useless. This has broken twice — never again.
 
 **8. Present:**
 

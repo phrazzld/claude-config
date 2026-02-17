@@ -489,9 +489,9 @@ def render_catalog(evo: Evolution) -> str:
             items = "".join(f"<li>{n}</li>" for n in p.notes)
             notes = f'<div class="notes"><strong>Notes:</strong><ul>{items}</ul></div>'
 
-        link = ""
-        if p.artifacts.get("html"):
-            link = f'<a href="{p.artifacts["html"]}" target="_blank" class="link">Open Preview</a>'
+        # Always link to conventional path; fall back to artifacts if set
+        artifact_path = p.artifacts.get("html") or f"gen-{gen.number}/{p.id}/index.html"
+        link = f'<a href="{artifact_path}" target="_blank" class="link">▶ Open Preview</a>'
 
         origin = f'<span class="origin">{p.origin}'
         if p.parent:
@@ -615,10 +615,18 @@ def cmd_add(args):
     dna_list = [DNA.from_code(c) for c in args.dna]
     origins = args.origins.split(",") if args.origins else None
     gen = add_generation(evo, dna_list, origins)
+    # Auto-populate artifacts for any proposals with HTML at conventional path
+    base = _dir(evo.repo_path)
+    for p in gen.proposals:
+        html_path = base / f"gen-{gen.number}" / p.id / "index.html"
+        rel_path = f"gen-{gen.number}/{p.id}/index.html"
+        if html_path.exists():
+            p.artifacts["html"] = rel_path
+            print(f"  {p.id}: {p.dna.as_code()} [preview: {rel_path}]")
+        else:
+            print(f"  {p.id}: {p.dna.as_code()} [WARNING: no preview at {rel_path}]")
     save(evo)
     print(f"Generation {gen.number}: {len(gen.proposals)} proposals")
-    for p in gen.proposals:
-        print(f"  {p.id}: {p.dna.as_code()}")
 
 
 def cmd_select(args):
@@ -736,6 +744,45 @@ def cmd_export(args):
     print(json.dumps(data, indent=2))
 
 
+def cmd_serve(args):
+    """Start HTTP server on a project-specific port (hash-based, no collisions)."""
+    evo = _require(args.repo)
+    base_dir = _dir(evo.repo_path)
+    port = _project_port(evo.project)
+    import os, signal, subprocess
+    # Kill any existing server on this port
+    try:
+        result = subprocess.run(["lsof", "-ti", f":{port}"], capture_output=True, text=True)
+        if result.stdout.strip():
+            for pid in result.stdout.strip().split("\n"):
+                os.kill(int(pid), signal.SIGTERM)
+            import time; time.sleep(0.5)
+    except Exception:
+        pass
+    print(f"Serving {evo.project} at http://localhost:{port}")
+    print(f"  Catalog: http://localhost:{port}/catalog.html")
+    os.chdir(str(base_dir))
+    import http.server, socketserver
+    with socketserver.TCPServer(("", port), http.server.SimpleHTTPRequestHandler) as httpd:
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            pass
+
+
+def cmd_port(args):
+    """Print the project-specific port without starting a server."""
+    evo = _require(args.repo)
+    port = _project_port(evo.project)
+    print(f"{port}")
+
+
+def _project_port(project_name: str) -> int:
+    """Deterministic port from project name. Range 8800-9799 (1000 slots)."""
+    h = sum(ord(c) * (i + 1) for i, c in enumerate(project_name))
+    return 8800 + (h % 1000)
+
+
 def main():
     p = argparse.ArgumentParser(prog="evolve", description="Design evolution engine")
     p.add_argument("--repo", default=".", help="Repository root (default: .)")
@@ -775,6 +822,8 @@ def main():
 
     sub.add_parser("taste")
     sub.add_parser("export")
+    sub.add_parser("serve")
+    sub.add_parser("port")
 
     args = p.parse_args()
     if not args.cmd:
@@ -786,6 +835,7 @@ def main():
         "select": cmd_select, "note": cmd_note, "advance": cmd_advance,
         "status": cmd_status, "catalog": cmd_catalog, "lock": cmd_lock,
         "taste": cmd_taste, "export": cmd_export,
+        "serve": cmd_serve, "port": cmd_port,
     }[args.cmd](args)
 
 
