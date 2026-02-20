@@ -27,6 +27,13 @@ Analyze CI failure logs, classify the failure type, identify root cause, and gen
 
 **The CI Question**: Is this a code issue, infrastructure issue, or flaky test?
 
+## Bounded Shell Output (MANDATORY)
+
+- Never run raw unbounded CI logs
+- List first, then inspect one failed job
+- Cap output with `--limit` and `tail -n`
+- Narrow to failed steps before reruns
+
 ## The CI Philosophy
 
 ### Humble's Wisdom: Bring Pain Forward
@@ -47,13 +54,13 @@ Use `gh` to check CI status for the current PR:
 
 ```bash
 # Recent workflow runs
-gh run list --limit 5
+gh run list --limit 5 --json databaseId,workflowName,status,conclusion,displayTitle,headBranch
 
 # Specific run details
-gh run view <run-id> --log
+gh run view <run-id> --log-failed | tail -n 200
 
 # PR checks
-gh pr checks
+gh pr checks --json name,state,startedAt,completedAt,link
 ```
 
 ## Phase 2: Classify Failure Type
@@ -235,6 +242,7 @@ Update PR or create summary with:
 - [ ] No local reproduction (environment drift)
 - [ ] Retrying without understanding (hiding the problem)
 - [ ] Multiple unrelated failures (systemic issue)
+- [ ] **Lowering a quality gate to make CI pass** — NEVER do this. Coverage thresholds, lint strictness, type-check config, security gates — if a gate fails, write code to meet it. More tests, better code, actual fixes. Never move the goalpost. This is absolute and non-negotiable.
 
 ## Philosophy
 

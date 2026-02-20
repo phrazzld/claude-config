@@ -63,6 +63,13 @@ Mark investigation as **UNVERIFIED** until observables confirm. Never trust "sho
 
 Create a live investigation document (`INCIDENT-{timestamp}.md`) and systematically find root cause.
 
+## Bounded Shell Output (MANDATORY)
+
+- Never dump full production logs blindly
+- Start with counts and latest slices (`tail -n 200`)
+- For large artifacts, use `~/.claude/scripts/safe-read.sh`
+- Add hard bounds (`--limit`, `per_page`, timeout) to external commands
+
 ## Your Toolkit
 
 - **Observability**: sentry-cli, npx convex, vercel, whatever this project has

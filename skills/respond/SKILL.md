@@ -21,6 +21,13 @@ Why this matters:
 
 ## Workflow
 
+## Bounded Shell Output (MANDATORY)
+
+- Count first; fetch details second
+- Use bounded pages (`per_page`, `page`) instead of raw dumps
+- Truncate body previews during triage
+- Process newest 50 first, then continue page-by-page
+
 ### 1. Gather All Feedback
 
 Collect from all three GitHub comment sources:
@@ -29,6 +36,20 @@ Collect from all three GitHub comment sources:
 - Review summaries (top-level review state)
 
 Use pagination. Don't miss anything.
+
+Bounded collection pattern:
+
+```bash
+OWNER="$(gh repo view --json owner --jq .owner.login)"
+REPO="$(gh repo view --json name --jq .name)"
+
+REVIEW_COUNT="$(gh api "repos/$OWNER/$REPO/pulls/$PR/comments?per_page=100" --paginate --jq '.[] | 1' | wc -l | tr -d ' ')"
+ISSUE_COUNT="$(gh api "repos/$OWNER/$REPO/issues/$PR/comments?per_page=100" --paginate --jq '.[] | 1' | wc -l | tr -d ' ')"
+SUMMARY_COUNT="$(gh api "repos/$OWNER/$REPO/pulls/$PR/reviews?per_page=100" --paginate --jq '.[] | 1' | wc -l | tr -d ' ')"
+
+gh api "repos/$OWNER/$REPO/pulls/$PR/comments?per_page=50&page=1" \
+  --jq '.[] | {id,user:.user.login,path,line,body:(.body|gsub("\n";" ")|.[0:200])}'
+```
 
 ### 2. Post Initial Acknowledgment
 

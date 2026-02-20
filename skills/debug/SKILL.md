@@ -42,6 +42,13 @@ Then review Codex's findings. Don't investigate yourself first.
 
 Find root cause. Propose fix. Verify it works.
 
+## Bounded Shell Output (MANDATORY)
+
+- Check size first: `wc -l`, `du -h`
+- Read windows: `~/.claude/scripts/safe-read.sh <file> 1 120`
+- Cap logs: `head -n 200`, `tail -n 200`
+- If no useful signal in 20s: abort and rerun with narrower scope
+
 ## Latitude
 
 - Use any debugging approach: console.log, breakpoints, git bisect, print statements

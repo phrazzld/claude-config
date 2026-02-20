@@ -65,3 +65,7 @@ NOT CODIFIED:
 ❌ "Already obvious" - If it wasn't codified, the system didn't know it
 
 See CLAUDE.md "Continuous Learning Philosophy" for valid exceptions and the full codification philosophy.
+
+## See Also
+
+`/done` — Full session retrospective (subsumes codification as one step in a broader process: went-well, friction, bugs, codify, report).

@@ -127,6 +127,7 @@ Coverage is a diagnostic tool, not a goal.
 - **Testing implementation details** → Test behavior
 - **Heavy mocking** → Prefer integration tests
 - **Skipping hooks routinely** → Fix the root cause
+- **NEVER lower a quality gate to pass CI** — Coverage thresholds, lint rules, type strictness, security gates are load-bearing walls. When a gate fails, write code to meet it (more tests, better code, actual fixes). Never move the goalpost. If the threshold is genuinely wrong, escalate to the user — don't "fix" it autonomously.
 - **CI only on main** → Test every PR
 
 ## References

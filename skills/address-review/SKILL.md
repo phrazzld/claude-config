@@ -18,6 +18,12 @@ Systematically work through code review findings: TDD for in-scope fixes, GitHub
 /address-review verify       # Re-review after fixes
 ```
 
+## Bounded Shell Output (MANDATORY)
+
+- For large review files: `wc -l` then `~/.claude/scripts/safe-read.sh <file> 1 120`
+- Prefer `rg -n` over full-file dumps
+- Keep verification output concise; include summary + failures only
+
 ## Workflow
 
 ### 1. Parse Findings
