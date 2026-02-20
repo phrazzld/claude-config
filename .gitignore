@@ -56,3 +56,19 @@ image-cache/
 telemetry/
 __pycache__/
 teams/
+
+# Evolve runtime data (per-project, not portable)
+skills/evolve/.design-evolution/
+design-memory.db
+design-memory.db-shm
+design-memory.db-wal
+
+# Runtime caches (provider-specific)
+.gemini/
+.kimi/
+
+# Ephemeral backups
+backups/
+
+# Shell scripts (machine-specific)
+scripts/
