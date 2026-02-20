@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><!-- SLOT:PROJECT --> | Generation <!-- SLOT:GEN_NUMBER --></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --void: oklch(0.05 0.02 280);
+            --void-deep: oklch(0.03 0.01 280);
+            --surface: oklch(0.12 0.03 280);
+            --surface-elevated: oklch(0.18 0.04 280);
+            --surface-hover: oklch(0.22 0.05 280);
+            --text-primary: oklch(0.98 0.01 100);
+            --text-secondary: oklch(0.75 0.03 100);
+            --text-muted: oklch(0.55 0.04 100);
+            --accent-cyan: oklch(0.75 0.18 200);
+            --accent-cyan-glow: oklch(0.75 0.25 200);
+            --accent-amber: oklch(0.78 0.16 75);
+            --accent-amber-glow: oklch(0.78 0.22 75);
+            --accent-coral: oklch(0.68 0.18 25);
+            --winner: oklch(0.75 0.16 145);
+            --loser: oklch(0.65 0.14 25);
+            --pending: oklch(0.7 0.08 250);
+            --gradient-start: oklch(0.08 0.05 280);
+            --gradient-end: oklch(0.15 0.08 260);
+            --pattern-line-minor: oklch(0.3 0.04 250 / 0.18);
+            --pattern-line-major: oklch(0.48 0.06 205 / 0.2);
+            --pattern-dot: oklch(0.75 0.16 75 / 0.14);
+            --border: oklch(0.25 0.05 280);
+            --shadow-color: oklch(0.02 0.02 280 / 0.8);
+            --font-serif: 'Playfair Display', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Instrument Serif', Georgia, serif;
+        }
+
+        :root[data-theme="light"] {
+            --void: oklch(0.98 0.01 100);
+            --void-deep: oklch(0.95 0.01 100);
+            --surface: oklch(0.92 0.02 100);
+            --surface-elevated: oklch(0.88 0.02 100);
+            --surface-hover: oklch(0.85 0.03 100);
+            --text-primary: oklch(0.15 0.03 280);
+            --text-secondary: oklch(0.4 0.04 280);
+            --text-muted: oklch(0.55 0.04 280);
+            --accent-cyan: oklch(0.55 0.16 220);
+            --accent-cyan-glow: oklch(0.6 0.2 220);
+            --accent-amber: oklch(0.65 0.14 75);
+            --accent-amber-glow: oklch(0.7 0.18 75);
+            --accent-coral: oklch(0.55 0.16 25);
+            --winner: oklch(0.55 0.14 145);
+            --loser: oklch(0.5 0.12 25);
+            --pending: oklch(0.5 0.1 250);
+            --gradient-start: oklch(0.94 0.03 100);
+            --gradient-end: oklch(0.9 0.04 280);
+            --pattern-line-minor: oklch(0.72 0.03 260 / 0.22);
+            --pattern-line-major: oklch(0.58 0.06 220 / 0.25);
+            --pattern-dot: oklch(0.55 0.1 75 / 0.16);
+            --border: oklch(0.8 0.05 280);
+            --shadow-color: oklch(0.3 0.02 280 / 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background-color: var(--void-deep);
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0,
+                    transparent 23px,
+                    var(--pattern-line-minor) 23px,
+                    var(--pattern-line-minor) 24px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0,
+                    transparent 23px,
+                    var(--pattern-line-minor) 23px,
+                    var(--pattern-line-minor) 24px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0,
+                    transparent 119px,
+                    var(--pattern-line-major) 119px,
+                    var(--pattern-line-major) 120px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0,
+                    transparent 119px,
+                    var(--pattern-line-major) 119px,
+                    var(--pattern-line-major) 120px
+                ),
+                radial-gradient(circle at 1px 1px, var(--pattern-dot) 1px, transparent 1.2px);
+            background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px, 24px 24px;
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Particle Background */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float-particle 20s infinite ease-in-out;
+            opacity: 0;
+        }
+
+        @keyframes float-particle {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(0.5);
+                opacity: 0;
+            }
+            10% { opacity: var(--particle-opacity, 0.3); }
+            50% {
+                transform: translateY(-50vh) translateX(20px) scale(1);
+            }
+            90% { opacity: var(--particle-opacity, 0.3); }
+        }
+
+        /* Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            animation: sidebar-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes sidebar-enter {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .sidebar-brand {
+            margin-bottom: 3rem;
+        }
+
+        .sidebar-brand h1 {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-brand span {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+        }
+
+        .nav-section {
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 0.375rem;
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            animation: nav-item-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            text-decoration: none;
+        }
+
+        .nav-item:nth-child(1) { animation-delay: 0.1s; }
+        .nav-item:nth-child(2) { animation-delay: 0.15s; }
+        .nav-item:nth-child(3) { animation-delay: 0.2s; }
+        .nav-item:nth-child(4) { animation-delay: 0.25s; }
+        .nav-item:nth-child(5) { animation-delay: 0.3s; }
+        .nav-item:nth-child(6) { animation-delay: 0.35s; }
+
+        @keyframes nav-item-enter {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .nav-item:hover {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--surface-elevated);
+            color: var(--accent-cyan);
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Main Content */
+        .main {
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 3rem;
+            animation: header-enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes header-enter {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .header-title-group h2 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 400;
+            letter-spacing: -0.03em;
+        }
+
+        .generation-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .gen-pill {
+            background: var(--accent-cyan);
+            color: var(--void);
+            padding: 0.375rem 0.875rem;
+            border-radius: 100px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            box-shadow: 0 0 20px oklch(0.75 0.2 200 / 0.4);
+        }
+
+        .dna-code {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent-amber);
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.625rem;
+            border: 1px solid var(--accent-amber);
+            border-radius: 4px;
+            background: oklch(0.78 0.16 75 / 0.05);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface-hover);
+            color: var(--accent-cyan);
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px var(--shadow-color);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            animation: card-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            transition:
+                transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, box-shadow, border-color;
+        }
+
+        .section-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px var(--shadow-color);
+            border-color: oklch(0.4 0.1 280);
+        }
+
+        @keyframes card-enter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .section-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Generation Overview */
+        .gen-overview {
+            grid-column: 1 / -1;
+        }
+
+        .proposal-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .proposal-card {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition:
+                transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            will-change: transform, box-shadow, border-color;
+        }
+
+        .proposal-card:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 16px 40px var(--shadow-color);
+            border-color: oklch(0.35 0.08 280);
+        }
+
+        .proposal-card.winner {
+            border-color: var(--winner);
+            background: var(--surface-elevated);
+        }
+
+        .proposal-card.winner .proposal-id {
+            color: var(--winner);
+        }
+
+        .proposal-card.loser {
+            opacity: 0.75;
+        }
+
+        .proposal-card.loser .proposal-id {
+            color: var(--loser);
+        }
+
+        .proposal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.875rem;
+        }
+
+        .proposal-id {
+            font-family: var(--font-mono);
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .status-pill {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.625rem;
+            border-radius: 100px;
+            font-weight: 700;
+        }
+
+        .status-pill.winner {
+            background: var(--winner);
+            color: var(--void);
+        }
+
+        .status-pill.loser {
+            background: var(--loser);
+            color: var(--text-primary);
+        }
+
+        .status-pill.pending {
+            background: var(--pending);
+            color: var(--void);
+        }
+
+        .dna-traits {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .proposal-notes {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-style: italic;
+            font-family: var(--font-serif);
+        }
+
+        /* Analytics Grid */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Win/Loss Analytics */
+        .axis-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+        }
+
+        .axis-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 1rem;
+            background: var(--surface-elevated);
+            border-radius: 8px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .axis-item:hover {
+            background: var(--surface-hover);
+            transform: translateX(4px);
+        }
+
+        .axis-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .axis-indicator.win {
+            background: var(--winner);
+            box-shadow: 0 0 12px var(--winner);
+        }
+
+        .axis-indicator.loss {
+            background: var(--loser);
+        }
+
+        .axis-name {
+            flex: 1;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .axis-value {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Taste Profile */
+        .taste-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .taste-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .taste-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+
+        .taste-label {
+            font-weight: 500;
+        }
+
+        .taste-score {
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+        }
+
+        .taste-score.positive {
+            color: var(--winner);
+        }
+
+        .taste-score.negative {
+            color: var(--loser);
+        }
+
+        .taste-bar-bg {
+            height: 6px;
+            background: var(--surface-elevated);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .taste-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .taste-bar-fill.positive {
+            background: linear-gradient(90deg, var(--winner), oklch(0.8 0.18 145));
+        }
+
+        .taste-bar-fill.negative {
+            background: linear-gradient(90deg, var(--loser), oklch(0.7 0.16 25));
+        }
+
+        /* DNA Bank */
+        .dna-bank-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .dna-sample {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition:
+                transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            will-change: transform, box-shadow, border-color, background-color;
+        }
+
+        .dna-sample:hover {
+            transform: translateY(-4px);
+            border-color: oklch(0.4 0.1 280);
+            box-shadow: 0 12px 32px var(--shadow-color);
+        }
+
+        .dna-sample-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .dna-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--void-deep);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            font-weight: 700;
+            color: var(--accent-amber);
+        }
+
+        .dna-name {
+            font-family: var(--font-serif);
+            font-size: 0.9375rem;
+            font-weight: 600;
+        }
+
+        .dna-project {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .dna-code-block {
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            color: var(--text-muted);
+            background: var(--void-deep);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+            line-height: 1.6;
+        }
+
+        :root[data-theme="light"] .dna-sample {
+            background: oklch(0.955 0.015 95);
+            border-color: oklch(0.8 0.04 280);
+        }
+
+        :root[data-theme="light"] .dna-sample:hover {
+            background: oklch(0.975 0.012 100);
+            border-color: oklch(0.62 0.07 220);
+        }
+
+        :root[data-theme="light"] .dna-avatar {
+            background: oklch(0.98 0.01 100);
+        }
+
+        :root[data-theme="light"] .dna-code-block {
+            background: oklch(0.97 0.01 100);
+            border-color: oklch(0.82 0.03 280);
+            color: oklch(0.38 0.04 280);
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 0;
+        }
+
+        .timeline-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .timeline-node:hover {
+            transform: scale(1.1);
+        }
+
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--surface-elevated);
+            border: 2px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .timeline-node:hover .timeline-dot {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 16px oklch(0.75 0.2 200 / 0.5);
+        }
+
+        .timeline-dot.active {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px oklch(0.75 0.2 200 / 0.6);
+        }
+
+        .timeline-dot.winners {
+            background: var(--winner);
+            border-color: var(--winner);
+        }
+
+        .timeline-label {
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .timeline-node.active .timeline-label {
+            color: var(--accent-cyan);
+        }
+
+        .timeline-line {
+            flex: 1;
+            height: 2px;
+            background: var(--surface-elevated);
+            border-radius: 1px;
+        }
+
+        .timeline-count {
+            font-size: 0.5625rem;
+            color: var(--text-muted);
+            background: var(--surface);
+            padding: 0.125rem 0.5rem;
+            border-radius: 100px;
+            margin-top: 0.25rem;
+        }
+
+        /* Notes section */
+        .gen-notes {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-family: var(--font-serif);
+        }
+
+        .gen-notes p {
+            margin-bottom: 0.75rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .proposal-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .dna-bank-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                padding: 1.5rem;
+            }
+            .proposal-grid {
+                grid-template-columns: 1fr;
+            }
+            .dna-bank-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-title-group h2 {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--surface-elevated);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--surface-hover);
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--accent-cyan);
+            color: var(--void);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles"></canvas>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h1><!-- SLOT:PROJECT --></h1>
+                <span>Design Genetics Lab</span>
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-section-title">Laboratory</div>
+                <a class="nav-item active" href="#dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a class="nav-item" href="#generations">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                    Generations
+                </a>
+                <a class="nav-item" href="#taste-profile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    Taste Profile
+                </a>
+                <a class="nav-item" href="#dna-bank">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4c8 0 8 16 16 16"/>
+                        <path d="M20 4c-8 0-8 16-16 16"/>
+                        <path d="M8 7h8"/>
+                        <path d="M7 12h10"/>
+                        <path d="M8 17h8"/>
+                    </svg>
+                    DNA Bank
+                </a>
+                <a class="nav-item" href="#projects">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    Projects
+                </a>
+                <a class="nav-item" href="#settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                    </svg>
+                    Settings
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                <div class="header-title-group">
+                    <h2>Generation <!-- SLOT:GEN_NUMBER --> Laboratory</h2>
+                    <div class="generation-badge">
+                        <span class="gen-pill">GEN-<!-- SLOT:GEN_NUMBER --> ACTIVE</span>
+                        <span class="dna-code"><!-- SLOT:LOCKED_DNA --></span>
+                        <span><!-- SLOT:SCOPE --> // <!-- SLOT:BRAND --></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"/>
+                            <line x1="12" y1="1" x2="12" y2="3"/>
+                            <line x1="12" y1="21" x2="12" y2="23"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                            <line x1="1" y1="12" x2="3" y2="12"/>
+                            <line x1="21" y1="12" x2="23" y2="12"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Generation Overview -->
+                <div id="dashboard" class="section-card gen-overview" style="animation-delay: 0.1s;">
+                    <div class="section-header">
+                        <h3 class="section-title">Generation <!-- SLOT:GEN_NUMBER --> Proposals</h3>
+                        <span class="section-meta"><!-- SLOT:PROPOSAL_COUNT --> Candidates // <!-- SLOT:TOTAL_EVALUATED --> Total Evaluated</span>
+                    </div>
+                    <div class="proposal-grid">
+                        <!-- SLOT:PROPOSAL_CARDS -->
+                    </div>
+                </div>
+
+                <!-- Analytics Grid -->
+                <div id="generations" class="analytics-grid">
+                    <!-- Taste Profile -->
+                    <div id="taste-profile" class="section-card" style="animation-delay: 0.2s;">
+                        <div class="section-header">
+                            <h3 class="section-title">Taste Profile</h3>
+                            <span class="section-meta">Preference Vectors</span>
+                        </div>
+                        <div class="taste-bars">
+                            <!-- SLOT:TASTE_HTML -->
+                        </div>
+                    </div>
+
+                    <!-- Generation Notes -->
+                    <div class="section-card" style="animation-delay: 0.25s;">
+                        <div class="section-header">
+                            <h3 class="section-title">Generation Notes</h3>
+                            <span class="section-meta"><!-- SLOT:DATE --></span>
+                        </div>
+                        <div class="gen-notes">
+                            <!-- SLOT:GEN_NOTES -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DNA Bank -->
+                <div id="dna-bank" class="section-card" style="animation-delay: 0.3s;">
+                    <div class="section-header">
+                        <h3 class="section-title">DNA Bank</h3>
+                        <span class="section-meta">Archived Champions</span>
+                    </div>
+                    <div class="dna-bank-grid">
+                        <!-- SLOT:DNA_BANK_HTML -->
+                    </div>
+                </div>
+
+                <!-- Evolution Timeline -->
+                <div id="timeline" class="section-card" style="animation-delay: 0.35s;">
+                    <div class="section-header">
+                        <h3 class="section-title">Evolution Timeline</h3>
+                        <span class="section-meta">Generational Progress</span>
+                    </div>
+                    <div class="timeline">
+                        <!-- SLOT:TIMELINE_HTML -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Check system preference
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (!prefersDark) {
+            html.setAttribute('data-theme', 'light');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+        });
+
+        // Particle System
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId;
+        let isActive = true;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedY = Math.random() * 0.5 + 0.2;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.life = 0;
+                this.maxLife = Math.random() * 300 + 200;
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                this.life++;
+
+                if (this.life < 50) {
+                    this.currentOpacity = (this.life / 50) * this.opacity;
+                } else if (this.life > this.maxLife - 50) {
+                    this.currentOpacity = ((this.maxLife - this.life) / 50) * this.opacity;
+                } else {
+                    this.currentOpacity = this.opacity;
+                }
+
+                if (this.y < -10 || this.life > this.maxLife) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                const isDark = !html.getAttribute('data-theme') || html.getAttribute('data-theme') === 'dark';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+
+                if (isDark) {
+                    ctx.fillStyle = `rgba(100, 200, 255, ${this.currentOpacity})`;
+                } else {
+                    ctx.fillStyle = `rgba(100, 150, 200, ${this.currentOpacity * 0.5})`;
+                }
+                ctx.fill();
+            }
+        }
+
+        // Create particles
+        const particleCount = 25;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = new Particle();
+            particle.y = Math.random() * canvas.height;
+            particles.push(particle);
+        }
+
+        let frameCount = 0;
+        function animate() {
+            if (!isActive) return;
+
+            frameCount++;
+            // Render every 2nd frame for performance
+            if (frameCount % 2 === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+            }
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // Visibility handling
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                isActive = false;
+                cancelAnimationFrame(animationId);
+            } else {
+                isActive = true;
+                animate();
+            }
+        });
+
+        animate();
+
+        // Navigation interaction
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Proposal card interaction
+        document.querySelectorAll('.proposal-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Animate taste bars on load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.taste-bar-fill').forEach((bar, index) => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>

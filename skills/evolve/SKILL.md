@@ -1,42 +1,73 @@
 ---
 name: evolve
 description: |
-  Genetic algorithm for design systems. Generates populations of design
-  proposals, collects feedback, evolves winners through mutation/crossover,
-  kills losers, repeats until lock-in.
+  Compounding design intelligence. Genetic algorithm for design systems with
+  persistent cross-project memory, brand auto-detection, and image generation.
 
   Invoke when:
   - User wants to explore design directions iteratively
   - "evolve", "design evolution", "genetic design", "iterate on designs"
   - Before /design-theme when direction is unclear and user wants options
+  - Logo/icon generation with brand enforcement
+  - Brand infrastructure audit ("what design tokens exist?")
 
-  Matrix: scope (full system | specific component) × brand (adherent | free)
+  What makes it different from /design-and-refine or /frontend-design:
+  - Persistent memory: taste compounds across sessions and repos
+  - Hard preferences: vetoes ("never sans-serif") and mandates ("always OKLCH")
+  - DNA bank: save interesting designs from any project for reuse
+  - Brand auto-detection: scans repos for existing design infrastructure
+  - Image generation: Recraft AI for vector logos, nano-banana for raster
 effort: high
-argument-hint: "[project-name] [--scope full|component] [--brand brand.yaml]"
+argument-hint: "[project-name] [--scope full|component] [--contexts saas,landing]"
 ---
 
-# Design Evolution
+# Design Evolution v2
 
-Genetic algorithm over the DNA code system. Simple loop:
-generate population → user selects winners/losers → mutate winners,
-kill losers, add immigrants → repeat until lock-in.
+Genetic algorithm over DNA codes + persistent design memory.
+Simple loop: detect brand → generate population → user selects winners/losers →
+mutate winners, kill losers, add immigrants → repeat until lock-in.
+Learning persists across sessions and repositories.
 
 ## Engine
 
-All state management via `engine.py` in this skill's directory:
+All state via `engine.py`. Per-project state in `.design-evolution/evolution.yaml`.
+Global memory in `~/.claude/design-memory.db` (SQLite, auto-created).
 
 ```bash
 ENGINE="$HOME/.claude/skills/evolve/engine.py"
 python3 "$ENGINE" --repo "$REPO" <command> [args]
 ```
 
-The engine is the source of truth. Claude orchestrates, the engine tracks state.
+## First Invocation
 
-## Workflow
+### 1. Brand Auto-Detection
 
-### First Invocation (No State)
+Run brand detection first:
 
-**1. Determine matrix position:**
+```bash
+python3 "$ENGINE" --repo "$REPO" detect
+```
+
+This scans for: brand.yaml, tailwind config, @theme CSS blocks, Google Fonts,
+component libraries (shadcn, Radix, etc.), dark mode support. Reports completeness
+score (0-100%) and remediation suggestions.
+
+If gaps found, offer to run remediation:
+- Missing brand.yaml → "Run /brand-init first?"
+- Missing tokens → "Run /brand-compile first?"
+
+### 2. Ask Constraint Level
+
+```
+AskUserQuestion:
+"How much creative freedom?"
+- "Strict" → Lock color+typography. Evolve layout/motion/density/background only.
+- "Extend" → Respect existing tokens but allow new ones.
+- "Reimagine" → Brand as inspiration only. Everything open.
+- "Greenfield" → Ignore existing design system. Start fresh.
+```
+
+### 3. Ask Scope + Context
 
 ```
 AskUserQuestion:
@@ -44,233 +75,342 @@ AskUserQuestion:
 - "Full design system" → scope=full
 - "Specific component" → scope=component (ask which)
 
-"Brand adherence?"
-- "Evolve freely" → brand=free, no locked axes
-- "Stay on brand" → brand=adherent, lock color+typography axes
+"What context?" (multiselect)
+- SaaS / Landing / Dashboard / Portfolio / E-commerce
 ```
 
-**2. Analyze codebase:**
+Context tags affect which taste data is loaded from memory. A "saas" project
+inherits preferences from past "saas" work but not "landing" preferences.
 
-- Detect framework (Next.js, Remix, vanilla, etc.)
-- Find existing design tokens, brand.yaml, tailwind config
-- Screenshot current state if URL available
-- Infer current DNA
-
-**3. Initialize:**
+### 4. Initialize
 
 ```bash
 python3 "$ENGINE" --repo "$REPO" init \
   --project "$PROJECT" \
   --scope "$SCOPE" \
-  --brand "$BRAND_FILE" \  # omit if free
-  --lock "$LOCKED_AXES" \  # e.g. "color,typography" if brand-adherent
+  --contexts "saas,dashboard" \
+  --brand "$BRAND_FILE" \
+  --lock "$LOCKED_AXES" \
   --population 8
 ```
 
-**4. Generate initial population:**
+This auto-detects brand state, registers the project in memory, and imports
+any existing evolution data.
+
+### 5. Generate Population
 
 ```bash
 python3 "$ENGINE" --repo "$REPO" suggest --count 8
 ```
 
-This outputs 8 DNA codes biased by taste (empty on first run = pure random).
+Population is biased by:
+- **Local taste** from this project's prior selections (2x weight)
+- **Global taste** from all past projects
+- **Contextual taste** from projects with matching context tags (1.5x weight)
+- **Hard preferences**: vetoed values excluded, mandated values boosted
+- **DNA bank**: 1-2 slots seeded from banked interesting designs
 
-**5. Generate proposals — DELEGATE to parallel agents:**
+### 5b. Explicit Anchor Mode (Mandatory)
 
-For EACH DNA code from suggest, spawn a parallel agent (Kimi preferred, Moonbridge/Codex fallback):
+If user explicitly names a prior proposal as target direction (example: `gen-5/5a`):
+- Freeze that proposal as the baseline archetype for next generation.
+- Build survivors/mutations from that anchor first, not from latest generation winners.
+- Keep at least one near-faithful baseline variant to prevent drift.
+- Treat "go back to X" as a hard constraint, not soft preference.
+
+### 5c. Hard Preference Enforcement (MANDATORY — Run Before EVERY Generation)
+
+Before generating ANY proposals, query ALL hard preferences from the design memory DB:
+
+```bash
+python3 "$ENGINE" memory rules
+```
+
+Extract every VETO and MANDATE. Build a **BANNED/REQUIRED** block that gets
+injected verbatim into EVERY agent prompt (survivors, mutations, immigrants — all of them).
+
+Format for agent prompts:
+```
+=== HARD VETOES (ABSOLUTE — violating ANY of these = instant rejection) ===
+- NEVER use [font]: [reason]
+- NEVER use [CSS pattern]: [reason]
+- NEVER use [color/background]: [reason]
+...
+
+=== HARD MANDATES (REQUIRED — omitting ANY of these = instant rejection) ===
+- ALWAYS use [pattern]: [reason]
+...
+```
+
+**Why this exists:** Vetoes stored in the DB were not reaching agent prompts,
+causing the same rejected patterns (border-top on rounded cards, banned fonts)
+to reappear generation after generation. This step is non-negotiable.
+
+CSS-level vetoes (card border treatments, dark-in-light theming) are stored
+alongside DNA-axis vetoes. Both MUST be included in prompts.
+
+### 5d. Survivor Fidelity (MANDATORY)
+
+Survivors and mutations MUST be given the actual parent HTML file to READ and MODIFY.
+Giving agents only a DNA code and description causes them to generate from scratch,
+losing all the qualities that made the parent a winner.
+
+For each survivor/mutation agent prompt:
+1. Include the full path to the parent HTML file
+2. Instruct the agent to READ the parent file FIRST
+3. Instruct the agent to MODIFY the parent, not generate from scratch
+4. Specify ONLY the targeted changes (e.g., "change background from gradient to patterned")
+5. Verify output file size is within 20% of parent (drift guard)
+
+Template:
+```
+Read the parent proposal at: [path to parent index.html]
+This file is the STARTING POINT. You MUST modify this file, NOT generate from scratch.
+The user selected this proposal as a winner because [reasons].
+Your job: make ONLY these targeted changes: [specific axis changes].
+Preserve everything else — layout, typography, component structure, color relationships.
+```
+
+### 6. Generate Proposals — MULTI-PROVIDER DELEGATION
+
+Distribute proposals across **varied AI providers** for aesthetic diversity.
+Each provider brings different creative biases — mixing them prevents convergence.
+
+**Provider roster (use 2+ per generation):**
+
+| Provider | Via | Strengths |
+|----------|-----|-----------|
+| Kimi K2.5 | `mcp__moonbridge__spawn_agents_parallel` adapter=kimi | Frontend craft, visual fidelity |
+| Codex | `mcp__moonbridge__spawn_agents_parallel` adapter=codex | Systematic, architecture-first |
+| Claude | Task tool (general-purpose agent) | Nuanced design thinking |
+| Gemini | `opencode run --model github-copilot/gemini-3-pro-preview` | Creative divergence |
+
+**Example distribution for 8 proposals:** Kimi(2), Codex(2), Claude(2), Gemini(2).
+Vary per generation. Don't use same provider for both survivors.
 
 Each proposal MUST include:
-- Color palette (hex + OKLCH values, semantic names)
-- Typography scale (font families, sizes, weights, line heights)
+- Color palette (hex + OKLCH, semantic names)
+- Typography scale (families, sizes, weights, line heights)
 - Spacing system (base unit, scale)
 - Component examples (button, card, input, nav item)
 - Animation specifications (if motion axis != "none")
+- Externalized logo/mark slot (`gen-N/assets/logos/*`) instead of only inline placeholder
+- **Light AND dark theme support** (default to system `prefers-color-scheme`)
 - Full rendered HTML preview
 
+**Quality gate:** Each proposal should target 90+/100 from the `/ui-skills` expert
+panel (Ogilvy, Rams, Scher, Wiebe, Laja, Walter, Cialdini, Ive, Wroblewski, Millman).
+Apply `/frontend-design` aesthetic guidelines: bold direction, no generic AI slop,
+distinctive font choices, intentional composition.
+
+**Layout rule:** Items in the same state (pending, alive, winner, killed) MUST
+occupy equal space. No arbitrary bento sizing for same-status proposals.
+
 ```javascript
-// Preferred: Kimi parallel swarm
-mcp__kimi__spawn_agents_parallel({
-  agents: dna_codes.map((code, i) => ({
-    prompt: `Design system proposal. DNA: ${code}
-Project: ${project_context}
-Framework: ${framework}
-Scope: ${scope}
-
-Generate a COMPLETE design system preview as a single HTML file.
-Include: color palette swatches, typography specimens, spacing scale,
-button/card/input/nav components, animation demos (if DNA motion != "none").
-
-Use real fonts from Google Fonts. Use OKLCH for colors.
-Make it visually stunning — this competes against 7 other proposals.
-
-BANNED: Inter, Roboto, Space Grotesk, Satoshi, purple gradients,
-Tailwind default blue-500, centered-max-w-4xl-everything.
-
-Output to: .design-evolution/gen-${genNum}/${genNum}${letter}/index.html`,
-    thinking: true
-  }))
+// Kimi batch (survivors + crossovers)
+mcp__moonbridge__spawn_agents_parallel({
+  agents: [
+    { prompt: kimiPrompt(dna_a), adapter: "kimi", thinking: true, timeout_seconds: 900 },
+    { prompt: kimiPrompt(dna_e), adapter: "kimi", thinking: true, timeout_seconds: 900 },
+  ]
 })
+
+// Codex batch (mutations)
+mcp__moonbridge__spawn_agents_parallel({
+  agents: [
+    { prompt: codexPrompt(dna_b), adapter: "codex", reasoning_effort: "xhigh", timeout_seconds: 1800 },
+    { prompt: codexPrompt(dna_f), adapter: "codex", reasoning_effort: "xhigh", timeout_seconds: 1800 },
+  ]
+})
+
+// Claude batch (via Task tool)
+// Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_c) })
+// Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_d) })
+
+// Gemini batch (via OpenCode CLI)
+// opencode run --model github-copilot/gemini-3-pro-preview "prompt for dna_g"
+// opencode run --model github-copilot/gemini-3-pro-preview "prompt for dna_h"
+```
 ```
 
-If Kimi unavailable, use Moonbridge/Codex or generate directly.
+### 6b. Asset Batch (Mandatory)
 
-**6. Register proposals:**
+After DNA proposal generation, run `/asset-generation` and mount assets into each proposal.
 
-After all agents complete, register with engine:
+Rules:
+1. Use **Recraft + OpenAI + Nano Banana Pro** in exploratory rounds.
+2. Generate assets **per proposal** (`7a`, `7b`, ...) using that proposal's palette and style.
+3. Match exploration width to design uncertainty:
+   - Early rounds: broad style/color/logo families
+   - Late rounds: narrow around surviving direction
+4. Never ship noisy illustration-style logos as the primary mark.
+5. Logo marks must be favicon/app-icon safe (legible at 16/24px, flat, low detail).
+6. If generated logos fail QA, synthesize deterministic geometric SVG fallback marks.
+7. Ensure proposal variants are meaningfully distinct; near-clone rounds are invalid.
+8. User-provided logo references are **principle references only**:
+   - extract qualities (simplicity, geometry, proportion, negative space)
+   - never replicate exact silhouettes/compositions
+   - reject outputs resembling known or provided logos
+
+Required structure:
+- `.design-evolution/gen-N/assets/logos/7a/{recraft,openai,gemini}-*.{svg,png}`
+- `.design-evolution/gen-N/assets/logos/7a/final.{svg,png}`
+- `.design-evolution/gen-N/assets/textures/7a/*.png` (optional)
+
+In each proposal HTML:
+- reference external assets via relative paths
+- do not hardcode a one-size-fits-all logo across all variants
+- keep background motifs subtle; no text artifacts/gibberish textures
+- enforce CTA button label optical centering and stable line-height
+
+### 7. Register, Catalog, Serve
 
 ```bash
-python3 "$ENGINE" --repo "$REPO" add \
-  "editorial.high-contrast.display-heavy.orchestrated.spacious.textured" \
-  "bento.dark.expressive.subtle.compact.layered" \
-  ... \
-  --origins "random,random,random,..."
-```
-
-**7. Generate catalog, VERIFY links work, and serve:**
-
-```bash
+python3 "$ENGINE" --repo "$REPO" add "dna1" "dna2" ... --origins "random,random,..."
 python3 "$ENGINE" --repo "$REPO" catalog
-# Use project-specific port (deterministic hash, no cross-session collisions)
 python3 "$ENGINE" --repo "$REPO" serve &
-# Or get port only: python3 "$ENGINE" --repo "$REPO" port
 ```
 
-**NEVER hardcode port 8888.** The engine hashes project name → port 8800-9799.
-Different projects get different ports. No cross-session collisions.
+**Catalog quality is part of the feature.** The catalog should not be a bare file list.
+It must help the user build design taste and vocabulary.
 
-**MANDATORY VERIFICATION — DO NOT SKIP:**
-After generating the catalog, verify EVERY proposal is accessible:
-1. Check that catalog.html contains an `<a href=...>` link for each proposal ID
-2. Check that each linked HTML file exists on disk
-3. If ANY proposal is missing a link or its HTML file is missing, FIX IT before presenting to the user
+Each proposal card should include:
+- DNA code + axis pills
+- **Design vocabulary readout** per axis (term + concise meaning)
+- **Critique prompts** ("what to inspect") for structure, typography, motion, spacing
+- Proposal notes + origin provenance
 
+If catalog clarity is weak, improve engine rendering before generating more proposals.
+
+**NEVER hardcode port 8888.** Engine hashes project name → port 8800-9799.
+
+**MANDATORY VERIFICATION:** After catalog generation, verify EVERY proposal link works:
 ```bash
-# Verify all proposal HTML files exist
 for id in a b c d e f g h; do
   ls "$REPO/.design-evolution/gen-${GEN}/${GEN}${id}/index.html" || echo "MISSING: ${GEN}${id}"
 done
-# Verify catalog has links
 grep -c "Open Preview" "$REPO/.design-evolution/catalog.html"
-# Must equal population count. If not, regenerate catalog.
 ```
 
-The user MUST be able to click through from the catalog to every individual proposal.
-A catalog without working links to previews is useless. This has broken twice — never again.
+### 8. Selection
 
-**8. Present:**
-
-```
-Design Evolution — Generation 1
-
-8 proposals generated. Browse: http://localhost:8888
-
-Quick overview:
-  1a: editorial.high-contrast.display-heavy.orchestrated.spacious.textured
-  1b: bento.dark.expressive.subtle.compact.layered
-  ...
-
-Open each preview to see the full design system.
-Tell me your winners and losers. You can also give notes on specific proposals.
-```
-
-### Selection Phase
-
-User provides feedback. Translate to engine commands:
+User provides feedback → translate to engine commands:
 
 ```bash
-# Mark winners and losers
 python3 "$ENGINE" --repo "$REPO" select --winners "1a,1e" --kill "1b,1c,1f"
-
-# Specific proposal notes
-python3 "$ENGINE" --repo "$REPO" note --proposal 1a --text "love the asymmetry, motion too aggressive"
-python3 "$ENGINE" --repo "$REPO" note --proposal 1e --text "typography perfect, needs warmer colors"
-
-# General direction notes
+python3 "$ENGINE" --repo "$REPO" note --proposal 1a --text "love the asymmetry"
 python3 "$ENGINE" --repo "$REPO" note --text "want more editorial feel overall"
 ```
 
-### Evolution Phase
+Selection writes to both local taste AND global memory. Winners accumulate
+positive scores globally; killed proposals accumulate negative. This learning
+carries over to the next project.
 
-**1. Compute next generation:**
+### 9. Evolution
 
 ```bash
 python3 "$ENGINE" --repo "$REPO" advance
 ```
 
-Reads `next_gen_plan.json` — contains DNA codes with origins (survivor, mutation, crossover, immigration).
+Then generate new proposals (same delegation as step 6) and repeat.
 
-**2. Generate new proposals** — same delegation pattern as step 5.
-
-Key differences from gen 1:
-- **Survivors**: Re-render the winner DNA (or keep existing artifacts if unchanged)
-- **Mutations**: Winner DNA with 1-2 axes perturbed. INCORPORATE NOTES. If user said "motion too aggressive" on 1a, bias the motion mutation away from "aggressive"
-- **Crossover**: Combined axes from two winners
-- **Immigration**: Completely new random DNA (prevents local optima)
-
-**3. Register, catalog, present** — same as steps 6-8.
-
-**4. Repeat** until user says "lock it in" or "that's the one."
-
-### Lock-in
+### 10. Lock-in
 
 ```bash
 python3 "$ENGINE" --repo "$REPO" lock 3b
 python3 "$ENGINE" --repo "$REPO" export
 ```
 
-Export contains: locked DNA, full lineage, taste profile, generation count.
+Locked DNA is auto-banked in global memory for future seeding.
 
 **Handoff routing:**
-- Full system → `/design-theme` with the locked DNA
+- Full system → `/design-theme` with locked DNA
 - Component → `/ui-skills` or direct implementation
 - Brand update → `/brand-compile` if tokens changed
 
-## Note Integration
+## Memory
 
-User notes are critical for directed evolution. When processing notes:
+Global design memory persists across sessions at `~/.claude/design-memory.db`.
 
-1. **Specific proposal notes** → inform mutations of that proposal's descendants
-2. **General notes** → bias ALL mutations in the stated direction
-3. **Axis-specific feedback** → if user says "warmer colors" and winner has `color: high-contrast`, mutate toward `brand-tinted` or `gradient`
+### Taste
 
-The engine handles taste accumulation automatically (winners +1, killed -1 per axis value).
-Claude's job is translating natural language notes into informed mutation prompts.
+Accumulated preference scores for each axis value. Updated on every
+selection. Global taste merges with contextual taste (scoped to tags
+like "saas", "landing") and hard preferences.
 
-## State Format
-
-All state in `.design-evolution/evolution.yaml`. Structure:
-
-```yaml
-project: "my-app"
-repo_path: "/path/to/repo"
-config:
-  scope: full
-  brand_adherent: false
-  locked_axes: []
-  population_size: 8
-  mutation_rate: 2
-  immigration_rate: 2
-  min_diversity: 3
-generations:
-  - number: 1
-    proposals:
-      - id: "1a"
-        dna: {layout: editorial, color: high-contrast, ...}
-        status: winner
-        origin: random
-        notes: ["love the asymmetry"]
-        artifacts: {html: "gen-1/1a/index.html"}
-    general_notes: ["want more editorial feel"]
-    timestamp: "2026-02-15T..."
-taste:
-  layout: {editorial: 2, centered: -1}
-  color: {high-contrast: 1, gradient: -2}
-locked: null
+```bash
+python3 "$ENGINE" memory taste                    # Show merged taste
+python3 "$ENGINE" memory taste --context saas     # Context-filtered
 ```
 
-Phase 2 web app reads/writes this same format.
+### Hard Preferences
 
-## Subsequent Invocations (State Exists)
+Vetoes exclude values from population generation. Mandates force inclusion.
+
+```bash
+python3 "$ENGINE" memory veto typography minimal --reason "boring"
+python3 "$ENGINE" memory mandate color dark --reason "brand identity"
+python3 "$ENGINE" memory rules                    # List all
+python3 "$ENGINE" memory rules --remove 1         # Remove by ID
+```
+
+### DNA Bank
+
+Save interesting designs across projects for reuse. Winners are auto-banked
+after 2+ selections. Locked proposals always banked.
+
+```bash
+python3 "$ENGINE" --repo "$REPO" bank 2c --note "great editorial feel" --tags "saas,dark"
+python3 "$ENGINE" memory bank                     # Browse bank
+python3 "$ENGINE" memory bank --search editorial  # Search
+```
+
+### History + Import
+
+```bash
+python3 "$ENGINE" memory history                  # All feedback
+python3 "$ENGINE" memory history --project scry   # Per-project
+python3 "$ENGINE" memory import PATH --project scry --context saas  # Import YAML
+```
+
+## Brand Detection
+
+Auto-detects existing design infrastructure via `detect.py`:
+
+| Artifact | How Detected |
+|---|---|
+| brand.yaml | File at root |
+| Tailwind CSS | Config files or `@import "tailwindcss"` in CSS |
+| Design tokens | `@theme` blocks or `tokens.css` |
+| Fonts | Google Fonts imports, Next.js font modules |
+| Component lib | package.json deps (shadcn, Radix, MUI, etc.) |
+| Dark mode | CSS `prefers-color-scheme` or Tailwind `darkMode` |
+| Framework | package.json deps (Next.js, Remix, Astro, etc.) |
+
+```bash
+python3 "$ENGINE" --repo "$REPO" detect           # Summary
+python3 "$ENGINE" --repo "$REPO" detect --json    # Machine-readable
+```
+
+## Image Generation (Recraft AI)
+
+Generate vector logos, icons, and illustrations via Recraft API.
+Requires `RECRAFT_AI_API_KEY` (preferred) or `RECRAFT_API_TOKEN`.
+
+```bash
+python3 "$ENGINE" recraft logo "minimalist owl logo" --colors "#1a1a2e,#e94560" --n 4
+python3 "$ENGINE" recraft icon "search magnifying glass" --colors "#1a1a2e" --n 4
+python3 "$ENGINE" recraft illustrate "abstract data visualization" --n 4
+python3 "$ENGINE" recraft vectorize IMAGE_URL
+python3 "$ENGINE" recraft test    # API connectivity check
+```
+
+Brand colors from brand.yaml can be auto-injected into the `--colors` flag.
+Vector output (SVG) for `logo` and `icon` styles. Raster (PNG) for illustrations.
+
+For multi-provider workflows (Recraft + Nano Banana Pro + OpenAI), use `/asset-generation`.
+
+## Subsequent Invocations
 
 If `.design-evolution/evolution.yaml` exists:
 
@@ -288,17 +428,53 @@ Based on state:
 | Consumes | Produces |
 |----------|----------|
 | `brand.yaml` (if brand-adherent) | `.design-evolution/evolution.yaml` |
-| `aesthetic-system` DNA codes | `.design-evolution/export.json` |
-| `ui-skills` constraints | HTML proposal previews |
+| `~/.claude/design-memory.db` | `.design-evolution/export.json` |
+| `aesthetic-system` DNA codes | HTML proposal previews |
+| `ui-skills` constraints | SVG/PNG logos and icons (via Recraft) |
+| `asset-generation` prompts + QA gates | Proposal-mounted logos/illustrations/textures |
 
 **Hands off to:**
 - `/design-theme` — implement locked DNA as tokens
 - `/brand-compile` — update brand tokens from locked DNA
+- `/brand-assets` — generate branded visual assets
 - `/pencil-to-code` — if Pencil backend used
 
 ## Anti-Convergence
 
-Enforced by engine's `min_diversity` parameter (default 3 = proposals must differ on 3+ axes).
-Additionally, immigration guarantees fresh genes every generation.
+Enforced by `min_diversity` (default 3 = proposals differ on 3+ axes),
+immigration (fresh random genes), and DNA bank seeding (proven winners
+from other projects injected into population).
 
-Reference: `aesthetic-system/references/banned-patterns.md` — all proposals must pass.
+## Maintenance & Scalability
+
+Evolve is designed to scale across hundreds of repos and generations.
+
+### Automatic bounds
+
+- **Taste scores** clamped to ±20 on every update (prevents runaway accumulation)
+- **Evolution YAML** archived beyond 10 generations (older gens → `generations-archive.jsonl`)
+- **Connection caching** — single SQLite connection per process (no open/close per call)
+
+### `evolve gc [--keep-gens N]`
+
+Manual garbage collection. Safe to run anytime, idempotent.
+
+What it does:
+1. **Clamp taste** — caps all scores to ±20
+2. **Prune DNA bank** — keeps 200 most recent entries (locked designs protected)
+3. **Prune feedback** — keeps 500 per project (oldest deleted)
+4. **WAL checkpoint** — reclaims SQLite journal space
+5. **HTML cleanup** — removes old `gen-N/` preview directories, keeping last N (default: 3)
+
+### `evolve memory` maintenance subcommands
+
+```
+evolve memory stats           # DB overview
+evolve memory taste           # Current taste profile
+evolve memory bank            # Browse DNA bank
+evolve memory veto AXIS VAL   # Hard veto (never use this value)
+evolve memory mandate AXIS VAL # Hard mandate (always use this value)
+evolve memory rules           # List/remove hard preferences
+evolve memory history         # Feedback log
+evolve memory import --path P # Import from evolution.yaml
+```

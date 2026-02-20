@@ -2,8 +2,8 @@
 """Design evolution engine — genetic algorithm for design systems.
 
 Deep module: simple CLI, complex internals. State persists in
-.design-evolution/evolution.yaml. Phase 2 web app reads/writes
-the same format.
+.design-evolution/evolution.yaml. Global taste/DNA persists in
+~/.claude/design-memory.db (SQLite).
 
 Usage:
     evolve init --project NAME --repo PATH [--scope full|component] [--brand PATH]
@@ -17,6 +17,11 @@ Usage:
     evolve lock PROPOSAL_ID
     evolve taste
     evolve export
+    evolve detect [--repo PATH]
+    evolve memory [taste|bank|veto|mandate|rules|history|import|stats]
+    evolve bank PROPOSAL_ID [--note TEXT] [--tags TAGS]
+    evolve recraft [logo|icon|illustrate|vectorize] PROMPT [--colors HEX]
+    evolve gc [--keep-gens N]
 """
 
 import argparse
@@ -33,6 +38,79 @@ try:
     import yaml
 except ImportError:
     yaml = None
+
+# Lazy imports for optional modules (graceful degradation)
+_mem = None
+_detect = None
+_recraft = None
+
+def _get_memory():
+    """Lazy-load memory module. Returns module or None."""
+    global _mem
+    if _mem is not None:
+        return _mem if _mem else None
+    try:
+        from . import memory as mem_mod
+        mem_mod._connect()  # ensure DB exists
+        _mem = mem_mod
+        return _mem
+    except Exception:
+        try:
+            import importlib.util, os
+            spec = importlib.util.spec_from_file_location(
+                "memory", os.path.join(os.path.dirname(__file__), "memory.py"))
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            mod._connect()
+            _mem = mod
+            return _mem
+        except Exception:
+            _mem = False  # sentinel: tried and failed
+            return None
+
+def _get_detect():
+    """Lazy-load detect module. Returns module or None."""
+    global _detect
+    if _detect is not None:
+        return _detect if _detect else None
+    try:
+        from . import detect as det_mod
+        _detect = det_mod
+        return _detect
+    except Exception:
+        try:
+            import importlib.util, os
+            spec = importlib.util.spec_from_file_location(
+                "detect", os.path.join(os.path.dirname(__file__), "detect.py"))
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            _detect = mod
+            return _detect
+        except Exception:
+            _detect = False
+            return None
+
+def _get_recraft():
+    """Lazy-load recraft module. Returns module or None."""
+    global _recraft
+    if _recraft is not None:
+        return _recraft if _recraft else None
+    try:
+        from . import recraft as rc_mod
+        _recraft = rc_mod
+        return _recraft
+    except Exception:
+        try:
+            import importlib.util, os
+            spec = importlib.util.spec_from_file_location(
+                "recraft", os.path.join(os.path.dirname(__file__), "recraft.py"))
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            _recraft = mod
+            return _recraft
+        except Exception:
+            _recraft = False
+            return None
 
 
 # ── DNA Axes ──────────────────────────────────────────────────────────────────
@@ -214,9 +292,28 @@ def load(repo: str = ".") -> Optional[Evolution]:
     data = yaml.safe_load(text) if yaml else json.loads(text)
     return Evolution.from_dict(data)
 
+MAX_ACTIVE_GENS = 10
+
+
+def _archive_old_generations(evo: Evolution):
+    """Move generations beyond MAX_ACTIVE_GENS to an archive file.
+
+    Keeps the active YAML small. Archived data is append-only JSON lines.
+    """
+    if len(evo.generations) <= MAX_ACTIVE_GENS:
+        return
+    to_archive = evo.generations[:-MAX_ACTIVE_GENS]
+    archive_path = _dir(evo.repo_path) / "generations-archive.jsonl"
+    with archive_path.open("a") as f:
+        for gen in to_archive:
+            f.write(json.dumps(gen.as_dict()) + "\n")
+    evo.generations = evo.generations[-MAX_ACTIVE_GENS:]
+
+
 def save(evo: Evolution):
     d = _dir(evo.repo_path)
     d.mkdir(parents=True, exist_ok=True)
+    _archive_old_generations(evo)
     data = evo.as_dict()
     if yaml:
         text = yaml.dump(data, default_flow_style=False, sort_keys=False, allow_unicode=True)
@@ -265,14 +362,81 @@ def _diverse(population: list, candidate: DNA, min_dist: int) -> bool:
     return all(candidate.distance(p) >= min_dist for p in population)
 
 
+def _merge_taste(local_taste: dict, contexts: list = None) -> dict:
+    """Merge local project taste with global memory taste."""
+    mem = _get_memory()
+    if not mem:
+        return local_taste
+
+    global_taste = mem.get_merged_taste(contexts=contexts)
+    merged = {}
+    for axis in AXIS_NAMES:
+        local_scores = local_taste.get(axis, {})
+        global_scores = global_taste.get(axis, {})
+        combined = dict(global_scores)  # start with global
+        for v, s in local_scores.items():
+            combined[v] = combined.get(v, 0) + s * 2  # local 2x weight
+        if combined:
+            merged[axis] = combined
+    return merged
+
+
+def _build_effective_axes(contexts: list = None) -> dict:
+    """Build AXES dict with vetoed values removed."""
+    mem = _get_memory()
+    if not mem:
+        return dict(AXES)
+
+    vetoed = mem.get_vetoed_values(contexts=contexts)
+    effective = {}
+    for axis, values in AXES.items():
+        blocked = set(vetoed.get(axis, []))
+        filtered = [v for v in values if v not in blocked]
+        effective[axis] = filtered if filtered else values  # fallback if all vetoed
+    return effective
+
+
+def _seed_from_bank(count: int, contexts: list = None) -> list:
+    """Pull 1-2 interesting DNAs from the bank to seed population."""
+    mem = _get_memory()
+    if not mem:
+        return []
+
+    entries = mem.search_bank(limit=10)
+    if not entries:
+        return []
+
+    seeds = []
+    for entry in entries[:min(2, count // 4 or 1)]:
+        try:
+            dna = DNA.from_code(entry.dna_code)
+            seeds.append(dna)
+        except (ValueError, KeyError):
+            continue
+    return seeds
+
+
 def suggest_population(
     count: int, taste: dict, locked_axes: list = None,
     locked_values: dict = None, min_diversity: int = 3, attempts: int = 500,
+    contexts: list = None,
 ) -> list:
-    """Generate diverse DNA population, weighted by taste."""
+    """Generate diverse DNA population, weighted by taste.
+
+    If memory module is available, merges global taste, enforces vetoes,
+    and seeds 1-2 slots from the DNA bank.
+    """
     locked_axes = locked_axes or []
     locked_values = locked_values or {}
+    effective_axes = _build_effective_axes(contexts)
+    merged_taste = _merge_taste(taste, contexts)
     pop = []
+
+    # Seed from DNA bank
+    bank_seeds = _seed_from_bank(count, contexts)
+    for seed in bank_seeds:
+        if _diverse(pop, seed, min_diversity):
+            pop.append(seed)
 
     for _ in range(attempts):
         if len(pop) >= count:
@@ -281,10 +445,10 @@ def suggest_population(
         for axis in AXIS_NAMES:
             if axis in locked_values:
                 genes[axis] = locked_values[axis]
-            elif axis in taste and taste[axis] and random.random() < 0.6:
+            elif axis in merged_taste and merged_taste[axis] and random.random() < 0.6:
                 # Bias toward preferred values via softmax-ish weighting
-                scores = taste[axis]
-                options = AXES[axis]
+                scores = merged_taste[axis]
+                options = effective_axes[axis]
                 weighted = [(v, scores.get(v, 0) - min(scores.get(v, 0) for v in options) + 1)
                             for v in options]
                 total = sum(w for _, w in weighted)
@@ -297,7 +461,7 @@ def suggest_population(
                         genes[axis] = v
                         break
             else:
-                genes[axis] = random.choice(AXES[axis])
+                genes[axis] = random.choice(effective_axes[axis])
         candidate = DNA(**genes)
         if _diverse(pop, candidate, min_diversity):
             pop.append(candidate)
@@ -359,17 +523,32 @@ def add_generation(evo: Evolution, dna_list: list, origins: list = None) -> Gene
     return gen
 
 
-def select(evo: Evolution, winners: list, killed: list):
+def select(evo: Evolution, winners: list, killed: list, contexts: list = None):
     gen = evo.current_gen()
     if not gen:
         raise ValueError("No current generation")
+    mem = _get_memory()
     for p in gen.proposals:
         if p.id in winners:
             p.status = "winner"
             _update_taste(evo.taste, p, +1)
+            if mem:
+                mem.update_taste_from_dna(p.dna.as_code(), +1, contexts=contexts)
+                mem.log_feedback(evo.project, len(evo.generations), p.id,
+                                 p.dna.as_code(), "winner", contexts=contexts)
+                # Auto-bank winners with score >= 2 selections
+                wins = sum(1 for g in evo.generations for q in g.proposals
+                           if q.status == "winner" and q.dna.as_code() == p.dna.as_code())
+                if wins >= 2:
+                    mem.bank_dna(p.dna.as_code(), evo.project, "winner",
+                                 tags=contexts or [], note="auto-banked (2+ wins)")
         elif p.id in killed:
             p.status = "killed"
             _update_taste(evo.taste, p, -1)
+            if mem:
+                mem.update_taste_from_dna(p.dna.as_code(), -1, contexts=contexts)
+                mem.log_feedback(evo.project, len(evo.generations), p.id,
+                                 p.dna.as_code(), "killed", contexts=contexts)
 
 
 def add_note(evo: Evolution, text: str, proposal_id: str = None):
@@ -431,12 +610,18 @@ def advance(evo: Evolution) -> list:
     return plan
 
 
-def lock_proposal(evo: Evolution, pid: str):
+def lock_proposal(evo: Evolution, pid: str, contexts: list = None):
     p = evo.find(pid)
     if not p:
         raise ValueError(f"Proposal {pid} not found")
     p.status = "locked"
     evo.locked = pid
+    mem = _get_memory()
+    if mem:
+        mem.bank_dna(p.dna.as_code(), evo.project, "locked",
+                     tags=contexts or [], note=f"locked as final from gen {len(evo.generations)}")
+        mem.log_feedback(evo.project, len(evo.generations), pid,
+                         p.dna.as_code(), "locked", contexts=contexts)
 
 
 def export_locked(evo: Evolution) -> dict:
@@ -474,103 +659,253 @@ _AXIS_COLORS = {
     "motion": "#f59e0b", "density": "#8b5cf6", "background": "#ec4899",
 }
 
+_AXIS_VOCAB = {
+    "layout": {
+        "centered": ("Central Axis Composition", "Symmetrical hierarchy with low visual tension."),
+        "asymmetric": ("Dynamic Asymmetry", "Intentional imbalance that creates directional energy."),
+        "grid-breaking": ("Grid Disruption", "Elements intentionally violate grid rhythm for emphasis."),
+        "full-bleed": ("Edge-to-Edge Framing", "Content extends to container edges for cinematic scale."),
+        "bento": ("Modular Bento Layout", "Nested cards and compartments with controlled density."),
+        "editorial": ("Editorial Structure", "Story-first hierarchy using pacing and typographic rhythm."),
+    },
+    "color": {
+        "dark": ("Low-Key Palette", "Deep value range and luminous accents."),
+        "light": ("High-Key Palette", "Airy value range with softer contrast transitions."),
+        "monochrome": ("Monochromatic System", "Single-hue tonal system focused on form and hierarchy."),
+        "gradient": ("Gradient Field", "Color transitions used as depth or directional cue."),
+        "high-contrast": ("Contrast-Forward Palette", "Large luminance gaps that sharpen hierarchy."),
+        "brand-tinted": ("Brand-Tinted Neutrals", "Neutrals infused with brand hue for cohesion."),
+    },
+    "typography": {
+        "display-heavy": ("Display-Led Voice", "Large headline forms dominate visual narrative."),
+        "text-forward": ("Body-First Readability", "Reading comfort and paragraph rhythm lead."),
+        "minimal": ("Minimal Typographic System", "Restrained scale and low-style typography."),
+        "expressive": ("Expressive Typography", "Personality-forward forms and contrast in type."),
+        "editorial": ("Editorial Typography", "Serif/sans interplay with magazine-like pacing."),
+    },
+    "motion": {
+        "orchestrated": ("Sequenced Motion", "Staggered choreography across multiple UI layers."),
+        "subtle": ("Ambient Motion", "Low-amplitude movement for polish without distraction."),
+        "aggressive": ("High-Energy Motion", "Fast, emphatic transitions with strong directional force."),
+        "none": ("Static System", "No animation; hierarchy relies on shape and contrast alone."),
+        "scroll-triggered": ("Scroll-Linked Motion", "Animation tied to viewport progression and reveal."),
+    },
+    "density": {
+        "spacious": ("Generous Spacing", "Wide breathing room and slower reading cadence."),
+        "compact": ("Tight Density", "High information packing with reduced whitespace."),
+        "mixed": ("Variable Density", "Intentional shifts between dense and open zones."),
+        "full-bleed": ("Bleed-Dominant Density", "Large spans and oversized blocks with minimal containment."),
+    },
+    "background": {
+        "solid": ("Solid Field", "Flat planes emphasize typography and silhouette."),
+        "gradient": ("Gradient Surface", "Tonal blend used as atmospheric depth layer."),
+        "textured": ("Textural Surface", "Noise or grain adds materiality and tactility."),
+        "patterned": ("Patterned Surface", "Repeating motifs create rhythm and brand memory."),
+        "layered": ("Layered Background", "Multiple planes establish foreground/background depth."),
+    },
+}
+
+
+def _axis_vocab(axis: str, value: str) -> tuple[str, str]:
+    fallback = (value.replace("-", " ").title(), "Intentional visual choice for this axis.")
+    return _AXIS_VOCAB.get(axis, {}).get(value, fallback)
+
+
+def _design_coaching(dna: DNA) -> list[str]:
+    prompts = [
+        "Are button radius and vertical padding proportional to control size (not pill-like)?",
+        "Do component specimen cards have enough inner padding to breathe?",
+    ]
+    if dna.layout == "asymmetric":
+        prompts.append("Is asymmetric tension balanced by clear focal anchors?")
+    if dna.typography in {"display-heavy", "expressive"}:
+        prompts.append("Do large letterforms preserve descenders and line-height readability?")
+    if dna.motion in {"orchestrated", "aggressive", "scroll-triggered"}:
+        prompts.append("Does motion reinforce hierarchy rather than compete with content?")
+    if dna.background in {"gradient", "patterned", "textured", "layered"}:
+        prompts.append("Does surface treatment support legibility instead of overpowering it?")
+    return prompts[:4]
+
+
+def _load_catalog_template() -> str:
+    """Load the catalog template from the evolve skill directory."""
+    template_path = Path(__file__).parent / "catalog-template.html"
+    if template_path.exists():
+        return template_path.read_text()
+    return ""
+
+
+def _render_proposal_card(p, gen_number: int) -> str:
+    """Render a single proposal card in 7a's design language."""
+    status_class = p.status
+    if p.status == "killed":
+        status_class = "loser"
+
+    status_label = {
+        "alive": "Alive", "winner": "Winner", "killed": "Eliminated",
+        "locked": "Locked", "pending": "Pending",
+    }.get(p.status, p.status.title())
+
+    origin_label = p.origin.upper()
+    if p.parent:
+        origin_label += f" from {p.parent}"
+
+    notes_html = ""
+    if p.notes:
+        notes_html = f'<div class="proposal-notes">{p.notes[0]}</div>'
+
+    artifact_path = p.artifacts.get("html") or f"gen-{gen_number}/{p.id}/index.html"
+    link = (
+        f'<a href="{artifact_path}" target="_blank" '
+        f'style="display:block;margin-top:0.75rem;font-family:var(--font-mono);'
+        f'font-size:0.7rem;color:var(--accent-cyan);text-decoration:none;'
+        f'letter-spacing:0.05em">'
+        f'&#9654; Open Preview</a>'
+    )
+
+    return f'''<div class="proposal-card {status_class}">
+    <div class="proposal-header">
+        <span class="proposal-id">{p.id}</span>
+        <span class="status-pill {status_class}">{status_label}</span>
+    </div>
+    <div class="dna-traits">{p.dna.as_code()}</div>
+    <div style="font-size:0.6rem;color:var(--text-muted);margin-bottom:0.5rem;
+        text-transform:uppercase;letter-spacing:0.08em">{origin_label}</div>
+    {notes_html}
+    {link}
+</div>'''
+
+
+def _render_taste_bars(taste: dict) -> str:
+    """Render taste profile as animated bars in 7a's style."""
+    ts = taste_summary(taste)
+    if not ts:
+        return '<div style="color:var(--text-muted);font-size:0.8rem">No taste data yet.</div>'
+    items = []
+    for axis, data in ts.items():
+        # Show top preferred and top avoided
+        for v, s in data.get("preferred", [])[:2]:
+            pct = min(abs(s) * 5, 100)
+            items.append(f'''<div class="taste-item">
+    <div class="taste-header">
+        <span class="taste-label">{axis}: {v}</span>
+        <span class="taste-score positive">+{s}</span>
+    </div>
+    <div class="taste-bar-bg">
+        <div class="taste-bar-fill positive" style="width:{pct}%"></div>
+    </div>
+</div>''')
+        for v, s in data.get("avoided", [])[:2]:
+            pct = min(abs(s) * 5, 100)
+            items.append(f'''<div class="taste-item">
+    <div class="taste-header">
+        <span class="taste-label">{axis}: {v}</span>
+        <span class="taste-score negative">{s}</span>
+    </div>
+    <div class="taste-bar-bg">
+        <div class="taste-bar-fill negative" style="width:{pct}%"></div>
+    </div>
+</div>''')
+    return "\n".join(items)
+
+
+def _render_timeline(evo) -> str:
+    """Render generation timeline nodes."""
+    nodes = []
+    for g in evo.generations:
+        winners = sum(1 for p in g.proposals if p.status == "winner")
+        is_current = g == evo.current_gen()
+        dot_class = "active" if is_current else ("winners" if winners else "")
+        node_class = "active" if is_current else ""
+        count = "current" if is_current else (f"{winners} winners" if winners else "no winners")
+        nodes.append(f'''<div class="timeline-node {node_class}">
+    <div class="timeline-dot {dot_class}"></div>
+    <span class="timeline-label">G{g.number}</span>
+    <span class="timeline-count">{count}</span>
+</div>''')
+    return '<div class="timeline-line"></div>'.join(nodes)
+
+
+def _render_gen_notes(gen) -> str:
+    """Render general notes for a generation."""
+    if not gen.general_notes:
+        return '<div style="color:var(--text-muted);font-size:0.8rem">No notes yet.</div>'
+    items = "".join(
+        f'<div style="padding:0.75rem;background:var(--surface-elevated);'
+        f'border-radius:8px;margin-bottom:0.5rem;font-size:0.8rem;'
+        f'color:var(--text-secondary);line-height:1.5">{n}</div>'
+        for n in gen.general_notes
+    )
+    return items
+
+
+def _render_dna_bank() -> str:
+    """Render DNA bank entries from global memory."""
+    mem = _get_memory()
+    if not mem:
+        return '<div style="color:var(--text-muted);font-size:0.8rem">No memory DB.</div>'
+    entries = mem.search_bank(limit=9)
+    if not entries:
+        return '<div style="color:var(--text-muted);font-size:0.8rem">Bank is empty.</div>'
+    cards = []
+    for e in entries:
+        note = e.note or ""
+        project = e.source_project or "unknown"
+        cards.append(f'''<div class="dna-sample">
+    <div class="dna-sample-header">
+        <div class="dna-avatar">{e.source_status[0].upper() if e.source_status else "?"}</div>
+        <div>
+            <div class="dna-name">{note or e.dna_code[:30]}</div>
+            <div class="dna-project">{project}</div>
+        </div>
+    </div>
+    <div class="dna-code-block">{e.dna_code}</div>
+</div>''')
+    return "\n".join(cards)
+
 
 def render_catalog(evo: Evolution) -> str:
     gen = evo.current_gen()
     if not gen:
         return "<html><body><p>No generations yet.</p></body></html>"
 
-    cards = []
-    for p in gen.proposals:
-        sc = _STATUS_COLORS.get(p.status, "#6b7280")
+    template = _load_catalog_template()
+    if not template:
+        # Minimal fallback if template missing
+        cards_html = "".join(_render_proposal_card(p, gen.number) for p in gen.proposals)
+        return f"<html><body><h1>{evo.project}</h1>{cards_html}</body></html>"
 
-        notes = ""
-        if p.notes:
-            items = "".join(f"<li>{n}</li>" for n in p.notes)
-            notes = f'<div class="notes"><strong>Notes:</strong><ul>{items}</ul></div>'
+    # Build all slot content
+    cards_html = "\n".join(_render_proposal_card(p, gen.number) for p in gen.proposals)
+    taste_html = _render_taste_bars(evo.taste)
+    timeline_html = _render_timeline(evo)
+    notes_html = _render_gen_notes(gen)
+    bank_html = _render_dna_bank()
+    total = sum(len(g.proposals) for g in evo.generations)
+    locked_dna = ""
+    if evo.locked:
+        lp = evo.find(evo.locked)
+        if lp:
+            locked_dna = lp.dna.as_code()
+    brand = "adherent" if evo.config.brand_adherent else "free"
+    date = gen.timestamp[:10] if gen.timestamp else ""
 
-        # Always link to conventional path; fall back to artifacts if set
-        artifact_path = p.artifacts.get("html") or f"gen-{gen.number}/{p.id}/index.html"
-        link = f'<a href="{artifact_path}" target="_blank" class="link">▶ Open Preview</a>'
-
-        origin = f'<span class="origin">{p.origin}'
-        if p.parent:
-            origin += f' from {p.parent}'
-        origin += '</span>'
-
-        pills = "".join(
-            f'<span class="pill" style="border-left:2px solid {_AXIS_COLORS[a]}">'
-            f'{getattr(p.dna, a)}</span>'
-            for a in AXIS_NAMES
-        )
-
-        cards.append(f'''<div class="card {p.status}" data-id="{p.id}">
-<div class="hdr"><span class="pid">{p.id}</span>
-<span class="badge" style="background:{sc}">{p.status}</span></div>
-<div class="dna">{pills}</div>
-<div class="code">{p.dna.as_code()}</div>
-{origin}{notes}{link}</div>''')
-
-    gen_notes = ""
-    if gen.general_notes:
-        items = "".join(f"<li>{n}</li>" for n in gen.general_notes)
-        gen_notes = f'<div class="section"><h3>General Notes</h3><ul>{items}</ul></div>'
-
-    taste_html = ""
-    ts = taste_summary(evo.taste)
-    if ts:
-        rows = []
-        for axis, data in ts.items():
-            pref = ", ".join(f"{v} (+{s})" for v, s in data.get("preferred", []))
-            avoid = ", ".join(f"{v} ({s})" for v, s in data.get("avoided", []))
-            rows.append(f"<tr><td>{axis}</td><td>{pref or '—'}</td><td>{avoid or '—'}</td></tr>")
-        taste_html = f'''<div class="section"><h3>Taste Profile</h3>
-<table><tr><th>Axis</th><th>Preferred</th><th>Avoided</th></tr>
-{"".join(rows)}</table></div>'''
-
-    return f'''<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{evo.project} — Gen {gen.number}</title>
-<style>
-*{{margin:0;padding:0;box-sizing:border-box}}
-body{{font-family:"SF Mono","Cascadia Code","Fira Code",monospace;background:#0a0a0a;color:#e5e5e5;padding:2rem}}
-h1{{font-size:1.4rem;margin-bottom:.25rem}}
-.meta{{color:#737373;font-size:.75rem;margin-bottom:2rem}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}}
-.card{{background:#171717;border:1px solid #262626;border-radius:8px;padding:1.25rem;transition:border-color .15s}}
-.card:hover{{border-color:#404040}}
-.card.winner{{border-color:#22c55e40}}
-.card.killed{{opacity:.35}}
-.card.locked{{border-color:#f59e0b80;box-shadow:0 0 24px #f59e0b10}}
-.hdr{{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}}
-.pid{{font-size:1.2rem;font-weight:700}}
-.badge{{font-size:.65rem;padding:2px 8px;border-radius:99px;color:#fff;text-transform:uppercase;letter-spacing:.05em}}
-.dna{{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem}}
-.pill{{font-size:.65rem;padding:2px 8px;background:#262626;border-radius:4px;color:#a3a3a3}}
-.code{{font-size:.6rem;color:#525252;margin-bottom:.5rem;word-break:break-all}}
-.origin{{font-size:.65rem;color:#525252;display:block;margin-bottom:.5rem}}
-.notes{{margin-top:.75rem;padding-top:.75rem;border-top:1px solid #262626;font-size:.8rem}}
-.notes ul{{padding-left:1.25rem;color:#a3a3a3}}
-.notes li{{margin:.2rem 0}}
-.link{{display:block;margin-top:.75rem;color:#3b82f6;text-decoration:none;font-size:.8rem}}
-.link:hover{{text-decoration:underline}}
-.section{{margin-top:2rem;padding:1.25rem;background:#171717;border:1px solid #262626;border-radius:8px}}
-.section h3{{font-size:.85rem;margin-bottom:.75rem}}
-.section ul{{padding-left:1.25rem;color:#a3a3a3;font-size:.8rem}}
-.section li{{margin:.2rem 0}}
-table{{width:100%;font-size:.75rem;border-collapse:collapse}}
-th,td{{text-align:left;padding:.5rem;border-bottom:1px solid #262626}}
-th{{color:#737373;font-weight:500}}
-</style></head>
-<body>
-<h1>{evo.project}</h1>
-<div class="meta">Generation {gen.number} · {len(gen.proposals)} proposals · \
-scope: {evo.config.scope} · brand: {"adherent" if evo.config.brand_adherent else "free"} · \
-{gen.timestamp[:10] if gen.timestamp else ""}</div>
-<div class="grid">{"".join(cards)}</div>
-{gen_notes}{taste_html}
-</body></html>'''
+    # Fill slots
+    html = template
+    html = html.replace("<!-- SLOT:PROJECT -->", evo.project)
+    html = html.replace("<!-- SLOT:GEN_NUMBER -->", str(gen.number))
+    html = html.replace("<!-- SLOT:PROPOSAL_COUNT -->", str(len(gen.proposals)))
+    html = html.replace("<!-- SLOT:TOTAL_EVALUATED -->", str(total))
+    html = html.replace("<!-- SLOT:SCOPE -->", evo.config.scope or "full")
+    html = html.replace("<!-- SLOT:BRAND -->", brand)
+    html = html.replace("<!-- SLOT:DATE -->", date)
+    html = html.replace("<!-- SLOT:LOCKED_DNA -->", locked_dna)
+    html = html.replace("<!-- SLOT:PROPOSAL_CARDS -->", cards_html)
+    html = html.replace("<!-- SLOT:TASTE_HTML -->", taste_html)
+    html = html.replace("<!-- SLOT:TIMELINE_HTML -->", timeline_html)
+    html = html.replace("<!-- SLOT:GEN_NOTES -->", notes_html)
+    html = html.replace("<!-- SLOT:DNA_BANK_HTML -->", bank_html)
+    return html
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
@@ -593,9 +928,36 @@ def cmd_init(args):
         min_diversity=args.diversity,
     )
     evo = Evolution(project=args.project, repo_path=args.repo, config=cfg)
+
+    # Brand auto-detection
+    detect = _get_detect()
+    brand_state = None
+    if detect:
+        brand_state = detect.detect_brand_state(args.repo)
+        print(brand_state.summary())
+        if brand_state.completeness > 0:
+            print()
+
     save(evo)
     print(f"Initialized: {_file(args.repo)}")
     print(f"  scope={cfg.scope} brand={cfg.brand_adherent} pop={cfg.population_size}")
+
+    # Register with memory
+    contexts = [c.strip() for c in args.contexts.split(",")] if getattr(args, "contexts", None) else []
+    mem = _get_memory()
+    if mem:
+        bs_dict = brand_state.as_dict() if brand_state else None
+        mem.record_project(args.project, args.repo, args.scope,
+                           contexts=contexts, brand_state=bs_dict)
+        # Auto-import existing evolution.yaml data
+        evo_yaml = _file(args.repo)
+        if evo_yaml.exists():
+            try:
+                mem.import_from_evolution_yaml(str(evo_yaml), args.project, contexts)
+                print("  Imported existing evolution data into memory")
+            except Exception:
+                pass
+        print(f"  Registered in design memory (contexts: {contexts or 'none'})")
 
 
 def cmd_suggest(args):
@@ -777,6 +1139,266 @@ def cmd_port(args):
     print(f"{port}")
 
 
+# ── New v2 commands ──────────────────────────────────────────────────────────
+
+def cmd_detect(args):
+    """Show brand state for a repo."""
+    detect = _get_detect()
+    if not detect:
+        print("detect.py not available", file=sys.stderr)
+        sys.exit(1)
+    state = detect.detect_brand_state(args.repo)
+    print(state.summary())
+    if args.json:
+        print(json.dumps(state.as_dict(), indent=2))
+
+
+def cmd_memory(args):
+    """Memory subcommands: stats, taste, bank, veto, mandate, rules, history, import."""
+    mem = _get_memory()
+    if not mem:
+        print("memory.py not available", file=sys.stderr)
+        sys.exit(1)
+
+    sub = args.memory_cmd
+
+    if not sub or sub == "stats":
+        s = mem.stats()
+        print("Design Memory Stats:")
+        for k, v in s.items():
+            print(f"  {k}: {v}")
+
+    elif sub == "taste":
+        contexts = [c.strip() for c in args.context.split(",")] if getattr(args, "context", None) else None
+        print(mem.taste_summary_text(contexts))
+
+    elif sub == "bank":
+        search = getattr(args, "search", None)
+        if search:
+            entries = mem.search_bank(axis_filters={"_query": search}, limit=20)
+        else:
+            entries = mem.search_bank(limit=20)
+        if not entries:
+            print("DNA bank is empty.")
+            return
+        print(f"DNA Bank ({len(entries)} entries):")
+        for e in entries:
+            tags = ", ".join(e.tags) if e.tags else ""
+            note = e.note or ""
+            print(f"  {e.dna_code}  [{e.source_status or ''}] "
+                  f"from {e.source_project or '?'}"
+                  f"{' #' + tags if tags else ''}"
+                  f"{' — ' + note if note else ''}")
+
+    elif sub == "veto":
+        if not args.axis or not args.value:
+            print("Usage: evolve memory veto AXIS VALUE [--reason R] [--context C]")
+            return
+        ctx = args.context if getattr(args, "context", None) else None
+        reason = getattr(args, "reason", None)
+        mem.add_hard_preference("veto", args.axis, args.value, context=ctx, reason=reason)
+        print(f"Vetoed: {args.axis}={args.value}" + (f" (context: {ctx})" if ctx else ""))
+
+    elif sub == "mandate":
+        if not args.axis or not args.value:
+            print("Usage: evolve memory mandate AXIS VALUE [--reason R] [--context C]")
+            return
+        ctx = args.context if getattr(args, "context", None) else None
+        reason = getattr(args, "reason", None)
+        mem.add_hard_preference("mandate", args.axis, args.value, context=ctx, reason=reason)
+        print(f"Mandated: {args.axis}={args.value}" + (f" (context: {ctx})" if ctx else ""))
+
+    elif sub == "rules":
+        remove_id = getattr(args, "remove", None)
+        if remove_id:
+            # Find rule details first, then remove by type/axis/value
+            prefs = mem.list_hard_preferences()
+            target = next((p for p in prefs if str(p.get("id")) == str(remove_id)), None)
+            if target:
+                mem.remove_hard_preference(target["type"], target["axis"],
+                                            target["value"], target.get("context"))
+                print(f"Removed rule {remove_id}")
+            else:
+                print(f"Rule {remove_id} not found", file=sys.stderr)
+            return
+        prefs = mem.list_hard_preferences()
+        if not prefs:
+            print("No hard preferences set.")
+            return
+        print("Hard Preferences:")
+        for p in prefs:
+            ctx = f" (context: {p['context']})" if p.get("context") else ""
+            reason = f" — {p['reason']}" if p.get("reason") else ""
+            print(f"  [{p['id']}] {p['type'].upper()} {p['axis']}={p['value']}{ctx}{reason}")
+
+    elif sub == "history":
+        project = getattr(args, "project", None)
+        entries = mem.get_feedback_history(project=project, limit=50)
+        if not entries:
+            print("No feedback history.")
+            return
+        print(f"Feedback History ({len(entries)} entries):")
+        for e in entries:
+            print(f"  {e.get('timestamp', '?')[:16]}  {e.get('action', '?'):8s} "
+                  f"{e.get('dna_code', '?')}  [{e.get('project', '?')}]")
+
+    elif sub == "import":
+        path = args.path
+        project = getattr(args, "project", None) or "imported"
+        contexts = [c.strip() for c in args.context.split(",")] if getattr(args, "context", None) else []
+        count = mem.import_from_evolution_yaml(path, project, contexts)
+        print(f"Imported {count} feedback entries from {path}")
+
+    else:
+        print(f"Unknown memory command: {sub}")
+
+
+def cmd_bank(args):
+    """Bank a proposal from current generation."""
+    evo = _require(args.repo)
+    mem = _get_memory()
+    if not mem:
+        print("memory.py not available", file=sys.stderr)
+        sys.exit(1)
+
+    p = evo.find(args.proposal)
+    if not p:
+        print(f"Proposal {args.proposal} not found", file=sys.stderr)
+        sys.exit(1)
+
+    tags = [t.strip() for t in args.tags.split(",")] if getattr(args, "tags", None) else []
+    note = getattr(args, "note", None) or ""
+    mem.bank_dna(p.dna.as_code(), evo.project, p.status, tags=tags, note=note)
+    print(f"Banked {args.proposal}: {p.dna.as_code()}"
+          f"{' #' + ','.join(tags) if tags else ''}"
+          f"{' — ' + note if note else ''}")
+
+
+def cmd_recraft(args):
+    """Recraft AI image generation commands."""
+    rc = _get_recraft()
+    if not rc:
+        print("recraft.py not available", file=sys.stderr)
+        sys.exit(1)
+
+    sub = args.recraft_cmd
+
+    if sub == "logo":
+        colors = rc.parse_color_arg(args.colors) if getattr(args, "colors", None) else None
+        n = getattr(args, "n", 4) or 4
+        images = rc.generate_logo(args.prompt, brand_colors=colors,
+                                  substyle=getattr(args, "substyle", None), n=n)
+        out = Path(getattr(args, "out", ".") or ".")
+        saved = rc.download_and_save(images, out, "logo")
+        for s in saved:
+            print(f"  Saved: {s}")
+
+    elif sub == "icon":
+        colors = rc.parse_color_arg(args.colors) if getattr(args, "colors", None) else None
+        n = getattr(args, "n", 4) or 4
+        images = rc.generate_icon(args.prompt, brand_colors=colors, n=n)
+        out = Path(getattr(args, "out", ".") or ".")
+        saved = rc.download_and_save(images, out, "icon")
+        for s in saved:
+            print(f"  Saved: {s}")
+
+    elif sub == "illustrate":
+        colors = rc.parse_color_arg(args.colors) if getattr(args, "colors", None) else None
+        n = getattr(args, "n", 4) or 4
+        style = getattr(args, "style", "digital_illustration") or "digital_illustration"
+        images = rc.generate_illustration(args.prompt, style=style, brand_colors=colors, n=n)
+        out = Path(getattr(args, "out", ".") or ".")
+        saved = rc.download_and_save(images, out, "illustration")
+        for s in saved:
+            print(f"  Saved: {s}")
+
+    elif sub == "vectorize":
+        url = rc.vectorize(args.image_url)
+        print(f"  Vectorized: {url}")
+
+    elif sub == "test":
+        print("Testing Recraft API connectivity...")
+        try:
+            images = rc.generate_logo("simple geometric circle logo", n=1)
+            print(f"  Generated {len(images)} image(s)")
+            print("  API test passed.")
+        except Exception as e:
+            print(f"  API test failed: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    else:
+        print(f"Unknown recraft command: {sub}")
+
+
+DEFAULT_KEEP_GENS = 3
+
+
+def _gc_html_previews(repo: str, keep_gens: int = DEFAULT_KEEP_GENS) -> dict:
+    """Remove old generation HTML previews, keeping only the latest N.
+
+    Returns dict with cleanup stats.
+    """
+    base = _dir(repo)
+    if not base.exists():
+        return {"html_dirs_removed": 0, "bytes_freed": 0}
+
+    # Find all gen-N directories
+    gen_dirs = sorted(
+        [d for d in base.iterdir() if d.is_dir() and d.name.startswith("gen-")],
+        key=lambda d: int(d.name.split("-")[1]) if d.name.split("-")[1].isdigit() else 0,
+    )
+
+    if len(gen_dirs) <= keep_gens:
+        return {"html_dirs_removed": 0, "bytes_freed": 0}
+
+    to_remove = gen_dirs[:-keep_gens]
+    removed = 0
+    freed = 0
+    import shutil
+    for d in to_remove:
+        # Sum file sizes before removal
+        for f in d.rglob("*"):
+            if f.is_file():
+                freed += f.stat().st_size
+        shutil.rmtree(d)
+        removed += 1
+
+    return {"html_dirs_removed": removed, "bytes_freed": freed}
+
+
+def cmd_gc(args):
+    """Garbage collection: prune memory DB + clean old HTML previews."""
+    keep = getattr(args, "keep_gens", DEFAULT_KEEP_GENS) or DEFAULT_KEEP_GENS
+
+    # 1. Memory DB maintenance
+    mem = _get_memory()
+    if mem:
+        result = mem.gc()
+        print("Memory DB:")
+        print(f"  Taste scores clamped to ±{mem.TASTE_SCORE_CAP}")
+        if result["bank_pruned"]:
+            print(f"  DNA bank pruned: {result['bank_pruned']} entries removed")
+        else:
+            print(f"  DNA bank: within limit ({mem.MAX_BANK_SIZE})")
+        if result["feedback_pruned"]:
+            print(f"  Feedback pruned: {result['feedback_pruned']} entries removed")
+        else:
+            print(f"  Feedback: within limit ({mem.MAX_FEEDBACK_PER_PROJECT}/project)")
+        print("  WAL checkpoint: done")
+    else:
+        print("Memory DB: not available (skipped)")
+
+    # 2. HTML preview cleanup for current repo
+    html = _gc_html_previews(args.repo, keep)
+    if html["html_dirs_removed"]:
+        mb = html["bytes_freed"] / (1024 * 1024)
+        print(f"\nHTML previews:")
+        print(f"  Removed {html['html_dirs_removed']} old generation(s), freed {mb:.1f}MB")
+        print(f"  Keeping last {keep} generation(s)")
+    else:
+        print(f"\nHTML previews: nothing to clean (≤{keep} generations)")
+
+
 def _project_port(project_name: str) -> int:
     """Deterministic port from project name. Range 8800-9799 (1000 slots)."""
     h = sum(ord(c) * (i + 1) for i, c in enumerate(project_name))
@@ -794,6 +1416,7 @@ def main():
     s.add_argument("--component")
     s.add_argument("--brand", help="Path to brand.yaml")
     s.add_argument("--lock", help="Comma-separated axes to lock")
+    s.add_argument("--contexts", help="Comma-separated context tags (saas, landing, dashboard)")
     s.add_argument("--population", type=int, default=8)
     s.add_argument("--immigration", type=int, default=2)
     s.add_argument("--diversity", type=int, default=3)
@@ -825,6 +1448,64 @@ def main():
     sub.add_parser("serve")
     sub.add_parser("port")
 
+    # v2: detect
+    s = sub.add_parser("detect", help="Auto-detect brand infrastructure")
+    s.add_argument("--json", action="store_true", help="Output as JSON")
+
+    # v2: memory
+    s = sub.add_parser("memory", help="Design memory management")
+    s.add_argument("memory_cmd", nargs="?", default="stats",
+                   choices=["stats", "taste", "bank", "veto", "mandate", "rules", "history", "import"])
+    s.add_argument("axis", nargs="?", help="Axis name (for veto/mandate)")
+    s.add_argument("value", nargs="?", help="Value (for veto/mandate)")
+    s.add_argument("--context", help="Context tag")
+    s.add_argument("--reason", help="Reason for veto/mandate")
+    s.add_argument("--search", help="Search DNA bank")
+    s.add_argument("--remove", help="Remove rule by ID")
+    s.add_argument("--project", help="Filter by project")
+    s.add_argument("--path", help="Path for import command")
+
+    # v2: bank
+    s = sub.add_parser("bank", help="Bank a proposal into DNA bank")
+    s.add_argument("proposal", help="Proposal ID to bank")
+    s.add_argument("--note", help="Note for banked DNA")
+    s.add_argument("--tags", help="Comma-separated tags")
+
+    # v2: recraft
+    s = sub.add_parser("recraft", help="Recraft AI image generation")
+    rsub = s.add_subparsers(dest="recraft_cmd")
+
+    rs = rsub.add_parser("logo", help="Generate vector logos")
+    rs.add_argument("prompt", help="Logo description")
+    rs.add_argument("--colors", help="Brand colors as hex: '#1a1a2e,#e94560'")
+    rs.add_argument("--substyle", help="Vector substyle")
+    rs.add_argument("--n", type=int, default=4)
+    rs.add_argument("--out", default=".", help="Output directory")
+
+    rs = rsub.add_parser("icon", help="Generate UI icons")
+    rs.add_argument("prompt", help="Icon description")
+    rs.add_argument("--colors", help="Brand colors as hex")
+    rs.add_argument("--n", type=int, default=4)
+    rs.add_argument("--out", default=".", help="Output directory")
+
+    rs = rsub.add_parser("illustrate", help="Generate illustrations")
+    rs.add_argument("prompt", help="Illustration description")
+    rs.add_argument("--style", default="digital_illustration",
+                    choices=["digital_illustration", "realistic_image"])
+    rs.add_argument("--colors", help="Brand colors as hex")
+    rs.add_argument("--n", type=int, default=4)
+    rs.add_argument("--out", default=".", help="Output directory")
+
+    rs = rsub.add_parser("vectorize", help="Convert raster to SVG")
+    rs.add_argument("image_url", help="URL of image to vectorize")
+
+    rsub.add_parser("test", help="Quick API connectivity test")
+
+    # v2: gc
+    s = sub.add_parser("gc", help="Garbage collection: prune DB + clean HTML")
+    s.add_argument("--keep-gens", type=int, default=DEFAULT_KEEP_GENS,
+                   help=f"Keep last N generations' HTML (default: {DEFAULT_KEEP_GENS})")
+
     args = p.parse_args()
     if not args.cmd:
         p.print_help()
@@ -836,6 +1517,8 @@ def main():
         "status": cmd_status, "catalog": cmd_catalog, "lock": cmd_lock,
         "taste": cmd_taste, "export": cmd_export,
         "serve": cmd_serve, "port": cmd_port,
+        "detect": cmd_detect, "memory": cmd_memory,
+        "bank": cmd_bank, "recraft": cmd_recraft, "gc": cmd_gc,
     }[args.cmd](args)
 
 
