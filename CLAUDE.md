@@ -72,6 +72,18 @@ Never mark complete without proving correctness:
 - Non-trivial changes: pause and ask "is there a more elegant solution?"
 - Bug reports: just fix. Don't ask for hand-holding. Point at logs/errors/tests → resolve.
 
+## Bounded Shell Output (MANDATORY)
+
+Never run unbounded reads/log dumps.
+
+- Size first: `wc -l <file>` (or `du -h <path>`)
+- Read windows: `sed -n '1,120p' <file>`; jump with `rg -n`
+- Bound every command: `--limit`, `head -n`, `tail -n`, and timeout (`timeout 15s` or `gtimeout 15s`)
+- Parallelize only bounded commands; never parallelize unknown-size output
+- If command gives no useful signal in 20s: abort, narrow scope, rerun
+
+Reference: `~/.claude/docs/bounded-io.md`
+
 ## Bug-Fixing Discipline
 
 - **Test-first for bugs.** When given a bug report, first write a test that reproduces it. Fix passes when test passes.
@@ -126,6 +138,7 @@ See `/cli-reference` for full commands.
 - Shallow modules, pass-through layers, configuration hell
 - Hidden coupling, action-at-a-distance, magic shared state
 - Large diffs, untested branches, speculative abstractions
+- **NEVER lower quality gates to pass CI.** Coverage thresholds, lint rules, type-check strictness, security gates — these exist to catch problems. If a gate fails, write code to meet it (tests, fixes, refactors). Moving the goalpost is gaming the system. The correct response to a coverage gate failure is ALWAYS more tests, never a lower threshold. No exceptions.
 
 ---
 
@@ -199,6 +212,12 @@ Five mandatory sections — missing any = not ready:
 Learnings land here first. Run `/distill` to graduate to skills/agents.
 
 <!-- Add learnings below this line -->
+
+### Bounded Output Protocol
+
+- Unbounded reads cause silent stalls and wasted time.
+- Fix: size check first, windowed reads, hard output limits, and 15s timeouts.
+- Rule: abort after 20s without signal; rerun with narrower query.
 
 ### AI Writing Tells to Avoid
 
@@ -373,3 +392,35 @@ When delegating, prefer Moonbridge (`mcp__moonbridge__spawn_agent`) over `codex 
 
 **Hooks:** delegation-guard auto-suspends when team active. Safety hooks still fire.
 
+### Module Integration: Read Before Writing
+
+When writing code that calls another module's functions:
+
+1. **Read the module's public API first.** Don't guess function names, return types, or parameter signatures.
+2. **Check return types.** Dataclass? Dict? NamedTuple? Use attribute access (`.field`) vs subscript (`["field"]`) accordingly.
+3. **Check column/field names.** DB schemas use their own names; don't assume `pref_type` when the column is `type`.
+
+Anti-pattern that caused 6/6 bugs in one session:
+```python
+# BAD: Assumed API
+result = module.feedback_history()        # Wrong name
+entry["dna_code"]                         # Dataclass, not dict
+p['pref_type']                            # Column is 'type'
+
+# GOOD: Verified API
+result = module.get_feedback_history()    # Read the module first
+entry.dna_code                            # Attribute access
+p['type']                                 # Matches schema
+```
+
+### NEVER Lower Quality Gates (ABSOLUTE RULE)
+
+Coverage thresholds, lint rules, type strictness, security gates — these are load-bearing walls.
+When a gate fails, the ONLY acceptable response is writing code to meet it: more tests, better code, actual fixes.
+NEVER lower a threshold, relax a rule, or weaken a gate to make CI pass.
+This includes: coverage percentages, `fail_under`, branch coverage floors, ESLint rule severity, tsconfig strictness, security scan thresholds.
+If the gate was set too aggressively and can't be met, STOP and escalate to the user. Don't "fix" it yourself.
+
+### Session Retrospective Discipline
+
+Run `/done` at the end of significant sessions. Produces artifacts, not journal entries.
