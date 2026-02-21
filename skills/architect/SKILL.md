@@ -148,3 +148,20 @@ Triggered when autopilot calls `/architect` on a specced issue.
 
 **Exploration mode:** "Technical design locked. Ready for `/build $1`."
 **Quick mode:** "Technical design complete. Next: `/build $1`"
+
+## Visual Deliverable
+
+After completing the core workflow, generate a visual HTML summary:
+
+1. Read `~/.claude/skills/visualize/prompts/architect-diagram.md`
+2. Read the template(s) referenced in the prompt
+3. Read `~/.claude/skills/visualize/references/css-patterns.md`
+4. Generate self-contained HTML capturing this session's output
+5. Write to `~/.agent/diagrams/architect-{feature}-{date}.html`
+6. Open in browser: `open ~/.agent/diagrams/architect-{feature}-{date}.html`
+7. Tell the user the file path
+
+Skip visual output if:
+- The session was trivial (single finding, quick fix)
+- The user explicitly opts out (`--no-visual`)
+- No browser available (SSH session)

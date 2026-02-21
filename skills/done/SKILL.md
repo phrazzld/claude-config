@@ -138,3 +138,20 @@ Output structured summary:
 - Over-codifying obvious patterns that any model would know
 - Creating docs nobody will read (prefer hooks/agents that enforce automatically)
 - Skipping the "went well" section (positive reinforcement matters for pattern stability)
+
+## Visual Deliverable
+
+After completing the core workflow, generate a visual HTML summary:
+
+1. Read `~/.claude/skills/visualize/prompts/done-retro.md`
+2. Read the template(s) referenced in the prompt
+3. Read `~/.claude/skills/visualize/references/css-patterns.md`
+4. Generate self-contained HTML capturing this session's output
+5. Write to `~/.agent/diagrams/retro-{date}.html`
+6. Open in browser: `open ~/.agent/diagrams/retro-{date}.html`
+7. Tell the user the file path
+
+Skip visual output if:
+- The session was trivial (single finding, quick fix)
+- The user explicitly opts out (`--no-visual`)
+- No browser available (SSH session)

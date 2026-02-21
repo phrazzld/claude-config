@@ -70,3 +70,20 @@ See `references/reviewer-prompts.md` for prompt templates.
 ## Output
 
 Action plan with: Critical (block merge), Important (fix in PR), Suggestions (optional). Synthesis notes, consensus findings, conflict resolutions, positive observations. Raw outputs in collapsible details.
+
+## Visual Deliverable
+
+After completing the core workflow, generate a visual HTML summary:
+
+1. Read `~/.claude/skills/visualize/prompts/review-findings.md`
+2. Read the template(s) referenced in the prompt
+3. Read `~/.claude/skills/visualize/references/css-patterns.md`
+4. Generate self-contained HTML capturing this session's output
+5. Write to `~/.agent/diagrams/review-{branch}-{date}.html`
+6. Open in browser: `open ~/.agent/diagrams/review-{branch}-{date}.html`
+7. Tell the user the file path
+
+Skip visual output if:
+- The session was trivial (single finding, quick fix)
+- The user explicitly opts out (`--no-visual`)
+- No browser available (SSH session)

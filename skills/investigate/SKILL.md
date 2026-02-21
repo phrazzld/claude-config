@@ -116,3 +116,20 @@ Prefer investigating root hypotheses first. If you find yourself proposing a sym
 - Consider if the pattern is worth codifying (regression test, agent update, etc.)
 
 Trust your judgment. You don't need permission for read-only operations. If something doesn't work, try another approach.
+
+## Visual Deliverable
+
+After completing the core workflow, generate a visual HTML summary:
+
+1. Read `~/.claude/skills/visualize/prompts/investigate-timeline.md`
+2. Read the template(s) referenced in the prompt
+3. Read `~/.claude/skills/visualize/references/css-patterns.md`
+4. Generate self-contained HTML capturing this session's output
+5. Write to `~/.agent/diagrams/investigate-{incident}-{date}.html`
+6. Open in browser: `open ~/.agent/diagrams/investigate-{incident}-{date}.html`
+7. Tell the user the file path
+
+Skip visual output if:
+- The session was trivial (single finding, quick fix)
+- The user explicitly opts out (`--no-visual`)
+- No browser available (SSH session)
