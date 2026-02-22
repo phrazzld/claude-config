@@ -81,6 +81,29 @@ gh api repos/{owner}/{repo}/branches/main/protection 2>/dev/null | jq -r '.requi
 grep -q '"strict": true' tsconfig.json 2>/dev/null && echo "✓ Strict mode" || echo "✗ Strict mode"
 ```
 
+### 4.5. Custom Guardrails
+
+Check for project-specific lint rules in `guardrails/` directory:
+
+```bash
+# Guardrails directory exists?
+[ -d "guardrails" ] && echo "✓ guardrails/ directory" || echo "- No custom guardrails (run /guardrail to create)"
+
+# ESLint local plugin
+[ -f "guardrails/index.js" ] && echo "✓ ESLint local plugin" || echo "- No ESLint guardrails"
+
+# ast-grep config
+[ -f "guardrails/sgconfig.yml" ] && echo "✓ ast-grep config" || echo "- No ast-grep guardrails"
+
+# Count rules and tests
+if [ -d "guardrails/rules" ]; then
+  RULES=$(find guardrails/rules -name "*.js" -not -name "*.test.js" -o -name "*.yml" 2>/dev/null | wc -l | tr -d ' ')
+  TESTS=$(find guardrails/rules -name "*.test.js" 2>/dev/null | wc -l | tr -d ' ')
+  echo "Rules: $RULES | Tests: $TESTS"
+  [ "$TESTS" -lt "$RULES" ] && echo "⚠ Some rules lack tests"
+fi
+```
+
 ### 5. Commit Standards
 
 ```bash
@@ -161,6 +184,7 @@ Spawn `security-sentinel` agent to analyze source code for:
 | Not strict TypeScript | P1 |
 | No commitlint | P2 |
 | No coverage in PRs | P2 |
+| No custom guardrails | P3 |
 | Tool upgrades | P3 |
 
 ## Related

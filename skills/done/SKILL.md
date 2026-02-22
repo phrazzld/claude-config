@@ -61,12 +61,13 @@ Sort into five buckets:
 For EACH friction point and bug, evaluate codification targets in order:
 
 ```
-Hook     → Can we prevent this automatically?
-Agent    → Can a reviewer catch this?
-Skill    → Is this a reusable workflow?
-Memory   → Should auto-memory capture this?
+Hook      → Can we prevent this automatically? (pre-edit)
+Lint rule → Can a lint rule catch this at edit time? → invoke /guardrail
+Agent     → Can a reviewer catch this?
+Skill     → Is this a reusable workflow?
+Memory    → Should auto-memory capture this?
 CLAUDE.md → Is this a convention/philosophy?
-Docs     → Does a reference doc need updating?
+Docs      → Does a reference doc need updating?
 ```
 
 **Default: codify. Exception: justify not codifying.**

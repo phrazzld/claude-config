@@ -32,11 +32,14 @@ Scan the session for:
 
 For each learning, consider:
 - **Hook** - Should this be guaranteed/blocked? (most deterministic)
+- **Lint rule** - Can a lint rule catch this at edit time? → invoke `/guardrail`
 - **Agent** - Should a reviewer catch this pattern?
 - **Skill** - Is this a reusable workflow?
 - **CLAUDE.md** - Is this philosophy/convention?
 
-Choose the target that provides the most leverage. Hooks > Agents > Skills > CLAUDE.md for enforcement. Skills > CLAUDE.md for workflows.
+Choose the target that provides the most leverage. Hooks > Lint rules > Agents > Skills > CLAUDE.md for enforcement. Skills > CLAUDE.md for workflows.
+
+Lint rules are ideal for: import boundaries, naming conventions, deprecated API usage, auth enforcement, architectural layering violations. If the pattern can be expressed as "this code shape should never/always appear," it's a lint rule.
 
 ### 3. Implement
 

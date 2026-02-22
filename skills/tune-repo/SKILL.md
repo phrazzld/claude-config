@@ -54,15 +54,13 @@ Generate bottom-up per-directory summaries. This gives agents granular navigatio
 # Check if glance is available
 which glance
 
-# Run glance on the repo root (-force to regenerate stale summaries)
-glance -force
+# Run glance on the repo root
+glance
 ```
 
-Glance produces `glance.md` in each directory. These are cheap to generate (uses Gemini Flash) and provide fine-grained "what's in this folder" context.
+Glance produces `glance.md` in each directory. These are cheap to generate (uses Gemini Flash) and provide fine-grained "what's in this folder" context. Glance skips directories that already have a `glance.md` by default.
 
 **If glance is not installed:** Skip this phase. Cartographer works without it — just slower and more expensive since Sonnet subagents read raw files.
-
-**If glance.md files already exist and are recent:** Skip `-force`, use existing summaries.
 
 ### Phase 2: Cartographer (Comprehensive, Top-Down)
 
@@ -176,7 +174,29 @@ Bad memory entries:
 - Generic language/framework knowledge
 - Temporary state (current branch, active PR)
 
-### Phase 7: Skill Gap Analysis
+### Phase 7.5: Guardrail Discovery
+
+Analyze Cartographer output and codebase for architectural invariants worth enforcing as lint rules. Look for:
+
+- **Import boundaries** — Are there modules that should only be accessed through a facade? (e.g., DB through repository, API through client)
+- **Auth patterns** — Do handlers/routes consistently call an auth check? Any that don't?
+- **Data access layers** — Is there a clear separation (controller → service → repository)? Violations?
+- **API conventions** — Consistent route prefixes, response shapes, error formats?
+- **Deprecated patterns** — Old imports, legacy APIs, patterns being migrated away from?
+- **Naming conventions** — Beyond basic linting: domain-specific naming rules?
+
+For each pattern found, output a recommendation:
+
+```
+Guardrail candidates:
+- /guardrail "all DB access must go through repository layer" (3 violations found)
+- /guardrail "API routes must use /api/v1 prefix" (0 violations — already clean, protect it)
+- /guardrail "no direct fetch() — use apiClient wrapper" (7 violations found)
+```
+
+**Do NOT generate rules here.** `/guardrail` owns rule generation. This phase only discovers and recommends.
+
+### Phase 8: Skill Gap Analysis
 
 Assess whether this repo needs project-specific skills:
 
@@ -209,4 +229,5 @@ Report:
 - AGENTS.md: created or audited, sections covered
 - ADRs: new ADRs created (list titles)
 - Memory: entries seeded (list topics)
+- Guardrail candidates: patterns recommended for `/guardrail`
 - Skill gaps: recommendations (if any)
