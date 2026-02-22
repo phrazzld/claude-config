@@ -72,3 +72,11 @@ backups/
 
 # Shell scripts (machine-specific)
 scripts/
+
+# Temporary work directories and external project checkouts
+tmp/
+tmp-*/
+work/
+caesar-in-a-year-work/
+cerberus-cloud/
+moneta_link
