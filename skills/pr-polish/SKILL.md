@@ -118,7 +118,19 @@ gh pr edit $PR --body "$(current body + before/after section)"
 
 Skip screenshots only when all polish was purely internal (refactoring with no visible output change).
 
-### 8. Codify (Optional)
+### 8. Refresh Glance Summaries (Conditional)
+
+If this PR added, removed, or significantly restructured directories:
+
+```bash
+glance   # run from repo root — skips up-to-date directories automatically
+```
+
+Do NOT pass `-force`. Glance handles intelligent regeneration based on existing `.glance.md` files. Only affects directories that changed.
+
+Commit any updated `.glance.md` files with the PR branch.
+
+### 9. Codify (Optional)
 
 If patterns or learnings emerged during this polish pass, invoke `/distill` to capture them as permanent knowledge (hooks, agents, skills, CLAUDE.md entries).
 

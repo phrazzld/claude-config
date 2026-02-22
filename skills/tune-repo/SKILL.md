@@ -58,7 +58,7 @@ which glance
 glance
 ```
 
-Glance produces `glance.md` in each directory. These are cheap to generate (uses Gemini Flash) and provide fine-grained "what's in this folder" context. Glance skips directories that already have a `glance.md` by default.
+Glance produces `.glance.md` in each directory. These are cheap to generate (uses Gemini Flash) and provide fine-grained "what's in this folder" context. Glance skips directories that already have a `.glance.md` by default — intelligent regeneration is built in, so never pass `-force`.
 
 **If glance is not installed:** Skip this phase. Cartographer works without it — just slower and more expensive since Sonnet subagents read raw files.
 

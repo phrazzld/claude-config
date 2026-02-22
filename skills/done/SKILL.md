@@ -72,6 +72,10 @@ Docs      → Does a reference doc need updating?
 
 **Default: codify. Exception: justify not codifying.**
 
+### 3.5. Tune Repo
+
+Run `/tune-repo` to refresh `.glance.md` summaries, update CLAUDE.md/AGENTS.md if drift is detected, and seed memory with new gotchas from the session.
+
 ### 4. Execute Codification
 
 For each item to codify:
