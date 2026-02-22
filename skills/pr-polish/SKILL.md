@@ -118,6 +118,21 @@ gh pr edit $PR --body "$(current body + before/after section)"
 
 Skip screenshots only when all polish was purely internal (refactoring with no visible output change).
 
+### 7.5 Diagram Audit
+
+Check PR body for visual communication:
+
+```bash
+gh pr view $PR --json body | jq -r '.body'
+```
+
+- Does the PR body have a `## What Changed` Mermaid diagram?
+- If no, and the change involves logic/architecture/data flow: generate one using `~/.claude/skills/visualize/references/github-mermaid-patterns.md`
+- If yes: validate it accurately reflects the **final state** (diagrams drift during review)
+- Add or update diagram in PR body: `gh pr edit $PR --body "$(updated body)"`
+
+Omit only when the change is purely internal with no branching or relationships.
+
 ### 8. Refresh Glance Summaries (Conditional)
 
 If this PR added, removed, or significantly restructured directories:

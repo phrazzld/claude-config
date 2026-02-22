@@ -71,6 +71,25 @@ Transforms a feature specification into a visual overview that communicates the 
 - **Collapsible Sections** — for open questions
 - **Background Atmosphere** — radial glow behind the hero section
 
+## GitHub-Ready Blocks
+
+At the bottom of the generated HTML, include a `<section class="github-ready">` section:
+
+```html
+<section class="github-ready">
+  <h2>GitHub-Ready Blocks</h2>
+  <p>Copy-paste into GitHub issues/PR comments:</p>
+  <pre><code>## Flow
+
+```mermaid
+flowchart LR
+    [user journey diagram reflecting this spec's primary flow]
+```</code></pre>
+</section>
+```
+
+Generate the actual Mermaid source from the spec content — not a placeholder. This block should be copy-paste ready for posting to a GitHub issue comment.
+
 ## Output
 
 `~/.agent/diagrams/spec-{project}-{timestamp}.html`

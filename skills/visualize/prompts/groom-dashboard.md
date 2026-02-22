@@ -59,6 +59,25 @@ Transforms a codebase grooming audit into a scannable visual dashboard. The audi
 - **Background Atmosphere** — gradient mesh with 2-3 positioned radials
 - **Animations** — `fadeScale` for KPI cards, `fadeUp` for table rows with staggered `--i`
 
+## GitHub-Ready Blocks
+
+At the bottom of the generated HTML, include a `<section class="github-ready">` section:
+
+```html
+<section class="github-ready">
+  <h2>GitHub-Ready Blocks</h2>
+  <p>Copy-paste into GitHub issues/PR comments:</p>
+  <pre><code>## Theme Relationships
+
+```mermaid
+graph LR
+    [theme relationship diagram reflecting this groom session's strategic themes]
+```</code></pre>
+</section>
+```
+
+Generate actual Mermaid source from the session's strategic themes — not a placeholder. Show dependencies, shared components, and compounding effects between themes. This block should be copy-paste ready for posting as a synthesis message or issue comment on GitHub.
+
 ## Output
 
 `~/.agent/diagrams/groom-{project}-{timestamp}.html`

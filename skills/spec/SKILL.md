@@ -108,7 +108,25 @@ Write product spec on the issue:
 
 ### Open Questions for Architect
 [Technical unknowns surfaced during exploration]
+
+## Flow
+
+```mermaid
+flowchart LR
+    A([User opens X]) --> B[Does Y]
+    B --> C{Decision?}
+    C -- Yes --> D[Path A]
+    C -- No --> E[Path B]
+    D & E --> F([Goal achieved])
 ```
+```
+
+**Diagram selection:**
+- Feature with user interaction → `flowchart LR` (user journey)
+- Feature with branching logic → `flowchart TD` (decision tree)
+- Integration/API feature → `sequenceDiagram`
+
+Load `~/.claude/skills/visualize/references/github-mermaid-patterns.md` for annotated examples and GitHub gotchas.
 
 If scope is large: yield multiple atomic issues linked via epic.
 
@@ -144,8 +162,8 @@ Triggered when autopilot calls `/spec` on a well-defined issue.
 
 ## Completion
 
-**Exploration mode:** "Product spec locked. Ready for `/architect $1` or `/shaping $1`."
-**Quick mode:** "Product spec complete. Next: `/architect $1`"
+**Exploration mode:** "Product spec locked — includes flow diagram. Ready for `/architect $1` or `/shaping $1`."
+**Quick mode:** "Product spec complete — includes flow diagram. Next: `/architect $1`"
 
 > **Note:** For interactive exploration with formal Shape Up methodology (Rs/Ss notation, fit checks), prefer `/shaping`. `/spec` is the product-only primitive used by autopilot's quick mode.
 

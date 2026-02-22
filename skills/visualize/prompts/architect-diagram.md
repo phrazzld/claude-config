@@ -77,6 +77,32 @@ Transforms an architecture plan into a visual diagram showing how components con
 - **Background Atmosphere** — dot grid or gradient mesh
 - **Animations** — staggered `fadeUp` for sections, draw-in for Mermaid
 
+## GitHub-Ready Blocks
+
+At the bottom of the generated HTML, include a `<section class="github-ready">` section with two blocks:
+
+```html
+<section class="github-ready">
+  <h2>GitHub-Ready Blocks</h2>
+  <p>Copy-paste into GitHub issues/PR comments:</p>
+  <pre><code>## Components
+
+```mermaid
+graph TD
+    [component diagram reflecting this architecture]
+```
+
+## Sequence
+
+```mermaid
+sequenceDiagram
+    [sequence diagram for the primary async/API flow, if applicable]
+```</code></pre>
+</section>
+```
+
+Generate actual Mermaid source from the architecture content — not placeholders. Omit the Sequence block if the design has no async interactions or API calls. Both blocks should be copy-paste ready for posting to a GitHub issue comment.
+
 ## Output
 
 `~/.agent/diagrams/architect-{project}-{timestamp}.html`

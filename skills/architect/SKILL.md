@@ -104,7 +104,34 @@ Post technical design on the issue:
 
 ### Risks & Mitigations
 [Technical risks and how to handle them]
+
+## Components
+
+```mermaid
+graph TD
+    A[Component A] -->|calls| B[Component B]
+    B --> C[(Store)]
+    A -->|reads| C
 ```
+
+## Sequence
+
+```mermaid
+sequenceDiagram
+    actor User
+    User->>API: POST /action
+    API->>Service: process()
+    Service-->>API: result
+    API-->>User: 200 OK
+```
+```
+
+**Diagram requirements:**
+- `## Components` (`graph TD`) — always required. Shows new/changed components and their relationships.
+- `## Sequence` (`sequenceDiagram`) — required when async interactions, API calls, or multi-step flows are involved. Omit for purely synchronous or single-component changes.
+- `## Data Model` (`erDiagram`) — add when schema changes are part of the work.
+
+Load `~/.claude/skills/visualize/references/github-mermaid-patterns.md` for annotated examples and GitHub gotchas.
 
 Post as comment: `gh issue comment $1 --body "..."`
 

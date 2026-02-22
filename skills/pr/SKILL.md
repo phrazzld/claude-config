@@ -44,6 +44,23 @@ Copied or derived from the linked issue. Checkboxes.
 Step-by-step instructions a reviewer can follow to verify the change works.
 Include: setup steps, exact commands, expected output, URLs to visit.
 
+## What Changed
+
+Mermaid diagram showing the nature of the change. Selection:
+
+| Change type | Diagram |
+|------------|---------|
+| New feature / component | `graph TD` of new components and their relationships |
+| Bug fix | `stateDiagram-v2` showing broken state → fixed state |
+| Refactor | `graph TD` before vs. after (two diagrams, labeled Before/After) |
+| Data model change | `erDiagram` of affected tables/relations |
+| API change | `sequenceDiagram` of old vs. new call flow |
+| Simple/internal change | Omit — don't force a diagram when it adds no signal |
+
+**Decision rule:** If the change can be explained in one sentence with no branching or relationships → omit. Otherwise → include.
+
+Load `~/.claude/skills/visualize/references/github-mermaid-patterns.md` for annotated examples and GitHub gotchas.
+
 ## Before / After
 Show the state before and after this PR. MANDATORY for every PR.
 

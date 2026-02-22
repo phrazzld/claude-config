@@ -121,7 +121,17 @@ Launch agents in parallel:
 Synthesize findings into **3-5 strategic themes** with evidence.
 Examples: "reliability foundation," "onboarding redesign," "API expansion."
 
-Present: "Here are the themes I see across the analysis. Which interest you?"
+Present a Mermaid `graph LR` showing how themes relate (dependencies, shared components, compounding effects) before Phase 3:
+
+```mermaid
+graph LR
+    ThemeA[Theme A] --> ThemeB[Theme B]
+    ThemeA --> ThemeC[Theme C]
+    ThemeB --> ThemeD[Theme D]
+    ThemeC --> ThemeD
+```
+
+Present: "Here are the themes I see across the analysis — and how they relate. Which interest you?"
 
 ### Phase 3: Exploration Loop
 
@@ -174,6 +184,14 @@ Each issue gets:
 - Recommended approach (from locked direction)
 - Acceptance criteria
 - Effort estimate
+- `## Overview` diagram (Mermaid, required for strategic issues; exempt: chores, dependency bumps)
+
+**Diagram type by issue domain:**
+- Feature: `flowchart LR` of proposed user flow or component addition
+- Refactor/debt: `graph TD` of current vs. proposed architecture (two diagrams, labeled Before/After)
+- Bug: `sequenceDiagram` showing failure path and intended fix path
+
+Load `~/.claude/skills/visualize/references/github-mermaid-patterns.md` for annotated examples.
 
 Use Codex for implementation recommendations on P0/P1 issues.
 Use Gemini for current best practices research.
