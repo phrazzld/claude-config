@@ -149,6 +149,8 @@ Triggered when autopilot calls `/architect` on a specced issue.
 **Exploration mode:** "Technical design locked. Ready for `/build $1`."
 **Quick mode:** "Technical design complete. Next: `/build $1`"
 
+> **Note:** For affordance-level design (places, UI/code/store affordances, wiring), consider `/breadboarding`. `/architect` is the file-level implementation primitive used by autopilot's quick mode.
+
 ## Visual Deliverable
 
 After completing the core workflow, generate a visual HTML summary:

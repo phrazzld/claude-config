@@ -144,8 +144,10 @@ Triggered when autopilot calls `/spec` on a well-defined issue.
 
 ## Completion
 
-**Exploration mode:** "Product spec locked. Ready for `/architect $1` or `/shape $1`."
+**Exploration mode:** "Product spec locked. Ready for `/architect $1` or `/shaping $1`."
 **Quick mode:** "Product spec complete. Next: `/architect $1`"
+
+> **Note:** For interactive exploration with formal Shape Up methodology (Rs/Ss notation, fit checks), prefer `/shaping`. `/spec` is the product-only primitive used by autopilot's quick mode.
 
 ## Visual Deliverable
 

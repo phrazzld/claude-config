@@ -235,6 +235,15 @@ View all: gh issue list --state open
 - `/log-stripe-issues`, `/log-bitcoin-issues`, `/log-lightning-issues`
 - `/log-virality-issues`, `/log-landing-issues`, `/log-onboarding-issues`
 
+### Planning & Design
+| I want to... | Skill |
+|--------------|-------|
+| Full planning for one idea (Shape Up methodology) | `/shaping` |
+| Map system affordances | `/breadboarding` |
+| Validate a breadboard | `/breadboard-reflection` |
+| Product spec only (autopilot primitive) | `/spec` |
+| Technical design only (autopilot primitive) | `/architect` |
+
 ### Standalone Domain Work
 ```bash
 /check-production     # Audit only
