@@ -1,0 +1,141 @@
+name: quality
+description: Quality gates — tests, CI/CD, hooks, coverage, linting
+labels:
+  - domain/quality
+agent: test-strategy-architect
+
+checks:
+  - id: test-runner
+    name: Test runner configured
+    commands:
+      - "[ -f vitest.config.ts ] || [ -f vitest.config.js ] || [ -f jest.config.ts ] || [ -f jest.config.js ]"
+    priority: p0
+    fix: "pnpm add -D vitest @vitest/coverage-v8"
+    issue_title: "No test runner configured"
+    issue_body: |
+      ## Problem
+      No testing framework (Vitest/Jest) is configured. Code changes cannot be validated.
+      ## Approach
+      Install Vitest with coverage. Create vitest.config.ts with coverage enabled.
+
+  - id: ci-workflow
+    name: CI workflow exists
+    commands:
+      - "[ -f .github/workflows/ci.yml ] || [ -f .github/workflows/test.yml ]"
+    priority: p0
+    issue_title: "No CI workflow"
+    issue_body: |
+      ## Problem
+      No GitHub Actions CI workflow. Changes are not validated before merge.
+
+  - id: git-hooks
+    name: Git hooks configured
+    commands:
+      - "[ -f lefthook.yml ] || [ -f .husky/_/husky.sh ]"
+    priority: p1
+    fix: "pnpm add -D lefthook && pnpm lefthook install"
+    issue_title: "No pre-commit hooks configured"
+    issue_body: |
+      ## Problem
+      No git hooks. Code can be committed without running lint/format/typecheck.
+
+  - id: coverage
+    name: Coverage configured
+    commands:
+      - "grep -q 'coverage' package.json 2>/dev/null"
+    priority: p1
+    issue_title: "No test coverage configured"
+
+  - id: eslint
+    name: ESLint configured
+    commands:
+      - "[ -f eslint.config.js ] || [ -f .eslintrc.js ] || [ -f .eslintrc.json ] || [ -f biome.json ]"
+    priority: p1
+    issue_title: "No linting configured"
+
+  - id: typescript-strict
+    name: TypeScript strict mode
+    commands:
+      - "grep -q '\"strict\": true' tsconfig.json 2>/dev/null"
+    priority: p1
+    issue_title: "TypeScript not in strict mode"
+
+  - id: commitlint
+    name: Commitlint configured
+    commands:
+      - "[ -f commitlint.config.js ] || [ -f commitlint.config.cjs ]"
+    priority: p2
+    issue_title: "No commit message linting"
+
+  - id: coverage-threshold
+    name: Coverage threshold enforced (75%+)
+    commands:
+      - "grep -qE 'thresholds|fail_under|--coverage.*threshold' vitest.config.ts jest.config.ts .nycrc package.json 2>/dev/null"
+    priority: p1
+    issue_title: "Coverage threshold not enforced"
+    issue_body: |
+      ## Problem
+      No minimum coverage threshold. Code can ship with 0% coverage and CI won't catch it.
+      ## Approach
+      Add thresholds to vitest.config.ts: lines/functions/branches/statements >= 75.
+
+  - id: e2e-framework
+    name: E2E test framework configured
+    commands:
+      - "grep -qE 'playwright|cypress|@playwright' package.json 2>/dev/null"
+    priority: p2
+    issue_title: "No E2E test framework configured"
+    issue_body: |
+      ## Problem
+      No end-to-end tests. Critical user flows have no automated validation.
+      ## Approach
+      Install Playwright. Create tests for auth, primary workflow, payment if applicable.
+
+  - id: package-manager-bun
+    name: Bun as package manager
+    commands:
+      - "[ -f bun.lock ] || [ -f bun.lockb ]"
+    priority: p2
+    issue_title: "Not using Bun as package manager"
+    issue_body: |
+      ## Problem
+      Project uses pnpm/npm/yarn instead of Bun. Slower installs and test runs.
+      ## Approach
+      Run /bun for guided migration. Assess compatibility first via /check-bun.
+
+  - id: coverage-pr-comments
+    name: Coverage comments on PRs
+    commands:
+      - "grep -rqE 'vitest-coverage-report|coverage-report|codecov' .github/workflows/ 2>/dev/null"
+    priority: p2
+    issue_title: "No coverage comments on pull requests"
+    issue_body: |
+      ## Problem
+      PRs don't show coverage impact. Reviewers can't see if new code is tested.
+      ## Approach
+      Add vitest-coverage-report-action to CI workflow.
+
+  - id: error-boundaries
+    name: React error boundaries configured
+    commands:
+      - "grep -rqE 'ErrorBoundary|error-boundary|errorElement' --include='*.tsx' --include='*.jsx' src/ app/ 2>/dev/null"
+    priority: p2
+    issue_title: "No React error boundaries"
+    issue_body: |
+      ## Problem
+      No error boundaries. A single component crash white-screens the entire app.
+      ## Approach
+      Add ErrorBoundary wrapper at layout level. Use react-error-boundary or custom implementation.
+
+  - id: guardrails
+    name: Custom guardrails
+    commands:
+      - "[ -d guardrails ]"
+    priority: p3
+    issue_title: "No custom guardrail rules"
+
+priority_rules:
+  p0: "No safety net — tests can't run, CI doesn't exist"
+  p1: "Missing fundamentals — code ships without validation"
+  p2: "Launch gaps — quality reporting and consistency"
+  p3: "Polish — project-specific enforcement"

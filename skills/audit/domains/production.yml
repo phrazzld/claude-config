@@ -1,0 +1,94 @@
+name: production
+description: Production health — Sentry, Vercel, health endpoints, CI/CD status
+labels:
+  - domain/infra
+agent: null
+
+checks:
+  - id: sentry
+    name: Sentry error tracking
+    commands:
+      - "grep -qE '@sentry|sentry' package.json 2>/dev/null"
+    priority: p1
+    issue_title: "No error tracking configured"
+    issue_body: |
+      ## Problem
+      No Sentry SDK installed. Production errors go undetected.
+
+  - id: health-endpoint
+    name: Health endpoint exists
+    commands:
+      - "[ -f app/api/health/route.ts ] || [ -f src/app/api/health/route.ts ] || [ -f pages/api/health.ts ]"
+    priority: p1
+    issue_title: "No health check endpoint"
+
+  - id: ci-main-passing
+    name: Main branch CI passing
+    commands:
+      - "gh run list --branch main --status failure --limit 1 --json conclusion 2>/dev/null | grep -q '\\[\\]'"
+    priority: p0
+    issue_title: "Main branch CI failing"
+
+  - id: empty-catch
+    name: No empty catch blocks
+    commands:
+      - "! grep -rqE 'catch\\s*\\(\\s*\\)' --include='*.ts' --include='*.tsx' src/ app/ 2>/dev/null"
+    priority: p2
+    issue_title: "Empty catch blocks found (silent failures)"
+
+  - id: posthog
+    name: PostHog analytics configured
+    commands:
+      - "grep -qE 'posthog|posthog-js|posthog-node' package.json 2>/dev/null"
+    priority: p1
+    issue_title: "No analytics configured (PostHog)"
+    issue_body: |
+      ## Problem
+      No PostHog SDK. User behavior invisible — can't measure activation, retention, or adoption.
+      ## Approach
+      Run /instrument-repo to set up PostHog alongside Sentry.
+
+  - id: health-endpoint-depth
+    name: Health endpoint validates dependencies
+    commands:
+      - "grep -rqE 'database|redis|external|dependency|upstream|db.*health|health.*db' app/api/health/ src/app/api/health/ pages/api/health* 2>/dev/null"
+    priority: p2
+    issue_title: "Health endpoint doesn't validate dependencies"
+    issue_body: |
+      ## Problem
+      Health endpoint returns 200 without checking database, cache, or external services.
+      UptimeRobot thinks the app is healthy when the database is down.
+      ## Approach
+      Enhance health endpoint to check each critical dependency. Return 503 if any fails.
+
+  - id: structured-logging
+    name: Structured logging (not console.log)
+    commands:
+      - "grep -qE 'pino|winston|bunyan|structured.*log|@logtail' package.json 2>/dev/null"
+    priority: p2
+    issue_title: "No structured logging"
+    issue_body: |
+      ## Problem
+      Using console.log in production. Logs aren't searchable, filterable, or machine-parseable.
+      ## Approach
+      Install pino (preferred for Node/Next.js). Replace console.log calls with structured logger.
+      Include: level, timestamp, requestId, userId in every log line.
+
+  - id: rate-limiting
+    name: Rate limiting on public APIs
+    commands:
+      - "grep -rqE 'rate.?limit|ratelimit|throttle|upstash.*ratelimit' --include='*.ts' --include='*.tsx' src/ app/ lib/ middleware* 2>/dev/null"
+    priority: p2
+    issue_title: "No rate limiting on API endpoints"
+    issue_body: |
+      ## Problem
+      Public API endpoints have no rate limiting. Vulnerable to abuse and accidental DDoS.
+      ## Approach
+      Add @upstash/ratelimit or similar. Apply to auth endpoints, public APIs, and webhooks.
+      Next.js: implement in middleware.ts for global coverage.
+
+priority_rules:
+  p0: "Active production failures"
+  p1: "Missing safety infrastructure"
+  p2: "Silent failure risks"
+  p3: "Monitoring improvements"

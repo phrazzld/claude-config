@@ -1,0 +1,56 @@
+name: docs
+description: Documentation — README, architecture, API docs, .env.example
+labels:
+  - domain/docs
+agent: null
+
+checks:
+  - id: readme
+    name: README.md exists
+    commands:
+      - "[ -f README.md ]"
+    priority: p1
+    fix: "touch README.md"
+    issue_title: "No README.md"
+
+  - id: env-example
+    name: .env.example exists
+    commands:
+      - "[ -f .env.example ] || [ -f .env.template ]"
+    priority: p1
+    issue_title: "No .env.example for onboarding"
+
+  - id: architecture-docs
+    name: Architecture documentation
+    commands:
+      - "[ -f ARCHITECTURE.md ] || [ -d docs ] || [ -f docs/CODEBASE_MAP.md ]"
+    priority: p2
+    issue_title: "No architecture documentation"
+
+  - id: claude-md
+    name: CLAUDE.md exists
+    commands:
+      - "[ -f CLAUDE.md ]"
+    priority: p1
+    fix: "Run /tune-repo to generate"
+    issue_title: "No CLAUDE.md for AI agents"
+
+  - id: agents-md
+    name: AGENTS.md exists
+    commands:
+      - "[ -f AGENTS.md ]"
+    priority: p2
+    issue_title: "No AGENTS.md for agent conventions"
+
+  - id: adr-directory
+    name: ADR directory
+    commands:
+      - "[ -d docs/adr ]"
+    priority: p3
+    issue_title: "No architectural decision records"
+
+priority_rules:
+  p0: "Cannot start project (no setup instructions)"
+  p1: "Missing essential documentation"
+  p2: "Architecture not documented"
+  p3: "Decision history not recorded"

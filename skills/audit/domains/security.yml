@@ -1,0 +1,79 @@
+name: security
+description: Security baseline — dependency scanning, secrets, branch protection, headers
+labels:
+  - domain/security
+agent: security-sentinel
+
+checks:
+  - id: dependabot
+    name: Dependabot enabled
+    commands:
+      - "[ -f .github/dependabot.yml ] || [ -f .github/dependabot.yaml ]"
+    priority: p1
+    issue_title: "No automated dependency updates (Dependabot)"
+    issue_body: |
+      ## Problem
+      No Dependabot configuration. Dependencies accumulate known vulnerabilities silently.
+      ## Approach
+      Create .github/dependabot.yml targeting npm ecosystem. Weekly update schedule.
+      Enable security updates and version updates.
+
+  - id: secrets-scanning
+    name: Secrets scanning configured (TruffleHog)
+    commands:
+      - "grep -rqE 'trufflehog|truffleHog|secret.*scan|detect-secrets' lefthook.yml .github/workflows/ .pre-commit-config.yaml 2>/dev/null"
+    priority: p1
+    issue_title: "No secrets scanning in CI or hooks"
+    issue_body: |
+      ## Problem
+      No automated secrets detection. API keys, tokens, and credentials can be committed
+      and pushed without warning.
+      ## Approach
+      Add TruffleHog to CI workflow and/or lefthook pre-commit hook.
+      Run initial scan on repo history to find existing leaks.
+
+  - id: branch-protection
+    name: Branch protection on master
+    commands:
+      - "gh api repos/{owner}/{repo}/branches/master/protection --jq '.required_pull_request_reviews' 2>/dev/null | grep -q 'required_approving_review_count'"
+    priority: p1
+    issue_title: "No branch protection on master"
+    issue_body: |
+      ## Problem
+      Master branch has no protection rules. Force pushes and direct commits allowed.
+      ## Approach
+      Enable branch protection: require PR reviews, require status checks to pass,
+      disallow force push. Use gh CLI: gh api repos/{owner}/{repo}/branches/master/protection --method PUT
+
+  - id: default-branch-master
+    name: Default branch is master (not main)
+    commands:
+      - "gh api repos/{owner}/{repo} --jq '.default_branch' 2>/dev/null | grep -q 'master'"
+    priority: p2
+    issue_title: "Default branch should be master"
+    issue_body: |
+      ## Problem
+      Default branch is not 'master'. Org convention requires master as primary branch.
+      ## Approach
+      Rename via GitHub settings or gh api. Update CI workflows and branch protection rules.
+
+  - id: security-headers
+    name: Security headers configured
+    commands:
+      - "grep -rqE 'Content-Security-Policy|X-Frame-Options|helmet|next-safe|security.*headers|headers.*security' next.config* middleware* src/ app/ 2>/dev/null"
+    priority: p2
+    issue_title: "No security headers configured"
+    issue_body: |
+      ## Problem
+      Missing security headers (CSP, X-Frame-Options, X-Content-Type-Options).
+      Vulnerable to clickjacking, XSS, and MIME sniffing attacks.
+      ## Approach
+      Add headers in next.config.js headers() or middleware.ts.
+      Minimum: X-Frame-Options DENY, X-Content-Type-Options nosniff,
+      Referrer-Policy strict-origin-when-cross-origin, basic CSP.
+
+priority_rules:
+  p0: "Active secret exposure or vulnerability"
+  p1: "Missing security infrastructure"
+  p2: "Hardening and convention enforcement"
+  p3: "Advanced security measures"

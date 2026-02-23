@@ -1,0 +1,71 @@
+name: stripe
+description: Stripe integration — config, webhooks, subscriptions, security
+labels:
+  - domain/payments
+agent: stripe-auditor
+
+checks:
+  - id: sdk-installed
+    name: Stripe SDK installed
+    commands:
+      - "grep -q 'stripe' package.json 2>/dev/null"
+    priority: p0
+    issue_title: "Stripe SDK not installed"
+
+  - id: webhook-secret
+    name: Webhook secret configured
+    commands:
+      - "grep -q 'STRIPE_WEBHOOK_SECRET' .env.local 2>/dev/null || [ -n \"$STRIPE_WEBHOOK_SECRET\" ]"
+    priority: p0
+    issue_title: "Missing STRIPE_WEBHOOK_SECRET"
+    issue_body: |
+      ## Problem
+      STRIPE_WEBHOOK_SECRET not configured. Webhooks are unverified (security risk).
+
+  - id: webhook-verification
+    name: Webhook signature verified
+    commands:
+      - "grep -rqE 'constructEvent|stripe\\.webhooks\\.constructEvent' --include='*.ts' . 2>/dev/null"
+    priority: p1
+    issue_title: "Webhook signature not verified"
+
+  - id: hardcoded-keys
+    name: No hardcoded Stripe keys
+    commands:
+      - "! grep -rqE 'sk_live_|sk_test_|pk_live_|pk_test_' --include='*.ts' --include='*.tsx' . 2>/dev/null | grep -v node_modules | grep -v '.env'"
+    priority: p0
+    issue_title: "Hardcoded Stripe keys in source code"
+
+  - id: customer-portal
+    name: Customer portal configured
+    commands:
+      - "grep -rqE 'createBillingPortalSession|billing.*portal' --include='*.ts' . 2>/dev/null"
+    priority: p1
+    issue_title: "No Stripe customer portal"
+
+  - id: subscription-status
+    name: Subscription status checked
+    commands:
+      - "grep -rqE 'subscription\\.status|active|canceled|past_due' --include='*.ts' . 2>/dev/null"
+    priority: p1
+    issue_title: "Subscription status not checked on protected routes"
+
+  - id: convex-webhook-token
+    name: Convex webhook token parity
+    commands:
+      - "grep -q 'CONVEX_WEBHOOK_TOKEN' .env.local 2>/dev/null"
+    priority: p0
+    issue_title: "Missing or mismatched CONVEX_WEBHOOK_TOKEN"
+
+  - id: idempotency-keys
+    name: Idempotency keys on payment operations
+    commands:
+      - "grep -rqE 'idempotencyKey|idempotency_key' --include='*.ts' . 2>/dev/null"
+    priority: p2
+    issue_title: "No idempotency keys on payment operations"
+
+priority_rules:
+  p0: "Payment failures, security vulnerabilities"
+  p1: "Missing critical payment infrastructure"
+  p2: "Reliability and correctness gaps"
+  p3: "Advanced payment features"

@@ -1,0 +1,60 @@
+name: llm
+description: LLM tooling — observability, evaluation, tracing. Only applies to projects using LLM APIs.
+labels:
+  - domain/ai
+agent: null
+
+detect:
+  commands:
+    - "grep -qE 'ai-sdk|@ai-sdk|openai|anthropic|@anthropic-ai|langchain' package.json 2>/dev/null"
+    - "grep -rqE 'generateText|streamText|ChatCompletion|messages.*role' --include='*.ts' --include='*.tsx' --include='*.py' src/ app/ lib/ 2>/dev/null"
+
+checks:
+  - id: helicone
+    name: Helicone LLM observability
+    commands:
+      - "grep -rqE 'helicone|HELICONE' package.json .env.example .env.local src/ lib/ 2>/dev/null"
+    priority: p1
+    issue_title: "No LLM cost observability (Helicone)"
+    issue_body: |
+      ## Problem
+      LLM API calls have no cost tracking or latency monitoring.
+      ## Approach
+      Run /helicone-observability. Route LLM calls through Helicone gateway.
+
+  - id: promptfoo
+    name: Promptfoo evaluation configured
+    commands:
+      - "[ -f promptfooconfig.yaml ] || [ -f promptfooconfig.yml ]"
+    priority: p2
+    issue_title: "No LLM prompt evaluation framework"
+    issue_body: |
+      ## Problem
+      No automated evaluation for LLM prompts. Quality regressions go undetected.
+      ## Approach
+      Run /llm-evaluation to set up Promptfoo with golden test cases and CI gate.
+
+  - id: llm-ci-eval
+    name: LLM evaluation in CI
+    commands:
+      - "grep -rqE 'promptfoo|eval.*llm|llm.*eval' .github/workflows/ 2>/dev/null"
+    priority: p3
+    issue_title: "No LLM evaluation in CI pipeline"
+
+  - id: langfuse-or-traces
+    name: LLM tracing configured
+    commands:
+      - "grep -qE 'langfuse|@langfuse' package.json 2>/dev/null || grep -rqE 'Helicone-Session-Id' --include='*.ts' src/ lib/ 2>/dev/null"
+    priority: p3
+    issue_title: "No LLM session tracing"
+    issue_body: |
+      ## Problem
+      Multi-turn LLM conversations aren't traced. Can't debug conversation quality.
+      ## Approach
+      Add Helicone session tracing or integrate Langfuse.
+
+priority_rules:
+  p0: "LLM system producing harmful/incorrect output"
+  p1: "No visibility into LLM costs or quality"
+  p2: "Missing evaluation and testing"
+  p3: "Advanced tracing and observability"
