@@ -362,6 +362,19 @@ When delegating, prefer Moonbridge (`mcp__moonbridge__spawn_agent`) over `codex 
 | `reasoning_effort` | `xhigh` for complex work, `high` for standard tasks |
 | `timeout_seconds` | `2400` (40min) gives room for larger tasks |
 
+### Codex Native Multi-Agent vs Moonbridge
+
+| Scenario | Tool | Why |
+|----------|------|-----|
+| Single implementation task | Moonbridge `codex` | Simple, well-integrated |
+| Multi-persona review | Codex native subagents | Injection keeps context, named roles |
+| Explore + implement pipeline | Codex native subagents | Explorer feeds implementer |
+| Quick lookup/scaffold | Moonbridge `codex` | Fast, direct |
+| Cross-tool review (Claude + Gemini + Codex) | `council` script | Multi-vendor |
+
+Native subagents are better when you want the parent to synthesize multiple child results.
+Moonbridge is better for fire-and-forget delegation from Claude Code.
+
 ### Opus 4.6 Capabilities (2026-02-05)
 
 **What changed:** 1M context (beta), 128K output, adaptive thinking, effort parameter GA, context compaction, agent teams (preview), prefill removal (breaking).
@@ -433,3 +446,21 @@ If the gate was set too aggressively and can't be met, STOP and escalate to the 
 ### Session Retrospective Discipline
 
 Run `/done` at the end of significant sessions. Produces artifacts, not journal entries.
+
+### gh api graphql Shell Escaping
+
+`$` in GraphQL variables gets shell-interpreted. Write query to temp file:
+```bash
+cat > /tmp/gql.txt << 'EOF'
+query($owner:String!,$repo:String!,$number:Int!){...}
+EOF
+gh api graphql -F owner=X -F repo=Y -F number=N -f query="$(cat /tmp/gql.txt)"
+```
+Also: `jq` `!=` gets escaped to `\!=`. Use positive selects instead.
+
+For mutations with complex query strings, Python subprocess is the escape hatch — avoids all shell quoting entirely:
+```python
+import subprocess
+query = "mutation { resolveReviewThread(input: {threadId: \"THREAD_ID\"}) { thread { isResolved } } }"
+subprocess.run(['gh', 'api', 'graphql', '-f', f'query={query}'], check=True)
+```
