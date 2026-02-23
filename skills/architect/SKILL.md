@@ -31,16 +31,17 @@ User-invoked, or complex design space = exploration mode.
 ### Phase 1: Absorb
 
 1. Read product spec: `gh issue view $1 --comments`
-2. Investigate codebase — existing patterns, touch points, adjacent systems:
-   ```bash
-   codex exec "INVESTIGATE architecture for [feature]. Find existing patterns, identify touch points, list files to modify." \
-     --output-last-message /tmp/codex-investigation.md 2>/dev/null
-   ```
-3. Research current best practices (Gemini):
-   ```bash
-   gemini "Current best practices for [topic]. Framework docs, common patterns, pitfalls."
-   ```
+2. Load `project.md` for product vision, domain glossary, quality bar
+3. **Spawn research sub-agents in parallel:**
+
+| Agent | Focus |
+|-------|-------|
+| Codebase explorer | Existing patterns, touch points, adjacent systems, .glance.md context |
+| Web researcher | Current best practices, framework docs, how others solve this (Gemini) |
+| Cross-repo investigator | Prior art in misty-step org repos, shared patterns |
+
 4. Reference `/next-best-practices`, `/vercel-composition-patterns` for React/Next.js
+5. Compile research brief: patterns found, prior art, recommendations
 
 Present: "Here's the landscape — existing patterns, relevant prior art, constraints."
 

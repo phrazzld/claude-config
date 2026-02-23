@@ -84,6 +84,13 @@ Note any gaps: what ISN'T tested and why.
 4. **Before/After** — Screenshot before state, apply changes, screenshot after state. For non-UI changes, describe behavioral difference in text.
 5. **Open** — `gh pr create --draft --assignee phrazzld`
 6. **Comment** — Add context comment if notable decisions were made
+7. **Retro** — If this PR closes a GitHub issue, append implementation feedback:
+   ```
+   /retro append --issue $ISSUE --predicted {effort_label} --actual {actual_effort} \
+     --scope "{what_changed_from_spec}" --blocker "{blockers}" --pattern "{insight}"
+   ```
+   This feeds the grooming feedback loop — `/groom` reads retro.md to calibrate
+   future effort estimates and issue scoping.
 
 ## Comment Style
 
@@ -95,4 +102,4 @@ Like a colleague leaving context for future-you:
 
 ## Output
 
-PR URL.
+PR URL. Retro entry appended to `.groom/retro.md` (if issue-linked).

@@ -40,11 +40,22 @@ Deliver Issue `$ARGUMENTS` (or highest-priority open issue) as a draft PR with t
 ## Workflow
 
 1. **Find issue** — `gh issue view $1` or `gh issue list --state open --limit 20`
-2. **Spec** — Invoke `/spec` if no `## Product Spec` section
-3. **Design** — Invoke `/architect` if no `## Technical Design` section
-4. **Build** — Invoke `/build` (branching, Codex implementation, commits)
-5. **Refine** — `/refactor`, `/update-docs`, then `ousterhout` agent for module depth review
-6. **Ship** — `/pr` with `Closes #N` (must satisfy all PR Body Requirements from `/pr` skill)
+2. **Load context** — Read `project.md` for product vision, domain glossary, quality bar
+3. **Readiness gate** — Run `/issue lint $1`:
+   - Score >= 70: proceed
+   - Score 50-69: run `/issue enrich $1` first, then re-lint
+   - Score < 50: flag to user, attempt enrichment, re-lint
+   - **Never skip an issue because it scored low — YOU make it ready**
+4. **Spec** — Invoke `/spec` if no `## Product Spec` section
+5. **Design** — Invoke `/architect` if no `## Technical Design` section
+6. **Build** — Invoke `/build` (branching, Codex implementation, commits)
+7. **Refine** — `/refactor`, `/update-docs`, then `ousterhout` agent for module depth review
+8. **Ship** — `/pr` with `Closes #N` (must satisfy all PR Body Requirements from `/pr` skill)
+9. **Retro** — Append implementation signals to `.groom/retro.md`:
+   ```
+   /retro append --issue $1 --predicted {effort_label} --actual {actual_effort} \
+     --scope "{scope_changes}" --blocker "{blockers}" --pattern "{insight}"
+   ```
 
 ## Parallel Refinement (Agent Teams)
 

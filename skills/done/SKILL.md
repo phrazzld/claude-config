@@ -72,7 +72,21 @@ Docs      → Does a reference doc need updating?
 
 **Default: codify. Exception: justify not codifying.**
 
-### 3.5. Tune Repo
+### 3.5. Retro Append
+
+If this session implemented a GitHub issue, append implementation feedback to
+`{repo}/.groom/retro.md` via `/retro append`:
+
+- Issue number
+- Predicted effort (from issue's effort label) vs actual effort
+- Scope changes (what was added/removed during implementation)
+- Blockers encountered
+- Reusable pattern for future scoping
+
+This feeds the grooming feedback loop — `/groom` reads retro.md to calibrate
+future effort estimates and issue scoping.
+
+### 3.6. Tune Repo
 
 Run `/tune-repo` to refresh `.glance.md` summaries, update CLAUDE.md/AGENTS.md if drift is detected, and seed memory with new gotchas from the session.
 
@@ -131,6 +145,7 @@ Output structured summary:
 | Task list state | New/updated hooks |
 | Error logs from session | Auto-memory entries |
 | | New/updated agents |
+| | `.groom/retro.md` entries |
 
 **Hands off to:**
 - `/commit` — if codification artifacts should be committed

@@ -3,25 +3,28 @@ name: groom
 description: |
   Interactive backlog grooming. Explore, brainstorm, discuss, then synthesize.
   Orchestrates agents and issue-creator skills. Creates prioritized GitHub issues.
-  Enforces Misty Step org-wide standards.
+  Enforces Misty Step org-wide standards. Research-first with multi-model validation.
 effort: high
 ---
 
 # /groom
 
 Orchestrate interactive backlog grooming. Explore the product landscape with the user,
-brainstorm directions, then synthesize into prioritized issues.
+research current best practices, validate with multi-model consensus, then synthesize
+into prioritized, agent-executable issues.
 
 ## Philosophy
 
 **Exploration before synthesis.** Understand deeply, discuss with user, THEN create issues.
 
-**Orchestrator pattern.** /groom invokes skills and agents, doesn't reimplement logic.
+**Research-first.** Every theme gets web research, cross-repo investigation, and codebase
+deep-dive before scoping decisions are made.
 
-**AI-augmented analysis.** External tools provide specialized capabilities:
-- **Gemini** — Web-grounded research, current best practices, huge context
-- **Codex** — Implementation recommendations, concrete code suggestions
-- **Thinktank** — Multi-model consensus, diverse expert perspectives
+**Multi-model validation.** Strategic directions pass through `/thinktank` before locking.
+
+**Quality gate on output.** Every created issue must score >= 70 on `/issue lint`.
+
+**Orchestrator pattern.** /groom invokes skills and agents, doesn't reimplement logic.
 
 **Opinionated recommendations.** Don't just present options. Recommend and justify.
 
@@ -34,46 +37,63 @@ Load that file before creating any issues.
 
 ### Phase 1: Context
 
-#### Step 1: Load or Gather Vision
+#### Step 1: Load or Update Project Context
 
-Check for `vision.md` in project root:
+Check for `project.md` in project root:
 
-**If vision.md exists:**
-1. Read and display current vision
+**If project.md exists:**
+1. Read and display current vision/focus
 2. Ask: "Is this still accurate? Any updates?"
-3. If updates, rewrite vision.md
+3. If updates, rewrite project.md
 
-**If vision.md doesn't exist:**
+**If project.md doesn't exist (but vision.md does):**
+1. Read vision.md
+2. Migrate content into project.md format (see `groom/references/project-md-format.md`)
+3. Interview for missing sections (domain glossary, quality bar, patterns)
+4. Write project.md, delete vision.md
+
+**If neither exists:**
 1. Interview: "What's your vision for this product? Where should it go?"
-2. Write response to `vision.md`
+2. Write `project.md` using format from `groom/references/project-md-format.md`
 
-**vision.md format:**
-```markdown
-# Vision
+Store as `{project_context}` for agent context throughout session.
 
-## One-Liner
-[Single sentence: what this product is and who it's for]
+#### Step 2: Check Tune-Repo Freshness
 
-## North Star
-[The dream state — what does success look like in 2 years?]
+Verify that codebase context artifacts are current:
 
-## Key Differentiators
-[What makes this different from alternatives?]
+```bash
+# CODEBASE_MAP.md — is last_mapped within 2 weeks?
+[ -f docs/CODEBASE_MAP.md ] && head -5 docs/CODEBASE_MAP.md || echo "No CODEBASE_MAP.md"
 
-## Target User
-[Who specifically is this for?]
+# .glance.md files — do they exist for key directories?
+find . -name ".glance.md" -maxdepth 3 2>/dev/null | wc -l
 
-## Current Focus
-[Immediate priority this quarter?]
-
----
-*Last updated: YYYY-MM-DD*
-*Updated during: /groom session*
+# CLAUDE.md and AGENTS.md — do they exist with essential sections?
+[ -f CLAUDE.md ] && echo "CLAUDE.md exists" || echo "No CLAUDE.md"
+[ -f AGENTS.md ] && echo "AGENTS.md exists" || echo "No AGENTS.md"
 ```
 
-Store as `{vision}` for agent context throughout session.
+If stale or missing, recommend: "Consider running `/tune-repo` to refresh codebase
+context before or after this grooming session."
 
-#### Step 2: Capture What's On Your Mind
+Don't block grooming — flag and continue.
+
+#### Step 3: Read Implementation Retrospective
+
+```bash
+[ -f .groom/retro.md ] && cat .groom/retro.md || echo "No retro data yet"
+```
+
+Extract patterns for this session:
+- Effort calibration (historical predicted vs actual)
+- Scope patterns (what commonly gets added during implementation)
+- Blocker patterns (what commonly blocks progress)
+- Domain insights (domain-specific gotchas)
+
+Present: "From past implementations, I see these patterns: [summary]"
+
+#### Step 4: Capture What's On Your Mind
 
 Before structured analysis:
 
@@ -85,22 +105,13 @@ These become issues alongside the automated findings.
 ```
 
 For each item: clarify if needed (one follow-up max), assign tentative priority.
-Don't create issues yet — collect for Phase 4.
+Don't create issues yet — collect for Phase 5.
 
-#### Step 3: Quick Backlog Audit
+#### Step 5: Quick Backlog Audit
 
-```bash
-gh issue list --state open --limit 100 --json number,title,labels,body,createdAt,updatedAt
-```
+Invoke `/backlog` for a health dashboard of existing issues.
 
-Evaluate each existing issue:
-1. **Still relevant?** Given current vision and codebase state
-2. **Priority correct?** Focus may have shifted
-3. **Duplicate?** Will new findings cover this?
-4. **Actionable?** Can someone pick this up?
-
-Present findings. Don't auto-close anything yet.
-"Here's where we stand: X open issues, Y look stale, Z may need reprioritization."
+Present: "Here's where we stand: X open issues, Y ready for execution, Z need enrichment."
 
 ### Phase 2: Discovery
 
@@ -110,18 +121,14 @@ Launch agents in parallel:
 |-------|-------|
 | Product strategist | Gaps vs vision, user value opportunities |
 | Technical archaeologist | Code health, architectural debt, improvement patterns |
-| Domain auditors | Run `check-*` skills (audit-only, no issue creation) |
+| Domain auditors | `/audit --all` (replaces individual check-* invocations) |
 | Growth analyst | Acquisition, activation, retention opportunities |
-
-**Domain auditors** invoke in parallel:
-- `/check-production`, `/check-quality`, `/check-docs`, `/check-observability`
-- `/check-product-standards`, `/check-stripe`, `/check-bitcoin`, `/check-lightning`
-- `/check-virality`, `/check-landing`, `/check-onboarding`
 
 Synthesize findings into **3-5 strategic themes** with evidence.
 Examples: "reliability foundation," "onboarding redesign," "API expansion."
 
-Present a Mermaid `graph LR` showing how themes relate (dependencies, shared components, compounding effects) before Phase 3:
+Present a Mermaid `graph LR` showing how themes relate (dependencies, shared
+components, compounding effects):
 
 ```mermaid
 graph LR
@@ -133,15 +140,70 @@ graph LR
 
 Present: "Here are the themes I see across the analysis — and how they relate. Which interest you?"
 
-### Phase 3: Exploration Loop
+### Phase 3: Research (NEW)
+
+For each theme the user wants to explore, before making scoping decisions:
+
+#### Sub-Agent Research
+
+1. **Web research agents** — Spawn Explore/general-purpose agents to:
+   - Research current best practices and documentation for relevant technologies
+   - Find how other projects solve similar problems
+   - Check for updated library versions, deprecations, new approaches
+   - Use Gemini for web-grounded research where available
+
+2. **Cross-repo investigation** — Spawn agents to check other repos:
+   - `gh repo list misty-step --limit 20 --json name,url`
+   - How did we solve this problem elsewhere?
+   - Are there shared patterns or libraries to reuse?
+   - Are there related issues in sibling repos?
+
+3. **Codebase deep-dive** — Spawn Explore agents with specific prompts:
+   - Trace execution paths through affected code
+   - Map dependencies and blast radius
+   - Identify existing utilities, helpers, and patterns to reuse
+   - Check `.glance.md` files and `docs/CODEBASE_MAP.md` for architecture context
+
+4. **Compile research brief** — Structured findings per theme:
+   ```markdown
+   ## Research Brief: {Theme}
+
+   ### Best Practices
+   - [finding with source]
+
+   ### Prior Art (Our Repos)
+   - [repo]: [how they solved it]
+
+   ### Codebase Context
+   - Affected modules: [list]
+   - Existing patterns to follow: [list]
+   - Blast radius: [assessment]
+
+   ### Recommendations
+   - [grounded recommendation]
+   ```
+
+#### Sub-Agent Prompt Requirements
+
+All sub-agent prompts during grooming must include:
+- **Project context** from `project.md` (vision, domain glossary)
+- **Specific investigation questions** (not vague "look into X")
+- **Output format requirements** (structured findings, not prose)
+- **Scope boundaries** (what to investigate, what to skip)
+
+### Phase 4: Exploration Loop
 
 For each theme the user wants to explore:
 
-1. **Pitch** — Agents brainstorm approaches. What it looks like, what it costs, what it enables.
-2. **Present** — 3-5 competing approaches with tradeoffs. Recommend one.
-3. **Discuss** — User steers. "What about X?" "I prefer Y because Z."
-4. **Refine** — Agents dig deeper on selected direction. Architecture, toolchain, risk.
-5. **Decide or iterate** — Lock direction or explore more.
+1. **Pitch** — Present research brief + 3-5 competing approaches with tradeoffs
+2. **Present** — Recommend one approach, explain why
+3. **Discuss** — User steers: "What about X?" "I prefer Y because Z"
+4. **Validate** — Before locking any direction, invoke `/thinktank`:
+   - Proposed approach + alternatives
+   - Research findings from Phase 3
+   - Relevant code context
+   - Questions: "What are we missing?", "What will break?", "What's simpler?"
+5. **Decide** — User locks direction informed by research + multi-model validation
 
 Repeats per theme. Revisits allowed. Continues until user says "lock it in."
 
@@ -156,46 +218,39 @@ Use AskUserQuestion for structured decisions. Plain conversation for exploration
 | Payments & integrations | Stripe, Bitcoin, Lightning |
 | AI enrichment | Gemini research, Codex implementation recs |
 
-Teammates share findings via messages. Cross-pollination encouraged:
-when Infra finds a P0, Growth checks if it affects onboarding.
-
-### Phase 4: Synthesis
+### Phase 5: Synthesis
 
 Once directions are locked for explored themes:
 
 #### Step 1: Create Issues
 
 Create atomic, implementable GitHub issues from agreed directions.
-Include user observations from Phase 1 Step 2.
+Include user observations from Phase 1 Step 4.
 
-Invoke `log-*` skills for domains where automated issue creation helps:
-- `/log-production-issues`, `/log-quality-issues`, `/log-doc-issues`
-- `/log-observability-issues`, `/log-product-standards-issues`
-- `/log-stripe-issues`, `/log-bitcoin-issues`, `/log-lightning-issues`
-- `/log-virality-issues`, `/log-landing-issues`, `/log-onboarding-issues`
+Use the new org-standards issue format with ALL sections:
+- Problem (specific with evidence)
+- Context (vision one-liner, related issues, domain knowledge)
+- Acceptance Criteria (Given/When/Then)
+- Affected Files (specific paths with descriptions)
+- Verification (executable commands)
+- Boundaries (what NOT to do)
+- Approach (recommended direction with code examples)
+- Overview (Mermaid diagram per issue type)
+
+For domain-specific findings from `/audit --all`:
+Use `/audit {domain} --issues` to create issues from audit findings.
 
 For strategic issues from exploration: create directly with full context.
 
-#### Step 2: Enrich
+#### Step 2: Quality Gate
 
-Each issue gets:
-- Problem statement (from exploration discussion)
-- Context and evidence
-- Recommended approach (from locked direction)
-- Acceptance criteria
-- Effort estimate
-- `## Overview` diagram (Mermaid, required for strategic issues; exempt: chores, dependency bumps)
+Run `/issue lint` on every created issue.
 
-**Diagram type by issue domain:**
-- Feature: `flowchart LR` of proposed user flow or component addition
-- Refactor/debt: `graph TD` of current vs. proposed architecture (two diagrams, labeled Before/After)
-- Bug: `sequenceDiagram` showing failure path and intended fix path
+- Score >= 70: pass
+- Score 50-69: run `/issue enrich` to fill gaps
+- Score < 50: rewrite manually (too incomplete for enrichment)
 
-Load `~/.claude/skills/visualize/references/github-mermaid-patterns.md` for annotated examples.
-
-Use Codex for implementation recommendations on P0/P1 issues.
-Use Gemini for current best practices research.
-Use Thinktank for architecture validation on complex issues.
+**No issue ships below 70.**
 
 #### Step 3: Organize
 
@@ -205,14 +260,14 @@ Apply org-wide standards (load `groom/references/org-standards.md`):
 - Milestone assignment
 - Project linking (Active Sprint, Product Roadmap)
 
-Close stale issues identified in Phase 1 Step 3 (with user confirmation).
+Close stale issues identified in Phase 1 Step 5 (with user confirmation).
 Migrate legacy labels.
 
 #### Step 4: Deduplicate
 
 Three sources of duplicates:
 1. User observations that overlap with automated findings
-2. New issues from log-* skills that overlap with each other
+2. New issues from `/audit --issues` that overlap with each other
 3. New issues that overlap with existing kept issues
 
 Keep the most comprehensive. Close others with link to canonical.
@@ -232,6 +287,11 @@ Issues by Priority:
 - P2 (Important): N
 - P3 (Nice to Have): N
 
+Readiness Scores:
+- Excellent (90-100): N
+- Good (70-89): N
+- All issues scored >= 70 ✓
+
 Recommended Execution Order:
 1. [P0] ...
 2. [P1] ...
@@ -240,18 +300,48 @@ Ready for /autopilot: [issue numbers]
 View all: gh issue list --state open
 ```
 
+### Phase 6: Plan Artifact
+
+Save the grooming plan as a reviewable artifact:
+
+```bash
+mkdir -p .groom
+```
+
+Write `.groom/plan-{date}.md`:
+```markdown
+# Grooming Plan — {date}
+
+## Themes Explored
+- [theme]: [direction locked]
+
+## Issues Created
+- #N: [title] (score: X/100)
+
+## Deferred
+- [topic]: [why deferred, when to revisit]
+
+## Research Findings
+[Key findings from Phase 3 worth preserving]
+
+## Retro Patterns Applied
+[How past implementation feedback influenced this session's scoping]
+```
+
+This enables:
+- `groom apply` to resume after review
+- Future sessions to reference what was explored and deferred
+- Retro patterns to accumulate across sessions
+
 ## Related Skills
 
-### Audit Primitives (Phase 2)
-- `/check-production`, `/check-docs`, `/check-quality`, `/check-observability`
-- `/check-product-standards`, `/check-stripe`, `/check-bitcoin`, `/check-lightning`
-- `/check-virality`, `/check-landing`, `/check-onboarding`
-
-### Issue Creators (Phase 4)
-- `/log-production-issues`, `/log-doc-issues`, `/log-quality-issues`
-- `/log-observability-issues`, `/log-product-standards-issues`
-- `/log-stripe-issues`, `/log-bitcoin-issues`, `/log-lightning-issues`
-- `/log-virality-issues`, `/log-landing-issues`, `/log-onboarding-issues`
+### Plumbing (Phase 2 + 5)
+- `/audit [domain|--all]` — Unified domain auditor (replaces check-*/log-*)
+- `/issue lint` — Score issues against org-standards
+- `/issue enrich` — Fill gaps with sub-agent research
+- `/issue decompose` — Split oversized issues
+- `/backlog` — Backlog health dashboard
+- `/retro` — Implementation feedback capture
 
 ### Planning & Design
 | I want to... | Skill |
@@ -261,12 +351,14 @@ View all: gh issue list --state open
 | Validate a breadboard | `/breadboard-reflection` |
 | Product spec only (autopilot primitive) | `/spec` |
 | Technical design only (autopilot primitive) | `/architect` |
+| Multi-model validation | `/thinktank` |
+| Quick backlog cleanup (non-interactive) | `/tidy` |
 
 ### Standalone Domain Work
 ```bash
-/check-production     # Audit only
-/log-production-issues # Create issues
-/triage              # Fix highest priority
+/audit quality        # Audit only
+/audit quality --fix  # Audit + fix
+/triage              # Fix highest priority production issue
 ```
 
 ## Visual Deliverable

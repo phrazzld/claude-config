@@ -33,7 +33,7 @@ Accept input: raw idea (string), issue ID, or observation.
 
 1. If no issue exists: create skeleton immediately (`gh issue create`)
 2. If issue exists: `gh issue view $1 --comments`
-3. Load `vision.md` if present
+3. Load `project.md` if present (falls back to `vision.md`)
 4. Read relevant codebase context (adjacent features, existing patterns)
 
 Present: "Here's what I understand about this idea. Let me investigate the problem space."
@@ -45,7 +45,8 @@ Launch agents in parallel:
 | Agent | Focus |
 |-------|-------|
 | Problem explorer | What's the real problem? Who has it? How painful? |
-| Research agent | How do others solve this? Best practices, state of the art (Gemini) |
+| Web research agent | How do others solve this? Current best practices, docs (Gemini) |
+| Codebase explorer | Existing patterns, affected files, reusable utilities |
 | User impact analyst | Who's affected, how much, cost of inaction |
 
 Synthesize findings. Present: "Here's what we know about this problem space."
@@ -96,15 +97,30 @@ Write product spec on the issue:
 ### Recommended Approach
 [Chosen direction and why]
 
+### Acceptance Criteria
+- [ ] Given [precondition], when [action], then [outcome]
+- [ ] Given [precondition], when [action], then [outcome]
+
+### Affected Files
+- `path/file.ts` — [what changes and why]
+
 ### User Stories
 - As [persona], I want [action] so that [value]
-  - [ ] [Testable acceptance criterion]
 
 ### Success Metrics
 | Metric | Target | How Measured |
 
 ### Non-Goals
 - [What we're NOT building]
+
+### Boundaries
+- Do NOT modify [X]
+- Do NOT change [Y]
+
+### Verification
+```bash
+[commands to verify the implementation works]
+```
 
 ### Open Questions for Architect
 [Technical unknowns surfaced during exploration]
