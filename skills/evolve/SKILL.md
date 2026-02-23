@@ -18,7 +18,7 @@ description: |
   - Brand auto-detection: scans repos for existing design infrastructure
   - Image generation: Recraft AI for vector logos, nano-banana for raster
 effort: high
-argument-hint: "[project-name] [--scope full|component] [--contexts saas,landing]"
+argument-hint: "[project-name] [--scope full|component] [--contexts saas,landing] [--variance=N] [--motion=N] [--density=N]"
 ---
 
 # Design Evolution v2
@@ -81,6 +81,19 @@ AskUserQuestion:
 
 Context tags affect which taste data is loaded from memory. A "saas" project
 inherits preferences from past "saas" work but not "landing" preferences.
+
+### 3b. Parse Taste Dials
+
+Parse `--variance`, `--motion`, `--density` args. Defaults from taste-skill: **8/6/4**.
+
+```
+DESIGN_VARIANCE = args.variance ?? 8   # Layout axis: 1-3=centered, 4-7=offset, 8-10=asymmetric
+MOTION_INTENSITY = args.motion ?? 6    # Motion axis: 1-3=none/subtle, 4-7=orchestrated, 8-10=aggressive
+VISUAL_DENSITY = args.density ?? 4     # Density axis: 1-3=spacious, 4-7=mixed, 8-10=compact
+```
+
+These values are injected into EVERY proposal generation prompt. They override the DNA axes
+for Layout, Motion, and Density (additive precision — not a replacement for DNA codes).
 
 ### 4. Initialize
 
@@ -202,6 +215,16 @@ Each proposal MUST include:
 panel (Ogilvy, Rams, Scher, Wiebe, Laja, Walter, Cialdini, Ive, Wroblewski, Millman).
 Apply `/frontend-design` aesthetic guidelines: bold direction, no generic AI slop,
 distinctive font choices, intentional composition.
+
+**taste-frontend injection (MANDATORY):** Every proposal prompt MUST include:
+
+```
+Load ~/.claude/skills/aesthetic-system/references/taste-frontend.md and follow strictly.
+Active dials: DESIGN_VARIANCE={DESIGN_VARIANCE}, MOTION_INTENSITY={MOTION_INTENSITY}, VISUAL_DENSITY={VISUAL_DENSITY}.
+Apply pre-flight checklist (Section 10 of taste-frontend.md) before finalizing.
+```
+
+Resolved dial values override DNA axes for Layout, Motion, and Density.
 
 **Layout rule:** Items in the same state (pending, alive, winner, killed) MUST
 occupy equal space. No arbitrary bento sizing for same-status proposals.
@@ -327,6 +350,36 @@ Locked DNA is auto-banked in global memory for future seeding.
 - Full system → `/design-theme` with locked DNA
 - Component → `/ui-skills` or direct implementation
 - Brand update → `/brand-compile` if tokens changed
+
+### 10b. Enhanced Handoff — Component Seeding (Full System Only)
+
+When scope=full and user confirms lock-in, the handoff generates a complete design system:
+
+**1. Design tokens** → `/design-theme` generates `globals.css` with `@theme` block.
+
+**2. Component seeds** → Generate initial `components/ui/` using the locked token system.
+Minimum set (delegate to Codex or Kimi with taste-frontend.md loaded):
+- Button (variants: default, ghost, destructive, outline)
+- Card, CardHeader, CardContent, CardFooter
+- Input, Textarea, Select
+- Badge, Avatar
+- Separator
+- Typography (H1-H4, P, Muted)
+
+Components must:
+- Import only `~/lib/cn` and consume tokens via Tailwind classes
+- No inline `style={{}}` props
+- No hardcoded hex/px values outside token names
+
+**3. Guardrail rules** → Invoke `/guardrail` to generate `guardrails/no-adhoc-styling.js`
+(blocks arbitrary Tailwind values + inline styles). Enforced via lefthook pre-commit.
+
+**4. Design system doc** → Write `design-system.md` at repo root documenting:
+- Active DNA code and axis values
+- Active dials (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY)
+- Token list with semantic names
+- Component inventory
+- What's enforced by linting
 
 ## Memory
 

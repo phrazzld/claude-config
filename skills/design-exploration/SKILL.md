@@ -1,13 +1,24 @@
 ---
 name: design-exploration
+deprecated: true
+superseded_by: evolve
 description: |
-  Generate visual design proposal catalogues for existing projects. Use when:
-  - User wants to explore design directions before implementation
-  - Redesigning or refreshing an existing interface
-  - Starting /aesthetic or /polish without clear direction
-  - User says "explore designs", "show me options", "design directions"
+  DEPRECATED — use /evolve instead.
+  /evolve subsumes design exploration with persistent genetic memory, multi-backend
+  rendering (HTML + Pencil), taste-frontend injection, and dial-controlled aesthetics.
   Keywords: design catalogue, proposals, visual exploration, aesthetic directions, DNA
 effort: high
+---
+
+> **DEPRECATED.** Use `/evolve` instead.
+>
+> `/evolve` replaces this skill entirely. It explores design directions with a genetic
+> algorithm, persistent cross-project memory, multi-provider delegation, and
+> taste-frontend.md injection. The investigation → catalogue → refinement → selection
+> cycle maps directly to evolve's detect → generate → select → advance → lock workflow.
+>
+> Original skill content preserved below for reference.
+
 ---
 
 # Design Exploration

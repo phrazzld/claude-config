@@ -69,10 +69,12 @@ Output: ${targetPath}`,
 
 - MUST use an `AlertDialog` for destructive or irreversible actions
 - SHOULD use structural skeletons for loading states
-- NEVER use `h-screen`, use `h-dvh`
+- NEVER use `h-screen` for full-height sections — ALWAYS use `min-h-[100dvh]` (prevents iOS Safari layout jump)
 - MUST respect `safe-area-inset` for fixed elements
 - MUST show errors next to where the action happens
 - NEVER block paste in `input` or `textarea` elements
+- MUST verify 3rd-party package exists in `package.json` before importing — output install command if missing
+- MUST provide Loading, Empty, and Error states for every data-driven surface
 
 ## Animation
 
@@ -86,6 +88,11 @@ Output: ${targetPath}`,
 - SHOULD respect `prefers-reduced-motion`
 - NEVER introduce custom easing curves unless explicitly requested
 - SHOULD avoid animating large images or full-screen surfaces
+- MUST isolate perpetual/infinite animations in their own `React.memo` Client Component — never in parent layout
+- NEVER use React `useState` for continuous animations — use Framer Motion `useMotionValue`/`useTransform`
+- NEVER mix GSAP/ThreeJS with Framer Motion in the same component tree
+- MUST wrap grain/noise filters on `fixed inset-0 pointer-events-none` elements only — never on scrolling containers
+- MUST include cleanup functions in all `useEffect` animations
 
 ## Typography
 
@@ -96,8 +103,9 @@ Output: ${targetPath}`,
 
 ## Layout
 
-- MUST use a fixed `z-index` scale (no arbitrary `z-*`)
+- MUST use a fixed `z-index` scale (no arbitrary `z-*`) — use only for systemic layers (nav, modal, overlay)
 - SHOULD use `size-*` for square elements instead of `w-*` + `h-*`
+- MUST use CSS Grid for multi-column structures — NEVER flexbox percentage math (`w-[calc(33%-1rem)]`)
 
 ## Performance
 
@@ -166,3 +174,31 @@ Implementing: Laja (social proof), Wiebe (CTA), Cialdini (urgency)...
 - ❌ Accepting 85+ as "close enough"
 - ❌ Generic feedback ("make it better")
 - ❌ Returning design without 90+ score
+
+## Pre-Flight Checklist (MANDATORY — After Expert Panel, Before Return)
+
+Apply this checklist as the final gate before returning any design output:
+
+```
+- [ ] Mobile collapse guaranteed (single-column) for DESIGN_VARIANCE > 4?
+- [ ] Full-height sections use min-h-[100dvh] not h-screen?
+- [ ] All useEffect animations have cleanup functions?
+- [ ] Empty, loading, and error states provided for data surfaces?
+- [ ] CPU-heavy perpetual animations isolated in React.memo Client Components?
+- [ ] Only transform/opacity animated (never top/left/width/height)?
+- [ ] No Inter font, no 3-column equal card grid, no inline style={{}}?
+- [ ] 3rd-party imports verified against package.json?
+```
+
+## Dial Reference (taste-skill Integration)
+
+Active dials control generation behavior. Defaults from taste-skill (8/6/4):
+
+| Dial | Axis | 1-3 | 4-7 | 8-10 |
+|------|------|-----|-----|------|
+| `DESIGN_VARIANCE` | Layout | Centered/symmetric | Offset | Asymmetric/masonry |
+| `MOTION_INTENSITY` | Motion | None/hover only | Fluid CSS transitions | Spring physics, GSAP |
+| `VISUAL_DENSITY` | Density | Spacious/gallery | Daily app | Cockpit/data-dense |
+
+When `/evolve` passes `--variance=N --motion=N --density=N`, these override defaults.
+Inject resolved dial values into every proposal generation prompt.

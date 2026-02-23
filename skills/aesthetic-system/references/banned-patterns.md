@@ -15,6 +15,10 @@ Explicit "never use" elements to avoid AI slop and generic aesthetics.
 - Space Grotesk (AI favorite)
 - Satoshi (overused)
 
+**BANNED patterns:**
+- Oversized H1s that scream — control hierarchy with weight and color, not massive scale
+- Serif fonts in dashboard/software UIs — use high-end sans-serif pairings (Geist + Geist Mono, Satoshi + JetBrains Mono)
+
 **Why:** These are defaults that signal "no decision was made."
 
 **Instead:** Choose fonts with character that match the brand soul.
@@ -27,6 +31,8 @@ Explicit "never use" elements to avoid AI slop and generic aesthetics.
 - `max-w-7xl mx-auto` centered everything
 - Generic grid cards with even spacing
 - Hamburger menu hiding everything on mobile
+- 3-column equal-card feature rows (use 2-column zig-zag, asymmetric grid, or horizontal scroll)
+- Complex flexbox percentage math (`w-[calc(33%-1rem)]`) — use CSS Grid instead
 
 **Why:** These patterns are templates, not designs.
 
@@ -52,6 +58,11 @@ Explicit "never use" elements to avoid AI slop and generic aesthetics.
 - Excessive uniform rounded corners everywhere
 - Gradients that "glow" without purpose
 - Stock illustration styles
+- Neon/outer `box-shadow` glows (use inner borders or subtle tinted shadows)
+- Pure black `#000000` (use off-black, Zinc-950, or charcoal)
+- Oversaturated accents (saturation > 80%)
+- Excessive gradient-fill text on large headers
+- Custom mouse cursors (outdated, hurts performance/accessibility)
 
 **Why:** Decoration without meaning is noise.
 
@@ -86,6 +97,25 @@ Explicit "never use" elements to avoid AI slop and generic aesthetics.
 
 **Instead:** One well-choreographed page load beats 20 random hover effects.
 
+### Content & Data
+
+**BANNED:**
+- Generic placeholder names ("John Doe", "Jane Smith", "Acme Corp") — use realistic, creative names
+- Generic SVG "egg" or Lucide user icons for avatars — use photo placeholders or distinctive styling
+- Predictable fake numbers (99.99%, exactly 50%, `1234567`) — use organic messy data (47.2%, +1 (312) 847-1928)
+- Startup slop names ("Acme", "Nexus", "SmartFlow") — invent premium contextual brand names
+- AI copywriting filler ("Elevate", "Seamless", "Unleash", "Next-Gen") — use concrete verbs
+
+**Why:** Fake-looking placeholder data breaks immersion and signals a lazy prototype, not a designed product.
+
+### External Resources & Components
+
+**BANNED:**
+- Unsplash image URLs (frequently return 404) — use `https://picsum.photos/seed/{string}/800/600` or SVG UI Avatars
+- `shadcn/ui` in generic default state — always customize radii, colors, and shadows to match project aesthetic
+
+**Why:** Broken images and unmodified shadcn are the fastest ways to signal "AI-generated slop."
+
 ## Self-Review Checklist
 
 Before delivering any design, scan for violations:
@@ -100,6 +130,13 @@ Before delivering any design, scan for violations:
 [ ] Layout starts from content, not template?
 [ ] Mobile has real navigation, not buried hamburger?
 [ ] Motion is orchestrated, not scattered?
+[ ] No neon/outer box-shadow glows?
+[ ] No pure black (#000000)?
+[ ] No 3-column equal card layouts?
+[ ] No generic placeholder names/avatars/numbers?
+[ ] No Unsplash image URLs?
+[ ] shadcn customized to project aesthetic (not default)?
+[ ] Full-height sections use min-h-[100dvh] not h-screen?
 ```
 
 ## The "Discard First 10" Rule

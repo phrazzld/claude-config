@@ -1,9 +1,21 @@
 ---
 name: design-catalog
+deprecated: true
+superseded_by: evolve
 description: |
-  DESIGN-CATALOG
+  DEPRECATED — use /evolve instead.
+  /evolve's population generation (Step 5) subsumes catalog generation with better
+  anti-convergence enforcement, persistent taste memory, and multi-provider delegation.
 effort: high
 ---
+
+> **DEPRECATED.** Use `/evolve` instead.
+>
+> `/evolve` generates populations of proposals (8+ per generation) with anti-convergence
+> enforcement, persistent cross-project taste memory, and multi-provider delegation
+> (Kimi, Codex, Claude, Gemini). The catalog is replaced by the evolve catalog viewer.
+>
+> Original skill content preserved below for reference.
 
 ---
 description: Generate visual design proposal catalog with 5-8 options

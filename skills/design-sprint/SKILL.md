@@ -1,12 +1,25 @@
 ---
 name: design-sprint
+deprecated: true
+superseded_by: evolve
 description: |
-  Full design cycle: audit, catalog, pick, theme, build.
-  Explores visual options before committing to implementation.
-  Use when: redesigning UI, exploring visual directions, design system work.
-  Composes: /design-audit, /design-catalog, /design-theme, /build.
+  DEPRECATED — use /evolve instead.
+  /evolve subsumes the full design cycle with persistent memory, genetic algorithm,
+  taste injection (taste-frontend.md), dial args (--variance/--motion/--density),
+  and component seeding at handoff. /design-sprint adds no value over /evolve.
 argument-hint: "[route-or-url]"
 effort: high
+---
+
+> **DEPRECATED.** Use `/evolve` instead.
+>
+> `/evolve` replaces this skill entirely: it runs the same audit → catalog → select →
+> theme → build cycle, plus persistent cross-project memory, genetic algorithm evolution,
+> taste-frontend.md injection, dial args (`--variance`, `--motion`, `--density`), and
+> full design system handoff with component seeding.
+>
+> Original skill content preserved below for reference.
+
 ---
 
 # /design-sprint

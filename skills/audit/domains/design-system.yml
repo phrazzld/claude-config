@@ -1,0 +1,57 @@
+name: design-system
+description: Design system compliance — tokens, component library, no ad-hoc styling
+labels:
+  - domain/design
+
+detect:
+  commands:
+    - "[ -f package.json ]"  # applies to all JS/TS projects
+
+checks:
+  - id: design-tokens
+    name: Design tokens configured (@theme)
+    commands:
+      - "grep -rq '@theme' src/ app/ styles/ globals.css 2>/dev/null"
+    priority: p1
+    issue_title: "No design token system"
+    issue_body: |
+      No @theme block found. Run /evolve to establish design direction and generate tokens.
+
+  - id: component-library
+    name: Component library initialized
+    commands:
+      - "[ -d components/ui ] || [ -d src/components/ui ]"
+    priority: p1
+    issue_title: "No reusable component library"
+    issue_body: |
+      No components/ui directory. Run /evolve --handoff to seed component library.
+
+  - id: no-arbitrary-values
+    name: Tailwind arbitrary value linting enabled
+    commands:
+      - "grep -qE 'no-arbitrary-value|no-custom-classnames|tailwindcss' eslint.config* .eslintrc* 2>/dev/null"
+    priority: p1
+    issue_title: "No linting against arbitrary Tailwind values"
+    issue_body: |
+      No enforcement preventing text-[#hex] or w-[37px] patterns.
+      Run /guardrail with design-system preset to generate enforcement rules.
+
+  - id: no-inline-styles
+    name: Inline style enforcement
+    commands:
+      - "[ -f guardrails/no-inline-styles.js ] || grep -rqE 'no-inline-styles|style={{' guardrails/ .eslintrc* eslint.config* 2>/dev/null"
+    priority: p2
+    issue_title: "No enforcement against inline styles"
+
+  - id: design-system-doc
+    name: Design system documented
+    commands:
+      - "[ -f design-system.md ] || [ -f docs/design-system.md ]"
+    priority: p3
+    issue_title: "No design system documentation"
+
+priority_rules:
+  p0: "Design system actively broken (conflicts, missing tokens)"
+  p1: "Enforcement missing — ad hoc styling possible"
+  p2: "Guardrails incomplete"
+  p3: "Documentation gaps"
