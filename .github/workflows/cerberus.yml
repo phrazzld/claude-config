@@ -1,0 +1,46 @@
+# Cerberus AI Code Review
+# https://github.com/misty-step/cerberus
+#
+# Drop this file into .github/workflows/cerberus.yml in your repository.
+# Set OPENROUTER_API_KEY in your repository secrets and you're done.
+#
+# Optional inputs:
+#   timeout:     Max seconds per reviewer (default: 600)
+#   model:       Override LLM model for all reviewers
+#   context:     Project context to calibrate reviewer severity (no secrets)
+#   reviewers:   Force specific reviewers, bypassing routing (e.g. trace,guard)
+#   fail-on-verdict: Fail when verdict is FAIL (default: true)
+#   fail-on-skip:    Fail when verdict is SKIP (default: false)
+#                    Recommended: set to "true" so timeout/API failures don't
+#                    silently appear as green checks.
+#
+# Example with options:
+#   jobs:
+#     review:
+#       uses: misty-step/cerberus/.github/workflows/cerberus.yml@master
+#       with:
+#         context: "Single-user personal finance app. Data bounded to ~500 tx/year."
+#         timeout: 900
+#       secrets:
+#         api-key: ${{ secrets.OPENROUTER_API_KEY }}
+#
+# Power-user option (decomposed pipeline with full control):
+#   See templates/consumer-workflow-minimal.yml
+name: Cerberus
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+
+concurrency:
+  group: cerberus-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    uses: misty-step/cerberus/.github/workflows/cerberus.yml@master
+    permissions:
+      contents: read
+      pull-requests: write
+    secrets:
+      api-key: ${{ secrets.OPENROUTER_API_KEY }}
