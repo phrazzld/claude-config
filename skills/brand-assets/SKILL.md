@@ -73,3 +73,4 @@ When invoked without arguments, infer what's needed:
 - `/og-card` — Legacy card generation (superseded)
 - `/og-hero-image` — AI-generated hero images (complementary)
 - `/launch-assets` — Full launch asset orchestration
+- `/ai-image-generation` — 50+ AI models (FLUX Dev, Seedream 4K, Gemini 3 Pro, Reve with text rendering) for non-brand-template image generation

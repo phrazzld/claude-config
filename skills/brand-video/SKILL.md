@@ -80,3 +80,6 @@ Templates live in the project's Remotion source and import `tokens.ts`:
 - `/brand-compile` — Compile tokens (prerequisite)
 - `/voiceover` — Generate voiceover audio
 - `/demo-video` — Legacy demo video (enhanced by brand-video)
+- `/ai-video-generation` — AI-native video (Veo 3.1, Seedance, OmniHuman for avatars/lipsync) when React-based composition isn't needed
+- `/remotion-render` — Cloud render Remotion components via inference.sh
+- `/remotion-best-practices` — Remotion component structure, timing, and sequence patterns

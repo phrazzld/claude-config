@@ -36,6 +36,10 @@ gh issue edit $1 --remove-label "status/ready" --add-label "status/in-progress" 
 
 If on `master`/`main`, branch: `feature/issue-$1` or `fix/issue-$1`.
 
+## TDD Baseline
+
+If the issue lacks test coverage, invoke `/test-driven-development` for the first logical chunk. Establishes a failing test before Codex writes implementation — prevents shipping untested code.
+
 ## Execution Loop
 
 For each logical chunk:

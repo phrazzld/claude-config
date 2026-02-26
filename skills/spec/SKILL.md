@@ -58,6 +58,8 @@ Use AskUserQuestion to validate understanding:
 
 ### Phase 3: Brainstorm Product Approaches
 
+> For raw or vague ideas, open with `/brainstorming` before entering the spec loop. It surfaces design options via dialogue with user approval gates before writing anything.
+
 Generate 3-5 approaches from a product perspective. For each:
 
 - **What the user experiences** — Concrete interaction flow

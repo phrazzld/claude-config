@@ -118,6 +118,10 @@ codex exec "Add timing instrumentation to $FILE. Log timing for each major opera
   --output-last-message /tmp/codex-timing.md 2>/dev/null
 ```
 
+## Systematic Debugging Protocol
+
+For complex or intermittent bugs, invoke `/systematic-debugging`. Four-phase approach: root cause investigation → pattern analysis → hypothesis testing → implementation. Prevents symptom-fixing; 95% first-fix rate vs hours of random troubleshooting.
+
 ## Root Cause Verification
 
 Before implementing a fix, answer explicitly:

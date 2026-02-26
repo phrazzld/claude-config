@@ -116,6 +116,17 @@ any existing evolution data.
 python3 "$ENGINE" --repo "$REPO" suggest --count 8
 ```
 
+For first pass exploration, prefer hardened seed mode:
+
+```bash
+python3 "$ENGINE" --repo "$REPO" seed --count 8
+```
+
+`seed` guarantees:
+- high-variance DNA spread (diversity floor 4+)
+- materialized HTML previews for every proposal
+- fallback logo assets per proposal
+
 Population is biased by:
 - **Local taste** from this project's prior selections (2x weight)
 - **Global taste** from all past projects
@@ -196,9 +207,13 @@ Each provider brings different creative biases — mixing them prevents converge
 | Kimi K2.5 | `mcp__moonbridge__spawn_agents_parallel` adapter=kimi | Frontend craft, visual fidelity |
 | Codex | `mcp__moonbridge__spawn_agents_parallel` adapter=codex | Systematic, architecture-first |
 | Claude | Task tool (general-purpose agent) | Nuanced design thinking |
-| Gemini | `opencode run --model github-copilot/gemini-3-pro-preview` | Creative divergence |
+| Gemini 3.1 Pro | `mcp__moonbridge__spawn_agents_parallel` adapter=gemini | Creative divergence, experimental UI, front-end brainstorming — **use for 50%+ of proposals** |
 
-**Example distribution for 8 proposals:** Kimi(2), Codex(2), Claude(2), Gemini(2).
+**Provider preference (user-mandated, apply every generation):**
+Gemini 3.1 Pro handles **at least half** of each generation. It produces genuinely different directions.
+Default split: Gemini(4), Kimi(2), Claude(2). Codex optional. Never the same provider for both survivors.
+
+**Example distribution for 8 proposals:** Gemini(4), Kimi(2), Claude(2).
 Vary per generation. Don't use same provider for both survivors.
 
 Each proposal MUST include:
@@ -250,9 +265,15 @@ mcp__moonbridge__spawn_agents_parallel({
 // Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_c) })
 // Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_d) })
 
-// Gemini batch (via OpenCode CLI)
-// opencode run --model github-copilot/gemini-3-pro-preview "prompt for dna_g"
-// opencode run --model github-copilot/gemini-3-pro-preview "prompt for dna_h"
+// Gemini batch (4 agents — preferred provider for majority of proposals)
+mcp__moonbridge__spawn_agents_parallel({
+  agents: [
+    { prompt: geminiPrompt(dna_c), adapter: "gemini", timeout_seconds: 1200 },
+    { prompt: geminiPrompt(dna_d), adapter: "gemini", timeout_seconds: 1200 },
+    { prompt: geminiPrompt(dna_e), adapter: "gemini", timeout_seconds: 1200 },
+    { prompt: geminiPrompt(dna_f), adapter: "gemini", timeout_seconds: 1200 },
+  ]
+})
 ```
 ```
 
@@ -336,6 +357,19 @@ python3 "$ENGINE" --repo "$REPO" advance
 ```
 
 Then generate new proposals (same delegation as step 6) and repeat.
+
+For the winner/loser loop, prefer hardened breed mode:
+
+```bash
+python3 "$ENGINE" --repo "$REPO" breed
+```
+
+`breed` guarantees:
+- winners persist as survivors
+- mutations are parented from winners
+- at least two immigrants (new species) are injected
+- parent lineage is recorded in evolution state
+- next generation previews are materialized immediately
 
 ### 10. Lock-in
 
@@ -491,6 +525,8 @@ Based on state:
 - `/brand-compile` — update brand tokens from locked DNA
 - `/brand-assets` — generate branded visual assets
 - `/pencil-to-code` — if Pencil backend used
+- `/theme-factory` — apply 10 pre-built visual themes (color palettes, font pairings) to artifact outputs (slides, reports, HTML)
+- `/design-md` — generate `DESIGN.md` as source-of-truth for Stitch MCP design system generation
 
 ## Anti-Convergence
 
