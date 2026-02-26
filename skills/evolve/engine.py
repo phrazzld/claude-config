@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """Design evolution engine — genetic algorithm for design systems.
 
 Deep module: simple CLI, complex internals. State persists in
@@ -26,6 +27,7 @@ Usage:
 
 import argparse
 import copy
+import hashlib
 import json
 import random
 import sys
@@ -124,6 +126,8 @@ AXES = {
     "background": ["solid", "gradient", "textured", "patterned", "layered"],
 }
 AXIS_NAMES = list(AXES.keys())
+HIGH_VARIANCE_MIN_DIVERSITY = 4
+MIN_IMMIGRANTS = 2
 
 
 # ── Data Model ────────────────────────────────────────────────────────────────
@@ -289,7 +293,16 @@ def load(repo: str = ".") -> Optional[Evolution]:
     if not f.exists():
         return None
     text = f.read_text()
-    data = yaml.safe_load(text) if yaml else json.loads(text)
+    if yaml:
+        data = yaml.safe_load(text)
+    else:
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(
+                "PyYAML is required to read .design-evolution/evolution.yaml in this Python environment. "
+                "Use a Python with PyYAML installed (for example your asdf python)."
+            ) from exc
     return Evolution.from_dict(data)
 
 MAX_ACTIVE_GENS = 10
@@ -416,10 +429,33 @@ def _seed_from_bank(count: int, contexts: list = None) -> list:
     return seeds
 
 
+def _stratified_candidates(count: int, effective_axes: dict, locked_values: dict) -> list:
+    """Generate a high-variance candidate pool with broad axis coverage."""
+    pools = {}
+    for axis in AXIS_NAMES:
+        if axis in locked_values:
+            continue
+        values = list(effective_axes[axis])
+        random.shuffle(values)
+        pools[axis] = values
+
+    out = []
+    for i in range(max(count * 2, 1)):
+        genes = {}
+        for axis in AXIS_NAMES:
+            if axis in locked_values:
+                genes[axis] = locked_values[axis]
+                continue
+            values = pools[axis]
+            genes[axis] = values[i % len(values)]
+        out.append(DNA(**genes))
+    return out
+
+
 def suggest_population(
     count: int, taste: dict, locked_axes: list = None,
     locked_values: dict = None, min_diversity: int = 3, attempts: int = 500,
-    contexts: list = None,
+    contexts: list = None, high_variance: bool = False,
 ) -> list:
     """Generate diverse DNA population, weighted by taste.
 
@@ -431,11 +467,21 @@ def suggest_population(
     effective_axes = _build_effective_axes(contexts)
     merged_taste = _merge_taste(taste, contexts)
     pop = []
+    diversity_floor = max(min_diversity, HIGH_VARIANCE_MIN_DIVERSITY) if high_variance else min_diversity
 
-    # Seed from DNA bank
-    bank_seeds = _seed_from_bank(count, contexts)
+    # High-variance scaffold for first-pass exploration
+    if high_variance:
+        for candidate in _stratified_candidates(count, effective_axes, locked_values):
+            if len(pop) >= count:
+                break
+            if _diverse(pop, candidate, diversity_floor):
+                pop.append(candidate)
+
+    # Seed from DNA bank (kept lighter during high-variance rounds)
+    bank_cap = 1 if high_variance else count
+    bank_seeds = _seed_from_bank(bank_cap, contexts)
     for seed in bank_seeds:
-        if _diverse(pop, seed, min_diversity):
+        if _diverse(pop, seed, diversity_floor):
             pop.append(seed)
 
     for _ in range(attempts):
@@ -445,7 +491,7 @@ def suggest_population(
         for axis in AXIS_NAMES:
             if axis in locked_values:
                 genes[axis] = locked_values[axis]
-            elif axis in merged_taste and merged_taste[axis] and random.random() < 0.6:
+            elif axis in merged_taste and merged_taste[axis] and random.random() < (0.2 if high_variance else 0.6):
                 # Bias toward preferred values via softmax-ish weighting
                 scores = merged_taste[axis]
                 options = effective_axes[axis]
@@ -463,7 +509,7 @@ def suggest_population(
             else:
                 genes[axis] = random.choice(effective_axes[axis])
         candidate = DNA(**genes)
-        if _diverse(pop, candidate, min_diversity):
+        if _diverse(pop, candidate, diversity_floor):
             pop.append(candidate)
 
     # Relax diversity if population underflows
@@ -472,7 +518,7 @@ def suggest_population(
             if len(pop) >= count:
                 break
             candidate = random_dna(locked_values)
-            if _diverse(pop, candidate, max(1, min_diversity - 1)):
+            if _diverse(pop, candidate, max(1, diversity_floor - 1)):
                 pop.append(candidate)
 
     return pop[:count]
@@ -508,12 +554,17 @@ def _pid(gen_num: int, index: int) -> str:
     return f"{gen_num}{letter}"
 
 
-def add_generation(evo: Evolution, dna_list: list, origins: list = None) -> Generation:
+def add_generation(evo: Evolution, dna_list: list, origins: list = None, parents: list = None) -> Generation:
     gen_num = len(evo.generations) + 1
     origins = origins or ["random"] * len(dna_list)
+    parents = parents or [None] * len(dna_list)
+    if len(origins) != len(dna_list):
+        raise ValueError(f"Origins count ({len(origins)}) must match DNA count ({len(dna_list)})")
+    if len(parents) != len(dna_list):
+        raise ValueError(f"Parents count ({len(parents)}) must match DNA count ({len(dna_list)})")
     proposals = [
-        Proposal(id=_pid(gen_num, i), dna=dna, origin=origin)
-        for i, (dna, origin) in enumerate(zip(dna_list, origins))
+        Proposal(id=_pid(gen_num, i), dna=dna, origin=origin, parent=parent)
+        for i, (dna, origin, parent) in enumerate(zip(dna_list, origins, parents))
     ]
     gen = Generation(
         number=gen_num, proposals=proposals,
@@ -527,6 +578,15 @@ def select(evo: Evolution, winners: list, killed: list, contexts: list = None):
     gen = evo.current_gen()
     if not gen:
         raise ValueError("No current generation")
+    winners = winners or []
+    killed = killed or []
+    overlap = set(winners) & set(killed)
+    if overlap:
+        raise ValueError(f"Same proposal cannot be winner and killed: {sorted(overlap)}")
+    valid_ids = {p.id for p in gen.proposals}
+    unknown = sorted((set(winners) | set(killed)) - valid_ids)
+    if unknown:
+        raise ValueError(f"Unknown proposal IDs for current generation: {unknown}")
     mem = _get_memory()
     for p in gen.proposals:
         if p.id in winners:
@@ -578,16 +638,23 @@ def advance(evo: Evolution) -> list:
     cfg = evo.config
     target = cfg.population_size
     plan = []
+    target_diversity = max(cfg.min_diversity, HIGH_VARIANCE_MIN_DIVERSITY)
+    immigration_count = max(MIN_IMMIGRANTS, cfg.immigration_rate)
+    target = max(target, len(winners) + immigration_count)
 
     # Survivors: keep winners intact
     for w in winners:
         plan.append((copy.deepcopy(w.dna), "survivor", w.id))
 
     # Mutations: fill most remaining slots
-    remaining = target - len(plan) - cfg.immigration_rate
+    remaining = target - len(plan) - immigration_count
     for _ in range(max(0, remaining)):
         parent = random.choice(winners)
-        child = mutate(parent.dna, rate=cfg.mutation_rate, locked_axes=cfg.locked_axes)
+        child = mutate(parent.dna, rate=max(2, cfg.mutation_rate), locked_axes=cfg.locked_axes)
+        for _ in range(50):
+            if _diverse([d for d, _, _ in plan], child, max(2, target_diversity - 1)):
+                break
+            child = mutate(parent.dna, rate=max(2, cfg.mutation_rate), locked_axes=cfg.locked_axes)
         plan.append((child, "mutation", parent.id))
 
     # Crossover: replace some mutations if 2+ winners
@@ -604,10 +671,363 @@ def advance(evo: Evolution) -> list:
     locked_vals = {}
     if cfg.locked_axes and winners:
         locked_vals = {a: getattr(winners[0].dna, a) for a in cfg.locked_axes}
-    for _ in range(cfg.immigration_rate):
-        plan.append((random_dna(locked_vals), "immigration", None))
+    for _ in range(immigration_count):
+        immigrant = random_dna(locked_vals)
+        for _ in range(120):
+            if _diverse([d for d, _, _ in plan], immigrant, target_diversity):
+                break
+            immigrant = random_dna(locked_vals)
+        plan.append((immigrant, "immigration", None))
 
     return plan
+
+
+def _palette_for_color_axis(color_axis: str) -> dict:
+    palettes = {
+        "dark": {
+            "bg": "oklch(0.14 0.02 260)",
+            "surface": "oklch(0.20 0.03 255)",
+            "text": "oklch(0.95 0.01 260)",
+            "muted": "oklch(0.72 0.02 260)",
+            "primary": "oklch(0.72 0.15 225)",
+            "accent": "oklch(0.80 0.15 30)",
+            "danger": "oklch(0.68 0.20 20)",
+        },
+        "light": {
+            "bg": "oklch(0.98 0.01 95)",
+            "surface": "oklch(0.99 0.00 95)",
+            "text": "oklch(0.22 0.03 250)",
+            "muted": "oklch(0.55 0.02 250)",
+            "primary": "oklch(0.62 0.16 245)",
+            "accent": "oklch(0.74 0.14 45)",
+            "danger": "oklch(0.60 0.20 25)",
+        },
+        "monochrome": {
+            "bg": "oklch(0.16 0.00 0)",
+            "surface": "oklch(0.24 0.00 0)",
+            "text": "oklch(0.94 0.00 0)",
+            "muted": "oklch(0.70 0.00 0)",
+            "primary": "oklch(0.78 0.00 0)",
+            "accent": "oklch(0.62 0.00 0)",
+            "danger": "oklch(0.50 0.00 0)",
+        },
+        "gradient": {
+            "bg": "oklch(0.18 0.06 280)",
+            "surface": "oklch(0.24 0.05 265)",
+            "text": "oklch(0.95 0.01 265)",
+            "muted": "oklch(0.76 0.03 265)",
+            "primary": "oklch(0.75 0.16 220)",
+            "accent": "oklch(0.82 0.15 355)",
+            "danger": "oklch(0.70 0.20 30)",
+        },
+        "high-contrast": {
+            "bg": "oklch(0.10 0.00 0)",
+            "surface": "oklch(0.94 0.00 0)",
+            "text": "oklch(0.10 0.00 0)",
+            "muted": "oklch(0.38 0.00 0)",
+            "primary": "oklch(0.64 0.21 25)",
+            "accent": "oklch(0.72 0.16 200)",
+            "danger": "oklch(0.58 0.22 18)",
+        },
+        "brand-tinted": {
+            "bg": "oklch(0.19 0.04 210)",
+            "surface": "oklch(0.25 0.05 210)",
+            "text": "oklch(0.95 0.01 240)",
+            "muted": "oklch(0.76 0.03 230)",
+            "primary": "oklch(0.74 0.16 210)",
+            "accent": "oklch(0.78 0.14 165)",
+            "danger": "oklch(0.69 0.18 20)",
+        },
+    }
+    return palettes.get(color_axis, palettes["dark"])
+
+
+def _font_for_typography_axis(typography_axis: str) -> dict:
+    presets = {
+        "display-heavy": {
+            "display": "Bebas Neue",
+            "body": "Manrope",
+            "url": "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;700&display=swap",
+        },
+        "text-forward": {
+            "display": "Source Serif 4",
+            "body": "Source Sans 3",
+            "url": "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;700&family=Source+Sans+3:wght@400;500;600&display=swap",
+        },
+        "minimal": {
+            "display": "DM Sans",
+            "body": "IBM Plex Sans",
+            "url": "https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        },
+        "expressive": {
+            "display": "Archivo Black",
+            "body": "Sora",
+            "url": "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Sora:wght@400;500;600&display=swap",
+        },
+        "editorial": {
+            "display": "Playfair Display",
+            "body": "Spectral",
+            "url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Spectral:wght@400;500;600&display=swap",
+        },
+    }
+    return presets.get(typography_axis, presets["expressive"])
+
+
+def _spacing_for_density_axis(density_axis: str) -> tuple[int, int, int, int, int, int]:
+    spacing = {
+        "spacious": (8, 12, 18, 28, 40, 56),
+        "compact": (4, 8, 12, 16, 20, 28),
+        "mixed": (6, 10, 16, 24, 32, 44),
+        "full-bleed": (2, 6, 12, 20, 28, 40),
+    }
+    return spacing.get(density_axis, spacing["mixed"])
+
+
+def _motion_for_axis(motion_axis: str) -> tuple[str, str]:
+    motion = {
+        "none": ("none", "Static composition. Hierarchy carries the experience."),
+        "subtle": ("fadeIn 280ms ease-out both", "Subtle fade and lift on entry."),
+        "orchestrated": ("cascadeIn 480ms cubic-bezier(.22,.61,.36,1) both", "Staggered choreography across content blocks."),
+        "aggressive": ("snapIn 240ms cubic-bezier(.16,1,.3,1) both", "Fast directional transitions and higher visual energy."),
+        "scroll-triggered": ("slideIn 420ms ease both", "Scroll-linked reveal pattern with section offsets."),
+    }
+    return motion.get(motion_axis, motion["subtle"])
+
+
+def _background_css(background_axis: str) -> str:
+    presets = {
+        "solid": "var(--bg)",
+        "gradient": "radial-gradient(1200px 500px at -10% -20%, oklch(0.72 0.14 230 / .28), transparent 60%), radial-gradient(900px 500px at 110% 110%, oklch(0.80 0.14 30 / .24), transparent 55%), var(--bg)",
+        "textured": "repeating-linear-gradient(45deg, oklch(0.45 0.02 250 / .06) 0 2px, transparent 2px 8px), var(--bg)",
+        "patterned": "radial-gradient(circle at 1px 1px, oklch(0.72 0.03 240 / .30) 1px, transparent 0) 0 0 / 18px 18px, var(--bg)",
+        "layered": "linear-gradient(180deg, oklch(0.24 0.03 260 / .55), transparent 45%), radial-gradient(1000px 600px at 50% -10%, oklch(0.65 0.12 210 / .22), transparent 70%), var(--bg)",
+    }
+    return presets.get(background_axis, presets["solid"])
+
+
+def _layout_rules(layout_axis: str) -> tuple[str, str]:
+    css = {
+        "centered": ".shell{max-width:980px;grid-template-columns:1fr;grid-template-areas:'hero' 'controls' 'components';}",
+        "asymmetric": ".shell{max-width:1120px;grid-template-columns:1.35fr 1fr;grid-template-areas:'hero controls' 'hero components';}.hero{align-self:stretch;}",
+        "grid-breaking": ".shell{max-width:1180px;grid-template-columns:1fr 1fr;grid-template-areas:'hero hero' 'controls components';}.hero{transform:translateY(-14px) rotate(-0.4deg);}.components{transform:translateY(10px);}",
+        "full-bleed": ".shell{max-width:none;width:100%;grid-template-columns:2fr 1fr 1fr;grid-template-areas:'hero controls components';}.panel{border-radius:0;}",
+        "bento": ".shell{max-width:1200px;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:'hero hero controls controls' 'hero hero components components';}",
+        "editorial": ".shell{max-width:1080px;grid-template-columns:0.9fr 1.1fr;grid-template-areas:'hero hero' 'controls components';}.hero h1{max-width:16ch;}",
+    }
+    headline = {
+        "centered": "Balanced and intentional. Focus-first interface.",
+        "asymmetric": "Tension-driven composition with directional hierarchy.",
+        "grid-breaking": "Deliberate rule-breaking with anchored utility.",
+        "full-bleed": "Immersive, edge-to-edge visual language.",
+        "bento": "Modular tiles with controlled contrast and rhythm.",
+        "editorial": "Narrative pacing, typographic hierarchy, and white-space drama.",
+    }
+    return css.get(layout_axis, css["centered"]), headline.get(layout_axis, headline["centered"])
+
+
+def _logo_svg(primary: str, accent: str, key: str) -> str:
+    seed = int(hashlib.sha256(key.encode("utf-8")).hexdigest()[:8], 16)
+    spin = seed % 360
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
+  <rect width="128" height="128" rx="24" fill="{primary}"/>
+  <g transform="rotate({spin} 64 64)">
+    <circle cx="48" cy="48" r="18" fill="{accent}" />
+    <rect x="56" y="56" width="40" height="16" rx="8" fill="white" fill-opacity="0.88"/>
+  </g>
+</svg>
+"""
+
+
+def _ensure_logo_asset(base: Path, gen_number: int, proposal: Proposal):
+    logo_dir = base / f"gen-{gen_number}" / "assets" / "logos" / proposal.id
+    logo_dir.mkdir(parents=True, exist_ok=True)
+    logo_path = logo_dir / "final.svg"
+    if logo_path.exists():
+        return
+    palette = _palette_for_color_axis(proposal.dna.color)
+    svg = _logo_svg(palette["primary"], palette["accent"], f"{proposal.id}:{proposal.dna.as_code()}")
+    logo_path.write_text(svg)
+
+
+def _render_proposal_html(evo: Evolution, proposal: Proposal, gen_number: int) -> str:
+    dna = proposal.dna
+    palette = _palette_for_color_axis(dna.color)
+    fonts = _font_for_typography_axis(dna.typography)
+    s1, s2, s3, s4, s5, s6 = _spacing_for_density_axis(dna.density)
+    motion_anim, motion_note = _motion_for_axis(dna.motion)
+    layout_css, layout_note = _layout_rules(dna.layout)
+    bg = _background_css(dna.background)
+    logo_path = f"../assets/logos/{proposal.id}/final.svg"
+    contrast_text = "#111111" if dna.color in {"light", "high-contrast"} else "#f8fafc"
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{evo.project} {proposal.id} - {dna.as_code()}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="{fonts['url']}" rel="stylesheet" />
+  <style>
+    :root {{
+      --bg: {palette['bg']};
+      --surface: {palette['surface']};
+      --text: {palette['text']};
+      --muted: {palette['muted']};
+      --primary: {palette['primary']};
+      --accent: {palette['accent']};
+      --danger: {palette['danger']};
+      --space-1: {s1}px; --space-2: {s2}px; --space-3: {s3}px;
+      --space-4: {s4}px; --space-5: {s5}px; --space-6: {s6}px;
+      --radius: {10 if dna.density == 'compact' else 18}px;
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{
+      margin: 0;
+      min-height: 100vh;
+      font-family: "{fonts['body']}", sans-serif;
+      color: var(--text);
+      background: {bg};
+      padding: var(--space-6) var(--space-4);
+      animation: {motion_anim};
+    }}
+    .shell {{
+      margin: 0 auto;
+      display: grid;
+      gap: var(--space-4);
+    }}
+    {layout_css}
+    .panel {{
+      background: linear-gradient(180deg, color-mix(in oklch, var(--surface) 88%, white 12%), var(--surface));
+      border: 1px solid color-mix(in oklch, var(--muted) 30%, transparent);
+      border-radius: var(--radius);
+      padding: var(--space-5);
+      box-shadow: 0 8px 30px color-mix(in oklch, var(--bg) 80%, black 20%);
+    }}
+    .hero {{ grid-area: hero; }}
+    .controls {{ grid-area: controls; }}
+    .components {{ grid-area: components; }}
+    h1, h2, h3 {{
+      margin: 0 0 var(--space-3);
+      font-family: "{fonts['display']}", sans-serif;
+      letter-spacing: 0.01em;
+    }}
+    h1 {{ font-size: clamp(1.8rem, 3.8vw, 3.8rem); line-height: 1.04; }}
+    h2 {{ font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.11em; color: var(--muted); }}
+    .meta {{ color: var(--muted); margin-bottom: var(--space-4); font-size: 0.92rem; }}
+    .kpis {{ display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--space-2); margin-top: var(--space-4); }}
+    .kpi {{ padding: var(--space-2); border-radius: calc(var(--radius) - 6px); background: color-mix(in oklch, var(--surface) 84%, black 16%); }}
+    .kpi b {{ display: block; font-size: 1.05rem; font-family: "{fonts['display']}", sans-serif; }}
+    .logo {{ width: 44px; height: 44px; margin-bottom: var(--space-3); display: block; }}
+    .timer {{ font-family: "{fonts['display']}", sans-serif; font-size: clamp(2.1rem, 5.7vw, 4.5rem); }}
+    .btns {{ display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-3) 0; }}
+    button {{
+      border: 0;
+      border-radius: calc(var(--radius) - 6px);
+      padding: 11px 14px;
+      font: 600 13px "{fonts['body']}", sans-serif;
+      cursor: pointer;
+    }}
+    .primary {{ background: linear-gradient(130deg, var(--primary), var(--accent)); color: {contrast_text}; }}
+    .ghost {{ background: color-mix(in oklch, var(--surface) 72%, black 28%); color: var(--text); border: 1px solid color-mix(in oklch, var(--muted) 40%, transparent); }}
+    .components-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }}
+    .sample {{ background: color-mix(in oklch, var(--surface) 75%, black 25%); border: 1px solid color-mix(in oklch, var(--muted) 35%, transparent); border-radius: calc(var(--radius) - 8px); padding: var(--space-2); min-height: 74px; }}
+    .dna {{ margin-top: var(--space-3); font-size: 0.8rem; color: var(--muted); word-break: break-all; }}
+    .motion-note {{ margin-top: var(--space-3); color: var(--muted); font-size: 0.82rem; }}
+    .input {{
+      width: 100%;
+      margin-top: var(--space-2);
+      border-radius: calc(var(--radius) - 7px);
+      border: 1px solid color-mix(in oklch, var(--muted) 35%, transparent);
+      background: color-mix(in oklch, var(--surface) 84%, black 16%);
+      color: var(--text);
+      padding: 10px 12px;
+      font: 500 13px "{fonts['body']}", sans-serif;
+    }}
+    @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(8px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+    @keyframes cascadeIn {{ from {{ opacity: 0; transform: translateY(16px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+    @keyframes snapIn {{ from {{ opacity: 0; transform: translateY(20px) scale(0.98); }} to {{ opacity: 1; transform: translateY(0) scale(1); }} }}
+    @keyframes slideIn {{ from {{ opacity: 0; transform: translateX(-16px); }} to {{ opacity: 1; transform: translateX(0); }} }}
+    @media (max-width: 940px) {{
+      .shell {{ grid-template-columns: 1fr !important; grid-template-areas: "hero" "controls" "components" !important; }}
+      .panel {{ border-radius: 16px; }}
+      .components-grid {{ grid-template-columns: 1fr; }}
+    }}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="panel hero">
+      <img class="logo" src="{logo_path}" alt="{evo.project} mark" />
+      <h1>{layout_note}</h1>
+      <p class="meta">{evo.project} proposal {proposal.id} for high-variance exploration.</p>
+      <div class="kpis">
+        <div class="kpi"><small>Focus</small><b>25m</b></div>
+        <div class="kpi"><small>Break</small><b>05m</b></div>
+        <div class="kpi"><small>Cycle</small><b>4x</b></div>
+      </div>
+      <p class="motion-note">{motion_note}</p>
+      <p class="dna">DNA: {dna.as_code()}</p>
+    </section>
+    <section class="panel controls">
+      <h2>Timer Surface</h2>
+      <div class="timer">24:12</div>
+      <div class="btns">
+        <button class="primary">Start Focus</button>
+        <button class="ghost">Break</button>
+        <button class="ghost">Reset</button>
+      </div>
+      <label style="font-size:0.8rem;color:var(--muted)">Task</label>
+      <input class="input" value="Ship evolve high-variance pass" aria-label="Task" />
+    </section>
+    <section class="panel components">
+      <h2>Components</h2>
+      <div class="components-grid">
+        <article class="sample"><strong>Card</strong><p style="margin:8px 0 0;color:var(--muted);font-size:0.8rem">Session summary + velocity.</p></article>
+        <article class="sample"><strong>Input</strong><p style="margin:8px 0 0;color:var(--muted);font-size:0.8rem">Fast task capture.</p></article>
+        <article class="sample"><strong>Nav Item</strong><p style="margin:8px 0 0;color:var(--muted);font-size:0.8rem">Today / History / Stats.</p></article>
+        <article class="sample"><strong>Badge</strong><p style="margin:8px 0 0;color:var(--muted);font-size:0.8rem">Streak, paused, blocked.</p></article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+"""
+
+
+def _warn_duplicate_previews(gen: Generation, base: Path):
+    seen = {}
+    dupes = {}
+    for p in gen.proposals:
+        html_path = base / f"gen-{gen.number}" / p.id / "index.html"
+        if not html_path.exists():
+            continue
+        digest = hashlib.sha256(html_path.read_bytes()).hexdigest()
+        if digest in seen:
+            dupes.setdefault(digest, [seen[digest]]).append(p.id)
+        else:
+            seen[digest] = p.id
+    if dupes:
+        groups = ["+".join(ids) for ids in dupes.values()]
+        print(f"  [WARNING] duplicate preview HTML detected: {groups}")
+
+
+def _materialize_generation(evo: Evolution, gen: Generation, render_missing: bool = True, force_render: bool = False):
+    base = _dir(evo.repo_path)
+    for p in gen.proposals:
+        html_path = base / f"gen-{gen.number}" / p.id / "index.html"
+        rel_path = f"gen-{gen.number}/{p.id}/index.html"
+        should_render = force_render or (render_missing and not html_path.exists())
+        if should_render:
+            html_path.parent.mkdir(parents=True, exist_ok=True)
+            _ensure_logo_asset(base, gen.number, p)
+            html_path.write_text(_render_proposal_html(evo, p, gen.number))
+        if html_path.exists():
+            p.artifacts["html"] = rel_path
+            print(f"  {p.id}: {p.dna.as_code()} [preview: {rel_path}]")
+        else:
+            print(f"  {p.id}: {p.dna.as_code()} [WARNING: no preview at {rel_path}]")
+    _warn_duplicate_previews(gen, base)
 
 
 def lock_proposal(evo: Evolution, pid: str, contexts: list = None):
@@ -911,7 +1331,11 @@ def render_catalog(evo: Evolution) -> str:
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 def _require(repo):
-    evo = load(repo)
+    try:
+        evo = load(repo)
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(1)
     if not evo:
         print("No evolution state. Run: evolve init --project NAME", file=sys.stderr)
         sys.exit(1)
@@ -962,12 +1386,16 @@ def cmd_init(args):
 
 def cmd_suggest(args):
     evo = _require(args.repo)
+    high_variance = bool(getattr(args, "high_variance", False) or not evo.generations)
     dna_list = suggest_population(
         count=args.count or evo.config.population_size,
         taste=evo.taste,
         locked_axes=evo.config.locked_axes,
         min_diversity=evo.config.min_diversity,
+        high_variance=high_variance,
     )
+    if high_variance:
+        print(f"Mode: high-variance (min-diversity >= {max(evo.config.min_diversity, HIGH_VARIANCE_MIN_DIVERSITY)})")
     for i, dna in enumerate(dna_list):
         print(f"  {chr(ord('a') + i)}: {dna.as_code()}")
 
@@ -976,17 +1404,13 @@ def cmd_add(args):
     evo = _require(args.repo)
     dna_list = [DNA.from_code(c) for c in args.dna]
     origins = args.origins.split(",") if args.origins else None
-    gen = add_generation(evo, dna_list, origins)
-    # Auto-populate artifacts for any proposals with HTML at conventional path
-    base = _dir(evo.repo_path)
-    for p in gen.proposals:
-        html_path = base / f"gen-{gen.number}" / p.id / "index.html"
-        rel_path = f"gen-{gen.number}/{p.id}/index.html"
-        if html_path.exists():
-            p.artifacts["html"] = rel_path
-            print(f"  {p.id}: {p.dna.as_code()} [preview: {rel_path}]")
-        else:
-            print(f"  {p.id}: {p.dna.as_code()} [WARNING: no preview at {rel_path}]")
+    parents = args.parents.split(",") if getattr(args, "parents", None) else None
+    gen = add_generation(evo, dna_list, origins, parents)
+    _materialize_generation(
+        evo, gen,
+        render_missing=not getattr(args, "skip_render", False),
+        force_render=getattr(args, "force_render", False),
+    )
     save(evo)
     print(f"Generation {gen.number}: {len(gen.proposals)} proposals")
 
@@ -1024,6 +1448,52 @@ def cmd_advance(args):
     out = _dir(evo.repo_path) / "next_gen_plan.json"
     out.write_text(json.dumps(plan_data, indent=2))
     print(f"\nPlan: {out}")
+
+
+def cmd_seed(args):
+    """Generate and materialize a high-variance initial population."""
+    evo = _require(args.repo)
+    if evo.generations and not getattr(args, "force", False):
+        print("Seed aborted: generation already exists. Use --force to seed anyway.", file=sys.stderr)
+        sys.exit(1)
+    count = args.count or evo.config.population_size
+    diversity = max(evo.config.min_diversity, getattr(args, "diversity", HIGH_VARIANCE_MIN_DIVERSITY))
+    dna_list = suggest_population(
+        count=count,
+        taste=evo.taste,
+        locked_axes=evo.config.locked_axes,
+        min_diversity=diversity,
+        high_variance=True,
+    )
+    gen = add_generation(evo, dna_list, origins=["random"] * len(dna_list))
+    _materialize_generation(
+        evo, gen,
+        render_missing=True,
+        force_render=getattr(args, "force_render", False),
+    )
+    save(evo)
+    print(f"Seeded generation {gen.number} with {len(gen.proposals)} high-variance proposals")
+
+
+def cmd_breed(args):
+    """Advance from selected winners and materialize the next generation."""
+    evo = _require(args.repo)
+    plan = advance(evo)
+    dna_list = [dna for dna, _, _ in plan]
+    origins = [origin for _, origin, _ in plan]
+    parents = [parent for _, _, parent in plan]
+    gen = add_generation(evo, dna_list, origins=origins, parents=parents)
+    _materialize_generation(
+        evo, gen,
+        render_missing=True,
+        force_render=getattr(args, "force_render", False),
+    )
+    save(evo)
+    counts = {}
+    for origin in origins:
+        counts[origin] = counts.get(origin, 0) + 1
+    counts_text = ", ".join(f"{k}={v}" for k, v in sorted(counts.items()))
+    print(f"Bred generation {gen.number}: {counts_text}")
 
 
 def cmd_status(args):
@@ -1423,10 +1893,17 @@ def main():
 
     s = sub.add_parser("suggest")
     s.add_argument("--count", type=int)
+    s.add_argument("--high-variance", action="store_true",
+                   help="Force high-variance population mode")
 
     s = sub.add_parser("add")
     s.add_argument("dna", nargs="+")
     s.add_argument("--origins")
+    s.add_argument("--parents", help="Comma-separated parent proposal IDs (aligns with DNA list)")
+    s.add_argument("--skip-render", action="store_true",
+                   help="Do not auto-render missing proposal previews")
+    s.add_argument("--force-render", action="store_true",
+                   help="Regenerate proposal previews even if files already exist")
 
     s = sub.add_parser("select")
     s.add_argument("--winners")
@@ -1437,6 +1914,17 @@ def main():
     s.add_argument("--text", required=True)
 
     sub.add_parser("advance")
+    s = sub.add_parser("seed", help="Create a high-variance first generation and render previews")
+    s.add_argument("--count", type=int, help="Population size override")
+    s.add_argument("--diversity", type=int, default=HIGH_VARIANCE_MIN_DIVERSITY,
+                   help=f"Minimum diversity floor for seed mode (default: {HIGH_VARIANCE_MIN_DIVERSITY})")
+    s.add_argument("--force", action="store_true",
+                   help="Allow seeding even if generations already exist")
+    s.add_argument("--force-render", action="store_true",
+                   help="Regenerate proposal previews even if files already exist")
+    s = sub.add_parser("breed", help="Create next generation from winners and render previews")
+    s.add_argument("--force-render", action="store_true",
+                   help="Regenerate proposal previews even if files already exist")
     sub.add_parser("status")
     sub.add_parser("catalog")
 
@@ -1514,6 +2002,7 @@ def main():
     {
         "init": cmd_init, "suggest": cmd_suggest, "add": cmd_add,
         "select": cmd_select, "note": cmd_note, "advance": cmd_advance,
+        "seed": cmd_seed, "breed": cmd_breed,
         "status": cmd_status, "catalog": cmd_catalog, "lock": cmd_lock,
         "taste": cmd_taste, "export": cmd_export,
         "serve": cmd_serve, "port": cmd_port,
