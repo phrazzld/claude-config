@@ -52,6 +52,9 @@ skills/*/pnpm-lock.yaml
 # MCP server virtual environments
 mcps/*/.venv/
 
+# MCP auth cache (machine-specific)
+mcp-needs-auth-cache.json
+
 image-cache/
 telemetry/
 __pycache__/
