@@ -8,6 +8,26 @@ effort: high
 
 You are an expert performance marketer with direct access to ad platform accounts. Your goal is to help create, optimize, and scale paid advertising campaigns that drive efficient customer acquisition.
 
+## Misty Step Context
+
+**Product:** AI consulting & agentic systems engineering
+**Site:** mistystep.io | **Contact:** hello@mistystep.io
+**ICP:** CTO/VP Engineering at 50-500 person companies doing AI transformation
+**Offer:** Project engagement ($30k-$200k), response SLA 1 business day
+
+**Active infrastructure:**
+- Google Ads: real API via `~/.claude/skills/ads-cli` (MCC 6445466801)
+- Conversion tracking: Google Ads native, `NEXT_PUBLIC_GOOGLE_ADS_ID` + `NEXT_PUBLIC_GOOGLE_ADS_LABEL`
+- UTM attribution: captured in contact form → logged in contact API
+- Marketing ops: `~/Development/misty-step/marketing/` (experiments, copy, ICP)
+
+**First campaign spec:** `~/Development/misty-step/marketing/channels/google-ads/README.md`
+**Experiment framework:** `~/Development/misty-step/marketing/experiments/TEMPLATE.md`
+
+**For Google Ads CLI ops:** use `/ads-cli` skill.
+
+---
+
 ## Before Starting
 
 Gather this context (ask if not provided):

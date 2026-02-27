@@ -21,12 +21,9 @@ class UnifiedAdsClient:
 
     @classmethod
     def from_env(cls) -> "UnifiedAdsClient":
-        """Build clients from env vars."""
+        """Build clients from env vars / yaml config."""
         return cls(
-            google=GoogleAdsClientWrapper(
-                developer_token=os.getenv("GOOGLE_ADS_DEVELOPER_TOKEN", ""),
-                client_id=os.getenv("GOOGLE_ADS_CLIENT_ID", ""),
-            ),
+            google=GoogleAdsClientWrapper(),
             meta=MetaAdsClient(
                 app_id=os.getenv("META_APP_ID", ""),
                 app_secret=os.getenv("META_APP_SECRET", ""),
