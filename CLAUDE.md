@@ -22,7 +22,7 @@ Use the right tool for the job. Delegation is a strength, not a requirement.
 
 ## Operating Mode
 
-Implement directly when it's efficient. For larger tasks, Codex via Moonbridge is
+Implement directly when it's efficient. For larger tasks, Codex CLI is
 available and often faster/cheaper for implementation, tests, and boilerplate.
 
 **When Codex shines:**
@@ -37,7 +37,7 @@ available and often faster/cheaper for implementation, tests, and boilerplate.
 
 **Delegation pattern (when useful):**
 ```bash
-spawn_agent(prompt="[task]", adapter="codex", reasoning_effort="xhigh")
+codex exec --full-auto "[task]" --output-last-message /tmp/codex-out.md 2>/dev/null
 ```
 Then verify: `git diff --stat && pnpm typecheck && pnpm test`
 
@@ -254,6 +254,25 @@ Learnings land here first. Run `/distill` to graduate to skills/agents.
 
 <!-- Add learnings below this line -->
 
+### XCTestExpectation: Pin Fire Count When Preventing Duplicate Signals
+
+When a PR's explicit goal is to prevent an event from firing more than once (e.g., dual-callback removal), the test must prove exactly-one, not just at-least-one:
+
+```swift
+// BAD: proves callback fired, not that it fired exactly once
+let exp = expectation(description: "callback fired")
+callback = { exp.fulfill() }
+await fulfillment(of: [exp], timeout: 1.0)
+
+// GOOD: proves exactly one fire — directly guards the regression
+let exp = expectation(description: "callback fired")
+exp.expectedFulfillmentCount = 1  // fails if callback fires 0 OR 2+ times
+callback = { exp.fulfill() }
+await fulfillment(of: [exp], timeout: 1.0)
+```
+
+Rule: any test whose comment says "should only fire once" or "should not trigger re-auth" must use `expectedFulfillmentCount = 1`, not just a boolean flag.
+
 ### Bash Optional Flags: Use Array Pattern
 
 Never use an unquoted string variable for optional flags in `set -u` shells.
@@ -424,28 +443,16 @@ Visual/multimodal data doesn't persist—text does.
 | Browser returned data | Write to file |
 | Starting new phase | Read plan |
 
-### Moonbridge Delegation
-
-When delegating, prefer Moonbridge (`mcp__moonbridge__spawn_agent`) over `codex exec` via Bash.
-
-| Parameter | Recommendation |
-|-----------|----------------|
-| `adapter` | `codex` for implementation tasks |
-| `reasoning_effort` | `xhigh` for complex work, `high` for standard tasks |
-| `timeout_seconds` | `2400` (40min) gives room for larger tasks |
-
-### Codex Native Multi-Agent vs Moonbridge
+### Delegation Routing
 
 | Scenario | Tool | Why |
 |----------|------|-----|
-| Single implementation task | Moonbridge `codex` | Simple, well-integrated |
-| Multi-persona review | Codex native subagents | Injection keeps context, named roles |
-| Explore + implement pipeline | Codex native subagents | Explorer feeds implementer |
-| Quick lookup/scaffold | Moonbridge `codex` | Fast, direct |
-| Cross-tool review (Claude + Gemini + Codex) | `council` script | Multi-vendor |
-
-Native subagents are better when you want the parent to synthesize multiple child results.
-Moonbridge is better for fire-and-forget delegation from Claude Code.
+| Single implementation task | `codex exec` CLI | Simple, fire-and-forget |
+| Parallel analysis | Task tool (multiple calls) | Runs in parallel within Claude Code |
+| Multi-persona review | Task tool subagents | Named roles, parent synthesizes |
+| Cross-tool review | `council` script | Multi-vendor |
+| Research, best practices | `gemini` CLI | Web-grounded, huge context |
+| Architecture validation | `thinktank` CLI | Multi-model consensus |
 
 ### Opus 4.6 Capabilities (2026-02-05)
 
@@ -468,12 +475,12 @@ Moonbridge is better for fire-and-forget delegation from Claude Code.
 
 ### Agent Teams (Experimental, 2026-02-05)
 
-**When teams beat Moonbridge:**
+**When teams beat Codex CLI / Task tool:**
 - Workers need to share findings / challenge each other
 - Competing hypotheses (>2 plausible root causes)
 - Cross-layer coordination (FE + BE + tests as separate teammates)
 
-**When Moonbridge beats teams:**
+**When Codex CLI / Task tool beats teams:**
 - "Do X, report back" (no inter-worker communication needed)
 - Sequential pipeline (spec → build → ship)
 - Cost-sensitive tasks (teams ~5x token cost)
@@ -483,8 +490,6 @@ Moonbridge is better for fire-and-forget delegation from Claude Code.
 - Spawn prompt must include full context (teammates don't inherit conversation)
 - Each teammate owns different files (avoid merge conflicts)
 - 5-6 tasks per teammate for good throughput
-
-**Hooks:** delegation-guard auto-suspends when team active. Safety hooks still fire.
 
 ### Module Integration: Read Before Writing
 
@@ -594,3 +599,39 @@ private(set) var pendingReports: [Report] = []
 ```
 
 Rule: if `droppedCount` works via `private(set)`, so should any other read-only state you're exposing for testing.
+
+### Vitest Memory Safety (MANDATORY)
+
+- `"test"` scripts: ALWAYS `vitest run`, never bare `vitest`
+- Hook/CI subprocesses: ALWAYS pass `env={**os.environ, "CI": "true"}`
+- Pool config: `forks` pool, `maxForks: 4` on machines with <=36 GB RAM
+- Never delegate >3 parallel agents. Use Task tool, not external MCP servers.
+
+### GitHub Actions: Use `workflow_run` to Sequence Dependent Workflows
+
+When workflow B needs workflow A's output (e.g., a GitHub release that A creates), trigger B with `workflow_run` on A — not with a shared event + polling loop.
+
+```yaml
+# BAD: race condition — both fire simultaneously on tag push
+# release.yml: on: push: tags: [v*]
+# release-macos.yml: on: push: tags: [v*]
+# Patch: poll for release to appear (fragile, has a timeout ceiling)
+
+# GOOD: explicit ordering via workflow_run
+on:
+  workflow_run:
+    workflows:
+      - Release          # A must complete before B starts
+    types:
+      - completed
+```
+
+When using `workflow_run`, `github.ref_name` is the default branch — not the tag. Resolve the tag explicitly:
+```bash
+# In a step before checkout
+echo "tag=$(gh api repos/$GITHUB_REPOSITORY/releases/latest --jq '.tag_name')" >> "$GITHUB_OUTPUT"
+```
+
+Then use `steps.release.outputs.tag` for checkout `ref:`, `APP_VERSION`, and artifact paths.
+
+Rule: **if workflow B polls for workflow A's output, the trigger is wrong.** Polling is a code smell in CI just like it is in application code.
