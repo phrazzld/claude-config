@@ -90,7 +90,8 @@ def run_checks(project_type, cwd):
                 capture_output=True,
                 text=True,
                 timeout=120,
-                cwd=cwd
+                cwd=cwd,
+                env={**os.environ, "CI": "true"}
             )
             if result.returncode != 0:
                 output = result.stdout + result.stderr
