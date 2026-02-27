@@ -45,16 +45,40 @@ def get_swap_gb():
     return None
 
 
+def count_orphan_test_processes():
+    """Count vitest/jest watch processes that may be zombies."""
+    count = 0
+    try:
+        result = subprocess.run(
+            ["pgrep", "-lf", "vitest"],
+            capture_output=True, text=True, timeout=5
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            lines = [l for l in result.stdout.strip().split('\n')
+                     if 'vitest' in l.lower() and 'pgrep' not in l]
+            count += len(lines)
+    except Exception:
+        pass
+    return count
+
+
 def main():
     warnings = []
 
     disk_pct = get_disk_percent()
     if disk_pct and disk_pct >= 90:
-        warnings.append(f"💾 Disk at {disk_pct}% - consider running 'cache-clean'")
+        warnings.append(f"Disk at {disk_pct}% - consider running 'cache-clean'")
 
     swap_gb = get_swap_gb()
     if swap_gb and swap_gb >= 15:
-        warnings.append(f"🔄 Swap at {swap_gb:.1f}GB - high memory pressure")
+        warnings.append(f"Swap at {swap_gb:.1f}GB - high memory pressure")
+
+    orphans = count_orphan_test_processes()
+    if orphans > 0:
+        warnings.append(
+            f"Found {orphans} vitest process(es) still running. "
+            f"Run: pkill -f vitest"
+        )
 
     if warnings:
         message = "[codex] ⚠️ SYSTEM HEALTH:\n" + "\n".join(warnings)

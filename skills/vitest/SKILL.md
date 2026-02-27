@@ -20,6 +20,20 @@ For test philosophy (behavior vs implementation, TDD workflow, when to mock), se
 4. **Mocking**: Prefer `vi.spyOn` over `vi.mock` - avoids hoisting footguns
 5. **RTL cleanup**: Requires `globals: true` in config
 
+## Memory Safety (MANDATORY)
+
+Vitest in watch mode holds ~2 GB per process. 12 repos = 24+ GB = machine crash.
+
+| Rule | Why |
+|------|-----|
+| `"test"` script MUST be `vitest run`, never bare `vitest` | Bare `vitest` = watch mode = persistent process |
+| Hook/CI subprocesses: `env={**os.environ, "CI": "true"}` | Belt-and-suspenders against watch mode |
+| Pool config: `forks`, `maxForks: 4` on <=36 GB | Caps memory at ~2 GB total |
+| Never run `vitest --watch` from automated/agent contexts | Zombies accumulate across sessions |
+| Never delegate >3 parallel agents from hooks/scripts | Each agent spawns its own Node processes |
+
+When onboarding a new repo, check `package.json` test script immediately.
+
 ## Quick Reference
 
 ### Pool Selection (Node 22+)
