@@ -1,6 +1,6 @@
 ---
 name: codex-coworker
-description: "Invoke Codex as a coworker for implementation, brainstorming, specs, and reviews. Use when you want parallel thinking, cheap execution, or a second opinion. Codex tokens are cheaper than yours — delegate aggressively. Keywords: codex, delegate, implement, draft, review, brainstorm, write tests, code review, moonbridge."
+description: "Invoke Codex as a coworker for implementation, brainstorming, specs, and reviews. Use when you want parallel thinking, cheap execution, or a second opinion. Codex tokens are cheaper than yours — delegate aggressively. Keywords: codex, delegate, implement, draft, review, brainstorm, write tests, code review."
 effort: high
 ---
 
@@ -18,29 +18,10 @@ Your tokens are expensive and limited. Codex tokens are cheap. Delegate aggressi
 
 ## Invocation
 
-**Preferred: Moonbridge MCP (unified interface)**
-```
-mcp__moonbridge__spawn_agent({
-  "prompt": "Implement X following the pattern in Y. Run pnpm typecheck after.",
-  "adapter": "codex",
-  "reasoning_effort": "high"
-})
-```
-
-**Parallel tasks (multiple agents at once):**
-```
-mcp__moonbridge__spawn_agents_parallel({
-  "agents": [
-    {"prompt": "Implement feature A", "adapter": "codex", "reasoning_effort": "high"},
-    {"prompt": "Write tests for A", "adapter": "codex", "reasoning_effort": "medium"},
-    {"prompt": "Review for bugs", "adapter": "codex", "reasoning_effort": "high"}
-  ]
-})
-```
-
-**Fallback: CLI (when MCP unavailable)**
+**Primary: CLI**
 ```bash
-codex exec --full-auto "Implement X" --output-last-message /tmp/codex-out.md 2>/dev/null
+codex exec --full-auto "Implement X following the pattern in Y. Run pnpm typecheck after." \
+  --output-last-message /tmp/codex-out.md 2>/dev/null
 # Then validate via: git diff --stat, pnpm test, or read summary only if needed
 ```
 
@@ -74,16 +55,6 @@ Vary reasoning effort based on task complexity:
 | Most implementation (default) | `high` | Features, refactors, tests |
 | Complex debugging, architecture | `xhigh` | Race conditions, security, hard bugs |
 
-**Via Moonbridge MCP:**
-```
-mcp__moonbridge__spawn_agent({
-  "prompt": "Debug this race condition",
-  "adapter": "codex",
-  "reasoning_effort": "xhigh"
-})
-```
-
-**Via CLI (fallback):**
 ```bash
 codex exec --full-auto -c model_reasoning_effort=xhigh "Debug this race condition"
 ```
@@ -204,19 +175,5 @@ After Codex completes:
 5. **Review integration points:**
    - You handle complex integration across files
    - Check redirects, configs, and cross-file dependencies
-
-## Why Moonbridge MCP
-
-**Use Moonbridge for all Codex delegation:**
-
-| Method | When |
-|--------|------|
-| `mcp__moonbridge__spawn_agent` | Primary method — unified interface |
-| `codex exec` CLI | Fallback when MCP unavailable |
-
-**Key benefits:**
-- **Mixed parallel:** Run Codex + Kimi in same `spawn_agents_parallel` call
-- **Consistent params:** Same interface for both adapters
-- **Better control:** `reasoning_effort` for Codex, `thinking` for Kimi
 
 See `/delegate` for full orchestration patterns.

@@ -23,47 +23,36 @@ You don't analyze/review/audit yourself. You:
 
 ## Your Team
 
-### Moonbridge MCP — Unified Agent Interface
+### Codex CLI — Implementation Agent
 
-**One interface, multiple backends.** Moonbridge wraps both Codex and Kimi:
+**Fire-and-forget delegation for implementation work:**
 
-| Adapter | Strengths | When to Use |
-|---------|-----------|-------------|
-| `codex` | Long-context, tool calling, security | Refactors, migrations, debugging, backend |
-| `kimi`  | Native vision, extended thinking | UI from designs, visual debugging, frontend |
-
-**Single agent:**
-```
-mcp__moonbridge__spawn_agent({
-  "prompt": "...",
-  "adapter": "codex",           // or "kimi"
-  "reasoning_effort": "high"    // codex: low/medium/high/xhigh
-  // OR
-  "thinking": true              // kimi: extended reasoning
-})
+```bash
+codex exec --full-auto "Implement X following the pattern in Y. Run pnpm typecheck after." \
+  --output-last-message /tmp/codex-out.md 2>/dev/null
 ```
 
-**Timeout:** Moonbridge defaults: Codex=30min, Kimi=10min. Override for edge cases:
+| Task | Reasoning Effort |
+|------|-----------------|
+| Boilerplate, CRUD | `medium` |
+| Features, tests | `high` (default) |
+| Complex debug, security | `xhigh` |
 
-| Task | Timeout |
-|------|---------|
-| Quick check | `60` |
-| Large refactor | `3600` |
-
-```
-mcp__moonbridge__spawn_agent({ ..., "timeout_seconds": 3600 })
+```bash
+codex exec --full-auto -c model_reasoning_effort=xhigh "Debug this race condition"
 ```
 
-**Parallel agents (same or mixed adapters):**
+### Task Tool — Parallel Agent Spawning
+
+For parallel work within Claude Code:
+
 ```
-mcp__moonbridge__spawn_agents_parallel({
-  "agents": [
-    {"prompt": "Backend API", "adapter": "codex", "reasoning_effort": "high"},
-    {"prompt": "Frontend UI", "adapter": "kimi", "thinking": true},
-    {"prompt": "Tests", "adapter": "codex", "reasoning_effort": "medium"}
-  ]
-})
+Task({ subagent_type: "general-purpose", prompt: "Backend API review" })
+Task({ subagent_type: "general-purpose", prompt: "Frontend component audit" })
+Task({ subagent_type: "general-purpose", prompt: "Test coverage analysis" })
 ```
+
+Multiple Task calls in a single message run in parallel.
 
 ### Gemini CLI — Researcher, deep reasoner
 - Web grounding, thinking_level control, agentic vision
@@ -89,10 +78,10 @@ When workers need to communicate, challenge each other, or coordinate across lay
 **Plan approval:** For risky work, require teammates to plan before implementing.
 Lead reviews and approves/rejects plans.
 
-**When to use over Moonbridge:**
+**When to use over Codex CLI / Task tool:**
 
-| Signal | Teams | Moonbridge |
-|--------|-------|------------|
+| Signal | Teams | Codex CLI / Task |
+|--------|-------|-----------------|
 | Workers must discuss findings | YES | no |
 | Competing hypotheses / debate | YES | no |
 | Cross-layer (FE+BE+tests) | YES | no |
@@ -109,9 +98,9 @@ Domain specialists for focused review:
 
 Apply `/llm-communication` principles — state goals, not steps:
 
-### To Moonbridge Agents (Codex, Kimi)
+### To Codex (via CLI)
 
-Give them latitude to investigate:
+Give it latitude to investigate:
 ```
 "Investigate this stack trace. Find root cause. Propose fix with file:line."
 ```
@@ -132,7 +121,6 @@ What are we missing? Consensus and dissent."
 ### Parallel Execution
 
 Run independent reviews in parallel:
-- Multiple moonbridge agents in same call (`spawn_agents_parallel`)
 - Multiple Task tool calls in same message
 - Gemini + Thinktank can run concurrently (both bash)
 
@@ -173,14 +161,10 @@ TaskUpdate({taskId: "2", addBlockedBy: ["1"]})  # Task 2 waits for Task 1
 
 Spawn all unblocked tasks in single message:
 ```
-# Phase 1 - all parallel via moonbridge
-mcp__moonbridge__spawn_agents_parallel({
-  agents: [
-    {prompt: "Task 1: ...", adapter: "codex"},
-    {prompt: "Task 2: ...", adapter: "codex"},
-    {prompt: "Task 3: ...", adapter: "kimi", thinking: true}
-  ]
-})
+# Phase 1 - all parallel via Task tool
+Task({ subagent_type: "general-purpose", prompt: "Task 1: ..." })
+Task({ subagent_type: "general-purpose", prompt: "Task 2: ..." })
+Task({ subagent_type: "general-purpose", prompt: "Task 3: ..." })
 ```
 
 ### Step 4: Progress
@@ -246,10 +230,8 @@ For each finding:
 
 ## Note
 
-All Codex delegation goes through Moonbridge MCP. Use `mcp__moonbridge__spawn_agent` with `adapter: "codex"`. This gives you:
-- Single interface for both Kimi and Codex
-- Mixed-adapter parallel spawning
-- Consistent parameter naming
+Codex delegation uses the CLI (`codex exec`). For parallel work within Claude Code,
+use the Task tool with `subagent_type: "general-purpose"`.
 
 ## Related
 

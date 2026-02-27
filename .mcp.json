@@ -1,10 +1,5 @@
 {
   "mcpServers": {
-    "moonbridge": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["moonbridge@latest"]
-    },
     "exa": {
       "type": "http",
       "url": "https://mcp.exa.ai/mcp",

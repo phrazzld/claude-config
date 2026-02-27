@@ -204,16 +204,22 @@ Each provider brings different creative biases — mixing them prevents converge
 
 | Provider | Via | Strengths |
 |----------|-----|-----------|
-| Kimi K2.5 | `mcp__moonbridge__spawn_agents_parallel` adapter=kimi | Frontend craft, visual fidelity |
-| Codex | `mcp__moonbridge__spawn_agents_parallel` adapter=codex | Systematic, architecture-first |
 | Claude | Task tool (general-purpose agent) | Nuanced design thinking |
-| Gemini 3.1 Pro | `mcp__moonbridge__spawn_agents_parallel` adapter=gemini | Creative divergence, experimental UI, front-end brainstorming — **use for 50%+ of proposals** |
+| Codex | `codex exec --full-auto` CLI | Systematic, architecture-first |
+| Gemini | `gemini "..."` CLI | Creative divergence, experimental UI, brainstorming |
 
-**Provider preference (user-mandated, apply every generation):**
-Gemini 3.1 Pro handles **at least half** of each generation. It produces genuinely different directions.
-Default split: Gemini(4), Kimi(2), Claude(2). Codex optional. Never the same provider for both survivors.
+**Provider diversity (user preference):**
+Aim for genuine diversity — don't lock any provider to a fixed percentage. Track which providers produce
+liked proposals and bias toward them in subsequent generations. Codex is weakest for frontend design work.
+Don't use the same provider for both survivors.
 
-**Example distribution for 8 proposals:** Gemini(4), Kimi(2), Claude(2).
+**Performance tracking (update after each generation's feedback):**
+- Gemini: 2/4 liked in gen 2 (2E winner, 2F decent; 2C broken, 2D disliked)
+- Kimi: mixed (2A decent/2B AI slop in gen 2; 1A ok/1B wrong direction in gen 1)
+- Claude: mixed (2G promising/2H disliked in gen 2)
+- Codex: 0/2 liked in gen 1 (both killed)
+
+**Example distribution for 8 proposals:** Gemini(3-4), Kimi(2), Claude(2-3). Adjust per generation.
 Vary per generation. Don't use same provider for both survivors.
 
 Each proposal MUST include:
@@ -244,36 +250,20 @@ Resolved dial values override DNA axes for Layout, Motion, and Density.
 **Layout rule:** Items in the same state (pending, alive, winner, killed) MUST
 occupy equal space. No arbitrary bento sizing for same-status proposals.
 
-```javascript
-// Kimi batch (survivors + crossovers)
-mcp__moonbridge__spawn_agents_parallel({
-  agents: [
-    { prompt: kimiPrompt(dna_a), adapter: "kimi", thinking: true, timeout_seconds: 900 },
-    { prompt: kimiPrompt(dna_e), adapter: "kimi", thinking: true, timeout_seconds: 900 },
-  ]
-})
+```
+// Claude batch (via Task tool — parallel in single message)
+Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_a) })
+Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_b) })
+Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_c) })
+Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_d) })
 
-// Codex batch (mutations)
-mcp__moonbridge__spawn_agents_parallel({
-  agents: [
-    { prompt: codexPrompt(dna_b), adapter: "codex", reasoning_effort: "xhigh", timeout_seconds: 1800 },
-    { prompt: codexPrompt(dna_f), adapter: "codex", reasoning_effort: "xhigh", timeout_seconds: 1800 },
-  ]
-})
+// Codex batch (via CLI — run sequentially or background)
+codex exec --full-auto "${codexPrompt(dna_e)}" --output-last-message /tmp/evolve-e.md
+codex exec --full-auto "${codexPrompt(dna_f)}" --output-last-message /tmp/evolve-f.md
 
-// Claude batch (via Task tool)
-// Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_c) })
-// Task({ subagent_type: "general-purpose", prompt: claudePrompt(dna_d) })
-
-// Gemini batch (4 agents — preferred provider for majority of proposals)
-mcp__moonbridge__spawn_agents_parallel({
-  agents: [
-    { prompt: geminiPrompt(dna_c), adapter: "gemini", timeout_seconds: 1200 },
-    { prompt: geminiPrompt(dna_d), adapter: "gemini", timeout_seconds: 1200 },
-    { prompt: geminiPrompt(dna_e), adapter: "gemini", timeout_seconds: 1200 },
-    { prompt: geminiPrompt(dna_f), adapter: "gemini", timeout_seconds: 1200 },
-  ]
-})
+// Gemini batch (via CLI)
+gemini "${geminiPrompt(dna_g)}" > /tmp/evolve-g.md
+gemini "${geminiPrompt(dna_h)}" > /tmp/evolve-h.md
 ```
 ```
 

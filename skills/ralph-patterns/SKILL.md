@@ -33,19 +33,21 @@ Ralph monitors these for "no progress" circuit breaker:
 
 You have full access to:
 - `/spec`, `/architect`, `/build`, `/refactor`, `/update-docs`, `/pr`
-- Moonbridge MCP for Codex/Kimi delegation
+- Task tool for parallel agent delegation
 - Sentry, PostHog, GitHub MCPs
 - All configured hooks and skills
 
 ## Delegation Pattern
 
-Use Moonbridge for implementation:
+Use Codex CLI for implementation:
+```bash
+codex exec --full-auto "Implement [feature]. Follow pattern in [ref file]." \
+  --output-last-message /tmp/codex-out.md 2>/dev/null
 ```
-mcp__moonbridge__spawn_agent({
-  "prompt": "Implement [feature]. Follow pattern in [ref file].",
-  "adapter": "codex",
-  "reasoning_effort": "high"
-})
+
+Or Task tool for parallel work:
+```
+Task({ subagent_type: "general-purpose", prompt: "..." })
 ```
 
 ## Handling CI Failures

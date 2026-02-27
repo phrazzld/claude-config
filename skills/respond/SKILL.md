@@ -75,13 +75,13 @@ EOF
 
 For each piece of feedback:
 1. Assess technical merit and scope
-2. **For non-trivial decisions**, get a second opinion via Moonbridge:
-   ```bash
-   # Get Codex perspective
-   mcp__moonbridge__spawn_agent --adapter codex --prompt "Review this feedback: [quote]. Is this valid? Should it block merge?"
+2. **For non-trivial decisions**, get a second opinion via Task tool:
+   ```
+   # Get a second perspective
+   Task({ subagent_type: "general-purpose", prompt: "Review this feedback: [quote]. Is this valid? Should it block merge?" })
 
    # Get Gemini perspective for architectural questions
-   mcp__moonbridge__spawn_agent --adapter gemini --prompt "Analyze this architectural suggestion: [quote]. What are the tradeoffs?"
+   gemini "Analyze this architectural suggestion: [quote]. What are the tradeoffs?"
    ```
 3. Document your reasoning
 
@@ -193,7 +193,7 @@ EOF
 
 ## Decision Framework
 
-**When to get a second opinion (Moonbridge):**
+**When to get a second opinion (Task tool / Codex CLI):**
 - Architectural suggestions
 - Disagreements with reviewer
 - Ambiguous requirements
