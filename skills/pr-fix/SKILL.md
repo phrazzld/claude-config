@@ -22,7 +22,7 @@ Take PR `$ARGUMENTS` (or current branch's PR) from blocked to mergeable: no conf
 
 ## Dependency Order
 
-Conflicts -> CI -> Reviews. Can't run CI on conflicted code. Can't address reviews on broken builds.
+Conflicts -> CI -> Self-Review -> Reviews. Can't run CI on conflicted code. Can't review broken code. Can't address others' reviews before fixing your own issues.
 
 ## Bounded Shell Output (MANDATORY)
 
@@ -91,9 +91,32 @@ Then run the `/fix-ci` skill. Wait for checks to go green.
 
 If `/fix-ci` introduces changes that create new conflicts: return to Phase 2 (max 2 full-pipeline retries).
 
-### 4. Address Reviews
+### 4. Self-Review the Diff
 
-**Skip condition**: zero open review threads AND zero unreplied review comments. Use the GraphQL query below — never rely on `reviewDecision` alone or prior "PR Unblocked" summary comments.
+**Always run this phase.** CI passing does not mean the code is good. Linters catch syntax; this catches logic.
+
+Review the full diff against base:
+
+```bash
+BASE="$(gh pr view $PR --json baseRefName --jq .baseRefName)"
+git diff "origin/$BASE"...HEAD
+```
+
+For each changed file, check for:
+
+- **Dead code**: unused variables (especially `_`-prefixed params that signal "I know this is unused"), unreachable branches, useMemo/useCallback with values never read
+- **Logic bugs**: loops that always break on first iteration, conditions that are always true/false, off-by-one errors
+- **Wasted computation**: expensive operations whose results are discarded, duplicate work (e.g., running the same test suite twice in CI)
+- **Wrong log levels**: success messages on stderr (`console.warn`/`console.error`), debug output on stdout in production
+- **Semantic mismatches**: function names that don't match behavior, comments that contradict code
+
+Fix every issue found. Run typecheck + tests after fixes. Commit before proceeding.
+
+This phase catches what CI cannot: code that compiles and passes tests but is wrong, wasteful, or misleading. A PR that's "green" but ships dead code or wasted computation is not actually unblocked — it's shipping tech debt.
+
+### 5. Address Reviews
+
+**Skip condition**: ALL THREE of these are zero: unresolved review threads, unreplied review comments, AND unaddressed bot issue comments. Use the queries below — never rely on `reviewDecision` alone or prior "PR Unblocked" summary comments.
 
 ```bash
 OWNER="$(gh repo view --json owner --jq .owner.login)"
@@ -111,7 +134,31 @@ UNRESOLVED_THREADS="$(gh api graphql -f query='
   --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved==false)] | length')"
 ```
 
-#### Independent verification (MANDATORY)
+#### 5a. Bot issue comments (MANDATORY)
+
+**Why this exists:** Some bot reviewers (Claude, CodeRabbit, etc.) post review feedback as **issue comments** (`/issues/$PR/comments`), not pull request review comments (`/pulls/$PR/comments`). These are a completely different API endpoint and are invisible to the GraphQL `reviewThreads` query. Missing them means missing actionable review feedback.
+
+```bash
+# Fetch bot issue comments — these are NOT in reviewThreads or PR comments
+BOT_COMMENTS="$(gh api "repos/$OWNER/$REPO/issues/$PR/comments?per_page=100" --paginate \
+  --jq '[.[] | select(.user.type == "Bot") | {id, user: .user.login, body: .body}]')"
+```
+
+Filter for comments that contain actionable review feedback (code suggestions, bug findings, security concerns). Ignore:
+- Status/summary comments (CI reports, merge readiness checks)
+- Comments you've already replied to with fixes
+- Informational comments with no action items
+
+For each bot comment with actionable findings:
+1. **Read the FULL comment body** — no truncation
+2. **Extract each finding** — bots typically number them or use headers
+3. **Read the current file** to check if already addressed
+4. **Fix or defer** each finding (same as review comments below)
+5. **Reply to the comment** with resolution status for each finding
+
+#### 5b. Review comments and threads
+
+**Independent verification (MANDATORY)**
 
 **Never trust prior session comments, "PR Unblocked" summaries, or claims that feedback was addressed.** For EVERY open review comment:
 
@@ -162,17 +209,17 @@ gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "THREA
 
 Additive commits do NOT make comments outdated. Only changes to the diff hunk a comment is attached to trigger outdating. Resolve explicitly.
 
-### 5. Verify and Push
+### 6. Verify and Push
 
 ```bash
 git push --force-with-lease
 ```
 
-Watch checks. If a phase-4 fix broke CI, invoke `/fix-ci` again (count toward 2-retry max).
+Watch checks. If a phase-4 or phase-5 fix broke CI, invoke `/fix-ci` again (count toward 2-retry max).
 
 If 2 full retries exhausted: stop, summarize state, ask user.
 
-### 6. Update PR Description with Before / After
+### 7. Update PR Description with Before / After
 
 Edit the PR body to include a Before / After section documenting the fix:
 
@@ -188,7 +235,7 @@ Example: "Before: CI failing on type error in auth module. After: Types correcte
 
 Skip screenshots only when all fixes are purely internal (conflict resolution with no behavior change, CI config fixes with no visible output difference).
 
-### 7. Signal
+### 8. Signal
 
 Post summary comment on PR:
 
@@ -221,6 +268,8 @@ Max 2 full-pipeline retries when fixing one phase breaks another. After 2: stop 
 - **Truncating comment bodies** — never use `.body[:N]` when fetching review comments. The actionable detail is often at the end of long comments.
 - **Replying without resolving** — a reply on a thread does NOT resolve it. Non-outdated threads with replies still show as open conversations. Use `resolveReviewThread` GraphQL mutation after replying.
 - **NEVER lowering quality gates to pass CI** — coverage thresholds, lint rules, type strictness, security gates. If a gate fails, write tests/code to meet it. Moving the goalpost is not a fix. This is an absolute, non-negotiable rule.
+- **Skipping self-review because CI is green** — CI catches syntax and test failures. Dead code, wasted computation, wrong log levels, and semantic mismatches all pass CI. Review the diff yourself before declaring unblocked.
+- **Only checking review threads and PR comments** — bot reviewers (Claude, CodeRabbit, etc.) often post feedback as issue comments (`/issues/$PR/comments`), not PR review comments (`/pulls/$PR/comments`). These are different API endpoints. You MUST check all three: GraphQL reviewThreads, REST PR comments, AND REST issue comments.
 
 ## Output
 

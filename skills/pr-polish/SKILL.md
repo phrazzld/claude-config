@@ -1,8 +1,8 @@
 ---
 name: pr-polish
 description: |
-  Elevate a working PR: hindsight review, refactor, test audit, docs, quality gates.
-  Composes: hindsight-reviewer agent, /refactor, /update-docs, /check-quality, /distill.
+  Elevate a working PR: hindsight review, refactor, simplify, test audit, docs, quality gates.
+  Composes: hindsight-reviewer agent, /refactor, /simplify, /update-docs, /check-quality, /distill.
   Use when: PR works but could be better. "How would we do this knowing what we know now?"
 argument-hint: "[PR-number]"
 effort: high
@@ -72,6 +72,20 @@ For architectural findings that require broader changes: create GitHub issues.
 ```bash
 gh issue create --title "[Arch] Finding from PR #$PR hindsight review" --body "..."
 ```
+
+### 3.5. Simplify
+
+Invoke `/simplify` on the PR's changed files.
+
+The code-simplifier agent reviews recently modified code for clarity, consistency, and maintainability — complementing the architectural lens of hindsight review with line-level refinement:
+
+- Reduce unnecessary complexity and nesting
+- Eliminate redundant abstractions
+- Improve naming clarity
+- Consolidate related logic
+- Remove obvious comments
+
+This catches things the refactor step doesn't: verbose patterns, inconsistent style, overly compact one-liners, nested ternaries.
 
 ### 4. Test Audit
 
@@ -158,6 +172,7 @@ For large PRs (>500 line diff), parallelize phases 3-5:
 | Teammate | Task |
 |----------|------|
 | **Refactorer** | `/refactor` on hindsight findings |
+| **Simplifier** | `/simplify` on changed files |
 | **Test writer** | Test audit + write missing tests |
 | **Doc updater** | `/update-docs` |
 

@@ -144,8 +144,35 @@ For analytics auditing, see `/check-observability`. Note:
 
 If you need to investigate user behavior or funnels during incident response, query PostHog via MCP.
 
+### 6. E2E Smoke Check
+
+If Playwright is configured in the project:
+
+```bash
+# Run smoke tests against production
+PLAYWRIGHT_BASE_URL="$PROD_URL" npx playwright test e2e/smoke.spec.ts --reporter=list 2>&1 | head -30
+```
+
+Critical paths to verify:
+- Landing page loads (anonymous)
+- Dashboard loads (authenticated) — the #1 incident class
+- Subscribe page renders
+- Session page loads
+- No error boundaries triggered on any route
+
+### 7. Post-Deploy Health Check
+
+```bash
+# Verify health endpoint
+curl -sf "$PROD_URL/api/health" -w "\nHTTP %{http_code} in %{time_total}s\n" | head -5
+
+# Verify no error boundary on dashboard (check for error text in HTML)
+curl -sf "$PROD_URL/dashboard" 2>/dev/null | grep -c "Something went wrong" && echo "ERROR BOUNDARY DETECTED" || echo "Dashboard OK"
+```
+
 ## Related
 
 - `/log-production-issues` - Create GitHub issues from findings
 - `/triage` - Fix production issues
 - `/observability` - Set up monitoring infrastructure
+- `/flywheel-qa` - Agentic QA for preview deployments

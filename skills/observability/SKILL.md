@@ -295,8 +295,91 @@ User can:
 - Monitor app health via `/api/health`
 - View logs via `vercel logs`
 
+## Active Alerting (MANDATORY)
+
+Passive observability is not observability. Every production app needs:
+
+### Email Alerts
+- Sentry alert rule: new issue with `level:error` → email notification
+- Zero tolerance: fire on FIRST occurrence (not frequency-based)
+- Include: error message, stack trace, affected users count, URL
+
+### GitHub Issue Auto-Creation
+- Sentry-GitHub integration: new Sentry issue → GitHub issue
+- Labels: `bug`, `auto-detected`, `P0`
+- Body: stack trace, breadcrumbs, user impact, Sentry link, affected file paths
+- Recent commits to affected files (for causal analysis)
+
+### Error Boundaries Must Be Loud
+Every error boundary MUST call `Sentry.captureException(error)`:
+```typescript
+// ❌ BAD: Silent error boundary
+export default function Error({ error }: { error: Error }) {
+  return <p>Something went wrong</p>;
+}
+
+// ✅ GOOD: Error boundary that screams
+'use client';
+import * as Sentry from '@sentry/nextjs';
+import { useEffect } from 'react';
+
+export default function Error({ error, reset }: { error: Error; reset: () => void }) {
+  useEffect(() => { Sentry.captureException(error); }, [error]);
+  return (
+    <div>
+      <h2>Something went wrong</h2>
+      <button onClick={reset}>Try again</button>
+    </div>
+  );
+}
+```
+
+### Root Error Boundary
+`app/global-error.tsx` is REQUIRED for any Next.js app with Sentry:
+```typescript
+'use client';
+import * as Sentry from '@sentry/nextjs';
+import { useEffect } from 'react';
+
+export default function GlobalError({ error, reset }: { error: Error; reset: () => void }) {
+  useEffect(() => { Sentry.captureException(error); }, [error]);
+  return (
+    <html><body>
+      <h1>Application Error</h1>
+      <button onClick={reset}>Reload</button>
+    </body></html>
+  );
+}
+```
+
+### PostHog Exception Autocapture
+Enable `$exception` autocapture in PostHog config for client-side coverage
+that complements Sentry's server-side tracking.
+
+### Uptime Monitoring
+External ping to `/api/health` every 5 min. Options:
+- GitHub Actions cron job
+- UptimeRobot (free tier)
+- Simple curl script on a separate machine
+
+## 9 Observability Gaps (Incident Checklist)
+
+| # | Gap | Fix |
+|---|-----|-----|
+| 1 | No alerting pipeline | Sentry → email + auto-create GitHub issue |
+| 2 | No `global-error.tsx` | Add root error boundary with captureException |
+| 3 | Silent error boundaries | Add captureException to ALL error.tsx files |
+| 4 | Missing route error boundaries | Add error.tsx to every app route |
+| 5 | No Sentry release tracking | `sentry-cli releases` in CI |
+| 6 | Backend errors invisible | Forward function errors to Sentry via wrapper |
+| 7 | No uptime monitoring | External cron pings /api/health every 5 min |
+| 8 | Logger disconnected from Sentry | logError() calls captureException() |
+| 9 | Exception autocapture off | Enable $exception in PostHog config |
+
 ## Related Skills
 
 - `sentry-observability` — Detailed Sentry setup and scripts
 - `observability-stack` — PostHog/analytics integration patterns
 - `observability-advocate` — Agent for auditing observability coverage
+- `check-production` — Production health checks
+- `flywheel-qa` — Agentic QA for preview deployments

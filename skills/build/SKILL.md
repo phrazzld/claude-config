@@ -69,6 +69,16 @@ Don't use when: single module, sequential dependencies dominate.
 2. `ousterhout` agent for module depth review
 3. Commit simplifications separately
 
+## Visual QA (Frontend Changes)
+
+If the diff touches `app/`, `components/`, or `*.css` files:
+
+1. Run `/visual-qa --fix` with affected routes
+2. Fix P0/P1 issues, commit separately (`fix: visual QA — [description]`)
+3. Note any P2 findings for the PR body
+
+Skip if: pure backend, pure config, no user-facing changes.
+
 ## Issue Comments
 
 Leave breadcrumbs: starting work, decision points, scope creep, completion. Concise, high-context, useful, human.

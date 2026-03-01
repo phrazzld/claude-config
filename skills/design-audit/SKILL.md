@@ -26,9 +26,8 @@ Analyze the current design system for violations, gaps, and inconsistencies.
 ### 1. Load Design Skills
 
 ```
-Skill("design-tokens")        # Token patterns
-Skill("ui-skills")            # Implementation constraints
-Skill("web-interface-guidelines")  # Vercel standards
+Skill("design-tokens")           # Token patterns
+Skill("web-design-guidelines")   # Vercel standards
 ```
 
 ### 2. Extract Current Tokens
@@ -105,4 +104,4 @@ For design system diagrams (component hierarchy, token relationships), use `/bea
 
 ## Output
 
-Audit report ready. Next: `/design-catalog` to explore new directions, or `/design-theme` to fix issues.
+Audit report ready. Next: `/design` to explore new directions or fix issues.

@@ -80,9 +80,10 @@ Note any gaps: what ISN'T tested and why.
 
 1. **Clean** — Commit any uncommitted changes with semantic message
 2. **Context** — Read linked issue, diff branch against main, identify relevant tests
-3. **Describe** — Title from issue, body follows PR Body Requirements above (capture before state FIRST, before making changes if possible)
-4. **Before/After** — Screenshot before state, apply changes, screenshot after state. For non-UI changes, describe behavioral difference in text.
-5. **Open** — `gh pr create --draft --assignee phrazzld`
+3. **Visual QA** — If diff touches frontend files (`app/`, `components/`, `*.css`), run `/visual-qa`. Fix any P0/P1 issues before opening PR. Capture screenshots for Before/After section.
+4. **Describe** — Title from issue, body follows PR Body Requirements above (capture before state FIRST, before making changes if possible)
+5. **Before/After** — Use screenshots from visual QA step. For non-UI changes, describe behavioral difference in text.
+6. **Open** — `gh pr create --draft --assignee phrazzld`
 6. **Comment** — Add context comment if notable decisions were made
 7. **Retro** — If this PR closes a GitHub issue, append implementation feedback:
    ```

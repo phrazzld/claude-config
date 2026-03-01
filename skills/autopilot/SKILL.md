@@ -49,8 +49,9 @@ Deliver Issue `$ARGUMENTS` (or highest-priority open issue) as a draft PR with t
 4. **Spec** — Invoke `/spec` if no `## Product Spec` section
 5. **Design** — Invoke `/architect` if no `## Technical Design` section
 6. **Build** — Invoke `/build` (branching, Codex implementation, commits)
-7. **Refine** — `/refactor`, `/update-docs`, then `ousterhout` agent for module depth review
-8. **Ship** — `/pr` with `Closes #N` (must satisfy all PR Body Requirements from `/pr` skill)
+7. **Visual QA** — If diff touches frontend files (`app/`, `components/`, `*.css`), run `/visual-qa --fix`. Fix P0/P1 before proceeding.
+8. **Refine** — `/refactor`, `/update-docs`, then `ousterhout` agent for module depth review
+9. **Ship** — `/pr` with `Closes #N` (must satisfy all PR Body Requirements from `/pr` skill)
 9. **Retro** — Append implementation signals to `.groom/retro.md`:
    ```
    /retro append --issue $1 --predicted {effort_label} --actual {actual_effort} \

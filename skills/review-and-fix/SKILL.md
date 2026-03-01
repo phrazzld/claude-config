@@ -38,8 +38,9 @@ Take current branch from "code complete" to "PR ready" with comprehensive review
 1. **Review** — `/review-branch` (~12 reviewers, parallel)
 2. **Fix** — `/address-review` (TDD: failing test, fix, passing test, commit)
 3. **Quality** — `pnpm typecheck && pnpm lint && pnpm test`
-4. **Re-review** — If `verify` flag or Critical items found, loop to step 1
-5. **Ship** — `/pr` (unless `no-pr`)
+4. **Visual QA** — If diff touches frontend files, run `/visual-qa --fix`. Fix P0/P1 before shipping.
+5. **Re-review** — If `verify` flag or Critical items found, loop to step 1
+6. **Ship** — `/pr` (unless `no-pr`)
 
 ## Output
 
