@@ -37,7 +37,6 @@ DESTRUCTIVE_SUBSTRINGS = [
     ("git stash drop", "Permanently deletes stashed changes."),
     ("git stash clear", "Permanently deletes ALL stashed changes."),
     # GitHub CLI commands - equally destructive as their git equivalents
-    ("gh pr merge", "Merges PR and may delete branch. Run manually to review."),
     ("gh repo delete", "Permanently deletes repository. Extremely destructive."),
     ("gh release delete", "Permanently deletes a release."),
     ("gh issue delete", "Permanently deletes an issue."),
@@ -94,42 +93,23 @@ def is_protected_branch(branch: str | None) -> bool:
 
 def check_merge_protection(cmd: str) -> tuple[bool, str]:
     """
-    Smart merge protection:
-    - Allow merging main/master INTO feature branches
-    - Block all other merges
+    Merge protection: only block merges when currently ON a protected branch.
+    Feature branches can merge anything freely (remote tracking, other branches, etc.)
     """
     merge_match = re.match(r"^git\s+merge\s+(\S+)", cmd)
     if not merge_match:
         return False, ""
 
-    target_branch = merge_match.group(1)
     current_branch = get_current_branch()
 
-    # If on a protected branch, block all merges
+    # If on a protected branch, block all merges (use PRs)
     if is_protected_branch(current_branch):
         return True, (
             f"Merging into {current_branch} is blocked. "
             "Create a PR instead."
         )
 
-    # If on feature branch, only allow merging main/master
-    if target_branch in ("main", "master"):
-        return False, ""  # ALLOW: updating feature with main
-
-    # Block other merges (feature-to-feature, etc.)
-    return True, (
-        f"Merging {target_branch} is blocked. "
-        "Only 'git merge main' or 'git merge master' allowed on feature branches."
-    )
-
-
-def check_rebase_protection(cmd: str) -> tuple[bool, str]:
-    """Block all rebase commands - they rewrite history."""
-    if re.match(r"^git\s+rebase\b", cmd):
-        return True, (
-            "git rebase is blocked (rewrites history). "
-            "Use 'git merge main' to update your branch instead."
-        )
+    # On a feature branch: allow all merges freely
     return False, ""
 
 
@@ -227,11 +207,6 @@ def check_command(cmd: str) -> tuple[bool, str]:
 
     # Check merge protection (branch-aware)
     blocked, reason = check_merge_protection(cmd)
-    if blocked:
-        return True, reason
-
-    # Check rebase protection (always blocked)
-    blocked, reason = check_rebase_protection(cmd)
     if blocked:
         return True, reason
 
