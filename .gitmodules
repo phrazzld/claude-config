@@ -1,0 +1,7 @@
+[submodule "plugins/marketplaces/claude-plugins-official"]
+	path = plugins/marketplaces/claude-plugins-official
+	url = https://github.com/anthropics/claude-plugins-official.git
+
+[submodule "plugins/marketplaces/every-marketplace"]
+	path = plugins/marketplaces/every-marketplace
+	url = https://github.com/EveryInc/every-marketplace.git

@@ -74,6 +74,7 @@ design-memory.db-wal
 
 # Ephemeral backups
 backups/
+skills/.bak/
 
 # Shell scripts (machine-specific)
 scripts/

@@ -1,1 +1,0 @@
-"""Ads CLI platform clients."""
