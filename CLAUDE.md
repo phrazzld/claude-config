@@ -74,6 +74,7 @@ Never mark complete without proving correctness:
 - Bug reports: just fix. Don't ask for hand-holding. Point at logs/errors/tests → resolve.
 - Browser workflows: use `/agent-browser` for browser automation, `/dogfood` for exploratory QA with repro artifacts, and `/skill-creator` to codify reusable workflows.
 - Frontend taste workflow: use `/taste-skill` (design-taste-frontend) for high-agency UI architecture, anti-slop constraints, and performance-first motion patterns.
+- **AI/LLM model facts: always web search.** Never assert that a model ID is valid/invalid, exists or doesn't exist, or make claims about capabilities, pricing, or context windows from memory. Training data is stale; models ship weekly. WebSearch first, always. "I don't think that model exists" without searching is wrong by definition.
 
 ## Bounded Shell Output (MANDATORY)
 
@@ -253,6 +254,22 @@ squirrelscan CLI, 230+ rules, 21 categories. Modes: quick (25p), surface (100p, 
 Learnings land here first. Run `/distill` to graduate to skills/agents.
 
 <!-- Add learnings below this line -->
+
+### PR Merge Gate: /pr-fix + /pr-polish (MANDATORY)
+
+Before merging ANY pull request, always run both skills in order:
+1. `/pr-fix` — resolve conflicts, fix CI, unblock
+2. `/pr-polish` — hindsight review, quality elevation, final checks
+
+CI passing alone is NOT sufficient to merge. These skills catch issues that automated checks miss.
+No exceptions. No "it's a simple change." Run both, every time.
+
+### NEVER Assert AI Model Facts From Memory (ABSOLUTE RULE)
+
+Model IDs, capabilities, context windows, pricing, availability — all stale in training data.
+Before any assertion about any AI/LLM model: WebSearch first.
+Correct: search → state fact. Wrong: "that model ID looks wrong" without searching.
+Applied universally: OpenRouter, Anthropic, OpenAI, xAI, Google, Mistral, any provider.
 
 ### XCTestExpectation: Pin Fire Count When Preventing Duplicate Signals
 
@@ -635,3 +652,65 @@ echo "tag=$(gh api repos/$GITHUB_REPOSITORY/releases/latest --jq '.tag_name')" >
 Then use `steps.release.outputs.tag` for checkout `ref:`, `APP_VERSION`, and artifact paths.
 
 Rule: **if workflow B polls for workflow A's output, the trigger is wrong.** Polling is a code smell in CI just like it is in application code.
+
+### Error Boundaries Must captureException (ABSOLUTE RULE)
+
+Silent error boundaries = silent production failures. Every `error.tsx` and `global-error.tsx` MUST call `Sentry.captureException(error)`. No exceptions.
+
+```typescript
+// ❌ FATAL: Error swallowed, nobody knows
+export default function Error({ error }: { error: Error }) {
+  return <p>Something went wrong</p>;
+}
+
+// ✅ REQUIRED: Error reported, alerts fire
+'use client';
+import * as Sentry from '@sentry/nextjs';
+import { useEffect } from 'react';
+export default function Error({ error, reset }: { error: Error; reset: () => void }) {
+  useEffect(() => { Sentry.captureException(error); }, [error]);
+  return <div><h2>Something went wrong</h2><button onClick={reset}>Try again</button></div>;
+}
+```
+
+Every Next.js app MUST have `app/global-error.tsx` as root error boundary.
+
+### No Dynamic fs.readFile in Serverless Without Tracing Config
+
+Vercel file tracing can't follow dynamic `fs.readFile(path.join(process.cwd(), ...))`. The file won't be bundled into the serverless function.
+
+Fix (preferred): build-time import (`import data from '@/content/file.json'`).
+Fix (fallback): `outputFileTracingIncludes` in `next.config.js`.
+
+Never use dynamic file I/O in serverless without one of these.
+
+### E2E Tests Mandatory for User-Facing Routes
+
+Unit tests with mocked dependencies cannot catch:
+- Serverless bundling failures (file tracing, missing modules)
+- Error boundary rendering (the exact failure class from 2026-02-28)
+- Auth flow integration bugs
+- Client/server component boundary issues
+
+Every user-facing route needs at least a smoke E2E test: page loads, no error boundary, key elements visible, no console errors.
+
+### Autonomous Systems Need Autonomous Quality
+
+When no human reviews code, automated gates must be STRONGER than human review:
+1. Static: lint + typecheck + build (existing)
+2. Coverage: 80% floor, ratchet up, never lower (forcing function for tests)
+3. Runtime: E2E smoke tests against preview deploy (catches bundling/runtime failures)
+4. AI review: required status check, not advisory (catches logic/security)
+5. Post-deploy: health check + auto-revert on failure
+6. Observability: active alerting (email + auto-filed issues), not passive dashboards
+
+Static-only gates are insufficient for autonomous agents. Runtime verification is mandatory.
+
+### Convex Schema Changes Require `convex deploy` (caesar-in-a-year)
+
+Vercel build is `next build` only — does NOT deploy Convex functions. Any PR that changes
+`convex/schema.ts` or adds Convex functions WILL silently break production unless someone
+runs `npx convex deploy -y`. Production deployment: `enduring-lyrebird-918` (not dev `zany-mallard-635`).
+
+Fix: change Vercel build command to `npx convex deploy --cmd 'next build'`.
+Until then: run `npx convex deploy -y` from `/Users/phaedrus/Development/caesar-in-a-year` after any Convex changes merge.
