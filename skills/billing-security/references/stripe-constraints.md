@@ -58,13 +58,17 @@ const event = stripe.webhooks.constructEvent(
 
 ## API Key Formats
 
-| Key Type | Pattern | Example |
-|----------|---------|---------|
-| Secret (test) | `sk_test_[a-zA-Z0-9]+` | `sk_test_51ABC...` |
-| Secret (live) | `sk_live_[a-zA-Z0-9]+` | `sk_live_51ABC...` |
-| Publishable (test) | `pk_test_[a-zA-Z0-9]+` | `pk_test_51ABC...` |
-| Publishable (live) | `pk_live_[a-zA-Z0-9]+` | `pk_live_51ABC...` |
-| Webhook secret | `whsec_[a-zA-Z0-9]+` | `whsec_abc123...` |
+**IMPORTANT: Stripe test mode is DEPRECATED.** Two separate accounts exist:
+- **Sandbox account**: Isolated dev environment. `sk_test_*` keys here are fine.
+- **Production account**: Real money. ONLY use `sk_live_*` keys. Never `sk_test_*` from this account.
+
+| Key Type | Pattern | When to use |
+|----------|---------|-------------|
+| Secret (sandbox) | `sk_test_[a-zA-Z0-9]+` | Local dev only (from sandbox account) |
+| Secret (live) | `sk_live_[a-zA-Z0-9]+` | Production deployments |
+| Publishable (sandbox) | `pk_test_[a-zA-Z0-9]+` | Local dev only (from sandbox account) |
+| Publishable (live) | `pk_live_[a-zA-Z0-9]+` | Production deployments |
+| Webhook secret | `whsec_[a-zA-Z0-9]+` | Both (per-environment) |
 
 ### Validation Regex
 ```typescript
@@ -72,6 +76,10 @@ const STRIPE_SECRET_KEY = /^sk_(test|live)_[a-zA-Z0-9]+$/;
 const STRIPE_PUBLISHABLE_KEY = /^pk_(test|live)_[a-zA-Z0-9]+$/;
 const STRIPE_WEBHOOK_SECRET = /^whsec_[a-zA-Z0-9]+$/;
 ```
+
+### Production Deployment Guard
+Production deployments MUST use `sk_live_*`. If you see `sk_test_*` in a production
+environment (Fly.io, Vercel prod, etc.), it is WRONG — even if it "works."
 
 ---
 

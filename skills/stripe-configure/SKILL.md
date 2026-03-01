@@ -39,22 +39,27 @@ Guide the user through (or use Stripe CLI where possible):
 
 Set variables on ALL deployment targets. This is where incidents happen.
 
-**Local Development**
+**IMPORTANT: Stripe test mode is DEPRECATED.**
+Two separate Stripe accounts exist:
+- **Sandbox** (`acct_...sandbox`): Fully isolated dev account. Use its keys for local dev.
+- **Production** (`acct_...prod`): Real money. Only `sk_live_*` keys. Never `sk_test_*`.
+
+**Local Development** (use sandbox account keys)
 ```bash
-# .env.local
-STRIPE_SECRET_KEY=sk_test_...
+# .env.local — keys from SANDBOX account, not production test mode
+STRIPE_SECRET_KEY=sk_test_...  # from sandbox account
 STRIPE_WEBHOOK_SECRET=whsec_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...  # from sandbox account
 NEXT_PUBLIC_STRIPE_PRICE_ID=price_...
 ```
 
 **Convex (both dev and prod)**
 ```bash
-# Dev
-npx convex env set STRIPE_SECRET_KEY "sk_test_..."
+# Dev — sandbox account keys
+npx convex env set STRIPE_SECRET_KEY "sk_test_..."  # sandbox account
 npx convex env set STRIPE_WEBHOOK_SECRET "whsec_..."
 
-# Prod (DON'T FORGET THIS)
+# Prod — production account LIVE keys (NEVER sk_test_* from prod account)
 npx convex env set --prod STRIPE_SECRET_KEY "sk_live_..."
 npx convex env set --prod STRIPE_WEBHOOK_SECRET "whsec_..."
 ```
@@ -91,7 +96,8 @@ Must return 4xx or 5xx, NOT 3xx. If it redirects, fix the URL in Stripe Dashboar
 - Setting env vars on dev but forgetting prod
 - Using wrong domain (non-www when app is www)
 - Trailing whitespace in secrets (use `printf '%s'` not `echo`)
-- Test keys in production, live keys in development
+- **Using sk_test_* from production account** — test mode is DEPRECATED. Use sandbox account for dev, sk_live_* for prod.
+- Confusing sandbox account (separate account) with test mode (deprecated feature within production account)
 
 ## Output
 
