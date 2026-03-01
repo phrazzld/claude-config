@@ -5,9 +5,15 @@ Stripe CLI profile guard for Claude Code.
 Blocks stripe commands without explicit -p/--project-name flag.
 Forces explicit environment targeting to prevent sandbox/production confusion.
 
-IMPORTANT: Production profile requires --live flag.
-- Sandbox account: isolated test environment, test mode is appropriate
-- Production account: real money, ALWAYS use --live flag
+TWO STRIPE ACCOUNTS (test mode is DEPRECATED):
+- Sandbox (acct_1SV2rGD4aITn8Hia): Completely separate account for development.
+  Use: stripe -p sandbox ...
+- Production (acct_1SV2rADIyumDtWyU): Real money. ALWAYS use --live flag.
+  Use: stripe -p production ... --live
+
+NEVER use sk_test_* keys from the production account. Stripe deprecated
+test mode in favor of fully isolated sandbox accounts. If you need to test,
+use the sandbox account (profile: sandbox), not test-mode keys.
 """
 import json
 import re
@@ -46,9 +52,10 @@ def check_command(cmd: str) -> tuple[bool, str]:
     if not profile_match:
         return True, (
             "Stripe command without explicit profile (-p flag).\n\n"
-            "Use:\n"
-            "  stripe -p sandbox ...            # Development (test mode)\n"
-            "  stripe -p production ... --live  # Production (live mode)\n\n"
+            "TWO ACCOUNTS (test mode is DEPRECATED):\n"
+            "  stripe -p sandbox ...            # Sandbox account (development)\n"
+            "  stripe -p production ... --live  # Production account (real money)\n\n"
+            "NEVER use sk_test_* from production account.\n"
             "To check profiles: stripe config --list"
         )
 
@@ -59,8 +66,10 @@ def check_command(cmd: str) -> tuple[bool, str]:
     if profile == "production" and not HAS_LIVE_FLAG.search(cmd):
         return True, (
             "Production profile requires --live flag.\n\n"
-            "Stripe CLI defaults to test mode. Production account must use live mode.\n\n"
-            "Use:\n"
+            "Stripe test mode is DEPRECATED. The production account must ALWAYS\n"
+            "use --live. For development, use the sandbox account instead:\n"
+            "  stripe -p sandbox ...\n\n"
+            "Production (live mode):\n"
             "  stripe -p production ... --live\n\n"
             "Example:\n"
             "  stripe -p production products list --live"

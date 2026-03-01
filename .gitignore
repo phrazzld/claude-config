@@ -28,6 +28,8 @@ tasks/
 plugins/cache/
 plugins/install-counts-cache.json
 plugins/installed_plugins.json
+plugins/known_marketplaces.json
+plugins/blocklist.json
 
 # Chrome native host (machine-specific paths, auto-generated)
 chrome/chrome-native-host

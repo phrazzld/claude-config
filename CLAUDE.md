@@ -261,6 +261,20 @@ Before merging ANY pull request, always run both skills in order:
 1. `/pr-fix` — resolve conflicts, fix CI, unblock
 2. `/pr-polish` — hindsight review, quality elevation, final checks
 
+### Stripe: Test Mode is DEPRECATED — Use Sandbox Account (ABSOLUTE RULE)
+
+Stripe deprecated test mode. Two completely separate accounts exist:
+- **Sandbox** (`acct_1SV2rGD4aITn8Hia`, profile `sandbox`): Development/testing.
+- **Production** (`acct_1SV2rADIyumDtWyU`, profile `production --live`): Real money.
+
+NEVER use `sk_test_*` keys from the production account for ANY purpose.
+NEVER set `sk_test_*` keys on production infrastructure (Fly.io, Vercel prod, etc.).
+For development: use the sandbox account's keys.
+For production: use `sk_live_*` keys only.
+
+Root cause of the mistake: Skills/agents referenced "test keys" without clarifying
+they must come from the sandbox account, not the production account's deprecated test mode.
+
 CI passing alone is NOT sufficient to merge. These skills catch issues that automated checks miss.
 No exceptions. No "it's a simple change." Run both, every time.
 

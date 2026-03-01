@@ -29,7 +29,7 @@ Check that all configuration is correct and consistent:
 
 - Environment variables set on all deployments?
 - Cross-platform parity (Vercel ↔ Convex)?
-- Test keys in dev, live keys in prod?
+- Sandbox account keys in dev, live keys (sk_live_*) in prod? (NEVER sk_test_* from production account — test mode is deprecated)
 - No trailing whitespace in secrets?
 - Webhook URL canonical (no redirects)?
 
