@@ -139,6 +139,7 @@ Each composes domain-specific primitives.
 | `/llm-infrastructure` | LLM ops | evaluation, gateway-routing |
 | `/quality-gates` | CI/CD | testing-philosophy, code-quality |
 | `/brand-pipeline` | Brand | brand-init → brand-compile → brand-assets |
+| `/deploy` | Deployment | pre-flight, deploy, verify, rollback |
 
 ## Check / Log / Fix Pattern
 
